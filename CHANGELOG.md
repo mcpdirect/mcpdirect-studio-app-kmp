@@ -1,3 +1,25 @@
+### 2025-08-30
+
+**Summary:**
+
+Add reload functionality to MCP Server Integration and update dependencies
+
+**Details:**
+
+- **New Feature:**
+    - Added a reload button to the MCP Server Integration screen that allows users to refresh the tools list for the selected maker.
+    - Implemented `reloadMCPServer()` function in `MCPServerIntegrationViewModel.kt` to handle the reload functionality.
+- **UI Enhancement:**
+    - Added a restart icon (`restart_alt.svg`) to the MakerToolView section in `MCPServerIntegrationScreen.kt`.
+    - Fixed a typo in the remove server button's content description from "Remote Local MCP Server" to "Remove Local MCP Server".
+- **Dependency Update:**
+    - Updated `mcpdirect-studio-core` dependency from version `1.0.0-SNAPSHOT` to `1.1.0-SNAPSHOT` in `composeApp/build.gradle.kts`.
+- **Branding:**
+    - Updated version number from `1.1.0` to `1.0.1` in `composeApp/build.gradle.kts`.
+    - Added AGPL-3.0 license file.
+    - Updated README with license information and improved formatting.
+    - Renamed GEMINI.md to QWEN.md to reflect the project's context.
+
 ### 2025-07-29
 
 **Summary:**
