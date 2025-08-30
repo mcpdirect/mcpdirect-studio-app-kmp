@@ -1,4 +1,4 @@
-There are MCPwings workshop gui project folder
+There are MCPdirect Studio App project folder
 
 **the project structures are:**
 ```

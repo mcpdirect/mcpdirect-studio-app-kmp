@@ -1,10 +1,21 @@
+/**
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ * Copyright (C) 2025–present
+ * All rights reserved.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package ai.mcpdirect.studio.app.mcp
 
-//import androidx.compose.material3.Card
-//import androidx.compose.material.Divider
-//import androidx.compose.material.icons.Icons
-//import androidx.compose.material.icons.automirrored.filled.List
-//import androidx.compose.material.icons.filled.*
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.dao.entity.MCPServer
 import androidx.compose.foundation.clickable
@@ -13,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Badge
 import androidx.compose.material3.*
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
@@ -191,7 +201,8 @@ private fun MakerItem(
             }
         ){
             Text(
-                text = "${maker.name}(${maker.tools.size})",
+//                text = "${maker.name}(${maker.tools.size})",
+                text = maker.name,
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -230,12 +241,17 @@ private fun MakerToolView(
                 modifier = Modifier.weight(1f)
             )
 //            Spacer(modifier = Modifier.weight(1.0f))
+            IconButton(onClick = { viewModel.reloadMCPServer() }) {
+                Icon(
+                    painterResource(Res.drawable.restart_alt),
+                    contentDescription = "Reload MCP Server"
+                )}
             when(selectedMaker!!.id.toInt()){
                 0 -> {
                     IconButton(onClick = { viewModel.removeLocalMCPServer() }) {
                         Icon(
                             painterResource(Res.drawable.delete),
-                            contentDescription = "Remote Local MCP Server"
+                            contentDescription = "Remove Local MCP Server"
                         )}
                     if(selectedMaker!!.tools!!.isNotEmpty()) {
                         IconButton(onClick = { viewModel.publishMCPServer() }) {

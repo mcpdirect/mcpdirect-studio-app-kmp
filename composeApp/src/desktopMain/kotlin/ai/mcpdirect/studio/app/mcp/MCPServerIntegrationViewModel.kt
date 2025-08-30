@@ -321,4 +321,22 @@ class MCPServerIntegrationViewModel(private val repository: MCPServerRepository 
             }
         }
     }
+    fun reloadMCPServer() {
+        CoroutineScope(Dispatchers.Main).launch {
+            _selectedTools.value = listOf()
+            _currentTools.value = _selectedTools.value;
+        }
+        CoroutineScope(Dispatchers.Main).launch {
+            if(_selectedMaker.value!=null) try {
+                viewModelScope.launch {
+                    _selectedMaker.value!!.refreshTools()
+                    _selectedTools.value = MCPDirectStudio.getAIPortTools(
+                        _selectedMaker.value!!)
+                    _currentTools.value = _selectedTools.value
+                }
+            }catch (e: Exception){
+                errorMessage = "Error unpublishing MCP tools: ${e.message}"
+            }
+        }
+    }
 }

@@ -31,7 +31,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("ai.mcpdirect:mcpdirect-studio-core:1.0.0-SNAPSHOT")
+            implementation("ai.mcpdirect:mcpdirect-studio-core:1.1.0-SNAPSHOT")
         }
     }
 }
@@ -39,7 +39,7 @@ kotlin {
 compose.desktop {
 
     application {
-        val version = "1.1.0"
+        val version = "1.0.1"
         mainClass = "ai.mcpdirect.studio.app.MainKt"
         jvmArgs += listOf(
             "-Dai.mcpdirect.studio.app.version=${version}"
