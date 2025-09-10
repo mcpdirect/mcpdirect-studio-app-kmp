@@ -11,7 +11,6 @@ plugins {
 kotlin {
     jvm("desktop")
 
-    
     sourceSets {
         val desktopMain by getting
         commonMain.dependencies {
@@ -31,7 +30,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("ai.mcpdirect:mcpdirect-studio-core:1.1.0-SNAPSHOT")
+            implementation("ai.mcpdirect:mcpdirect-studio-core:1.1.1-SNAPSHOT")
         }
     }
 }
@@ -43,6 +42,7 @@ compose.desktop {
         mainClass = "ai.mcpdirect.studio.app.MainKt"
         jvmArgs += listOf(
             "-Dai.mcpdirect.studio.app.version=${version}"
+            //,-Dai.mcpdirect.gateway.host=https://your-mcpdirect-gateway-host
         )
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
