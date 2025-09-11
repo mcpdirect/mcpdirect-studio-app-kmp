@@ -52,6 +52,7 @@ compose.desktop {
             packageVersion = version
             windows {
                 iconFile.set(project.file("icons/icon.ico")) // For Windows
+                menu = true
             }
             macOS {
                 iconFile.set(project.file("icons/icon.icns")) // For macOS

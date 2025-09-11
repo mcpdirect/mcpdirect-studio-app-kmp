@@ -2,6 +2,17 @@
 
 **Summary:**
 
+Add menu option for Windows native distribution
+
+**Details:**
+
+- **Build Configuration:**
+    - Added `menu = true` for Windows native distribution in `composeApp/build.gradle.kts` to ensure the application appears in the Start menu.
+
+### 2025-09-11
+
+**Summary:**
+
 Update MCPdirect Studio Core dependency and application version
 
 **Details:**
@@ -42,6 +53,14 @@ Add reload functionality to MCP Server Integration and update dependencies
     - Implemented `reloadMCPServer()` function in `MCPServerIntegrationViewModel.kt` to handle the reload functionality.
 - **UI Enhancement:**
     - Added a restart icon (`restart_alt.svg`) to the MakerToolView section in `MCPServerIntegrationScreen.kt`.
+    - Fixed a typo in the remove server button's content description from "Remote Local MCP Server" to "Remove Local MCP Server".
+- **Dependency Update:**
+    - Updated `mcpdirect-studio-core` dependency from version `1.0.0-SNAPSHOT` to `1.1.0-SNAPSHOT` in `composeApp/build.gradle.kts`.
+- **Branding:**
+    - Updated version number from `1.1.0` to `1.0.1` in `composeApp/build.gradle.kts`.
+    - Added AGPL-3.0 license file.
+    - Updated README with license information and improved formatting.
+    - Renamed GEMINI.md to QWEN.md to reflect the project's context.    - Added a restart icon (`restart_alt.svg`) to the MakerToolView section in `MCPServerIntegrationScreen.kt`.
     - Fixed a typo in the remove server button's content description from "Remote Local MCP Server" to "Remove Local MCP Server".
 - **Dependency Update:**
     - Updated `mcpdirect-studio-core` dependency from version `1.0.0-SNAPSHOT` to `1.1.0-SNAPSHOT` in `composeApp/build.gradle.kts`.
