@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">MCPdirect Studio</string>
-    <string name="app_version">1.1.0</string>
     <string name="tool_development">DIY Tools</string>
     <string name="mcp_server_integration">Connect MCP</string>
     <string name="tool_management">Tool Management</string>

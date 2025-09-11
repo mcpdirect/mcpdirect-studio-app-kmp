@@ -12,6 +12,9 @@ import org.jetbrains.compose.resources.painterResource
 fun main() = application {
     val windowState = rememberWindowState(size = DpSize(1024.dp, 768.dp))
     val version = System.getProperty("ai.mcpdirect.studio.app.version")
+    println(System.getProperty("ai.mcpdirect.studio.app.version"))
+    println(System.getProperty("ai.mcpdirect.hstp.webport"))
+    println(System.getProperty("ai.mcpdirect.hstp.service.gateway"))
     Window(
         onCloseRequest = ::exitApplication,
         title = "MCPdirect Studio v$version",

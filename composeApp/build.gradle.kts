@@ -30,7 +30,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("ai.mcpdirect:mcpdirect-studio-core:1.1.1-SNAPSHOT")
+            implementation("ai.mcpdirect:mcpdirect-studio-core:1.1.2-SNAPSHOT")
         }
     }
 }
@@ -38,11 +38,12 @@ kotlin {
 compose.desktop {
 
     application {
-        val version = "1.0.1"
+        val version = "1.0.2"
         mainClass = "ai.mcpdirect.studio.app.MainKt"
         jvmArgs += listOf(
-            "-Dai.mcpdirect.studio.app.version=${version}"
-            //,-Dai.mcpdirect.gateway.host=https://your-mcpdirect-gateway-host
+            "-Dai.mcpdirect.studio.app.version=${version}",
+            //"-Dai.mcpdirect.hstp.webport=https://your_mcpdirect_gateway_host/hstp/",
+            //"-Dai.mcpdirect.hstp.service.gateway=ssl://your_mcpdirect_gateway_host:53100",
         )
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
