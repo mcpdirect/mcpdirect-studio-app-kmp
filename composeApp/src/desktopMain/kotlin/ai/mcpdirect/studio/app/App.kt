@@ -16,10 +16,15 @@ import ai.mcpdirect.studio.app.mcp.MCPServerNotificationHandlerImplement
 import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
+import ai.mcpdirect.studio.app.virtual.VirtualMakerScreen
+import ai.mcpdirect.studio.app.virtual.VirtualMakerToolConfigScreen
+import ai.mcpdirect.studio.app.virtual.VirtualMakerViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+//import androidx.compose.material.NavigationRail
+//import androidx.compose.material.NavigationRailItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,24 +34,33 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-sealed class Screen(val title: String, val icon: DrawableResource) {
-    object ToolDevelopment : Screen(Res.string.tool_development.key,
+sealed class Screen(val title: StringResource, val icon: DrawableResource) {
+    object ToolDevelopment : Screen(Res.string.tool_development,
         Res.drawable.handyman)
-    object MCPServerIntegration : Screen(Res.string.mcp_server_integration.key,
+    object MCPServerIntegration : Screen(Res.string.mcp_server_integration,
         Res.drawable.usb)
-    object ToolsLogbook : Screen(Res.string.tools_logbook.key,
+    object ToolsLogbook : Screen(Res.string.tools_logbook,
         Res.drawable.data_info_alert)
-    object AgentInteraction : Screen(Res.string.agent_interaction.key,
+    object AgentInteraction : Screen(Res.string.agent_interaction,
         Res.drawable.key)
-    object UserSetting : Screen(Res.string.user_setting.key,
+    object UserSetting : Screen(Res.string.user_setting,
         Res.drawable.settings)
-    object ToolPermission : Screen(Res.string.tool_permission.key,
+    object ToolPermission : Screen(Res.string.tool_permission,
         Res.drawable.shield_toggle)
-    object MyStudio : Screen(Res.string.my_studios.key,
+    object MyStudio : Screen(Res.string.my_studio,
         Res.drawable.design_services)
+    object MyTeam : Screen(Res.string.my_team,
+        Res.drawable.diversity_3)
+    object VirtualMCP : Screen(
+        Res.string.virtual_mcp,
+        Res.drawable.graph_2)
+    object VirtualMCPToolConfig : Screen(
+        Res.string.virtual_mcp,
+        Res.drawable.graph_2)
 }
 
 val authViewModel = AuthViewModel()
@@ -58,7 +72,7 @@ val mcpServerIntegrationViewModel = MCPServerIntegrationViewModel()
 val accessKeyViewModel = AccessKeyViewModel()
 
 val settingsViewModel = SettingsViewModel()
-
+val virtualMakerViewModel = VirtualMakerViewModel()
 
 val darkMode = mutableStateOf<Boolean?>(null)
 @Composable
@@ -116,6 +130,7 @@ fun AuthContent(authViewModel: AuthViewModel) {
     }
 }
 
+
 @Composable
 fun MainAppContent() {
     var showMenu by remember { mutableStateOf(false) }
@@ -129,6 +144,22 @@ fun MainAppContent() {
         // Register the log handler
 
     var currentScreen by remember { mutableStateOf<Screen>(Screen.MCPServerIntegration) }
+    @Composable
+    fun navigationRailItem(screen: Screen) {
+        NavigationRailItem(
+//                modifier = Modifier.padding(4.dp),
+            icon = {
+                Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
+                    Icon(painterResource(screen.icon),
+                        contentDescription = stringResource(screen.title))
+                    Text(stringResource(screen.title),
+                        Modifier.padding(start = 16.dp),
+                        style = MaterialTheme.typography.labelLarge)
+                }},
+            selected = currentScreen == screen,
+            onClick = { currentScreen = screen }
+        )
+    }
     Row(Modifier.fillMaxSize()) {
         NavigationRail(
             modifier = Modifier.width(196.dp),
@@ -136,85 +167,127 @@ fun MainAppContent() {
                 Image(
                     painter = painterResource(Res.drawable.mcpdirect_studio_256),
                     contentDescription = "MCPdirect Studio",
-                modifier = Modifier.padding(16.dp).width(180.dp)
+                modifier = Modifier.padding(horizontal = 16.dp).width(180.dp)
                 )
             }) {
 
-            NavigationRailItem(
-                modifier = Modifier.padding(4.dp),
-                icon = {
-                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
-                        Icon(painterResource(Screen.MCPServerIntegration.icon),
-                            contentDescription = stringResource(Res.string.mcp_server_integration))
-                        Text(stringResource(Res.string.mcp_server_integration),
-                            Modifier.padding(start = 16.dp),
-                            style = MaterialTheme.typography.labelLarge)
-                    }},
-                selected = currentScreen == Screen.MCPServerIntegration,
-                onClick = { currentScreen = Screen.MCPServerIntegration }
-            )
-
-            NavigationRailItem(
-                modifier = Modifier.padding(4.dp),
-                icon = {
-                    Row(Modifier.width(160.dp),verticalAlignment = Alignment.CenterVertically){
-                        Icon(painterResource(Screen.ToolDevelopment.icon), contentDescription = stringResource(Res.string.tool_development))
-                        Text(
-                            stringResource(Res.string.tool_development),
-                            Modifier.padding(start = 16.dp),
-                            style = MaterialTheme.typography.labelLarge
-                            )
-                    }
-                },
-                alwaysShowLabel = false,
-                selected = currentScreen == Screen.ToolDevelopment,
-                onClick = { currentScreen = Screen.ToolDevelopment }
-            )
-            NavigationRailItem(
-                modifier = Modifier.padding(4.dp),
-                icon = {
-                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
-                        Icon(
-                            painterResource(Screen.AgentInteraction.icon),
-                            contentDescription = stringResource(Res.string.agent_interaction)
-                        )
-                        Text(stringResource(Res.string.agent_interaction),
-                            Modifier.padding(start = 16.dp),
-                            style = MaterialTheme.typography.labelLarge)
-                    }
-                },
-                selected = currentScreen == Screen.AgentInteraction,
-                onClick = { currentScreen = Screen.AgentInteraction }
-            )
-            NavigationRailItem(
-                modifier = Modifier.padding(4.dp),
-                icon = {
-                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
-                        Icon(painterResource(Screen.ToolsLogbook.icon),
-                            contentDescription = stringResource(Res.string.tools_logbook))
-                        Text(stringResource(Res.string.tools_logbook),
-                            Modifier.padding(start = 16.dp),
-                            style = MaterialTheme.typography.labelLarge)
-                    }},
-                selected = currentScreen == Screen.ToolsLogbook,
-                onClick = { currentScreen = Screen.ToolsLogbook }
-            )
-            NavigationRailItem(
-                modifier = Modifier.padding(4.dp),
-                icon = {
-                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
-                        Icon(painterResource(Screen.MyStudio.icon),
-                            contentDescription = stringResource(Res.string.my_studios))
-                        Text(stringResource(Res.string.my_studios),
-                            Modifier.padding(start = 16.dp),
-                            style = MaterialTheme.typography.labelLarge)
-                    }},
-                selected = currentScreen == Screen.MyStudio,
-                onClick = { currentScreen = Screen.MyStudio }
-            )
+//            NavigationRailItem(
+////                modifier = Modifier.padding(4.dp),
+//                icon = {
+//                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
+//                        Icon(painterResource(Screen.MCPServerIntegration.icon),
+//                            contentDescription = stringResource(Screen.MCPServerIntegration.title))
+//                        Text(stringResource(Screen.MCPServerIntegration.title),
+//                            Modifier.padding(start = 16.dp),
+//                            style = MaterialTheme.typography.labelLarge)
+//                    }},
+//                selected = currentScreen == Screen.MCPServerIntegration,
+//                onClick = { currentScreen = Screen.MCPServerIntegration }
+//            )
+            navigationRailItem(Screen.MCPServerIntegration)
+//            NavigationRailItem(
+////                modifier = Modifier.padding(4.dp),
+//                icon = {
+//                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
+//                        Icon(
+//                            painterResource(Screen.AgentInteraction.icon),
+//                            contentDescription = stringResource(Res.string.agent_interaction)
+//                        )
+//                        Text(stringResource(Res.string.agent_interaction),
+//                            Modifier.padding(start = 16.dp),
+//                            style = MaterialTheme.typography.labelLarge)
+//                    }
+//                },
+//                selected = currentScreen == Screen.AgentInteraction,
+//                onClick = { currentScreen = Screen.AgentInteraction }
+//            )
+            navigationRailItem(Screen.AgentInteraction)
+//            NavigationRailItem(
+////                modifier = Modifier.padding(4.dp),
+//                icon = {
+//                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
+//                        Icon(painterResource(Screen.ToolsLogbook.icon),
+//                            contentDescription = stringResource(Res.string.tools_logbook))
+//                        Text(stringResource(Res.string.tools_logbook),
+//                            Modifier.padding(start = 16.dp),
+//                            style = MaterialTheme.typography.labelLarge)
+//                    }},
+//                selected = currentScreen == Screen.ToolsLogbook,
+//                onClick = { currentScreen = Screen.ToolsLogbook }
+//            )
+            navigationRailItem(Screen.ToolsLogbook)
+            HorizontalDivider()
+//            NavigationRailItem(
+////                modifier = Modifier.padding(4.dp),
+//                icon = {
+//                    Row(Modifier.width(160.dp),verticalAlignment = Alignment.CenterVertically){
+//                        Icon(painterResource(Screen.ToolDevelopment.icon), contentDescription = stringResource(Res.string.tool_development))
+//                        Text(
+//                            stringResource(Res.string.tool_development),
+//                            Modifier.padding(start = 16.dp),
+//                            style = MaterialTheme.typography.labelLarge
+//                        )
+//                    }
+//                },
+//                alwaysShowLabel = false,
+//                selected = currentScreen == Screen.ToolDevelopment,
+//                onClick = { currentScreen = Screen.ToolDevelopment }
+//            )
+            navigationRailItem(Screen.ToolDevelopment)
+            HorizontalDivider()
+//            NavigationRailItem(
+////                modifier = Modifier.padding(4.dp),
+//                icon = {
+//                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
+//                        Icon(painterResource(Screen.MyStudio.icon),
+//                            contentDescription = stringResource(Res.string.my_studio))
+//                        Text(stringResource(Res.string.my_studio),
+//                            Modifier.padding(start = 16.dp),
+//                            style = MaterialTheme.typography.labelLarge)
+//                    }},
+//                selected = currentScreen == Screen.MyStudio,
+//                onClick = { currentScreen = Screen.MyStudio }
+//            )
+            navigationRailItem(Screen.MyStudio)
+//            NavigationRailItem(
+////                modifier = Modifier.padding(4.dp),
+//                icon = {
+//                    Row(Modifier.width(160.dp),verticalAlignment = Alignment.CenterVertically){
+//                        Icon(painterResource(Screen.MyTeam.icon),
+//                            contentDescription = stringResource(Screen.MyTeam.title))
+//                        Text(
+//                            stringResource(Screen.MyTeam.title),
+//                            Modifier.padding(start = 16.dp),
+//                            style = MaterialTheme.typography.labelLarge
+//                        )
+//                    }
+//                },
+//                alwaysShowLabel = false,
+//                selected = currentScreen == Screen.MyTeam,
+//                onClick = { currentScreen = Screen.MyTeam }
+//            )
+            navigationRailItem(Screen.MyTeam)
+//            NavigationRailItem(
+////                modifier = Modifier.padding(4.dp),
+//                icon = {
+//                    Row(Modifier.width(160.dp),verticalAlignment = Alignment.CenterVertically){
+//                        Icon(painterResource(Screen.VirtualMCP.icon), contentDescription = stringResource(Res.string.tool_development))
+//                        Text(
+//                            stringResource(Screen.VirtualMCP.title),
+//                            Modifier.padding(start = 16.dp),
+//                            style = MaterialTheme.typography.labelLarge
+//                        )
+//                    }
+//                },
+//                alwaysShowLabel = false,
+//                selected = currentScreen == Screen.VirtualMCP,
+//                onClick = { currentScreen = Screen.VirtualMCP }
+//            )
+            navigationRailItem(Screen.VirtualMCP)
             Spacer(modifier = Modifier.weight(1f))
+            HorizontalDivider()
             NavigationRailItem(
-                modifier = Modifier.padding(4.dp),
+//                modifier = Modifier.padding(4.dp),
                 icon = {
                     Row(Modifier.width(160.dp),verticalAlignment = Alignment.CenterVertically){
                         Icon(painterResource(
@@ -231,21 +304,22 @@ fun MainAppContent() {
                 selected = false,
                 onClick = { darkMode.value=!darkMode.value!! }
             )
+//            NavigationRailItem(
+////                modifier = Modifier.padding(4.dp),
+//                icon = {
+//                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
+//                        Icon(painterResource(Screen.UserSetting.icon), contentDescription = stringResource(Res.string.user_setting))
+//                        Text(stringResource(Res.string.user_setting),
+//                            Modifier.padding(start = 16.dp),
+//                            style = MaterialTheme.typography.labelLarge)
+//                    }
+//                },
+//                selected = currentScreen == Screen.UserSetting,
+//                onClick = { currentScreen = Screen.UserSetting }
+//            )
+            navigationRailItem(Screen.UserSetting)
             NavigationRailItem(
-                modifier = Modifier.padding(4.dp),
-                icon = {
-                    Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
-                        Icon(painterResource(Screen.UserSetting.icon), contentDescription = stringResource(Res.string.user_setting))
-                        Text(stringResource(Res.string.user_setting),
-                            Modifier.padding(start = 16.dp),
-                            style = MaterialTheme.typography.labelLarge)
-                    }
-                },
-                selected = currentScreen == Screen.UserSetting,
-                onClick = { currentScreen = Screen.UserSetting }
-            )
-            NavigationRailItem(
-                modifier = Modifier.padding(4.dp),
+//                modifier = Modifier.padding(4.dp),
                 icon = {
                     Row(Modifier.width(160.dp), verticalAlignment = Alignment.CenterVertically){
                         Icon(painterResource(Res.drawable.account_circle), contentDescription = "Account")
@@ -279,6 +353,13 @@ fun MainAppContent() {
                     currentScreen = Screen.AgentInteraction
                 }
                 Screen.MyStudio -> MyStudioScreen()
+                Screen.MyTeam -> Card {  }
+                Screen.VirtualMCP -> VirtualMakerScreen(virtualMakerViewModel){
+                    currentScreen = Screen.VirtualMCPToolConfig
+                }
+                Screen.VirtualMCPToolConfig -> VirtualMakerToolConfigScreen(virtualMakerViewModel){
+                    currentScreen = Screen.VirtualMCP
+                }
             }
         }
     }

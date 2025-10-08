@@ -12,5 +12,7 @@
     <string name="change_password">Change Password</string>
     <string name="profile_setting">Profile Setting</string>
     <string name="tool_permission">Tool Permission</string>
-    <string name="my_studios">My Studio</string>
+    <string name="my_studio">My Studio</string>
+    <string name="my_team">My Team</string>
+    <string name="virtual_mcp">Virtual MCP</string>
 </resources>

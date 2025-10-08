@@ -23,6 +23,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.serialization.json)
+
+//            implementation("io.github.dokar3:chiptextfield-m3:0.7.0-alpha05")
+//            implementation("dev.snipme:kodeview:0.9.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -30,15 +33,15 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("ai.mcpdirect:mcpdirect-studio-core:1.1.2-SNAPSHOT")
+            implementation("ai.mcpdirect:mcpdirect-studio-core:1.2.0-SNAPSHOT")
         }
     }
 }
+val version = "1.0.3"
 
 compose.desktop {
-
     application {
-        val version = "1.0.2"
+
         mainClass = "ai.mcpdirect.studio.app.MainKt"
         jvmArgs += listOf(
             "-Dai.mcpdirect.studio.app.version=${version}",

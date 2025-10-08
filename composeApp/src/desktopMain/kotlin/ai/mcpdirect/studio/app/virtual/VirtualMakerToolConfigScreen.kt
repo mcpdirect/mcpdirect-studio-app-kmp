@@ -1,540 +1,216 @@
 package ai.mcpdirect.studio.app.virtual
 
+import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
+import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.compose.SearchView
 import ai.mcpdirect.studio.app.compose.StudioCard
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
-import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.key.AccessKeyViewModel
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
-val filterBy = mutableIntStateOf(0)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccessKeyPermissionScreen(
-    viewModel: AccessKeyViewModel,
+fun VirtualMakerToolConfigScreen(
+    viewModel: VirtualMakerViewModel,
     onBack: () -> Unit
 ) {
-    LaunchedEffect(viewModel) {
-        viewModel.loadKeyPermissions()
-    }
-    if(viewModel.showSaveSuccess.value){
-        viewModel.showSaveSuccess.value = false
-        viewModel.keyPermissions.clear()
-        viewModel.selectedTools.clear()
-        viewModel.selectedAgents.clear()
-        viewModel.selectedMakers.clear()
-        onBack()
-    }
-    var showDiscardDialog by remember { mutableStateOf(false) }
-    if (showDiscardDialog) {
-        AlertDialog(
-            onDismissRequest = { showDiscardDialog = false },
-            title = { Text("Discard Changes?") },
-            text = { Text("You have unsaved changes. Are you sure you want to discard them?") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDiscardDialog = false
-                        if (viewModel.hasUnsavedChanges()) {
-                            showDiscardDialog = true
-                        } else {
-                            onBack()
-                        }
-                    }
-                ) {
-                    Text("Save")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { 
-                        showDiscardDialog = false 
-                        onBack()
-                    }
-                ) {
-                    Text("Discard")
-                }
-            }
-        )
-    }
-    
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Tool Permissions for Key #${viewModel.apiKey.value!!.name}") },
+                title = { Text("${stringResource(Screen.VirtualMCP.title)} Tool Config for #${viewModel.selectedVirtualMaker!!.name}" ) },
+                actions = {
+                    IconButton(onClick = { viewModel.queryToolMakers() }) {
+                        Icon(
+                            painterResource(Res.drawable.refresh),
+                            contentDescription = "Refresh MCP Server"
+                        )
+                    }
+                    Button(onClick = {
+                        onBack()
+                        viewModel.modifyVirtualMakerTools()
+                    }){
+                        Text("Save")
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (viewModel.hasUnsavedChanges()) {
-                            showDiscardDialog = true
-                        } else {
+//                        if (viewModel.hasUnsavedChanges()) {
+//                            showDiscardDialog = true
+//                        } else {
                             onBack()
-                        }
+//                        }
                     }) {
                         Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
                     }
                 },
             )
         }
-    ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            val choices = remember {
-                mutableStateListOf("Your Studio", "Tools Maker")
-            }
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                    SegmentedButton(
-                        modifier = Modifier.width(150.dp),
-                        selected = filterBy.intValue == 0,
-                        onClick = {
-                            filterBy.intValue = 0
-                            viewModel.agentsDropdownExpanded.value=true
-                                  },
-                        shape = SegmentedButtonDefaults.itemShape(
-                            index = 0,
-                            count = choices.count()
-                        )
-                    ) {
-                        AgentDropdown(viewModel = viewModel)
-                    }
-                SegmentedButton(
-                    modifier = Modifier.width(150.dp),
-                    selected = filterBy.intValue == 1,
-                    onClick = {
-                        filterBy.intValue = 1
-                        viewModel.makersDropdownExpanded.value=true
-                              },
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = 1,
-                        count = choices.count()
-                    )
-                ) {
-                    MakerDropdown(viewModel = viewModel)
-                }
-            }
-
-            if(filterBy.value==0){
-                FlowRow(
-                    modifier = Modifier.wrapContentHeight(align = Alignment.Top),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    viewModel.selectedAgents.forEach { id ->
-                        val agent = viewModel.agents.first { it.id == id }
-                        Chip(
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp)
-                                .align(Alignment.CenterVertically),
-                            onClick = { }
-                        ) {
-                            Text(viewModel.getAgentName(agent), style = MaterialTheme.typography.bodySmall)
-                        }
-                    }
-                }
-            }else{
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight(align = Alignment.Top),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    viewModel.selectedMakers.forEach { id ->
-                        val maker = viewModel.makers.first { it.id == id }
-                        Chip(
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp)
-                                .align(Alignment.CenterVertically),
-                            onClick = { }
-                        ) {
-                            Text(maker.name, style = MaterialTheme.typography.bodySmall)
-                        }
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            ToolList(viewModel,onBack)
+    ) { padding ->
+        when {
+            viewModel.selectedMakerTool != null -> ToolDetailView(viewModel, padding)
+            else -> MakerListView(viewModel, padding)
         }
     }
+
+//    LaunchedEffect(Unit) {
+//        viewModel.queryToolMakers(AIPortToolMaker.TYPE_VIRTUAL)
+//    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-private fun AgentDropdown(viewModel: AccessKeyViewModel) {
-    var searchText by remember { mutableStateOf("") }
+private fun MakerListView(
+    viewModel: VirtualMakerViewModel,
+    padding: PaddingValues
+) {
 
-    ExposedDropdownMenuBox(
-        expanded = viewModel.agentsDropdownExpanded.value,
-        onExpandedChange = { expanded ->
-            viewModel.agentsDropdownExpanded.value = expanded
-            if (!expanded) searchText = ""
-        }
-    ) {
-        Text(if(filterBy.intValue == 0) "Filter by Your Studio" else "Your Studio",
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable))
-        ExposedDropdownMenu(
-            expanded = viewModel.agentsDropdownExpanded.value,
-            onDismissRequest = {
-                viewModel.agentsDropdownExpanded.value = false
-                searchText = ""
-            },
-            modifier = Modifier.heightIn(max = 400.dp).widthIn(300.dp)
-        ) {
-            OutlinedTextField(
-                value = searchText,
-                onValueChange = { searchText = it },
-                label = { Text("Search agents") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-
-            DropdownMenuItem(
-                text = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = viewModel.selectedAgents.size == viewModel.agents.size,
-                            onCheckedChange = { checked ->
-                                viewModel.toggleAllAgents(checked)
-                            }
+    Column(modifier = Modifier.padding(padding)) {
+        SearchView(
+            query = viewModel.searchQuery,
+            onQueryChange = { viewModel.updateSearchQuery(it) },
+            placeholder = "Search makers..."
+        )
+        StudioCard(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize()
+        ){
+            Row(modifier = Modifier.fillMaxWidth()) {
+                if (viewModel.makers.isEmpty()) {
+                    Column(modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceAround,
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(painterResource(Res.drawable.draft),
+                            contentDescription = "Empty",
+                            modifier = Modifier.size(64.dp)
                         )
-                        Text("Select All Agents")
                     }
-                },
-                onClick = {
-                    viewModel.toggleAllAgents(
-                        viewModel.selectedAgents.size != viewModel.agents.size
-                    )
-                }
-            )
-
-            HorizontalDivider()
-
-            viewModel.agents
-                .filter { it.name.contains(searchText, ignoreCase = true) }
-                .forEach { agent ->
-                    DropdownMenuItem(
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Checkbox(
-                                    checked = agent.id in viewModel.selectedAgents,
-                                    onCheckedChange  = { checked ->
-                                        if (checked) {
-                                            viewModel.selectedAgents.add(agent.id)
-                                        } else {
-                                            viewModel.selectedAgents.remove(agent.id)
-                                        }
-                                    }
-                                )
-                                Column {
-                                    Text(viewModel.getAgentName(agent))
-                                    Text(agent.device, style = MaterialTheme.typography.bodySmall)
-                                }
-                            }
-                        },
-                        onClick = {
-                            if (agent.id in viewModel.selectedAgents) {
-                                viewModel.selectedAgents.remove(agent.id)
-                            } else {
-                                viewModel.selectedAgents.add(agent.id)
+                }else {
+                    LazyColumn(modifier = Modifier.weight(3.0f)) {
+                        items(viewModel.makers) { maker ->
+                            MakerItem(maker) {
+                                viewModel.selectMaker(maker)
+                                viewModel.queryTools()
                             }
                         }
-                    )
+                    }
+                    if (viewModel.selectedMaker != null) {
+                        VerticalDivider()
+                        Column(modifier = Modifier.weight(5.0f)) {
+                            MakerDetailView(viewModel)
+                        }
+                    }
                 }
+            }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
-@Composable
-private fun MakerDropdown(viewModel: AccessKeyViewModel) {
-    var searchText by remember { mutableStateOf("") }
-    val visibleMakers = viewModel.getVisibleMakers()
-    
-    ExposedDropdownMenuBox(
-        expanded = viewModel.makersDropdownExpanded.value,
-        onExpandedChange = { expanded ->
-            viewModel.makersDropdownExpanded.value = expanded
-            if (!expanded) searchText = ""
-        }
-    ) {
-        Text(if(filterBy.intValue == 1)
-            "Filter by Tools Maker"
-        else "Tools Makers",
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable))
-        ExposedDropdownMenu(
-            expanded = viewModel.makersDropdownExpanded.value,
-            onDismissRequest = {
-                viewModel.makersDropdownExpanded.value = false
-                searchText = ""
-            },
-            modifier = Modifier.heightIn(max = 400.dp).widthIn(300.dp)
-        ) {
-            OutlinedTextField(
-                value = searchText,
-                onValueChange = { searchText = it },
-                label = { Text("Search makers") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-            
-            DropdownMenuItem(
-                text = { 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(
-                            checked = visibleMakers.isNotEmpty() && 
-                                     viewModel.selectedMakers.size == visibleMakers.size,
-                            onCheckedChange = { checked ->
-                                viewModel.toggleAllMakers(checked)
-                            },
-                            enabled = visibleMakers.isNotEmpty()
-                        )
-                        Text("Select All Makers")
-                    }
-                },
-                onClick = {
-                    viewModel.toggleAllMakers(
-                        viewModel.selectedMakers.size != visibleMakers.size
-                    )
-                },
-                enabled = visibleMakers.isNotEmpty()
-            )
-            
-            HorizontalDivider()
-            
-            visibleMakers
-                .filter { it.name.contains(searchText, ignoreCase = true) }
-                .forEach { maker ->
-                    DropdownMenuItem(
-                        text = { 
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Checkbox(
-                                    checked = maker.id in viewModel.selectedMakers,
-                                    onCheckedChange = { checked ->
-                                        if (checked) {
-                                            viewModel.selectedMakers.add(maker.id)
-                                        } else {
-                                            viewModel.selectedMakers.remove(maker.id)
-                                        }
-                                    }
-                                )
-                                Column {
-                                    Text(maker.name)
-                                    Text("Type: ${maker.type}", style = MaterialTheme.typography.bodySmall)
-                                }
-                            }
-                        },
-                        onClick = {
-                            if (maker.id in viewModel.selectedMakers) {
-                                viewModel.selectedMakers.remove(maker.id)
-                            } else {
-                                viewModel.selectedMakers.add(maker.id)
-                            }
-                            viewModel.selectedTools.clear()
-                        }
-                    )
-                }
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun ToolList(viewModel: AccessKeyViewModel, onBack: () -> Unit) {
-    val selectedMakers = remember { viewModel.selectedMakers }
-    val selectedAgents = remember { viewModel.selectedAgents }
-    val tools = remember { viewModel.tools }
-    val toolsByMaker = when (filterBy.value) {
-        1 if selectedMakers.isNotEmpty() -> {
-            tools
-                .filter { it.makerId in selectedMakers }
-                .groupBy { it.makerId }
+private fun MakerItem(
+    maker: AIPortToolMaker,
+    onClick: () -> Unit
+) {
+    ListItem(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        headlineContent = {
+            Text(maker.name)
+        },
+        supportingContent = {
+            Text("Tags: ${maker.tags}")
+        },
+        leadingContent = {
+            if (maker.status == 0) Icon(painter = painterResource(Res.drawable.block),
+                contentDescription = "Click to enable",
+                tint = Color.Red)
+            else Icon(painter = painterResource(Res.drawable.check),
+                contentDescription = "Click to disable",
+                tint = Color(0xFF63A002))
         }
-        0 if selectedAgents.isNotEmpty() -> {
-            val makerIds = viewModel.makers
-                .filter { it.agentId in selectedAgents }
-                .map { it.id }
-            tools
-                .filter { it.makerId in makerIds }
-                .groupBy { it.makerId }
-        }
-        else -> tools.groupBy { it.makerId }
-    }
-    // Track expanded/collapsed state for each maker
-    val expandedMakers = remember { mutableStateMapOf<Long, Boolean>() }
-
-    StudioCard(
-        modifier = Modifier.padding(8.dp).fillMaxWidth(),
-    ) {
-        Column(Modifier.fillMaxHeight(1.0f)) {
-            // Select all tools checkbox
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp)
-            ) {
-                val allTools = toolsByMaker.values.flatten()
-                Row (verticalAlignment = Alignment.CenterVertically,){
-                    if(allTools.isNotEmpty())Checkbox(
-                        checked = viewModel.selectedTools.isNotEmpty(),
-                        onCheckedChange = {
-                            val allSelected = allTools.all { it.id in viewModel.selectedTools }
-                            allTools.forEach { tool ->
-                                if (allSelected) {
-                                    viewModel.selectedTools.remove(tool.id)
-                                } else {
-                                    viewModel.selectedTools.add(tool.id)
-                                }
-                            }
-                        },
-                    )
-                    Text(
-                        text = if (allTools.isEmpty()) "No tools available"
-                        else "Selected (${viewModel.selectedTools.size})",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-                Button(onClick = {
-                    viewModel.savePermissions(onSuccess = onBack)
-                }){
-                    Text("Save")
-                }
-            }
-
-            // Grouped tool list
-            LazyColumn {
-                toolsByMaker.forEach { (makerId, tools) ->
-                    val maker = viewModel.getMakerById(makerId)
-                    val isExpanded = expandedMakers[makerId] ?: false // Default to expanded
-                    
-                    item {
-                        HorizontalDivider()
-                        MakerHeader(
-                            maker = maker,
-                            tools = tools,
-                            viewModel = viewModel,
-                            isExpanded = isExpanded,
-                            onToggleExpand = {
-                                expandedMakers[makerId] = !isExpanded
-                            }
-                        )
-
-                    }
-                    
-                    if (isExpanded) {
-                        item{
-                            HorizontalDivider(modifier = Modifier.shadow(
-                                2.dp
-                            ))
-                        }
-                        items(tools) { tool ->
-                            ToolItem(tool, viewModel)
-                        }
-                    }
-                }
-            }
-        }
-    }
+    )
 }
 
 @Composable
-private fun MakerHeader(
-    maker: AIPortToolMaker?,
-    tools: List<AIPortTool>,
-    viewModel: AccessKeyViewModel,
-    isExpanded: Boolean,
-    onToggleExpand: () -> Unit
+private fun MakerDetailView(
+    viewModel: VirtualMakerViewModel,
 ) {
-    Row(modifier = Modifier.clickable { onToggleExpand()}) {
+    val maker = viewModel.selectedMaker!!
+
+    Column{
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Expand/collapse icon
-            Icon(
-                painter = painterResource(
-                    if (isExpanded) Res.drawable.keyboard_arrow_down else Res.drawable.keyboard_arrow_right
-                ),
-                contentDescription = if (isExpanded) "Collapse" else "Expand",
-                modifier = Modifier.size(24.dp)
+            IconButton(onClick = { viewModel.selectMaker(null) }) {
+                Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
+            }
+            Text(
+                text = maker.name ?: "",
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
             )
-            Spacer(modifier = Modifier.width(8.dp))
+//            Spacer(modifier = Modifier.weight(1.0f))
 
-            // Maker selection checkbox
-            var checked = false
-            for (tool in tools) {
-                if(tool.id in viewModel.selectedTools){
-                    checked = true
-                    break;
+            Row (verticalAlignment = Alignment.CenterVertically,){
+                IconButton(onClick = {
+                    viewModel.selectAllSelectedMakerTools()
+                }) {
+                    Icon(painterResource(Res.drawable.select_all), contentDescription = "Select All")
+                }
+                IconButton(onClick = {
+                    viewModel.deselectAllSelectedMakerTools()
+                }) {
+                    Icon(painterResource(Res.drawable.deselect), contentDescription = "deselect All")
                 }
             }
-            Checkbox(
-
-//                checked = tools.isNotEmpty() &&
-//                        tools.all { it.id in viewModel.selectedTools },
-                checked = checked,
-                onCheckedChange = {
-                    val allSelected = tools.all { it.id in viewModel.selectedTools }
-                    tools.forEach { tool ->
-                        if (allSelected) {
-                            viewModel.selectedTools.remove(tool.id)
-                        } else {
-                            viewModel.selectedTools.add(tool.id)
-                        }
-                    }
-                },
-                enabled = tools.isNotEmpty(),
-                // Prevent checkbox from triggering expand/collapse
-                modifier = Modifier.clickable { /* no-op - handled by parent */ }
-            )
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "${maker?.name ?: "Unknown Maker"}(${tools.size})",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-//                    viewModel.agents.first { it.id == maker?.agentId }.name,
-                    viewModel.getAgentName(maker?.agentId!!),
-                    style = MaterialTheme.typography.bodySmall
-                )
+        }
+        LazyColumn {
+            items(    viewModel.selectedMakerTools) { tool ->
+                ToolItem(tool, viewModel)
             }
         }
     }
 }
 
 @Composable
-private fun ToolItem(tool: AIPortTool, viewModel: AccessKeyViewModel) {
+private fun ToolItem(tool: AIPortTool, viewModel: VirtualMakerViewModel) {
     Box(modifier = Modifier.background(Color.White.copy(alpha = 0.5f))) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .padding(horizontal = 8.dp)
 
         ) {
-            Spacer(modifier = Modifier.width(32.dp))
             Checkbox(
-                checked = tool.id in viewModel.selectedTools,
+                checked = viewModel.newVirtualMakerTools.containsKey(tool.id),
                 onCheckedChange = {
-                    if (tool.id in viewModel.selectedTools) {
-                        viewModel.selectedTools.remove(tool.id)
+                    if (viewModel.newVirtualMakerTools.containsKey(tool.id)) {
+                        viewModel.newVirtualMakerTools.remove(tool.id)
                     } else {
-                        viewModel.selectedTools.add(tool.id)
+                        viewModel.newVirtualMakerTools[tool.id]=tool
                     }
                 }
             )
@@ -565,12 +241,57 @@ private fun ToolItem(tool: AIPortTool, viewModel: AccessKeyViewModel) {
                     }
                 }
 
-                Text("Tags: ${tool.tags}", style = MaterialTheme.typography.bodySmall)
+//                Text("Tags: ${tool.tags}", style = MaterialTheme.typography.bodySmall)
             }
 
-            IconButton(onClick = { /* Show tool details */ }) {
+            IconButton(onClick = {
+                viewModel.selectedMakerTool = tool
+            }) {
                 Icon(painterResource(Res.drawable.info), contentDescription = "Details")
             }
         }
+    }
+}
+
+
+@Composable
+private fun ToolDetailView(
+    viewModel: VirtualMakerViewModel,
+    padding: PaddingValues
+) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = Modifier.fillMaxSize().padding(padding),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            androidx.compose.material3.IconButton(onClick = {
+                viewModel.selectedMakerTool = null
+                viewModel.selectedMakerToolMetadata = null
+            }) {
+                Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
+            }
+            Text(
+                text = viewModel.selectedMakerTool?.name ?: "",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        HorizontalDivider()
+        Column(Modifier.padding(8.dp).fillMaxSize().verticalScroll(scrollState)) {
+                viewModel.selectedMakerToolMetadata?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+//            CodeTextView(highlights = highlights.value)
+        }
+    }
+    LaunchedEffect(Unit) {
+        if(viewModel.selectedMakerTool!=null)
+        viewModel.queryToolMetadata(viewModel.selectedMakerTool!!.id)
     }
 }

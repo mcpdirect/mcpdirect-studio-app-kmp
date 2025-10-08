@@ -17,6 +17,7 @@
 package ai.mcpdirect.studio.app.mcp
 
 import ai.mcpdirect.studio.app.compose.StudioCard
+import ai.mcpdirect.studio.app.compose.SearchView
 import ai.mcpdirect.studio.dao.entity.MCPServer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -34,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
-import kotlin.text.toInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -368,29 +368,18 @@ private fun ToolItem(
 }
 
 @Composable
-private fun SearchView(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    placeholder: String
-) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        placeholder = { Text(placeholder) },
-        leadingIcon = { Icon(painterResource(Res.drawable.search), contentDescription = "Search") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        singleLine = true,
-    )
-}
-
-@Composable
 private fun ToolDetailView(
     viewModel: MCPServerIntegrationViewModel,
     padding: PaddingValues
 ) {
     val selectedTool by viewModel.selectedTool
+//    val highlights = remember {
+//        mutableStateOf(
+//            Highlights
+//                .Builder(code = selectedTool!!.metaData)
+//                .build()
+//        )
+//    }
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier.fillMaxSize().padding(padding),
@@ -414,10 +403,10 @@ private fun ToolDetailView(
                 text = selectedTool!!.metaData,
                 modifier = Modifier.padding(8.dp)
             )
+//            CodeTextView(highlights = highlights.value)
         }
     }
 }
-
 
 @Composable
 fun AddServerDialog(viewModel: MCPServerIntegrationViewModel) {
