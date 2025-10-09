@@ -5,6 +5,8 @@ import ai.mcpdirect.studio.app.auth.*
 import ai.mcpdirect.studio.app.key.AccessKeyNotificationHandlerImplement
 import ai.mcpdirect.studio.app.key.AccessKeyPermissionScreen
 import ai.mcpdirect.studio.app.key.AccessKeyScreen
+import ai.mcpdirect.studio.app.key.AccessKeyToolPermissionScreen
+import ai.mcpdirect.studio.app.key.AccessKeyToolPermissionViewModel
 import ai.mcpdirect.studio.app.key.AccessKeyViewModel
 import ai.mcpdirect.studio.app.logbook.ToolsLogHandlerImplement
 import ai.mcpdirect.studio.app.logbook.ToolsLogViewModel
@@ -70,6 +72,7 @@ val toolLogsViewModel = ToolsLogViewModel()
 val mcpServerIntegrationViewModel = MCPServerIntegrationViewModel()
 
 val accessKeyViewModel = AccessKeyViewModel()
+val accessKeyToolPermissionViewModel = AccessKeyToolPermissionViewModel()
 
 val settingsViewModel = SettingsViewModel()
 val virtualMakerViewModel = VirtualMakerViewModel()
@@ -341,6 +344,7 @@ fun MainAppContent() {
                 Screen.MCPServerIntegration -> MCPServerIntegrationScreen(mcpServerIntegrationViewModel){}
                 Screen.AgentInteraction -> AccessKeyScreen(accessKeyViewModel){
                     accessKeyViewModel.apiKey.value = it
+                    accessKeyToolPermissionViewModel.accessKey = it
                     currentScreen = Screen.ToolPermission
                 }
                 Screen.ToolsLogbook -> ToolsLogbookScreen(toolLogsViewModel) {
@@ -349,7 +353,10 @@ fun MainAppContent() {
                 Screen.UserSetting -> SettingsScreen(authViewModel.userInfo,settingsViewModel){
                     authViewModel.uiState = UiState.Idle
                 }
-                Screen.ToolPermission -> AccessKeyPermissionScreen(accessKeyViewModel){
+//                Screen.ToolPermission -> AccessKeyPermissionScreen(accessKeyViewModel){
+//                    currentScreen = Screen.AgentInteraction
+//                }
+                Screen.ToolPermission -> AccessKeyToolPermissionScreen{
                     currentScreen = Screen.AgentInteraction
                 }
                 Screen.MyStudio -> MyStudioScreen()

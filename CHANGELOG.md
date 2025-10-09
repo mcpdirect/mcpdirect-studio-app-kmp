@@ -2,11 +2,13 @@
 
 **Summary:**
 
-Add Virtual MCP feature, update dependencies, and refactor UI navigation
+Add Access Key Tool Permissions, enhance Virtual MCP, and update UI components
 
 **Details:**
 
 - **New Feature:**
+    - Added Access Key Tool Permission functionality with dedicated screens and view models (`AccessKeyToolPermissionScreen`, `AccessKeyToolPermissionViewModel`).
+    - Introduced comprehensive tool permission management allowing users to grant access to specific tools for API access keys.
     - Added Virtual MCP functionality with dedicated screens and view models (`VirtualMakerScreen`, `VirtualMakerToolConfigScreen`, `VirtualMakerViewModel`).
     - Introduced "Virtual MCP" and "My Team" options in the main navigation with corresponding string resources.
 
@@ -15,6 +17,9 @@ Add Virtual MCP feature, update dependencies, and refactor UI navigation
     - Added horizontal dividers to group navigation sections for better visual organization.
     - Improved layout spacing in the navigation rail.
     - Replaced inline SearchView implementation with a reusable component.
+    - Enhanced tool permission management screen with improved filtering and selection UI.
+    - Added segmented button row for filter options in tool permissions.
+    - Improved virtual maker tool configuration screen with better organization and UI elements.
 
 - **Dependency Updates:**
     - Updated `mcpdirect-studio-core` dependency from version `1.1.2-SNAPSHOT` to `1.2.0-SNAPSHOT`.
@@ -29,8 +34,12 @@ Add Virtual MCP feature, update dependencies, and refactor UI navigation
 - **Code Refactoring:**
     - Modified the Screen sealed class to use StringResource instead of String for titles.
     - Renamed `my_studios` string resource to `my_studio` for consistency.
-    - Added virtual maker view model to the main app initialization.
+    - Added access key tool permission view model to the main app initialization.
+    - Updated main application flow to use the new access key permission screen.
     - Commented out unused code related to code highlighting functionality.
+    - Improved tool detail view models with better data handling and UI state management.
+    - Added horizontal dividers in virtual maker UI for better separation of sections.
+    - Refined tool item display in virtual maker screen for better visual organization.
 
 ### 2025-09-11
 

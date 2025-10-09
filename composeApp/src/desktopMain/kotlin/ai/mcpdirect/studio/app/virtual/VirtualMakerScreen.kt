@@ -345,6 +345,7 @@ private fun MakerDetailView(
             }
 
         }
+        HorizontalDivider()
         LazyColumn {
             items(viewModel.selectedVirtualMakerTools) { tool ->
                 ToolItem(tool, viewModel)
@@ -504,49 +505,44 @@ fun EditServerTagsDialog(viewModel: VirtualMakerViewModel) {
 
 @Composable
 private fun ToolItem(tool: AIPortVirtualTool, viewModel: VirtualMakerViewModel) {
-    Box(modifier = Modifier.background(Color.White.copy(alpha = 0.5f))) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(PaddingValues(start = 16.dp,end=8.dp))
 
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Row {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(tool.name, style = MaterialTheme.typography.bodyMedium)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Box(
-                        Modifier.border(
-                            width = 1.dp,
-                            color = androidx.compose.material.MaterialTheme.colors.onSurface.copy(alpha = 0.12f),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                    ) {
-                        if (tool.status == 0) Text(
-                            "inactive",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(2.dp)
-                        )
-                        else Text(
-                            "active",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(2.dp)
-                        )
-                    }
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Row {
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(tool.name, style = MaterialTheme.typography.bodyMedium)
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
+                    Modifier.border(
+                        width = 1.dp,
+                        color = androidx.compose.material.MaterialTheme.colors.onSurface.copy(alpha = 0.12f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                ) {
+                    if (tool.status == 0) Text(
+                        "inactive",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(2.dp)
+                    )
+                    else Text(
+                        "active",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(2.dp)
+                    )
                 }
-
-//                Text("Tags: ${tool.tags}", style = MaterialTheme.typography.bodySmall)
             }
-
-            IconButton(onClick = {
-                viewModel.selectedMakerTool = tool
-            }) {
-                Icon(painterResource(Res.drawable.info), contentDescription = "Details")
-            }
+        }
+        IconButton(onClick = {
+            viewModel.selectedMakerTool = tool
+        }) {
+            Icon(painterResource(Res.drawable.info), contentDescription = "Details")
         }
     }
 }
