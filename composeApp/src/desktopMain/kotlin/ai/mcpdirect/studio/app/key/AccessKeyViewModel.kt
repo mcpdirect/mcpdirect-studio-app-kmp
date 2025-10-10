@@ -345,7 +345,7 @@ class AccessKeyViewModel : ViewModel(){
                     }
 
                 }
-                MCPDirectStudio.grantToolPermission(keyPermissions)
+                MCPDirectStudio.grantToolPermission(keyPermissions, listOf())
 
                 showSaveSuccess.value = true
                 isLoading.value = false

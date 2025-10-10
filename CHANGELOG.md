@@ -20,6 +20,12 @@ Add Access Key Tool Permissions, enhance Virtual MCP, and update UI components
     - Enhanced tool permission management screen with improved filtering and selection UI.
     - Added segmented button row for filter options in tool permissions.
     - Improved virtual maker tool configuration screen with better organization and UI elements.
+    - Added new SVG icons for checkbox controls (`check_box.svg`, `uncheck_box.svg`) and reset settings (`reset_settings.svg`).
+    - Enhanced access key permission screen with better visual indicators and tool selection UI.
+    - Added confirmation dialog for unsaved changes when navigating away from permission screen.
+    - Implemented reset to default functionality for tool permissions.
+    - Added counts to list items to show number of selected permissions.
+    - Improved text overflow handling with ellipsis for long names.
 
 - **Dependency Updates:**
     - Updated `mcpdirect-studio-core` dependency from version `1.1.2-SNAPSHOT` to `1.2.0-SNAPSHOT`.
@@ -40,6 +46,11 @@ Add Access Key Tool Permissions, enhance Virtual MCP, and update UI components
     - Improved tool detail view models with better data handling and UI state management.
     - Added horizontal dividers in virtual maker UI for better separation of sections.
     - Refined tool item display in virtual maker screen for better visual organization.
+    - Enhanced permission management logic with better state tracking and change detection.
+    - Implemented virtual tool agent for unified access control.
+    - Improved permission saving and reset functionality with better change detection.
+    - Updated API calls to include virtual tool permissions.
+    - Implemented proper state management for tool selection and permissions.
 
 ### 2025-09-11
 
