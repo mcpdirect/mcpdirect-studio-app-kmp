@@ -1,7 +1,7 @@
 package ai.mcpdirect.studio.app.tool
 
 import ai.mcpdirect.studio.app.Screen
-import ai.mcpdirect.studio.app.virtual.VirtualMakerViewModel
+import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll

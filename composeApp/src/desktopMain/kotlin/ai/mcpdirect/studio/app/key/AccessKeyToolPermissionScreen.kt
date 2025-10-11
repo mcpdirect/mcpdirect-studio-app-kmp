@@ -56,6 +56,7 @@ fun AccessKeyToolPermissionScreen(
                     }
                     Button(onClick = {
                         viewModel.savePermissions()
+                        onBack()
                     }){
                         Text("Save")
                     }
@@ -132,14 +133,6 @@ fun AccessKeyToolPermissionScreen(
                     VerticalDivider()
                     Column {
                         Row (verticalAlignment = Alignment.CenterVertically,){
-//                            val allChecked = viewModel.toolsSelected()
-//                            Checkbox(
-//                                checked = viewModel.countToolPermissions()>0,
-//                                onCheckedChange = {
-//                                        checked ->
-//                                    viewModel.selectAllTools(checked)
-//                                },
-//                            )
                             if(viewModel.countToolPermissions()>0)
                                 IconButton(onClick = {
                                     viewModel.selectAllTools(false)
@@ -153,7 +146,7 @@ fun AccessKeyToolPermissionScreen(
                                     Icon(painterResource(Res.drawable.uncheck_box), contentDescription = "Select All")
                                 }
 
-                            Text("${viewModel.countToolPermissions()} Selected")
+                            Text("${viewModel.countToolPermissions()} tool(s) selected")
                             Spacer(Modifier.weight(1.0f))
                             IconButton(onClick = {
                                 viewModel.resetPermissions()

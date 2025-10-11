@@ -131,7 +131,10 @@ fun LoginScreen(authViewModel: AuthViewModel) {
 
         when (val state = authViewModel.uiState) {
             is UiState.Loading -> {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
 
             is UiState.Error -> {

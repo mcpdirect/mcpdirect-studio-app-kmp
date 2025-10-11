@@ -3,7 +3,6 @@ package ai.mcpdirect.studio.app
 import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.auth.*
 import ai.mcpdirect.studio.app.key.AccessKeyNotificationHandlerImplement
-import ai.mcpdirect.studio.app.key.AccessKeyPermissionScreen
 import ai.mcpdirect.studio.app.key.AccessKeyScreen
 import ai.mcpdirect.studio.app.key.AccessKeyToolPermissionScreen
 import ai.mcpdirect.studio.app.key.AccessKeyToolPermissionViewModel
@@ -14,13 +13,16 @@ import ai.mcpdirect.studio.app.logbook.ToolsLogbookScreen
 import ai.mcpdirect.studio.app.mcp.MCPServerIntegrationScreen
 import ai.mcpdirect.studio.app.mcp.MCPServerIntegrationViewModel
 import ai.mcpdirect.studio.app.mcp.MCPServerNotificationHandlerImplement
+import ai.mcpdirect.studio.app.mcpkeys.MCPAccessKeyScreen
 //import ai.mcpdirect.studio.app.setting.PasswordRequirements
 import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
-import ai.mcpdirect.studio.app.virtual.VirtualMakerScreen
-import ai.mcpdirect.studio.app.virtual.VirtualMakerToolConfigScreen
-import ai.mcpdirect.studio.app.virtual.VirtualMakerViewModel
+import ai.mcpdirect.studio.app.viewmodel.GeneralViewModel
+import ai.mcpdirect.studio.app.viewmodel.MCPAccessKeyViewModel
+import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
+import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
+import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -40,31 +42,6 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-sealed class Screen(val title: StringResource, val icon: DrawableResource) {
-    object ToolDevelopment : Screen(Res.string.tool_development,
-        Res.drawable.handyman)
-    object MCPServerIntegration : Screen(Res.string.mcp_server_integration,
-        Res.drawable.usb)
-    object ToolsLogbook : Screen(Res.string.tools_logbook,
-        Res.drawable.data_info_alert)
-    object AgentInteraction : Screen(Res.string.agent_interaction,
-        Res.drawable.key)
-    object UserSetting : Screen(Res.string.user_setting,
-        Res.drawable.settings)
-    object ToolPermission : Screen(Res.string.tool_permission,
-        Res.drawable.shield_toggle)
-    object MyStudio : Screen(Res.string.my_studio,
-        Res.drawable.design_services)
-    object MyTeam : Screen(Res.string.my_team,
-        Res.drawable.diversity_3)
-    object VirtualMCP : Screen(
-        Res.string.virtual_mcp,
-        Res.drawable.graph_2)
-    object VirtualMCPToolConfig : Screen(
-        Res.string.virtual_mcp,
-        Res.drawable.graph_2)
-}
-
 val authViewModel = AuthViewModel()
 
 //val repository = ToolsLogRepositoryImpl() // Your implementation
@@ -76,6 +53,9 @@ val accessKeyToolPermissionViewModel = AccessKeyToolPermissionViewModel()
 
 val settingsViewModel = SettingsViewModel()
 val virtualMakerViewModel = VirtualMakerViewModel()
+
+val generalViewModel = GeneralViewModel()
+val mcpAccessKeyViewModel = MCPAccessKeyViewModel()
 
 val darkMode = mutableStateOf<Boolean?>(null)
 @Composable
@@ -204,7 +184,7 @@ fun MainAppContent() {
 //                selected = currentScreen == Screen.AgentInteraction,
 //                onClick = { currentScreen = Screen.AgentInteraction }
 //            )
-            navigationRailItem(Screen.AgentInteraction)
+            navigationRailItem(Screen.MCPAccessKey)
 //            NavigationRailItem(
 ////                modifier = Modifier.padding(4.dp),
 //                icon = {
@@ -342,8 +322,12 @@ fun MainAppContent() {
             when (currentScreen) {
                 Screen.ToolDevelopment -> ToolDevelopmentScreen()
                 Screen.MCPServerIntegration -> MCPServerIntegrationScreen(mcpServerIntegrationViewModel){}
-                Screen.AgentInteraction -> AccessKeyScreen(accessKeyViewModel){
-                    accessKeyViewModel.apiKey.value = it
+//                Screen.AgentInteraction -> AccessKeyScreen(accessKeyViewModel){
+//                    accessKeyViewModel.apiKey.value = it
+//                    accessKeyToolPermissionViewModel.accessKey = it
+//                    currentScreen = Screen.ToolPermission
+//                }
+                Screen.MCPAccessKey -> MCPAccessKeyScreen {
                     accessKeyToolPermissionViewModel.accessKey = it
                     currentScreen = Screen.ToolPermission
                 }
@@ -357,7 +341,7 @@ fun MainAppContent() {
 //                    currentScreen = Screen.AgentInteraction
 //                }
                 Screen.ToolPermission -> AccessKeyToolPermissionScreen{
-                    currentScreen = Screen.AgentInteraction
+                    currentScreen = Screen.MCPAccessKey
                 }
                 Screen.MyStudio -> MyStudioScreen()
                 Screen.MyTeam -> Card {  }

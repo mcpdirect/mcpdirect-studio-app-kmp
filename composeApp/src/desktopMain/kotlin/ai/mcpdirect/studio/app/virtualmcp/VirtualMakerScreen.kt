@@ -1,11 +1,10 @@
-package ai.mcpdirect.studio.app.virtual
+package ai.mcpdirect.studio.app.virtualmcp
 
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.SearchView
 import ai.mcpdirect.studio.app.compose.StudioCard
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

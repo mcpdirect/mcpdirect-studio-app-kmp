@@ -1,4 +1,4 @@
-package ai.mcpdirect.studio.app.virtual
+package ai.mcpdirect.studio.app.virtualmcp
 
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker

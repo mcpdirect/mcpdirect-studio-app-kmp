@@ -2,11 +2,13 @@
 
 **Summary:**
 
-Add Access Key Tool Permissions, enhance Virtual MCP, and update UI components
+Add MCP Access Key Management, restructure Virtual MCP, and enhance UI components
 
 **Details:**
 
 - **New Feature:**
+    - Added MCP Access Key Management functionality with dedicated screens and view models (`MCPAccessKeyScreen`, `MCPAccessKeyViewModel`).
+    - Introduced comprehensive access key management allowing users to create, enable/disable, and configure MCP access keys.
     - Added Access Key Tool Permission functionality with dedicated screens and view models (`AccessKeyToolPermissionScreen`, `AccessKeyToolPermissionViewModel`).
     - Introduced comprehensive tool permission management allowing users to grant access to specific tools for API access keys.
     - Added Virtual MCP functionality with dedicated screens and view models (`VirtualMakerScreen`, `VirtualMakerToolConfigScreen`, `VirtualMakerViewModel`).
@@ -26,6 +28,15 @@ Add Access Key Tool Permissions, enhance Virtual MCP, and update UI components
     - Implemented reset to default functionality for tool permissions.
     - Added counts to list items to show number of selected permissions.
     - Improved text overflow handling with ellipsis for long names.
+    - Enhanced login screen UI components and styling.
+    - Improved agent management screen with better data handling.
+
+- **Structural Changes:**
+    - Moved virtual-related files from `virtual` package to `virtualmcp` package for better organization.
+    - Created dedicated `mcpkeys` package for access key related functionality.
+    - Created dedicated `viewmodel` package for shared view models.
+    - Created separate `Screen.kt` file to better organize screen definitions.
+    - Updated main application flow to use new access key management screen.
 
 - **Dependency Updates:**
     - Updated `mcpdirect-studio-core` dependency from version `1.1.2-SNAPSHOT` to `1.2.0-SNAPSHOT`.
@@ -51,6 +62,9 @@ Add Access Key Tool Permissions, enhance Virtual MCP, and update UI components
     - Improved permission saving and reset functionality with better change detection.
     - Updated API calls to include virtual tool permissions.
     - Implemented proper state management for tool selection and permissions.
+    - Enhanced access key management with comprehensive CRUD operations.
+    - Improved data flow between different view models for better state consistency.
+    - Added GeneralViewModel for shared application state management.
 
 ### 2025-09-11
 

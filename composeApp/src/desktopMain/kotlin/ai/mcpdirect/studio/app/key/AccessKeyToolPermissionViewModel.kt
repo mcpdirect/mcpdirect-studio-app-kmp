@@ -94,6 +94,7 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
             permission.status = Short.MAX_VALUE.toInt()
             permission.makerId = tool.makerId
             permission.agentId = 0
+            permission.accessKeyId = accessKey!!.id
             virtualToolPermissions[permission.originalToolId]=permission
         }
 
@@ -118,6 +119,7 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
             permission.toolId = tool.id
             permission.makerId = tool.makerId
             permission.agentId = tool.agentId
+            permission.accessKeyId = accessKey!!.id
             toolPermissions[permission.toolId]=permission
         }
     }
@@ -258,7 +260,7 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
             }
         }
         for(v in virtualToolPermissions.values){
-            val p = _virtualToolPermissions[v.toolId]
+            val p = _virtualToolPermissions[v.originalToolId]
             if(p==null||p.status!=v.status){
                 return true;
             }

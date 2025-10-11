@@ -1,8 +1,8 @@
 <resources>
     <string name="tool_development">DIY Tools</string>
-    <string name="mcp_server_integration">Connect MCP</string>
+    <string name="connect_mcp">Connect MCP</string>
     <string name="tool_management">Tool Management</string>
-    <string name="agent_interaction">Agent Keys</string>
+    <string name="mcp_keys">MCP Keys</string>
     <string name="user_setting">Setting</string>
     <string name="tools_logbook">Tools Logbook</string>
     <string name="login">Login</string>
