@@ -1,7 +1,10 @@
 package ai.mcpdirect.studio.app.key
 
+import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.accessKeyToolPermissionViewModel
 import ai.mcpdirect.studio.app.compose.StudioCard
+import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.toolDetailViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
 import mcpdirectstudioapp.composeapp.generated.resources.check_box
+import mcpdirectstudioapp.composeapp.generated.resources.info
 import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_right
 import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 import mcpdirectstudioapp.composeapp.generated.resources.uncheck_box
@@ -83,7 +87,7 @@ fun AccessKeyToolPermissionScreen(
                                     Text("${count}")
                                 } },
                             trailingContent = {
-                                if(viewModel.toolAgent==it)
+                                if(viewModel.toolAgent!=null&&viewModel.toolAgent!!.id==it.id)
                                     Icon(painterResource(Res.drawable.keyboard_arrow_right),
                                         contentDescription = "Current Tool Agent")
                             },
@@ -116,7 +120,7 @@ fun AccessKeyToolPermissionScreen(
                                             Text("${count}")
                                         } },
                                     trailingContent = {
-                                        if(viewModel.toolMaker==it)
+                                        if(viewModel.toolMaker!=null&&viewModel.toolMaker!!.id==it.id)
                                             Icon(painterResource(Res.drawable.keyboard_arrow_right),
                                                 contentDescription = "Current Tool Maker")
                                     },
@@ -172,6 +176,15 @@ fun AccessKeyToolPermissionScreen(
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 maxLines = 1,
                                                 overflow = TextOverflow.Ellipsis)
+                                            Spacer(Modifier.weight(1.0f))
+                                            IconButton(onClick = {
+                                                toolDetailViewModel.toolId = it.toolId
+                                                toolDetailViewModel.toolName = it.name
+                                                generalViewModel.currentScreen = Screen.ToolDetails
+                                                generalViewModel.backToScreen = Screen.ToolPermission
+                                            }) {
+                                                Icon(painterResource(Res.drawable.info), contentDescription = "Details")
+                                            }
                                         }
                                     }
                                 }
@@ -190,6 +203,15 @@ fun AccessKeyToolPermissionScreen(
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 maxLines = 1,
                                                 overflow = TextOverflow.Ellipsis)
+                                            Spacer(Modifier.weight(1.0f))
+                                            IconButton(onClick = {
+                                                toolDetailViewModel.toolId = it.id
+                                                toolDetailViewModel.toolName = it.name
+                                                generalViewModel.currentScreen = Screen.ToolDetails
+                                                generalViewModel.backToScreen = Screen.ToolPermission
+                                            }) {
+                                                Icon(painterResource(Res.drawable.info), contentDescription = "Details")
+                                            }
                                         }
                                     }
                                 }

@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class AuthViewModel(private val userRepository: UserRepository = UserRepositoryImpl()) : ViewModel(){
@@ -98,19 +99,34 @@ class AuthViewModel(private val userRepository: UserRepository = UserRepositoryI
 
     fun anonymousLogin() {
         uiState = UiState.Loading
-        CoroutineScope(Dispatchers.Main).launch {
-            val anonymousKey = MCPDirectStudio.getAnonymousKey()
-            if(anonymousKey==null){
-                uiState = UiState.Error("Anonymous key not found in local.")
-            }else {
-                val result = MCPDirectStudio.anonymousLogin(anonymousKey)
-                uiState = if (result) {
-                    UiState.SuccessWithAnonymous(MCPDirectStudio.getUserInfo())
-                } else {
-                    UiState.Error("Anonymous login failed.")
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                val anonymousKey = MCPDirectStudio.getAnonymousKey()
+                if(anonymousKey==null){
+                    uiState = UiState.Error("Anonymous key not found in local.")
+                }else {
+                    val result = MCPDirectStudio.anonymousLogin(anonymousKey)
+                    uiState = if (result) {
+                        UiState.SuccessWithAnonymous(MCPDirectStudio.getUserInfo())
+                    } else {
+                        UiState.Error("Anonymous login failed.")
+                    }
                 }
             }
         }
+//        CoroutineScope(Dispatchers.Main).launch {
+//            val anonymousKey = MCPDirectStudio.getAnonymousKey()
+//            if(anonymousKey==null){
+//                uiState = UiState.Error("Anonymous key not found in local.")
+//            }else {
+//                val result = MCPDirectStudio.anonymousLogin(anonymousKey)
+//                uiState = if (result) {
+//                    UiState.SuccessWithAnonymous(MCPDirectStudio.getUserInfo())
+//                } else {
+//                    UiState.Error("Anonymous login failed.")
+//                }
+//            }
+//        }
     }
 
     fun anonymousRegister() {

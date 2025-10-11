@@ -5,6 +5,8 @@ import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.SearchView
 import ai.mcpdirect.studio.app.compose.StudioCard
+import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.toolDetailViewModel
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -539,7 +541,10 @@ private fun ToolItem(tool: AIPortVirtualTool, viewModel: VirtualMakerViewModel) 
             }
         }
         IconButton(onClick = {
-            viewModel.selectedMakerTool = tool
+            toolDetailViewModel.toolId = tool.toolId
+            toolDetailViewModel.toolName = tool.name
+            generalViewModel.currentScreen = Screen.ToolDetails
+            generalViewModel.backToScreen = Screen.VirtualMCP
         }) {
             Icon(painterResource(Res.drawable.info), contentDescription = "Details")
         }

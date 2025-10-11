@@ -8,18 +8,25 @@ import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolPermission
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualTool
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualToolPermission
 import ai.mcpdirect.studio.MCPDirectStudio
+import ai.mcpdirect.studio.app.Screen
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 
 class GeneralViewModel() : ViewModel() {
+    var currentScreen by mutableStateOf<Screen>(Screen.MCPServerIntegration)
+    var backToScreen by mutableStateOf<Screen?>(null)
     val snackbarHostState = SnackbarHostState()
 
     fun showSnackbar(message: String) {
@@ -68,15 +75,6 @@ class GeneralViewModel() : ViewModel() {
             withContext(Dispatchers.IO){
                 loadToolMakers()
             }
-//            MCPDirectStudio.queryToolMakers(null ,null,null){
-//                    code, message, data ->
-//                if(code==0&&data!=null){
-//                    _toolMakers.clear()
-//                    data.forEach {
-//                        _toolMakers[it.id]=it
-//                    }
-//                }
-//            }
         }
     }
     fun loadToolMakers(){
@@ -89,5 +87,13 @@ class GeneralViewModel() : ViewModel() {
                 }
             }
         }
+    }
+
+    fun copyToClipboard(key: AIPortAccessKeyCredential) {
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        clipboard.setContents(StringSelection(
+            MCPDirectStudio.createMCPConfigFromKey(key)),
+            null)
+        showSnackbar("MCP Server Config copied to clipboard!")
     }
 }

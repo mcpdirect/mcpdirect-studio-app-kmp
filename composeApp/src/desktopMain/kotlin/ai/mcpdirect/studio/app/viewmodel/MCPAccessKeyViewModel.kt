@@ -25,10 +25,12 @@ class MCPAccessKeyViewModel : ViewModel(){
     fun refreshMCPAccessKeys() {
 //        if(_accessKeys.isNotEmpty()) return
         loadding = true
+        _accessKeys.clear()
+        toolPermissionMakerSummary.clear()
         viewModelScope.launch {
-            _accessKeys.clear()
+
             val result = withContext(Dispatchers.IO) {
-                Thread.sleep(1000)
+//                Thread.sleep(1000)
                 MCPDirectStudio.queryAccessKeys(){
                         code, message, data ->
                     if(message!=null) generalViewModel.showSnackbar(message)
@@ -40,7 +42,7 @@ class MCPAccessKeyViewModel : ViewModel(){
                     }
                 }
                 var refreshToolMakers = false
-                toolPermissionMakerSummary.clear()
+
                 MCPDirectStudio.queryToolPermissionMakerSummaries {
                         code, message, data ->
                     if(data!=null) {
@@ -105,6 +107,21 @@ class MCPAccessKeyViewModel : ViewModel(){
                     _accessKeys[data.id]=data
                     onToolPermissionConfigClick(data)
                 }
+            }
+        }
+    }
+
+    fun getMCPAccessKeyFromLocal(id:Long): String?{
+        return MCPDirectStudio.getAccessKey(id)
+    }
+
+    fun setMCPKeyStatus(key: AIPortAccessKeyCredential, status:Int) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                MCPDirectStudio.modifyAccessKey(key.id,"",status)
+                _accessKeys.remove(key.id)
+                key.status = status
+                _accessKeys[key.id]=key
             }
         }
     }

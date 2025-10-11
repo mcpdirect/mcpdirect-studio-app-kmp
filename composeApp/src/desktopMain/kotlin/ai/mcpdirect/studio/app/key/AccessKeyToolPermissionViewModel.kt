@@ -161,7 +161,7 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
 
                         if(data.isNotEmpty()) {
                             toolMakers.addAll(data)
-                            selectToolMaker(toolMakers[0])
+                            if(toolMaker==null||(toolMaker!=null&&toolAgent!=null&&toolMaker!!.agentId!=toolAgent!!.id)) selectToolMaker(toolMakers[0])
                         }
                     }
                 }
@@ -232,7 +232,7 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
                     toolAgents.add(_virtualToolAgent)
                     if(data.isNotEmpty()) {
                         toolAgents.addAll(data)
-                        selectToolAgent(toolAgents[0])
+                        if(toolAgent==null) selectToolAgent(toolAgents[0])
                     }
                 }
             }

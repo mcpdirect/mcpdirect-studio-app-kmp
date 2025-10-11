@@ -65,6 +65,10 @@ Add MCP Access Key Management, restructure Virtual MCP, and enhance UI component
     - Enhanced access key management with comprehensive CRUD operations.
     - Improved data flow between different view models for better state consistency.
     - Added GeneralViewModel for shared application state management.
+    - Updated authentication flow with improved state management in AuthViewModel.
+    - Enhanced tool detail screen with additional UI elements and improved navigation.
+    - Refined strings.xml with additional localization entries for new features.
+    - Updated screen navigation flow for better user experience.
 
 ### 2025-09-11
 

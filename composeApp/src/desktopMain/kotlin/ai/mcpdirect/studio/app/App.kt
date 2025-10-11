@@ -1,9 +1,11 @@
 package ai.mcpdirect.studio.app
 
+//import ai.mcpdirect.studio.app.setting.PasswordRequirements
+//import androidx.compose.material.NavigationRail
+//import androidx.compose.material.NavigationRailItem
 import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.auth.*
 import ai.mcpdirect.studio.app.key.AccessKeyNotificationHandlerImplement
-import ai.mcpdirect.studio.app.key.AccessKeyScreen
 import ai.mcpdirect.studio.app.key.AccessKeyToolPermissionScreen
 import ai.mcpdirect.studio.app.key.AccessKeyToolPermissionViewModel
 import ai.mcpdirect.studio.app.key.AccessKeyViewModel
@@ -14,10 +16,11 @@ import ai.mcpdirect.studio.app.mcp.MCPServerIntegrationScreen
 import ai.mcpdirect.studio.app.mcp.MCPServerIntegrationViewModel
 import ai.mcpdirect.studio.app.mcp.MCPServerNotificationHandlerImplement
 import ai.mcpdirect.studio.app.mcpkeys.MCPAccessKeyScreen
-//import ai.mcpdirect.studio.app.setting.PasswordRequirements
 import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
+import ai.mcpdirect.studio.app.tool.ToolDetailScreen
+import ai.mcpdirect.studio.app.tool.ToolDetailViewModel
 import ai.mcpdirect.studio.app.viewmodel.GeneralViewModel
 import ai.mcpdirect.studio.app.viewmodel.MCPAccessKeyViewModel
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
@@ -27,8 +30,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-//import androidx.compose.material.NavigationRail
-//import androidx.compose.material.NavigationRailItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,8 +38,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.*
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -56,6 +55,7 @@ val virtualMakerViewModel = VirtualMakerViewModel()
 
 val generalViewModel = GeneralViewModel()
 val mcpAccessKeyViewModel = MCPAccessKeyViewModel()
+val toolDetailViewModel = ToolDetailViewModel()
 
 val darkMode = mutableStateOf<Boolean?>(null)
 @Composable
@@ -126,7 +126,7 @@ fun MainAppContent() {
 
         // Register the log handler
 
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.MCPServerIntegration) }
+//    var currentScreen = generalViewModel.currentScreen
     @Composable
     fun navigationRailItem(screen: Screen) {
         NavigationRailItem(
@@ -139,8 +139,8 @@ fun MainAppContent() {
                         Modifier.padding(start = 16.dp),
                         style = MaterialTheme.typography.labelLarge)
                 }},
-            selected = currentScreen == screen,
-            onClick = { currentScreen = screen }
+            selected = generalViewModel.currentScreen == screen,
+            onClick = { generalViewModel.currentScreen = screen }
         )
     }
     Row(Modifier.fillMaxSize()) {
@@ -319,7 +319,7 @@ fun MainAppContent() {
 
         }
         Column {
-            when (currentScreen) {
+            when (generalViewModel.currentScreen) {
                 Screen.ToolDevelopment -> ToolDevelopmentScreen()
                 Screen.MCPServerIntegration -> MCPServerIntegrationScreen(mcpServerIntegrationViewModel){}
 //                Screen.AgentInteraction -> AccessKeyScreen(accessKeyViewModel){
@@ -329,7 +329,7 @@ fun MainAppContent() {
 //                }
                 Screen.MCPAccessKey -> MCPAccessKeyScreen {
                     accessKeyToolPermissionViewModel.accessKey = it
-                    currentScreen = Screen.ToolPermission
+                    generalViewModel.currentScreen = Screen.ToolPermission
                 }
                 Screen.ToolsLogbook -> ToolsLogbookScreen(toolLogsViewModel) {
 
@@ -341,16 +341,17 @@ fun MainAppContent() {
 //                    currentScreen = Screen.AgentInteraction
 //                }
                 Screen.ToolPermission -> AccessKeyToolPermissionScreen{
-                    currentScreen = Screen.MCPAccessKey
+                    generalViewModel.currentScreen = Screen.MCPAccessKey
                 }
                 Screen.MyStudio -> MyStudioScreen()
                 Screen.MyTeam -> Card {  }
                 Screen.VirtualMCP -> VirtualMakerScreen(virtualMakerViewModel){
-                    currentScreen = Screen.VirtualMCPToolConfig
+                    generalViewModel.currentScreen = Screen.VirtualMCPToolConfig
                 }
                 Screen.VirtualMCPToolConfig -> VirtualMakerToolConfigScreen(virtualMakerViewModel){
-                    currentScreen = Screen.VirtualMCP
+                    generalViewModel.currentScreen = Screen.VirtualMCP
                 }
+                Screen.ToolDetails -> ToolDetailScreen()
             }
         }
     }

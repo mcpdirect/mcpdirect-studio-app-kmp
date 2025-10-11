@@ -1,6 +1,8 @@
 package ai.mcpdirect.studio.app.tool
 
 import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.toolDetailViewModel
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,19 +21,16 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ToolDetailScreen(
-    viewModel: VirtualMakerViewModel,
-    onBack: () -> Unit
-) {
+fun ToolDetailScreen() {
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("${stringResource(Screen.VirtualMCP.title)} Tool Config for #${viewModel.selectedVirtualMaker!!.name}" ) },
+                title = { Text("Tool details of #${toolDetailViewModel.toolName}" ) },
 
                 navigationIcon = {
                     IconButton(onClick = {
-                        onBack()
+                        generalViewModel.currentScreen = generalViewModel.backToScreen!!
                     }) {
                         Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
                     }
@@ -39,49 +38,30 @@ fun ToolDetailScreen(
             )
         }
     ) { padding ->
-        ToolDetailView(viewModel, padding)
+        ToolDetailView(padding)
     }
 
     LaunchedEffect(Unit) {
-        if(viewModel.selectedMakerTool!=null)
-            viewModel.queryToolMetadata(viewModel.selectedMakerTool!!.id)
+        toolDetailViewModel.queryToolMetadata()
     }
 }
 
 @Composable
 private fun ToolDetailView(
-    viewModel: VirtualMakerViewModel,
     padding: PaddingValues
 ) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier.fillMaxSize().padding(padding),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            androidx.compose.material3.IconButton(onClick = {
-                viewModel.selectedMakerTool = null
-                viewModel.selectedMakerToolMetadata = null
-            }) {
-                Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
-            }
-            Text(
-                text = viewModel.selectedMakerTool?.name ?: "",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.weight(1f)
-            )
-        }
         HorizontalDivider()
         Column(Modifier.padding(8.dp).fillMaxSize().verticalScroll(scrollState)) {
-                viewModel.selectedMakerToolMetadata?.let {
-                    Text(
-                        text = it,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
+            toolDetailViewModel.toolMetadata?.let {
+                Text(
+                    text = it.description,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
         }
     }
-
 }

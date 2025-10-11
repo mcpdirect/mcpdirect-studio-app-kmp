@@ -7,12 +7,14 @@ import mcpdirectstudioapp.composeapp.generated.resources.design_services
 import mcpdirectstudioapp.composeapp.generated.resources.diversity_3
 import mcpdirectstudioapp.composeapp.generated.resources.graph_2
 import mcpdirectstudioapp.composeapp.generated.resources.handyman
+import mcpdirectstudioapp.composeapp.generated.resources.info
 import mcpdirectstudioapp.composeapp.generated.resources.key
 import mcpdirectstudioapp.composeapp.generated.resources.mcp_keys
 import mcpdirectstudioapp.composeapp.generated.resources.my_studio
 import mcpdirectstudioapp.composeapp.generated.resources.my_team
 import mcpdirectstudioapp.composeapp.generated.resources.settings
 import mcpdirectstudioapp.composeapp.generated.resources.shield_toggle
+import mcpdirectstudioapp.composeapp.generated.resources.tool_details
 import mcpdirectstudioapp.composeapp.generated.resources.tool_development
 import mcpdirectstudioapp.composeapp.generated.resources.tool_permission
 import mcpdirectstudioapp.composeapp.generated.resources.tools_logbook
@@ -49,4 +51,7 @@ sealed class Screen(val title: StringResource, val icon: DrawableResource) {
     object VirtualMCPToolConfig : Screen(
         Res.string.virtual_mcp,
         Res.drawable.graph_2)
+    object ToolDetails: Screen(
+        Res.string.tool_details,
+        Res.drawable.info)
 }
