@@ -5,8 +5,10 @@ import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.SearchView
 import ai.mcpdirect.studio.app.compose.StudioCard
+import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.toolDetailViewModel
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -31,6 +33,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -302,48 +305,45 @@ private fun MakerDetailView(
                 modifier = Modifier.weight(1f)
             )
 //            Spacer(modifier = Modifier.weight(1.0f))
-            IconButton(onClick = { onConfigClick() }) {
-                Icon(
-                    painterResource(Res.drawable.settings),
-                    contentDescription = "Config Tools"
-                )
-            }
-            IconButton(onClick = { }) {
-                Icon(
-                    painterResource(Res.drawable.restart_alt),
-                    contentDescription = "Refresh"
-                )
-            }
-            IconButton(onClick = {
+            TooltipIconButton(
+                Res.drawable.settings,
+                tooltipText = "Config tools",
+                onClick = { onConfigClick() }
+            )
+            TooltipIconButton(
+                Res.drawable.restart_alt,
+                tooltipText = "Refresh",
+                onClick = { }
+            )
+            TooltipIconButton(
+                Res.drawable.sell,
+                tooltipText = "Edit tags",
+                onClick = {
                 viewModel.onServerTagChange(maker.tags)
                 viewModel.showEditServerTagsDialog = true
-            }) {
-                Icon(
-                    painterResource(Res.drawable.sell),
-                    contentDescription = "Edit Tags"
-                )
-            }
-            IconButton(onClick = {
+            })
+            TooltipIconButton(
+                Res.drawable.badge,
+                tooltipText = "Edit name",
+                onClick = {
                 viewModel.onServerNameChange(maker.name)
                 viewModel.showEditServerNameDialog = true
-            }) {
-                Icon(
-                    painterResource(Res.drawable.badge),
-                    contentDescription = "Edit Name"
-                )
-            }
-            if (maker.status == 0) IconButton(onClick = { viewModel.setServerStatus(maker.id,1) }) {
-                Icon(painter = painterResource(Res.drawable.block),
-                    contentDescription = "Enable",
-                    tint = Color.Red)
-            } else IconButton(onClick = { viewModel.setServerStatus(maker.id,0) }) {
-                Icon(painter = painterResource(Res.drawable.check),
-                    contentDescription = "Disable",
-                    tint = Color(0xFF63A002))
-            }
-            IconButton(onClick = { viewModel.setServerStatus(maker.id,-1) }) {
-                Icon(painter = painterResource(Res.drawable.delete), contentDescription = "Deprecate")
-            }
+            })
+            Spacer(Modifier.border(1.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), shape = RectangleShape))
+            if (maker.status == 0) TooltipIconButton(
+                Res.drawable.play_circle,
+                tooltipText = "Click to start",
+                iconTint = MaterialTheme.colorScheme.primary,
+                onClick = { viewModel.setServerStatus(maker.id,1) })
+            else TooltipIconButton(
+                Res.drawable.stop_circle,
+                tooltipText = "Click to stop",
+                iconTint = MaterialTheme.colorScheme.error,
+                onClick = { viewModel.setServerStatus(maker.id,0) })
+            TooltipIconButton(
+                Res.drawable.delete,
+                tooltipText = "Deprecate",
+                onClick = { viewModel.setServerStatus(maker.id,-1) })
 
         }
         HorizontalDivider()
@@ -540,13 +540,15 @@ private fun ToolItem(tool: AIPortVirtualTool, viewModel: VirtualMakerViewModel) 
                 }
             }
         }
-        IconButton(onClick = {
-            toolDetailViewModel.toolId = tool.toolId
-            toolDetailViewModel.toolName = tool.name
-            generalViewModel.currentScreen = Screen.ToolDetails
-            generalViewModel.backToScreen = Screen.VirtualMCP
-        }) {
-            Icon(painterResource(Res.drawable.info), contentDescription = "Details")
-        }
+        TooltipIconButton(
+            Res.drawable.info,
+            tooltipText = "Tool details",
+            onClick = {
+                toolDetailViewModel.toolId = tool.toolId
+                toolDetailViewModel.toolName = tool.name
+                generalViewModel.currentScreen = Screen.ToolDetails
+                generalViewModel.backToScreen = Screen.VirtualMCP
+            }
+        )
     }
 }

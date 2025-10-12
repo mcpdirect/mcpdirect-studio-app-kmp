@@ -23,6 +23,7 @@ Add MCP Access Key Management, restructure Virtual MCP, and enhance UI component
     - Added segmented button row for filter options in tool permissions.
     - Improved virtual maker tool configuration screen with better organization and UI elements.
     - Added new SVG icons for checkbox controls (`check_box.svg`, `uncheck_box.svg`) and reset settings (`reset_settings.svg`).
+    - Added play and stop circle SVG icons (`play_circle.svg`, `stop_circle.svg`) for enhanced UI functionality.
     - Enhanced access key permission screen with better visual indicators and tool selection UI.
     - Added confirmation dialog for unsaved changes when navigating away from permission screen.
     - Implemented reset to default functionality for tool permissions.
@@ -30,6 +31,7 @@ Add MCP Access Key Management, restructure Virtual MCP, and enhance UI component
     - Improved text overflow handling with ellipsis for long names.
     - Enhanced login screen UI components and styling.
     - Improved agent management screen with better data handling.
+    - Added a reusable `TooltipIconButton` component for better UI consistency.
 
 - **Structural Changes:**
     - Moved virtual-related files from `virtual` package to `virtualmcp` package for better organization.
@@ -37,6 +39,7 @@ Add MCP Access Key Management, restructure Virtual MCP, and enhance UI component
     - Created dedicated `viewmodel` package for shared view models.
     - Created separate `Screen.kt` file to better organize screen definitions.
     - Updated main application flow to use new access key management screen.
+    - Removed `VirtualMakerRepository` as its functionality was integrated into the view model.
 
 - **Dependency Updates:**
     - Updated `mcpdirect-studio-core` dependency from version `1.1.2-SNAPSHOT` to `1.2.0-SNAPSHOT`.
@@ -69,6 +72,8 @@ Add MCP Access Key Management, restructure Virtual MCP, and enhance UI component
     - Enhanced tool detail screen with additional UI elements and improved navigation.
     - Refined strings.xml with additional localization entries for new features.
     - Updated screen navigation flow for better user experience.
+    - Integrated repository functionality directly into view models for better architecture.
+    - Improved UI consistency with reusable components like `TooltipIconButton`.
 
 ### 2025-09-11
 
