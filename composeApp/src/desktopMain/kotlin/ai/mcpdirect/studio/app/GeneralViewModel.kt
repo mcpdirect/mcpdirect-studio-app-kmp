@@ -1,4 +1,4 @@
-package ai.mcpdirect.studio.app.viewmodel
+package ai.mcpdirect.studio.app
 
 import ai.mcpdirect.backend.dao.entity.account.AIPortAccessKeyCredential
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
@@ -8,7 +8,6 @@ import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolPermission
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualTool
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualToolPermission
 import ai.mcpdirect.studio.MCPDirectStudio
-import ai.mcpdirect.studio.app.Screen
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -36,15 +35,15 @@ class GeneralViewModel() : ViewModel() {
     }
 
     private val _virtualToolAgent = AIPortToolAgent("Virtual MCP")
-    private val _toolAgents = mutableStateMapOf<Long,AIPortToolAgent>()
+    private val _toolAgents = mutableStateMapOf<Long, AIPortToolAgent>()
     val toolAgents by derivedStateOf {
         _toolAgents.values.toList()
     }
-    private val _toolMakers = mutableStateMapOf<Long,AIPortToolMaker>()
+    private val _toolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
     val toolMakers by derivedStateOf {
         _toolMakers.values.toList()
     }
-    private val _tools = mutableStateMapOf<Long,AIPortTool>()
+    private val _tools = mutableStateMapOf<Long, AIPortTool>()
     private val _virtualTools = mutableStateListOf<AIPortVirtualTool>()
 
     private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
@@ -72,7 +71,7 @@ class GeneralViewModel() : ViewModel() {
     }
     fun refreshToolMakers(){
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 loadToolMakers()
             }
         }
@@ -91,8 +90,10 @@ class GeneralViewModel() : ViewModel() {
 
     fun copyToClipboard(key: AIPortAccessKeyCredential) {
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        clipboard.setContents(StringSelection(
-            MCPDirectStudio.createMCPConfigFromKey(key)),
+        clipboard.setContents(
+            StringSelection(
+                MCPDirectStudio.createMCPConfigFromKey(key)
+            ),
             null)
         showSnackbar("MCP Server Config copied to clipboard!")
     }

@@ -1,4 +1,4 @@
-package ai.mcpdirect.studio.app.viewmodel
+package ai.mcpdirect.studio.app.mcpkeys
 
 import ai.mcpdirect.backend.dao.entity.account.AIPortAccessKeyCredential
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolPermissionMakerSummary

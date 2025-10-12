@@ -21,8 +21,9 @@ import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import ai.mcpdirect.studio.app.tool.ToolDetailScreen
 import ai.mcpdirect.studio.app.tool.ToolDetailViewModel
-import ai.mcpdirect.studio.app.viewmodel.GeneralViewModel
-import ai.mcpdirect.studio.app.viewmodel.MCPAccessKeyViewModel
+import ai.mcpdirect.studio.app.GeneralViewModel
+import ai.mcpdirect.studio.app.mcpkeys.MCPAccessKeyViewModel
+import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerViewModel
@@ -344,7 +345,7 @@ fun MainAppContent() {
                     generalViewModel.currentScreen = Screen.MCPAccessKey
                 }
                 Screen.MyStudio -> MyStudioScreen()
-                Screen.MyTeam -> Card {  }
+                Screen.MyTeam -> MCPTeamScreen()
                 Screen.VirtualMCP -> VirtualMakerScreen(virtualMakerViewModel){
                     generalViewModel.currentScreen = Screen.VirtualMCPToolConfig
                 }

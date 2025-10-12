@@ -269,7 +269,7 @@ private fun MakerItem(
         supportingContent = {
             Text("Tags: ${maker.tags}")
         },
-        leadingContent = {
+        trailingContent = {
             if (maker.status == 0) Icon(painter = painterResource(Res.drawable.block),
                 contentDescription = "Click to enable",
                 tint = Color.Red)

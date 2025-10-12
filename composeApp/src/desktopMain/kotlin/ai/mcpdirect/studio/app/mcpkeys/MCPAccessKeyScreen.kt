@@ -5,8 +5,6 @@ import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcpAccessKeyViewModel
-import ai.mcpdirect.studio.app.viewmodel.MCPKeyDialog
-import ai.mcpdirect.studio.app.viewmodel.MCPKeyNameError
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,8 +29,8 @@ import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-var mcpKey by mutableStateOf<AIPortAccessKeyCredential?>(null)
-var dialog by mutableStateOf<MCPKeyDialog>(MCPKeyDialog.None)
+private var mcpKey by mutableStateOf<AIPortAccessKeyCredential?>(null)
+private var dialog by mutableStateOf<MCPKeyDialog>(MCPKeyDialog.None)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun MCPAccessKeyScreen(onToolPermissionConfigClick: (key: AIPortAccessKeyCredential) -> Unit) {
@@ -198,7 +196,7 @@ fun GenerateMCPKeyDialog(onToolPermissionConfigClick: (key: AIPortAccessKeyCrede
     val formScrollState = rememberScrollState()
 
     AlertDialog(
-        onDismissRequest = { dialog= MCPKeyDialog.GenerateMCPKey },
+        onDismissRequest = { dialog= MCPKeyDialog.None },
         title = { Text("Generate MCP Key") },
         text = {
             Column(Modifier.verticalScroll(formScrollState)) {
@@ -240,7 +238,7 @@ fun GenerateMCPKeyDialog(onToolPermissionConfigClick: (key: AIPortAccessKeyCrede
         },
         dismissButton = {
             TextButton(
-                onClick = { dialog= MCPKeyDialog.GenerateMCPKey }) {
+                onClick = { dialog= MCPKeyDialog.None }) {
                 Text("Cancel")
             }
         }
@@ -256,7 +254,7 @@ fun ShowMCPKeyDialog() {
     AlertDialog(
         onDismissRequest = {
             mcpKey==null
-            dialog= MCPKeyDialog.DisplayMCPKey},
+            dialog= MCPKeyDialog.None},
         title = { Text("The MCP Key of ${mcpKey!!.name}") },
         text = {
             StudioCard(
@@ -284,7 +282,7 @@ fun ShowMCPKeyDialog() {
             TextButton(
                 onClick = {
                     mcpKey=null
-                    dialog= MCPKeyDialog.DisplayMCPKey
+                    dialog= MCPKeyDialog.None
                 }) {
                 Text("Cancel")
             }
@@ -343,7 +341,8 @@ fun EditMCPKeyNameDialog() {
         },
         dismissButton = {
             TextButton(
-                onClick = { dialog= MCPKeyDialog.None}) {
+                onClick = { dialog= MCPKeyDialog.None}
+            ) {
                 Text("Cancel")
             }
         }

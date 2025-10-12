@@ -2,11 +2,13 @@
 
 **Summary:**
 
-Add MCP Access Key Management, restructure Virtual MCP, and enhance UI components
+Add MCP Team Management, restructure packages, and enhance UI components
 
 **Details:**
 
 - **New Feature:**
+    - Added MCP Team Management functionality with dedicated screens and view models (`MCPTeamScreen`, `MCPTeamViewModel`).
+    - Introduced comprehensive team management allowing users to manage team members and permissions.
     - Added MCP Access Key Management functionality with dedicated screens and view models (`MCPAccessKeyScreen`, `MCPAccessKeyViewModel`).
     - Introduced comprehensive access key management allowing users to create, enable/disable, and configure MCP access keys.
     - Added Access Key Tool Permission functionality with dedicated screens and view models (`AccessKeyToolPermissionScreen`, `AccessKeyToolPermissionViewModel`).
@@ -24,6 +26,7 @@ Add MCP Access Key Management, restructure Virtual MCP, and enhance UI component
     - Improved virtual maker tool configuration screen with better organization and UI elements.
     - Added new SVG icons for checkbox controls (`check_box.svg`, `uncheck_box.svg`) and reset settings (`reset_settings.svg`).
     - Added play and stop circle SVG icons (`play_circle.svg`, `stop_circle.svg`) for enhanced UI functionality.
+    - Added person addition and sharing SVG icons (`person_add.svg`, `share.svg`) for new team functionality.
     - Enhanced access key permission screen with better visual indicators and tool selection UI.
     - Added confirmation dialog for unsaved changes when navigating away from permission screen.
     - Implemented reset to default functionality for tool permissions.
@@ -37,6 +40,10 @@ Add MCP Access Key Management, restructure Virtual MCP, and enhance UI component
     - Moved virtual-related files from `virtual` package to `virtualmcp` package for better organization.
     - Created dedicated `mcpkeys` package for access key related functionality.
     - Created dedicated `viewmodel` package for shared view models.
+    - Moved `GeneralViewModel` from `viewmodel` package to main app package for better accessibility.
+    - Moved `MCPAccessKeyViewModel` from `viewmodel` package to `mcpkeys` package for better organization.
+    - Created `team` package for team management functionality.
+    - Added a new `UIState.kt` file to define a standard UI state pattern across the application.
     - Created separate `Screen.kt` file to better organize screen definitions.
     - Updated main application flow to use new access key management screen.
     - Removed `VirtualMakerRepository` as its functionality was integrated into the view model.
@@ -74,6 +81,8 @@ Add MCP Access Key Management, restructure Virtual MCP, and enhance UI component
     - Updated screen navigation flow for better user experience.
     - Integrated repository functionality directly into view models for better architecture.
     - Improved UI consistency with reusable components like `TooltipIconButton`.
+    - Implemented standardized `UIState` pattern for better loading/error state handling.
+    - Enhanced team management functionality with proper state management.
 
 ### 2025-09-11
 
