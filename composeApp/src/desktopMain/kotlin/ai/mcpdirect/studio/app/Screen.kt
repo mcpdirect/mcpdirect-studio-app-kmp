@@ -13,6 +13,8 @@ import mcpdirectstudioapp.composeapp.generated.resources.mcp_keys
 import mcpdirectstudioapp.composeapp.generated.resources.my_studio
 import mcpdirectstudioapp.composeapp.generated.resources.my_team
 import mcpdirectstudioapp.composeapp.generated.resources.settings
+import mcpdirectstudioapp.composeapp.generated.resources.share
+import mcpdirectstudioapp.composeapp.generated.resources.share_mcp_server
 import mcpdirectstudioapp.composeapp.generated.resources.shield_toggle
 import mcpdirectstudioapp.composeapp.generated.resources.tool_details
 import mcpdirectstudioapp.composeapp.generated.resources.tool_development
@@ -39,8 +41,11 @@ sealed class Screen(val title: StringResource, val icon: DrawableResource) {
         Res.drawable.shield_toggle)
     object MyStudio : Screen(Res.string.my_studio,
         Res.drawable.design_services)
-    object MyTeam : Screen(Res.string.my_team,
+    object MCPTeam : Screen(Res.string.my_team,
         Res.drawable.diversity_3)
+
+    object MCPTeamToolMaker : Screen(Res.string.share_mcp_server,
+        Res.drawable.share)
 
     object MCPAccessKey : Screen(Res.string.mcp_keys,
         Res.drawable.key)

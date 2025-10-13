@@ -5,11 +5,8 @@ import ai.mcpdirect.backend.service.AccountServiceErrors
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.authViewModel
-import ai.mcpdirect.studio.app.compose.OutlinedTextFieldDialog
-import ai.mcpdirect.studio.app.compose.SearchView
-import ai.mcpdirect.studio.app.compose.StudioCard
-import ai.mcpdirect.studio.app.compose.Tag
-import ai.mcpdirect.studio.app.compose.TooltipIconButton
+import ai.mcpdirect.studio.app.compose.*
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.isValidEmail
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.*
@@ -46,7 +41,7 @@ fun MCPTeamScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Screen.MyTeam.title) ) },
+                title = { Text(stringResource(Screen.MCPTeam.title) ) },
                 actions = {
                     if(viewModel.mcpTeams.isNotEmpty())
                         Button(onClick = { dialog = MCPTeamDialog.CreateTeam }) {
@@ -221,7 +216,10 @@ private fun TeamListView(
                                 TooltipIconButton(
                                     Res.drawable.share,
                                     tooltipText = "Share MCP Server",
-                                    onClick = { }
+                                    onClick = {
+                                        generalViewModel.currentScreen = Screen.MCPTeamToolMaker
+                                        generalViewModel.backToScreen = Screen.MCPTeam
+                                    }
                                 )
                             }
                         }

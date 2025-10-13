@@ -57,7 +57,7 @@ class GeneralViewModel() : ViewModel() {
     fun toolMaker(id:Long): AIPortToolMaker?{
         return _toolMakers[id]
     }
-    fun refreshToolAgents(){
+    fun refreshToolAgents(force:Boolean=false){
         MCPDirectStudio.queryToolAgents {
                 code, message, data ->
             if(code==0&&data!=null){
@@ -69,20 +69,23 @@ class GeneralViewModel() : ViewModel() {
             }
         }
     }
-    fun refreshToolMakers(){
+    fun refreshToolMakers(force:Boolean=false,onResponse:((code:Int,message:String?) -> Unit)? = null){
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                loadToolMakers()
+                loadToolMakers(onResponse)
             }
         }
     }
-    fun loadToolMakers(){
+    fun loadToolMakers(onResponse:((code:Int,message:String?) -> Unit)? = null){
         MCPDirectStudio.queryToolMakers(null ,null,null){
                 code, message, data ->
             if(code==0&&data!=null){
                 _toolMakers.clear()
                 data.forEach {
                     _toolMakers[it.id]=it
+                }
+                onResponse?.let {
+                    it(code,message)
                 }
             }
         }

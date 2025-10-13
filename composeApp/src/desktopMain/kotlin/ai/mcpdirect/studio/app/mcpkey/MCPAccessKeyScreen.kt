@@ -1,4 +1,4 @@
-package ai.mcpdirect.studio.app.mcpkeys
+package ai.mcpdirect.studio.app.mcpkey
 
 import ai.mcpdirect.backend.dao.entity.account.AIPortAccessKeyCredential
 import ai.mcpdirect.studio.app.compose.StudioCard
@@ -65,7 +65,7 @@ fun MCPAccessKeyScreen(onToolPermissionConfigClick: (key: AIPortAccessKeyCredent
             }
         }
 
-        if(viewModel.loadding){
+        if(viewModel.loading){
             Column(
                 Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,

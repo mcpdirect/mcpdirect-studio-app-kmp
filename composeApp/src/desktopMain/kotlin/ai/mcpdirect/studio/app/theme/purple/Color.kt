@@ -1,5 +1,11 @@
 package ai.mcpdirect.studio.app.theme.purple
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 val primaryLight = Color(0xFF8600CA)
 val onPrimaryLight = Color(0xFFFFFFFF)
@@ -217,4 +223,11 @@ val surfaceContainerDarkHighContrast = Color(0xFF313031)
 val surfaceContainerHighDarkHighContrast = Color(0xFF3C3B3C)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF474647)
 
-// 在 theme/Color.kt 文件中
+val selectedListItemColors: ListItemColors
+    @Composable
+    get() = ListItemDefaults.colors(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        headlineColor = MaterialTheme.colorScheme.onSurface,
+        supportingColor = MaterialTheme.colorScheme.onSurface,
+        trailingIconColor = MaterialTheme.colorScheme.onSurface,
+    )

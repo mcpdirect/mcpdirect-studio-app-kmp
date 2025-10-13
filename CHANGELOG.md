@@ -2,11 +2,13 @@
 
 **Summary:**
 
-Add MCP Team Management, restructure packages, and enhance UI components
+Add Team Tool Maker functionality, restructure packages, and enhance UI components
 
 **Details:**
 
 - **New Feature:**
+    - Added MCP Team Tool Maker functionality with dedicated screens and view models (`MCPTeamToolMakerScreen`, `MCPTeamToolMakerViewModel`).
+    - Introduced comprehensive team tool maker management allowing users to manage tools for team members.
     - Added MCP Team Management functionality with dedicated screens and view models (`MCPTeamScreen`, `MCPTeamViewModel`).
     - Introduced comprehensive team management allowing users to manage team members and permissions.
     - Added MCP Access Key Management functionality with dedicated screens and view models (`MCPAccessKeyScreen`, `MCPAccessKeyViewModel`).
@@ -41,16 +43,18 @@ Add MCP Team Management, restructure packages, and enhance UI components
 
 - **Structural Changes:**
     - Moved virtual-related files from `virtual` package to `virtualmcp` package for better organization.
-    - Created dedicated `mcpkeys` package for access key related functionality.
+    - Renamed `mcpkeys` package to `mcpkey` for better consistency.
+    - Created dedicated `mcpkey` package for access key related functionality.
     - Created dedicated `viewmodel` package for shared view models.
     - Moved `GeneralViewModel` from `viewmodel` package to main app package for better accessibility.
-    - Moved `MCPAccessKeyViewModel` from `viewmodel` package to `mcpkeys` package for better organization.
+    - Moved `MCPAccessKeyViewModel` from `viewmodel` package to `mcpkey` package for better organization.
     - Created `team` package for team management functionality.
     - Added a new `UIState.kt` file to define a standard UI state pattern across the application.
     - Created separate `Screen.kt` file to better organize screen definitions.
     - Updated main application flow to use new access key management screen.
     - Removed `VirtualMakerRepository` as its functionality was integrated into the view model.
     - Added `Validator.kt` file to centralize input validation logic.
+    - Added `MCPTeamToolMakerScreen` and `MCPTeamToolMakerViewModel` for team tool management.
 
 - **Dependency Updates:**
     - Updated `mcpdirect-studio-core` dependency from version `1.1.2-SNAPSHOT` to `1.2.0-SNAPSHOT`.
@@ -90,6 +94,7 @@ Add MCP Team Management, restructure packages, and enhance UI components
     - Centralized input validation logic with a dedicated `Validator` class.
     - Enhanced team screen with improved UI and validation.
     - Further refined team screen and view model with additional improvements and bug fixes.
+    - Enhanced team tool maker functionality with comprehensive management tools.
 
 ### 2025-09-11
 

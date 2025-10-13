@@ -1,4 +1,4 @@
-package ai.mcpdirect.studio.app.mcpkeys
+package ai.mcpdirect.studio.app.mcpkey
 
 import ai.mcpdirect.backend.dao.entity.account.AIPortAccessKeyCredential
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolPermissionMakerSummary
@@ -30,7 +30,7 @@ class MCPAccessKeyViewModel : ViewModel(){
             snackbarHostState.showSnackbar(message)
         }
     }
-    var loadding by mutableStateOf(true)
+    var loading by mutableStateOf(true)
 //    var showGenerateMCPKeyDialog by mutableStateOf(false)
     var mcpKeyName by mutableStateOf("")
         private set
@@ -42,7 +42,7 @@ class MCPAccessKeyViewModel : ViewModel(){
     val toolPermissionMakerSummary = mutableStateListOf<AIPortToolPermissionMakerSummary>()
     fun refreshMCPAccessKeys() {
 //        if(_accessKeys.isNotEmpty()) return
-        loadding = true
+        loading = true
         _accessKeys.clear()
         toolPermissionMakerSummary.clear()
         viewModelScope.launch {
@@ -56,7 +56,7 @@ class MCPAccessKeyViewModel : ViewModel(){
                         data.forEach {
                             _accessKeys[it.id]=it
                         }
-                        loadding = false
+                        loading = false
                     }
                 }
                 var refreshToolMakers = false

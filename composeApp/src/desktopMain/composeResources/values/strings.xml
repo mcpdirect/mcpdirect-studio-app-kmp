@@ -14,6 +14,7 @@
     <string name="tool_permission">Tool Permission</string>
     <string name="my_studio">My Studio</string>
     <string name="my_team">My Team</string>
+    <string name="share_mcp_server">Share MCP Server</string>
     <string name="virtual_mcp">Virtual MCP</string>
     <string name="tool_details">Tool Details</string>
 </resources>

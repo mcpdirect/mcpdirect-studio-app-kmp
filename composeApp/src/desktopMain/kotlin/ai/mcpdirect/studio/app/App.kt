@@ -15,15 +15,15 @@ import ai.mcpdirect.studio.app.logbook.ToolsLogbookScreen
 import ai.mcpdirect.studio.app.mcp.MCPServerIntegrationScreen
 import ai.mcpdirect.studio.app.mcp.MCPServerIntegrationViewModel
 import ai.mcpdirect.studio.app.mcp.MCPServerNotificationHandlerImplement
-import ai.mcpdirect.studio.app.mcpkeys.MCPAccessKeyScreen
+import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
 import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import ai.mcpdirect.studio.app.tool.ToolDetailScreen
 import ai.mcpdirect.studio.app.tool.ToolDetailViewModel
-import ai.mcpdirect.studio.app.GeneralViewModel
-import ai.mcpdirect.studio.app.mcpkeys.MCPAccessKeyViewModel
+import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyViewModel
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
+import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerViewModel
@@ -250,7 +250,7 @@ fun MainAppContent() {
 //                selected = currentScreen == Screen.MyTeam,
 //                onClick = { currentScreen = Screen.MyTeam }
 //            )
-            navigationRailItem(Screen.MyTeam)
+            navigationRailItem(Screen.MCPTeam)
 //            NavigationRailItem(
 ////                modifier = Modifier.padding(4.dp),
 //                icon = {
@@ -345,7 +345,8 @@ fun MainAppContent() {
                     generalViewModel.currentScreen = Screen.MCPAccessKey
                 }
                 Screen.MyStudio -> MyStudioScreen()
-                Screen.MyTeam -> MCPTeamScreen()
+                Screen.MCPTeam -> MCPTeamScreen()
+                Screen.MCPTeamToolMaker -> MCPTeamToolMakerScreen()
                 Screen.VirtualMCP -> VirtualMakerScreen(virtualMakerViewModel){
                     generalViewModel.currentScreen = Screen.VirtualMCPToolConfig
                 }
@@ -353,6 +354,7 @@ fun MainAppContent() {
                     generalViewModel.currentScreen = Screen.VirtualMCP
                 }
                 Screen.ToolDetails -> ToolDetailScreen()
+
             }
         }
     }
