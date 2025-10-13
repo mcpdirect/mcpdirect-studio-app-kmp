@@ -35,6 +35,9 @@ Add MCP Team Management, restructure packages, and enhance UI components
     - Enhanced login screen UI components and styling.
     - Improved agent management screen with better data handling.
     - Added a reusable `TooltipIconButton` component for better UI consistency.
+    - Added reusable `Tag` component for consistent tag display throughout the application.
+    - Added reusable `OutlinedTextFieldDialog` component for consistent dialog input fields.
+    - Enhanced `StudioCard` component with improved styling and functionality.
 
 - **Structural Changes:**
     - Moved virtual-related files from `virtual` package to `virtualmcp` package for better organization.
@@ -47,6 +50,7 @@ Add MCP Team Management, restructure packages, and enhance UI components
     - Created separate `Screen.kt` file to better organize screen definitions.
     - Updated main application flow to use new access key management screen.
     - Removed `VirtualMakerRepository` as its functionality was integrated into the view model.
+    - Added `Validator.kt` file to centralize input validation logic.
 
 - **Dependency Updates:**
     - Updated `mcpdirect-studio-core` dependency from version `1.1.2-SNAPSHOT` to `1.2.0-SNAPSHOT`.
@@ -83,6 +87,8 @@ Add MCP Team Management, restructure packages, and enhance UI components
     - Improved UI consistency with reusable components like `TooltipIconButton`.
     - Implemented standardized `UIState` pattern for better loading/error state handling.
     - Enhanced team management functionality with proper state management.
+    - Centralized input validation logic with a dedicated `Validator` class.
+    - Enhanced team screen with improved UI and validation.
 
 ### 2025-09-11
 

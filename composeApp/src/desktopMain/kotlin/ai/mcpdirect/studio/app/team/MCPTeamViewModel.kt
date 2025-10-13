@@ -15,6 +15,7 @@ sealed class MCPTeamDialog() {
     object None : MCPTeamDialog()
     object CreateTeam : MCPTeamDialog()
     object EditTeamName : MCPTeamDialog()
+    object InviteTeamMember : MCPTeamDialog()
 }
 sealed class MCPTeamNameError() {
     object None : MCPTeamNameError()
@@ -47,7 +48,6 @@ class MCPTeamViewModel : ViewModel(){
         _mcpTeams.values.toList()
     }
     var mcpTeam by mutableStateOf<AIPortTeam?>(null)
-        private set
 
     private val _mcpTeamMembers = mutableStateMapOf<Long, AIPortTeamMember>()
     val mcpTeamMembers by derivedStateOf {
@@ -105,9 +105,9 @@ class MCPTeamViewModel : ViewModel(){
     fun removeMCPTeamTag(tag:String){
         mcpTeamTags.remove(tag)
     }
-    fun setMCPTeam(team: AIPortTeam){
+    fun setMCPTeam(team: AIPortTeam?){
         mcpTeam = team
-        queryMCPTeamMembers(team.id);
+        if(team!=null) queryMCPTeamMembers(team.id)
     }
     fun createMCPTeam(onSuccess: () -> Unit) {
         viewModelScope.launch {
@@ -136,7 +136,7 @@ class MCPTeamViewModel : ViewModel(){
             }
         }
     }
-    fun inviteMCPTeamMember(account:String?,onSuccess: () -> Unit){
+    fun inviteMCPTeamMember(account:String?,onResponse: (code:Int,message:String?) -> Unit){
         mcpTeam?.let {
             viewModelScope.launch {
                 withContext(Dispatchers.IO){
@@ -145,6 +145,7 @@ class MCPTeamViewModel : ViewModel(){
                         if(code==0&&data!=null){
                             _mcpTeamMembers[data.memberId]=data
                         }
+                        onResponse(code,message)
                     }
                 }
             }

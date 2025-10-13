@@ -33,10 +33,7 @@ val studioCardBorderStroke: BorderStroke
     @Composable
     get() = BorderStroke(
         width = 1.dp,
-        color = if (isSystemInDarkTheme())
-            Color.White.copy(alpha = 0.12f)
-        else
-            Color.Black.copy(alpha = 0.12f)
+        color =  MaterialTheme.colorScheme.outline.copy(0.2f)
     )
 
 //val stduioCardShap:
@@ -44,7 +41,7 @@ val studioCardBorderStroke: BorderStroke
 @Composable
 fun StudioCard(
     modifier: Modifier = Modifier,
-    elevation: CardElevation = studioCardElevation,
+//    elevation: CardElevation = studioCardElevation,
     colors: CardColors = studioCardColors,
     border: BorderStroke = studioCardBorderStroke,
 //    shape: Shape,
@@ -52,7 +49,7 @@ fun StudioCard(
 ) {
     Card(
         colors = colors,
-        elevation = elevation,
+//        elevation = elevation,
         border = border,
         modifier = modifier
     ) {

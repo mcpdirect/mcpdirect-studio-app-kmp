@@ -1,17 +1,23 @@
 package ai.mcpdirect.studio.app.team
 
 import ai.mcpdirect.backend.dao.entity.account.AIPortTeam
+import ai.mcpdirect.backend.service.AccountServiceErrors
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.authViewModel
+import ai.mcpdirect.studio.app.compose.OutlinedTextFieldDialog
 import ai.mcpdirect.studio.app.compose.SearchView
 import ai.mcpdirect.studio.app.compose.StudioCard
+import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
+import ai.mcpdirect.studio.app.isValidEmail
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -24,25 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import mcpdirectstudioapp.composeapp.generated.resources.Res
-import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
-import mcpdirectstudioapp.composeapp.generated.resources.badge
-import mcpdirectstudioapp.composeapp.generated.resources.block
-import mcpdirectstudioapp.composeapp.generated.resources.check
-import mcpdirectstudioapp.composeapp.generated.resources.delete
-import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_right
-import mcpdirectstudioapp.composeapp.generated.resources.person_add
-import mcpdirectstudioapp.composeapp.generated.resources.play_circle
-import mcpdirectstudioapp.composeapp.generated.resources.restart_alt
-import mcpdirectstudioapp.composeapp.generated.resources.sell
-import mcpdirectstudioapp.composeapp.generated.resources.settings
-import mcpdirectstudioapp.composeapp.generated.resources.share
-import mcpdirectstudioapp.composeapp.generated.resources.stop_circle
+import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -105,6 +96,7 @@ fun MCPTeamScreen() {
         MCPTeamDialog.EditTeamName -> {
             CreateTeamDialog(viewModel.mcpTeam)
         }
+        MCPTeamDialog.InviteTeamMember -> InviteTeamDialog()
     }
 
     LaunchedEffect(Unit) {
@@ -112,7 +104,6 @@ fun MCPTeamScreen() {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CreateTeamDialog(
     team: AIPortTeam?
@@ -215,13 +206,13 @@ private fun TeamListView(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            IconButton(onClick = {  }) {
+                            IconButton(onClick = { viewModel.setMCPTeam(null)}) {
                                 Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
                             }
                             TooltipIconButton(
                                 Res.drawable.person_add,
                                 tooltipText = "Invite Member",
-                                onClick = { }
+                                onClick = { dialog = MCPTeamDialog.InviteTeamMember }
                             )
                             TooltipIconButton(
                                 Res.drawable.share,
@@ -252,8 +243,6 @@ private fun TeamListView(
     }
 }
 
-
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun TeamItem(
     team: AIPortTeam,
@@ -268,6 +257,10 @@ private fun TeamItem(
     )
     ListItem(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        overlineContent = {
+            if(team.ownerId== authViewModel.userInfo.value?.id)
+                Text("Me")
+        },
         headlineContent = {
             Text(team.name)
         },
@@ -285,7 +278,6 @@ private fun TeamItem(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun TeamMemberList() {
     val viewModel = mcpTeamViewModel
@@ -299,24 +291,62 @@ private fun TeamMemberList() {
                     Text(it.account)
                 },
                 supportingContent = {
-                    if (it.expirationDate < -1L) Text(
-                        "waiting for user acceptance",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(2.dp)
-                    )else if (it.status == 0) Text(
-                        "inactive",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(2.dp)
-                    ) else Text(
-                        "active",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(2.dp)
-                    )
+                    Box(
+                        Modifier.border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    ) {
+                        if (it.expirationDate < 0) Tag(
+                            "waiting for acceptance",
+                            color = MaterialTheme.colorScheme.error,
+                        )else if (it.status == 0) Tag(
+                            "inactive",
+                            color = MaterialTheme.colorScheme.error,
+                        ) else Tag(
+                            "active",
+                        )
+                    }
                 }
             )
         }
     }
+}
+
+@Composable
+fun InviteTeamDialog() {
+    val viewModel = mcpTeamViewModel
+    var userNotExist by remember { mutableStateOf(false) }
+    OutlinedTextFieldDialog(
+        title = {Text("Invite member for ${viewModel.mcpTeam!!.name}")},
+        label = {Text("Member account")},
+        supportingText = {
+            value, isValid ->
+            if(userNotExist) Text("Member not exists", color = MaterialTheme.colorScheme.error)
+        },
+        onValueChange = {
+            value,onValueChange->
+            onValueChange(value,isValidEmail(value))
+        },
+        confirmButton = {
+            value,isValid->
+            Button(
+                enabled = value.isNotEmpty()&&isValid,
+                onClick = {viewModel.inviteMCPTeamMember(value){
+                    code, message ->
+                    when(code){
+                        0-> dialog = MCPTeamDialog.None
+                        AccountServiceErrors.USER_NOT_EXIST -> {userNotExist=true}
+                    }
+                }}
+            ){
+                Text("Invite")
+            }
+        },
+        onDismissRequest = {
+            value, isValid ->
+            dialog = MCPTeamDialog.None
+        }
+    )
 }
