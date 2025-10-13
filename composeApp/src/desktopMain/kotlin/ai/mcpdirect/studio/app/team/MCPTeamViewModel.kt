@@ -109,7 +109,7 @@ class MCPTeamViewModel : ViewModel(){
         mcpTeam = team
         if(team!=null) queryMCPTeamMembers(team.id)
     }
-    fun createMCPTeam(onSuccess: () -> Unit) {
+    fun createMCPTeam(onResponse: (code:Int,message:String?) -> Unit) {
         viewModelScope.launch {
             withContext(Dispatchers.IO){
                 MCPDirectStudio.createTeam(mcpTeamName){
@@ -118,11 +118,12 @@ class MCPTeamViewModel : ViewModel(){
                         _mcpTeams[data.id]=data
                         mcpTeam = data
                     }
+                    onResponse(code,message)
                 }
             }
         }
     }
-    fun modifyMCPTeam(name:String?,status:Int?,onSuccess: () -> Unit){
+    fun modifyMCPTeam(name:String?,status:Int?,onResponse: (code:Int,message:String?) -> Unit){
         mcpTeam?.let {
             viewModelScope.launch {
                 withContext(Dispatchers.IO){
@@ -131,6 +132,7 @@ class MCPTeamViewModel : ViewModel(){
                         if(code==0&&data!=null){
                             _mcpTeams[data.id]=data
                         }
+                        onResponse(code,message)
                     }
                 }
             }
@@ -159,6 +161,20 @@ class MCPTeamViewModel : ViewModel(){
                     if(code==0&&data!=null){
                         data.forEach {
                             _mcpTeamMembers[it.memberId]=it
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fun acceptMCPTeamMember(teamId:Long,memberId:Long){
+        mcpTeam?.let {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO){
+                    MCPDirectStudio.acceptTeamMember(teamId,memberId){
+                            code, message, data ->
+                        if(code==0&&data!=null){
+                            _mcpTeamMembers[data.memberId]=data
                         }
                     }
                 }

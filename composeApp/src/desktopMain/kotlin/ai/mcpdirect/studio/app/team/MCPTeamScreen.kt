@@ -149,9 +149,11 @@ fun CreateTeamDialog(
                 modifier = Modifier.focusRequester(addFocusRequester),
                 onClick = {
                     if(team==null) viewModel.createMCPTeam {
-                        dialog = MCPTeamDialog.None
+                        code, message ->
+                        if(code==0)dialog = MCPTeamDialog.None
                     }else viewModel.modifyMCPTeam(viewModel.mcpTeamName,null){
-                        dialog = MCPTeamDialog.None
+                        code, message ->
+                        if(code==0)dialog = MCPTeamDialog.None
                     }
                 }
             ) {
@@ -209,16 +211,19 @@ private fun TeamListView(
                             IconButton(onClick = { viewModel.setMCPTeam(null)}) {
                                 Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
                             }
-                            TooltipIconButton(
-                                Res.drawable.person_add,
-                                tooltipText = "Invite Member",
-                                onClick = { dialog = MCPTeamDialog.InviteTeamMember }
-                            )
-                            TooltipIconButton(
-                                Res.drawable.share,
-                                tooltipText = "Share MCP Server",
-                                onClick = { }
-                            )
+                            if(viewModel.mcpTeam!!.ownerId==authViewModel.userInfo.value!!.id) {
+                                Spacer(Modifier.weight(1.0f))
+                                TooltipIconButton(
+                                    Res.drawable.person_add,
+                                    tooltipText = "Invite Member",
+                                    onClick = { dialog = MCPTeamDialog.InviteTeamMember }
+                                )
+                                TooltipIconButton(
+                                    Res.drawable.share,
+                                    tooltipText = "Share MCP Server",
+                                    onClick = { }
+                                )
+                            }
                         }
                         HorizontalDivider()
                         TabRow(selectedTabIndex = currentTabIndex) {
@@ -250,22 +255,29 @@ private fun TeamItem(
 ) {
     val viewModel = mcpTeamViewModel
     val selectedColor = ListItemDefaults.colors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        headlineColor = MaterialTheme.colorScheme.onPrimary,
-        supportingColor = MaterialTheme.colorScheme.onPrimary,
-        trailingIconColor = MaterialTheme.colorScheme.onPrimary,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        headlineColor = MaterialTheme.colorScheme.onSurface,
+        supportingColor = MaterialTheme.colorScheme.onSurface,
+        trailingIconColor = MaterialTheme.colorScheme.onSurface,
     )
     ListItem(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         overlineContent = {
-            if(team.ownerId== authViewModel.userInfo.value?.id)
-                Text("Me")
+            if(team.ownerId== authViewModel.userInfo.value?.id) Text("Me")
+            else if(team.ownerName.lowercase() == "anonymous")Text(team.ownerName)
+            else Text("${team.ownerName} (${team.ownerAccount})")
         },
         headlineContent = {
             Text(team.name)
         },
         supportingContent = {
-//            Text("Tags: ${maker.tags}")
+            when(team.status){
+                0-> Tag(
+                    "inactive",
+                    color = MaterialTheme.colorScheme.error,
+                )
+                1-> Tag("active",)
+            }
         },
         trailingContent = {
             if(viewModel.mcpTeam!=null&&viewModel.mcpTeam!!.id==team.id)
@@ -281,14 +293,19 @@ private fun TeamItem(
 @Composable
 private fun TeamMemberList() {
     val viewModel = mcpTeamViewModel
+    val myId = authViewModel.userInfo.value?.id
+    val team = viewModel.mcpTeam!!
+    val teamOwner = team.ownerId==authViewModel.userInfo.value!!.id
     LazyColumn {
         items(viewModel.mcpTeamMembers){
+            val me = it.memberId==myId
             ListItem(
                 headlineContent = {
                     Text(it.name)
                 },
                 overlineContent = {
-                    Text(it.account)
+                    if(me) Text("Me", color = MaterialTheme.colorScheme.primary)
+                    else Text(it.account)
                 },
                 supportingContent = {
                     Box(
@@ -308,8 +325,20 @@ private fun TeamMemberList() {
                             "active",
                         )
                     }
+                },
+                trailingContent = {
+                    if(teamOwner){
+
+                    }else if(me&&it.expirationDate<0){
+                        Button(
+                            onClick = {viewModel.acceptMCPTeamMember(team.id,myId)}
+                        ){
+                            Text("Accept")
+                        }
+                    }
                 }
             )
+            HorizontalDivider()
         }
     }
 }
