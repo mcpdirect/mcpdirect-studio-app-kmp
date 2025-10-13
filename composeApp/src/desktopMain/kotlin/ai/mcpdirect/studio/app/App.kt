@@ -23,7 +23,7 @@ import ai.mcpdirect.studio.app.tool.ToolDetailScreen
 import ai.mcpdirect.studio.app.tool.ToolDetailViewModel
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyViewModel
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
-import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
+import ai.mcpdirect.studio.app.team.MCPToolMakerTeamScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerViewModel
@@ -346,7 +346,7 @@ fun MainAppContent() {
                 }
                 Screen.MyStudio -> MyStudioScreen()
                 Screen.MCPTeam -> MCPTeamScreen()
-                Screen.MCPTeamToolMaker -> MCPTeamToolMakerScreen()
+                Screen.MCPToolMakerTeam -> MCPToolMakerTeamScreen()
                 Screen.VirtualMCP -> VirtualMakerScreen(virtualMakerViewModel){
                     generalViewModel.currentScreen = Screen.VirtualMCPToolConfig
                 }

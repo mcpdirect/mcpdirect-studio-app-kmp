@@ -44,7 +44,7 @@ sealed class Screen(val title: StringResource, val icon: DrawableResource) {
     object MCPTeam : Screen(Res.string.my_team,
         Res.drawable.diversity_3)
 
-    object MCPTeamToolMaker : Screen(Res.string.share_mcp_server,
+    object MCPToolMakerTeam : Screen(Res.string.share_mcp_server,
         Res.drawable.share)
 
     object MCPAccessKey : Screen(Res.string.mcp_keys,

@@ -7,8 +7,8 @@ Add Team Tool Maker functionality, restructure packages, and enhance UI componen
 **Details:**
 
 - **New Feature:**
-    - Added MCP Team Tool Maker functionality with dedicated screens and view models (`MCPTeamToolMakerScreen`, `MCPTeamToolMakerViewModel`).
-    - Introduced comprehensive team tool maker management allowing users to manage tools for team members.
+    - Added MCP Tool Maker Team functionality with dedicated screens and view models (`MCPToolMakerTeamScreen`, `MCPToolMakerTeamViewModel`).
+    - Introduced comprehensive tool maker team management allowing users to manage tools for team members.
     - Added MCP Team Management functionality with dedicated screens and view models (`MCPTeamScreen`, `MCPTeamViewModel`).
     - Introduced comprehensive team management allowing users to manage team members and permissions.
     - Added MCP Access Key Management functionality with dedicated screens and view models (`MCPAccessKeyScreen`, `MCPAccessKeyViewModel`).
@@ -54,7 +54,8 @@ Add Team Tool Maker functionality, restructure packages, and enhance UI componen
     - Updated main application flow to use new access key management screen.
     - Removed `VirtualMakerRepository` as its functionality was integrated into the view model.
     - Added `Validator.kt` file to centralize input validation logic.
-    - Added `MCPTeamToolMakerScreen` and `MCPTeamToolMakerViewModel` for team tool management.
+    - Renamed `MCPTeamToolMakerScreen` to `MCPToolMakerTeamScreen` for better clarity.
+    - Renamed `MCPTeamToolMakerViewModel` to `MCPToolMakerTeamViewModel` for better clarity.
 
 - **Dependency Updates:**
     - Updated `mcpdirect-studio-core` dependency from version `1.1.2-SNAPSHOT` to `1.2.0-SNAPSHOT`.

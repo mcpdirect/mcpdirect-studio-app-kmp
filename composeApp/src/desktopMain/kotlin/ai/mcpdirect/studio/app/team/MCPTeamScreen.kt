@@ -217,7 +217,7 @@ private fun TeamListView(
                                     Res.drawable.share,
                                     tooltipText = "Share MCP Server",
                                     onClick = {
-                                        generalViewModel.currentScreen = Screen.MCPTeamToolMaker
+                                        generalViewModel.currentScreen = Screen.MCPToolMakerTeam
                                         generalViewModel.backToScreen = Screen.MCPTeam
                                     }
                                 )

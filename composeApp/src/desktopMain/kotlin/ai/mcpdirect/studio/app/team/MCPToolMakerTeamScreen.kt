@@ -1,6 +1,5 @@
 package ai.mcpdirect.studio.app.team
 
-import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolAgent
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.Screen
@@ -11,31 +10,34 @@ import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.theme.purple.selectedListItemColors
+import ai.mcpdirect.studio.app.toolDetailViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.IconButton
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
-import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_right
+import mcpdirectstudioapp.composeapp.generated.resources.info
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MCPTeamToolMakerScreen() {
-    val viewModel = mcpTeamToolMakerViewModel
+fun MCPToolMakerTeamScreen() {
+    val viewModel = mcpToolMakerTeamViewModel
+    val team = mcpTeamViewModel.mcpTeam!!
     Scaffold(
+        snackbarHost = { SnackbarHost(generalViewModel.snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("${stringResource(Screen.MCPTeamToolMaker.title)} for team ${mcpTeamViewModel.mcpTeam!!.name}") },
+                title = { Text("${stringResource(Screen.MCPToolMakerTeam.title)} for team ${team.name}") },
                 navigationIcon = {
                     IconButton(onClick = {
                         generalViewModel.currentScreen = generalViewModel.backToScreen!!
@@ -43,6 +45,18 @@ fun MCPTeamToolMakerScreen() {
                         Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
                     }
                 },
+                actions = {
+                    Button(
+                        onClick = {viewModel.saveToolMakerTeams(team){
+                            code, message ->
+                            if(code==0){
+                                generalViewModel.currentScreen = generalViewModel.backToScreen!!
+                            }
+                        } }
+                    ){
+                        Text("Share")
+                    }
+                }
             )
         }
     ) { padding ->
@@ -82,7 +96,7 @@ fun MCPTeamToolMakerScreen() {
                                     HorizontalDivider()
                                 }
                             }
-                            if (viewModel.toolMaker != null) {
+                            viewModel.toolMaker?.let {
                                 VerticalDivider()
                                 Column(Modifier.weight(5.0f)) {
                                     Row(
@@ -97,8 +111,66 @@ fun MCPTeamToolMakerScreen() {
                                         }
                                     }
                                     HorizontalDivider()
+                                    if(it.type==0) LazyColumn {
+                                        viewModel.virtualTools.forEach {
+                                            item {
+                                                Row (verticalAlignment = Alignment.CenterVertically,){
+                                                    Text(it.name,
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis)
+                                                    Spacer(Modifier.weight(1.0f))
+                                                    IconButton(onClick = {
+                                                        toolDetailViewModel.toolId = it.toolId
+                                                        toolDetailViewModel.toolName = it.name
+                                                        generalViewModel.currentScreen = Screen.ToolDetails
+                                                        generalViewModel.backToScreen = Screen.MCPToolMakerTeam
+                                                    }) {
+                                                        Icon(painterResource(Res.drawable.info), contentDescription = "Details")
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else LazyColumn {
+                                        viewModel.tools.forEach {
+                                            item {
+                                                Row (verticalAlignment = Alignment.CenterVertically,){
+                                                    Text(it.name,
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis)
+                                                    Spacer(Modifier.weight(1.0f))
+                                                    IconButton(onClick = {
+                                                        toolDetailViewModel.toolId = it.id
+                                                        toolDetailViewModel.toolName = it.name
+                                                        generalViewModel.currentScreen = Screen.ToolDetails
+                                                        generalViewModel.backToScreen = Screen.MCPToolMakerTeam
+                                                    }) {
+                                                        Icon(painterResource(Res.drawable.info), contentDescription = "Details")
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
+//                            if (viewModel.toolMaker != null) {
+//                                VerticalDivider()
+//                                Column(Modifier.weight(5.0f)) {
+//                                    Row(
+//                                        modifier = Modifier
+//                                            .fillMaxWidth()
+//                                            .padding(8.dp),
+//                                        verticalAlignment = Alignment.CenterVertically,
+//                                        horizontalArrangement = Arrangement.SpaceBetween
+//                                    ) {
+//                                        IconButton(onClick = { viewModel.toolMaker(null)}) {
+//                                            Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
+//                                        }
+//                                    }
+//                                    HorizontalDivider()
+//                                }
+//                            }
                         }
                     }
                 }
@@ -120,13 +192,21 @@ private fun ToolMakerItem(
     maker: AIPortToolMaker,
     onClick: () -> Unit
 ) {
-    val viewModel = mcpTeamToolMakerViewModel
+    val viewModel = mcpToolMakerTeamViewModel
     val isVirtualMCP = maker.type== AIPortToolMaker.TYPE_VIRTUAL
     val localToolAgent = MCPDirectStudio.getLocalToolAgentDetails().toolAgent
     ListItem(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         overlineContent = {
             if(maker.userId == authViewModel.userInfo.value?.id) Text("Me")
+        },
+        leadingContent = {
+            Checkbox(
+                checked = viewModel.toolMakerSelected(maker),
+                onCheckedChange = {
+                    viewModel.selectToolMaker(it,maker)
+                }
+            )
         },
         headlineContent = {
             Text(maker.name)

@@ -117,6 +117,7 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
         } else if(selected) {
             permission = AIPortToolPermission()
             permission.toolId = tool.id
+            permission.status = Short.MAX_VALUE.toInt()
             permission.makerId = tool.makerId
             permission.agentId = tool.agentId
             permission.accessKeyId = accessKey!!.id
