@@ -37,13 +37,14 @@ private var dialog by mutableStateOf<MCPTeamDialog>(MCPTeamDialog.None)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MCPTeamScreen() {
-    val viewModel = mcpTeamViewModel;
+    val viewModel = mcpTeamViewModel
+    viewModel.uiState = UIState.Loading
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(Screen.MCPTeam.title) ) },
                 actions = {
-                    if(viewModel.mcpTeams.isNotEmpty())
+                    if(generalViewModel.teams.isNotEmpty())
                         Button(onClick = { dialog = MCPTeamDialog.CreateTeam }) {
                             Text("Create MCP Team")
                         }
@@ -67,7 +68,7 @@ fun MCPTeamScreen() {
                 }
             }
             UIState.Success -> {
-                if(viewModel.mcpTeams.isEmpty())
+                if(generalViewModel.teams.isEmpty())
                     Column(
                         Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -95,7 +96,10 @@ fun MCPTeamScreen() {
     }
 
     LaunchedEffect(Unit) {
-        viewModel.queryMCPTeams()
+        generalViewModel.refreshTeams(){
+            code, message ->
+            if(code==0) viewModel.uiState = UIState.Success
+        }
     }
 }
 
@@ -184,7 +188,7 @@ private fun TeamListView(
         ){
             Row(modifier = Modifier.fillMaxWidth()) {
                 LazyColumn(modifier = Modifier.weight(3.0f)) {
-                    items(viewModel.mcpTeams) {
+                    items(generalViewModel.teams) {
                         TeamItem(it) {
                             viewModel.setMCPTeam(it)
                         }
@@ -217,7 +221,7 @@ private fun TeamListView(
                                     Res.drawable.share,
                                     tooltipText = "Share MCP Server",
                                     onClick = {
-                                        generalViewModel.currentScreen = Screen.MCPToolMakerTeam
+                                        generalViewModel.currentScreen = Screen.MCPTeamToolMaker
                                         generalViewModel.backToScreen = Screen.MCPTeam
                                     }
                                 )

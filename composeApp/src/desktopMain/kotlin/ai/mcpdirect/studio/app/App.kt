@@ -217,7 +217,8 @@ fun MainAppContent() {
 //                selected = currentScreen == Screen.ToolDevelopment,
 //                onClick = { currentScreen = Screen.ToolDevelopment }
 //            )
-            navigationRailItem(Screen.ToolDevelopment)
+//            navigationRailItem(Screen.ToolDevelopment)
+            navigationRailItem(Screen.VirtualMCP)
             HorizontalDivider()
 //            NavigationRailItem(
 ////                modifier = Modifier.padding(4.dp),
@@ -267,7 +268,7 @@ fun MainAppContent() {
 //                selected = currentScreen == Screen.VirtualMCP,
 //                onClick = { currentScreen = Screen.VirtualMCP }
 //            )
-            navigationRailItem(Screen.VirtualMCP)
+//            navigationRailItem(Screen.VirtualMCP)
             Spacer(modifier = Modifier.weight(1f))
             HorizontalDivider()
             NavigationRailItem(
@@ -346,7 +347,7 @@ fun MainAppContent() {
                 }
                 Screen.MyStudio -> MyStudioScreen()
                 Screen.MCPTeam -> MCPTeamScreen()
-                Screen.MCPToolMakerTeam -> MCPToolMakerTeamScreen()
+                Screen.MCPTeamToolMaker -> MCPToolMakerTeamScreen()
                 Screen.VirtualMCP -> VirtualMakerScreen(virtualMakerViewModel){
                     generalViewModel.currentScreen = Screen.VirtualMCPToolConfig
                 }

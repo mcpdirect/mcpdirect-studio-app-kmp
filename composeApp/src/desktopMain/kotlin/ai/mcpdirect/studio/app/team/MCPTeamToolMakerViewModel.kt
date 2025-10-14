@@ -3,10 +3,11 @@ package ai.mcpdirect.studio.app.team
 import ai.mcpdirect.backend.dao.entity.account.AIPortTeam
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
-import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMakerTeam
+import ai.mcpdirect.backend.dao.entity.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.generalViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -14,10 +15,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.collections.set
 
-val mcpToolMakerTeamViewModel = MCPToolMakerTeamViewModel()
+val mcpTeamToolMakerViewModel = MCPToolMakerTeamViewModel()
 class MCPToolMakerTeamViewModel: ViewModel() {
     var searchQuery by mutableStateOf("")
         private set
@@ -52,19 +54,45 @@ class MCPToolMakerTeamViewModel: ViewModel() {
             }
         }
     }
-    private val _toolMakerTeams = mutableStateMapOf<Long, AIPortToolMakerTeam>()
+    private val _teamToolMakers = mutableStateMapOf<Long, AIPortTeamToolMaker>()
 
-    val toolMakerTeams = mutableStateMapOf<Long, AIPortToolMakerTeam>()
+    val teamToolMakers = mutableStateMapOf<Long, AIPortTeamToolMaker>()
     val tools = mutableStateListOf<AIPortTool>()
 
     val virtualTools = mutableStateListOf<AIPortVirtualTool>()
+
+    fun refreshTeamToolMakers(team: AIPortTeam,onResponse: (code: Int, message: String?) -> Unit){
+        viewModelScope.launch {
+            with(Dispatchers.IO){
+                MCPDirectStudio.queryTeamToolMakers(team){
+                    code, message, data ->
+                    if(code==0&&data!=null){
+                        var loadToolMakers = false
+                        data.forEach {
+                            _teamToolMakers[it.toolMakerId]=it
+                            teamToolMakers[it.toolMakerId] = it.copy()
+                            if(generalViewModel.toolMaker(it.toolMakerId)==null){
+                                loadToolMakers = true
+                            }
+                            if(loadToolMakers) generalViewModel.loadToolMakers {
+                                code, message ->
+                                onResponse(code,message)
+                            }else{
+                                onResponse(code,message)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     fun toolMakerSelected(toolMaker: AIPortToolMaker): Boolean{
-        val t = toolMakerTeams[toolMaker.id]
+        val t = teamToolMakers[toolMaker.id]
         return t!=null&&t.status>0
     }
     fun selectToolMaker(selected: Boolean, toolMaker: AIPortToolMaker){
 //        var permission = virtualToolPermissions[tool.toolId]
-        var t = toolMakerTeams.remove(toolMaker.id)
+        var t = teamToolMakers.remove(toolMaker.id)
         if(t!=null){
             if(t.status==Short.MAX_VALUE.toInt()){
 //                virtualToolPermissions.remove(tool.toolId)
@@ -74,32 +102,32 @@ class MCPToolMakerTeamViewModel: ViewModel() {
                 } else {
                     t.status = 0
                 }
-                toolMakerTeams[t.toolMakerId]=t
+                teamToolMakers[t.toolMakerId]=t
             }
         }else if(selected) {
-            t = AIPortToolMakerTeam()
+            t = AIPortTeamToolMaker()
                 .toolMakerId(toolMaker.id)
                 .status(Short.MAX_VALUE.toInt())
-            toolMakerTeams[t.toolMakerId]=t
+            teamToolMakers[t.toolMakerId]=t
         }
     }
-    fun toolMakerTeamsChanged():Boolean{
-        if(toolMakerTeams.size!=_toolMakerTeams.size){
+    fun teamToolMakersChanged():Boolean{
+        if(teamToolMakers.size!=_teamToolMakers.size){
             return true;
         }
-        for(v in toolMakerTeams.values){
-            val p = _toolMakerTeams[v.toolMakerId]
+        for(v in teamToolMakers.values){
+            val p = _teamToolMakers[v.toolMakerId]
             if(p==null||p.status!=v.status){
                 return true;
             }
         }
         return false
     }
-    fun saveToolMakerTeams(team: AIPortTeam,onResponse:(code:Int,message:String?)-> Unit){
-        if(toolMakerTeamsChanged()) {
+    fun saveTeamToolMakers(team: AIPortTeam, onResponse:(code:Int, message:String?)-> Unit){
+        if(teamToolMakersChanged()) {
             viewModelScope.launch {
-                MCPDirectStudio.modifyToolMakerTeams(
-                    team, toolMakerTeams.values.toList()
+                MCPDirectStudio.modifyTeamToolMakers(
+                    team, teamToolMakers.values.toList()
                 ){
                     code, message, data ->
                     onResponse(code,message)
@@ -108,10 +136,10 @@ class MCPToolMakerTeamViewModel: ViewModel() {
         }
     }
 
-    fun resetAllToolMakerTeam(){
-        toolMakerTeams.clear()
-        for(p in _toolMakerTeams.values){
-            toolMakerTeams[p.toolMakerId] = p.copy()
+    fun resetAllTeamToolMakers(){
+        teamToolMakers.clear()
+        for(p in _teamToolMakers.values){
+            teamToolMakers[p.toolMakerId] = p.copy()
         }
     }
 }

@@ -4,6 +4,7 @@ import ai.mcpdirect.backend.dao.entity.account.AIPortTeam
 import ai.mcpdirect.backend.dao.entity.account.AIPortTeamMember
 import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.generalViewModel
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -43,10 +44,7 @@ class MCPTeamViewModel : ViewModel(){
     }
 
     val mcpTeamTags = mutableStateSetOf<String>()
-    private val _mcpTeams = mutableStateMapOf<Long, AIPortTeam>()
-    val mcpTeams by derivedStateOf {
-        _mcpTeams.values.toList()
-    }
+
     var mcpTeam by mutableStateOf<AIPortTeam?>(null)
 
     private val _mcpTeamMembers = mutableStateMapOf<Long, AIPortTeamMember>()
@@ -56,23 +54,6 @@ class MCPTeamViewModel : ViewModel(){
 
     fun updateSearchQuery(query: String) {
         searchQuery = query
-    }
-    fun queryMCPTeams(){
-        uiState = UIState.Loading
-        _mcpTeams.clear()
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                MCPDirectStudio.queryTeams(){
-                    code,message,data->
-                    uiState = UIState.Success
-                    if(code==0&&data!=null){
-                        data.forEach {
-                            _mcpTeams[it.id]=it
-                        }
-                    }
-                }
-            }
-        }
     }
 
     fun onMCPTeamNameChange(name: String) {
@@ -115,7 +96,7 @@ class MCPTeamViewModel : ViewModel(){
                 MCPDirectStudio.createTeam(mcpTeamName){
                     code, message, data ->
                     if(code==0&&data!=null){
-                        _mcpTeams[data.id]=data
+                        generalViewModel.team(data)
                         mcpTeam = data
                     }
                     onResponse(code,message)
@@ -130,7 +111,7 @@ class MCPTeamViewModel : ViewModel(){
                     MCPDirectStudio.modifyTeam(it.id,name,status){
                             code, message, data ->
                         if(code==0&&data!=null){
-                            _mcpTeams[data.id]=data
+                            generalViewModel.team(data)
                         }
                         onResponse(code,message)
                     }

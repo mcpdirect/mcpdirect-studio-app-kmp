@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,13 +32,13 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MCPToolMakerTeamScreen() {
-    val viewModel = mcpToolMakerTeamViewModel
+    val viewModel = mcpTeamToolMakerViewModel
     val team = mcpTeamViewModel.mcpTeam!!
     Scaffold(
         snackbarHost = { SnackbarHost(generalViewModel.snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("${stringResource(Screen.MCPToolMakerTeam.title)} for team ${team.name}") },
+                title = { Text("${stringResource(Screen.MCPTeamToolMaker.title)} for team ${team.name}") },
                 navigationIcon = {
                     IconButton(onClick = {
                         generalViewModel.currentScreen = generalViewModel.backToScreen!!
@@ -47,7 +48,7 @@ fun MCPToolMakerTeamScreen() {
                 },
                 actions = {
                     Button(
-                        onClick = {viewModel.saveToolMakerTeams(team){
+                        onClick = {viewModel.saveTeamToolMakers(team){
                             code, message ->
                             if(code==0){
                                 generalViewModel.currentScreen = generalViewModel.backToScreen!!
@@ -124,7 +125,7 @@ fun MCPToolMakerTeamScreen() {
                                                         toolDetailViewModel.toolId = it.toolId
                                                         toolDetailViewModel.toolName = it.name
                                                         generalViewModel.currentScreen = Screen.ToolDetails
-                                                        generalViewModel.backToScreen = Screen.MCPToolMakerTeam
+                                                        generalViewModel.backToScreen = Screen.MCPTeamToolMaker
                                                     }) {
                                                         Icon(painterResource(Res.drawable.info), contentDescription = "Details")
                                                     }
@@ -144,7 +145,7 @@ fun MCPToolMakerTeamScreen() {
                                                         toolDetailViewModel.toolId = it.id
                                                         toolDetailViewModel.toolName = it.name
                                                         generalViewModel.currentScreen = Screen.ToolDetails
-                                                        generalViewModel.backToScreen = Screen.MCPToolMakerTeam
+                                                        generalViewModel.backToScreen = Screen.MCPTeamToolMaker
                                                     }) {
                                                         Icon(painterResource(Res.drawable.info), contentDescription = "Details")
                                                     }
@@ -154,23 +155,6 @@ fun MCPToolMakerTeamScreen() {
                                     }
                                 }
                             }
-//                            if (viewModel.toolMaker != null) {
-//                                VerticalDivider()
-//                                Column(Modifier.weight(5.0f)) {
-//                                    Row(
-//                                        modifier = Modifier
-//                                            .fillMaxWidth()
-//                                            .padding(8.dp),
-//                                        verticalAlignment = Alignment.CenterVertically,
-//                                        horizontalArrangement = Arrangement.SpaceBetween
-//                                    ) {
-//                                        IconButton(onClick = { viewModel.toolMaker(null)}) {
-//                                            Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
-//                                        }
-//                                    }
-//                                    HorizontalDivider()
-//                                }
-//                            }
                         }
                     }
                 }
@@ -179,7 +163,7 @@ fun MCPToolMakerTeamScreen() {
     }
     LaunchedEffect(null){
         viewModel.uiState = UIState.Loading
-        generalViewModel.refreshToolMakers(){
+        viewModel.refreshTeamToolMakers(team){
             code, message ->
             if(code==0) viewModel.uiState = UIState.Success
         }
@@ -192,9 +176,10 @@ private fun ToolMakerItem(
     maker: AIPortToolMaker,
     onClick: () -> Unit
 ) {
-    val viewModel = mcpToolMakerTeamViewModel
+    val viewModel = mcpTeamToolMakerViewModel
     val isVirtualMCP = maker.type== AIPortToolMaker.TYPE_VIRTUAL
     val localToolAgent = MCPDirectStudio.getLocalToolAgentDetails().toolAgent
+
     ListItem(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         overlineContent = {

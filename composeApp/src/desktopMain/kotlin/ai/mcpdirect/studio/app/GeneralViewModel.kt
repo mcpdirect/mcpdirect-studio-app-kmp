@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app
 
 import ai.mcpdirect.backend.dao.entity.account.AIPortAccessKeyCredential
+import ai.mcpdirect.backend.dao.entity.account.AIPortTeam
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolAgent
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
@@ -54,8 +55,42 @@ class GeneralViewModel() : ViewModel() {
     val virtualToolPermissions by derivedStateOf {
         _virtualToolPermissions.values.toList()
     }
+
+    private val _teams = mutableStateMapOf<Long, AIPortTeam>()
+    val teams by derivedStateOf {
+        _teams.values.toList()
+    }
+
     fun toolMaker(id:Long): AIPortToolMaker?{
         return _toolMakers[id]
+    }
+    fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
+        return _toolMakers.values.filter {
+            if(agent.id==0L) it.agentId==authViewModel.userInfo.value!!.id
+            else it.agentId==agent.id
+        }
+    }
+    fun toolMakers(team: AIPortTeam): List<AIPortToolMaker>{
+        return _toolMakers.values.filter {it.teamId==team.id}
+    }
+    fun refreshTeams(onResponse:((code:Int,message:String?) -> Unit)? = null){
+        _teams.clear()
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                MCPDirectStudio.queryTeams(){
+                        code,message,data->
+                    if(code==0&&data!=null){
+                        data.forEach {
+                            _teams[it.id]=it
+                        }
+                    }
+                    onResponse?.invoke(code, message)
+                }
+            }
+        }
+    }
+    fun team(team: AIPortTeam){
+        _teams[team.id]=team
     }
     fun refreshToolAgents(force:Boolean=false){
         MCPDirectStudio.queryToolAgents {
@@ -69,15 +104,18 @@ class GeneralViewModel() : ViewModel() {
             }
         }
     }
-    fun refreshToolMakers(force:Boolean=false,onResponse:((code:Int,message:String?) -> Unit)? = null){
+    fun refreshToolMakers(force:Boolean=false,
+                          type:Int?=null,name:String?=null,toolAgentId:Long?=null,teamId:Long?=null,
+                          onResponse:((code:Int,message:String?) -> Unit)? = null){
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                loadToolMakers(onResponse)
+                loadToolMakers(type,name,toolAgentId,teamId,onResponse=onResponse)
             }
         }
     }
-    fun loadToolMakers(onResponse:((code:Int,message:String?) -> Unit)? = null){
-        MCPDirectStudio.queryToolMakers(null ,null,null){
+    fun loadToolMakers(type:Int?=null,name:String?=null,toolAgentId:Long?=null,teamId:Long?=null,
+                       onResponse:((code:Int,message:String?) -> Unit)? = null){
+        MCPDirectStudio.queryToolMakers(type ,name,toolAgentId,teamId){
                 code, message, data ->
             if(code==0&&data!=null){
                 _toolMakers.clear()

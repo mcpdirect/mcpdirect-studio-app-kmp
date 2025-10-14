@@ -77,7 +77,7 @@ class VirtualMakerViewModel: ViewModel() {
         }
     }
     fun queryToolMakers(){
-        MCPDirectStudio.queryToolMakers(null,null,null){
+        MCPDirectStudio.queryToolMakers(null,null,null,null){
             code, message, data ->
             if(code==0&&data!=null){
                 data.forEach {
@@ -192,10 +192,10 @@ class VirtualMakerViewModel: ViewModel() {
         }
     }
     fun queryToolMetadata(id:Long){
-        MCPDirectStudio.queryTools(id,null,null, null,null){
+        MCPDirectStudio.getTool(id){
                 code, message, data ->
-            if(code==0&&data!=null&&data.isNotEmpty()){
-                val json = Json.parseToJsonElement(data[0].metaData)
+            if(code==0&&data!=null){
+                val json = Json.parseToJsonElement(data.metaData)
                 selectedMakerToolMetadata = json.jsonObject["description"]?.jsonPrimitive?.content
             }
         }

@@ -12,12 +12,14 @@ import kotlinx.coroutines.launch
 import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ai.mcpdirect.backend.dao.entity.account.AIPortTeam
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolPermission
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolAgent
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualTool
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualToolPermission
+import ai.mcpdirect.studio.app.generalViewModel
 import androidx.compose.runtime.mutableStateMapOf
 import kotlin.collections.forEach
 
@@ -36,8 +38,10 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
         private set
     var toolMaker by mutableStateOf<AIPortToolMaker?>(null)
         private set
+    var team by mutableStateOf<AIPortTeam?>(null)
+        private set
     val toolAgents = mutableStateListOf<AIPortToolAgent>()
-    val toolMakers = mutableStateListOf<AIPortToolMaker>()
+//    val toolMakers = mutableStateListOf<AIPortToolMaker>()
     val tools = mutableStateListOf<AIPortTool>()
 
     val virtualTools = mutableStateListOf<AIPortVirtualTool>()
@@ -153,19 +157,20 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
     fun selectToolAgent(agent:AIPortToolAgent?){
         toolAgent = agent
         toolAgent?.let {
-            toolMakers.clear()
+//            toolMakers.clear()
             tools.clear()
             viewModelScope.launch {
-                MCPDirectStudio.queryToolMakers(if(it.id==0L) 0 else -1 ,null,it.id){
-                        code, message, data ->
-                    if(code==0&&data!=null){
-
-                        if(data.isNotEmpty()) {
-                            toolMakers.addAll(data)
-                            if(toolMaker==null||(toolMaker!=null&&toolAgent!=null&&toolMaker!!.agentId!=toolAgent!!.id)) selectToolMaker(toolMakers[0])
-                        }
-                    }
-                }
+//                MCPDirectStudio.queryToolMakers(if(it.id==0L) 0 else -1 ,null,it.id){
+//                        code, message, data ->
+//                    if(code==0&&data!=null){
+//
+//                        if(data.isNotEmpty()) {
+//                            toolMakers.addAll(data)
+//                            if(toolMaker==null||(toolMaker!=null&&toolAgent!=null&&toolMaker!!.agentId!=toolAgent!!.id)) selectToolMaker(toolMakers[0])
+//                        }
+//                    }
+//                }
+                generalViewModel.loadToolMakers(if(it.id==0L) 0 else -1 ,null,it.id,null)
             }
         }
     }
@@ -184,7 +189,7 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
                         }
                     }
                 }
-                else MCPDirectStudio.queryTools(null,null,null,it.id,null){
+                else MCPDirectStudio.queryTools(it.userId,null,null,it.id,null){
                         code, message, data ->
                     if(code==0&&data!=null){
                         if(data.isNotEmpty()) {
@@ -219,7 +224,7 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
                         virtualToolPermissions.clear()
                         data.forEach {
                             _virtualToolPermissions[it.originalToolId]=it
-                            virtualToolPermissions[it.originalToolId]=it.copy()
+                            virtualToolPermissions[it.originalToolId] = it.copy()
                         }
                     }
                 }
@@ -315,6 +320,17 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
         }
         for(p in _toolPermissions.values){
             toolPermissions[p.toolId] = p.copy()
+        }
+    }
+
+    fun selectTeam(team: AIPortTeam?){
+        this.team=team
+        this.team?.let {
+            tools.clear()
+            viewModelScope.launch {
+                generalViewModel.loadToolMakers(if(it.id==0L) 0 else -1 ,null,
+                    null,it.id)
+            }
         }
     }
 }
