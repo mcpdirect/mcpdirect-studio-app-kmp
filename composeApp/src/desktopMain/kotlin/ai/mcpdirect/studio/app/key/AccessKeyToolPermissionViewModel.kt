@@ -328,8 +328,7 @@ class AccessKeyToolPermissionViewModel : ViewModel(){
         this.team?.let {
             tools.clear()
             viewModelScope.launch {
-                generalViewModel.loadToolMakers(if(it.id==0L) 0 else -1 ,null,
-                    null,it.id)
+                generalViewModel.loadToolMakers()
             }
         }
     }

@@ -74,7 +74,7 @@ class MCPToolMakerTeamViewModel: ViewModel() {
                             if(generalViewModel.toolMaker(it.toolMakerId)==null){
                                 loadToolMakers = true
                             }
-                            if(loadToolMakers) generalViewModel.loadToolMakers {
+                            if(loadToolMakers) generalViewModel.loadToolMakers() {
                                 code, message ->
                                 onResponse(code,message)
                             }else{

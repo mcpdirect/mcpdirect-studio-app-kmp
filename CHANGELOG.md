@@ -96,6 +96,7 @@ Add Team Tool Maker functionality, restructure packages, and enhance UI componen
     - Enhanced team screen with improved UI and validation.
     - Further refined team screen and view model with additional improvements and bug fixes.
     - Enhanced team tool maker functionality with comprehensive management tools.
+    - Updated GeneralViewModel, AccessKeyToolPermissionScreen, AccessKeyToolPermissionViewModel, and MCPTeamToolMakerViewModel with minor improvements and bug fixes.
 
 ### 2025-09-11
 

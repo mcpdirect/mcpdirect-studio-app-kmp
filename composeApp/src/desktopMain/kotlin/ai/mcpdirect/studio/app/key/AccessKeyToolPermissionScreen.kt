@@ -289,7 +289,7 @@ fun TeamList(){
     val viewModel = accessKeyToolPermissionViewModel
     LazyColumn(Modifier.fillMaxHeight()) {
         items(generalViewModel.teams){
-            if(it.ownerId != authViewModel.userInfo.value!!.id)ListItem(
+            ListItem(
                 modifier = Modifier.clickable{
                     viewModel.selectTeam(it)
                 },

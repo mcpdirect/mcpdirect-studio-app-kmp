@@ -25,6 +25,7 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
 class GeneralViewModel() : ViewModel() {
+    var lastRefreshed = 0;
     var currentScreen by mutableStateOf<Screen>(Screen.MCPServerIntegration)
     var backToScreen by mutableStateOf<Screen?>(null)
     val snackbarHostState = SnackbarHostState()
@@ -43,6 +44,10 @@ class GeneralViewModel() : ViewModel() {
     private val _toolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
     val toolMakers by derivedStateOf {
         _toolMakers.values.toList()
+    }
+    private val _teamToolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
+    val teamToolMakers by derivedStateOf {
+        _teamToolMakers.values.toList()
     }
     private val _tools = mutableStateMapOf<Long, AIPortTool>()
     private val _virtualTools = mutableStateListOf<AIPortVirtualTool>()
@@ -66,40 +71,62 @@ class GeneralViewModel() : ViewModel() {
     }
     fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
         return _toolMakers.values.filter {
-            if(agent.id==0L) it.agentId==authViewModel.userInfo.value!!.id
+            if(agent.id==0L) {
+                if(!(it.type== AIPortToolMaker.TYPE_VIRTUAL&&it.userId == authViewModel.userInfo.value!!.id)){
+                    println(it.type)
+                    println(it.userId)
+                }
+                it.type== AIPortToolMaker.TYPE_VIRTUAL&&it.userId == authViewModel.userInfo.value!!.id
+            }
             else it.agentId==agent.id
         }
     }
     fun toolMakers(team: AIPortTeam): List<AIPortToolMaker>{
-        return _toolMakers.values.filter {it.teamId==team.id}
+        return _teamToolMakers.values.filter {it.teamId==team.id}
+    }    fun team(team: AIPortTeam){
+        _teams[team.id]=team
+    }
+    fun refreshable():Boolean{
+        return System.currentTimeMillis()-lastRefreshed>60000
+    }
+    fun refresh(force:Boolean=false){
+        refreshToolAgents()
+        refreshToolMakers()
+        refreshTeams()
     }
     fun refreshTeams(onResponse:((code:Int,message:String?) -> Unit)? = null){
-        _teams.clear()
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                MCPDirectStudio.queryTeams(){
-                        code,message,data->
-                    if(code==0&&data!=null){
-                        data.forEach {
-                            _teams[it.id]=it
+        if(refreshable()){
+            _teams.clear()
+            viewModelScope.launch {
+                withContext(Dispatchers.IO){
+                    MCPDirectStudio.queryTeams(){
+                            code,message,data->
+                        if(code==0&&data!=null){
+                            data.forEach {
+                                _teams[it.id]=it
+                            }
                         }
+                        onResponse?.invoke(code, message)
                     }
-                    onResponse?.invoke(code, message)
                 }
             }
         }
     }
-    fun team(team: AIPortTeam){
-        _teams[team.id]=team
-    }
+
     fun refreshToolAgents(force:Boolean=false){
-        MCPDirectStudio.queryToolAgents {
-                code, message, data ->
-            if(code==0&&data!=null){
-                _toolAgents.clear()
-                _toolAgents[0] = _virtualToolAgent
-                data.forEach {
-                    _toolAgents[it.id]=it
+        if(refreshable()) {
+            _toolAgents.clear()
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    MCPDirectStudio.queryToolAgents {
+                            code, message, data ->
+                        if(code==0&&data!=null){
+                            _toolAgents[0] = _virtualToolAgent
+                            data.forEach {
+                                _toolAgents[it.id]=it
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -107,9 +134,12 @@ class GeneralViewModel() : ViewModel() {
     fun refreshToolMakers(force:Boolean=false,
                           type:Int?=null,name:String?=null,toolAgentId:Long?=null,teamId:Long?=null,
                           onResponse:((code:Int,message:String?) -> Unit)? = null){
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                loadToolMakers(type,name,toolAgentId,teamId,onResponse=onResponse)
+        if(refreshable()) {
+            _toolMakers.clear()
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    loadToolMakers(type, name, toolAgentId, teamId, onResponse = onResponse)
+                }
             }
         }
     }
@@ -118,8 +148,8 @@ class GeneralViewModel() : ViewModel() {
         MCPDirectStudio.queryToolMakers(type ,name,toolAgentId,teamId){
                 code, message, data ->
             if(code==0&&data!=null){
-                _toolMakers.clear()
                 data.forEach {
+                    if(it.teamId!=0L) _teamToolMakers[it.id]=it
                     _toolMakers[it.id]=it
                 }
                 onResponse?.let {
