@@ -83,7 +83,8 @@ class GeneralViewModel() : ViewModel() {
     }
     fun toolMakers(team: AIPortTeam): List<AIPortToolMaker>{
         return _teamToolMakers.values.filter {it.teamId==team.id}
-    }    fun team(team: AIPortTeam){
+    }
+    fun team(team: AIPortTeam){
         _teams[team.id]=team
     }
     fun refreshable():Boolean{

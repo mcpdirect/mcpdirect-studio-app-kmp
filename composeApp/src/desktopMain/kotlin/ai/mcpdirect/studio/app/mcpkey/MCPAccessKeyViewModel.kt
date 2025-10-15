@@ -79,25 +79,6 @@ class MCPAccessKeyViewModel : ViewModel(){
             }
 
         }
-//        var refreshToolMakers = false;
-//        viewModelScope.launch {
-//            toolPermissionMakerSummary.clear()
-//            MCPDirectStudio.queryToolPermissionMakerSummaries {
-//                code, message, data ->
-//                if(data!=null) {
-//                    toolPermissionMakerSummary.addAll(data)
-//                    for (s in data){
-//                        if(generalViewModel.toolMaker(s.makerId)==null){
-//                            refreshToolMakers = true
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        if(refreshToolMakers){
-//            generalViewModel.refreshToolMakers()
-//        }
     }
     fun onMCPKeyNameChange(name: String) {
         if(name.isBlank())

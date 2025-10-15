@@ -217,15 +217,15 @@ private fun TeamListView(
                                     tooltipText = "Invite Member",
                                     onClick = { dialog = MCPTeamDialog.InviteTeamMember }
                                 )
-                                TooltipIconButton(
-                                    Res.drawable.share,
-                                    tooltipText = "Share MCP Server",
-                                    onClick = {
-                                        generalViewModel.currentScreen = Screen.MCPTeamToolMaker
-                                        generalViewModel.backToScreen = Screen.MCPTeam
-                                    }
-                                )
                             }
+                            TooltipIconButton(
+                                Res.drawable.share,
+                                tooltipText = "Share MCP Server",
+                                onClick = {
+                                    generalViewModel.currentScreen = Screen.MCPTeamToolMaker
+                                    generalViewModel.backToScreen = Screen.MCPTeam
+                                }
+                            )
                         }
                         HorizontalDivider()
                         TabRow(selectedTabIndex = currentTabIndex) {
@@ -380,4 +380,46 @@ fun InviteTeamDialog() {
             dialog = MCPTeamDialog.None
         }
     )
+}
+
+@Composable
+private fun TeamToolMakerList() {
+    val viewModel = mcpTeamViewModel
+    val myId = authViewModel.userInfo.value?.id
+    val team = viewModel.mcpTeam!!
+    val toolMakers = generalViewModel.toolMakers(team)
+    val teamOwner = team.ownerId==authViewModel.userInfo.value!!.id
+    LazyColumn {
+        items(toolMakers){
+            val me = it.userId==myId
+            ListItem(
+                headlineContent = {
+                    Text(it.name)
+                },
+                overlineContent = {
+                    if(me) Text("Me", color = MaterialTheme.colorScheme.primary)
+                    else Text(it.u)
+                },
+                supportingContent = {
+                    Box(
+                        Modifier.border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    ) { if (it.status == 0) Tag(
+                            "inactive",
+                            color = MaterialTheme.colorScheme.error,
+                        ) else Tag(
+                            "active",
+                        )
+                    }
+                },
+                trailingContent = {
+
+                }
+            )
+            HorizontalDivider()
+        }
+    }
 }

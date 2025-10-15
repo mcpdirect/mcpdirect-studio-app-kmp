@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.team
 
 import ai.mcpdirect.backend.dao.entity.account.AIPortTeam
 import ai.mcpdirect.backend.dao.entity.account.AIPortTeamMember
+import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.generalViewModel
