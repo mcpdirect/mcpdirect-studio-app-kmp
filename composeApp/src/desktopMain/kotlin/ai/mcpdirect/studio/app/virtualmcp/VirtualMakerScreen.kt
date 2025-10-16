@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.virtualmcp
 
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortVirtualTool
+import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.SearchView
 import ai.mcpdirect.studio.app.compose.StudioCard
@@ -211,7 +212,7 @@ private fun MakerListView(
     padding: PaddingValues,
     onConfigClick: () -> Unit
 ) {
-
+    val myAccountId = MCPDirectStudio.accountId()
     Column(modifier = Modifier.padding(padding)) {
         SearchView(
             query = viewModel.searchQuery,
@@ -235,7 +236,9 @@ private fun MakerListView(
                     }
                 }else {
                     LazyColumn(modifier = Modifier.weight(3.0f)) {
-                        items(viewModel.virtualMakers) { maker ->
+                        items(viewModel.virtualMakers.filter {
+                            it.userId==myAccountId
+                        }) { maker ->
                             MakerItem(maker) {
                                 viewModel.selectVirtualMaker(maker)
                                 viewModel.queryVirtualMakerTools()
@@ -332,12 +335,12 @@ private fun MakerDetailView(
             Spacer(Modifier.border(1.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), shape = RectangleShape))
             if (maker.status == 0) TooltipIconButton(
                 Res.drawable.play_circle,
-                tooltipText = "Click to start",
+                tooltipText = "Enable",
                 iconTint = MaterialTheme.colorScheme.primary,
                 onClick = { viewModel.setServerStatus(maker.id,1) })
             else TooltipIconButton(
                 Res.drawable.stop_circle,
-                tooltipText = "Click to stop",
+                tooltipText = "Disable",
                 iconTint = MaterialTheme.colorScheme.error,
                 onClick = { viewModel.setServerStatus(maker.id,0) })
             TooltipIconButton(

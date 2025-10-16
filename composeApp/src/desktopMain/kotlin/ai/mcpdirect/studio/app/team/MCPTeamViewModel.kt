@@ -52,6 +52,9 @@ class MCPTeamViewModel : ViewModel(){
     val mcpTeamMembers by derivedStateOf {
         _mcpTeamMembers.values.toList()
     }
+    fun teamMember(id:Long): AIPortTeamMember?{
+        return _mcpTeamMembers[id]
+    }
 
     fun updateSearchQuery(query: String) {
         searchQuery = query

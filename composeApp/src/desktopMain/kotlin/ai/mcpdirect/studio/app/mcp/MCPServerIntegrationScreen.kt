@@ -16,8 +16,17 @@
 
 package ai.mcpdirect.studio.app.mcp
 
-import ai.mcpdirect.studio.app.compose.StudioCard
+import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
+import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.compose.OutlinedTagFieldDialog
+import ai.mcpdirect.studio.app.compose.OutlinedTextFieldDialog
 import ai.mcpdirect.studio.app.compose.SearchView
+import ai.mcpdirect.studio.app.compose.StudioCard
+import ai.mcpdirect.studio.app.compose.Tag
+import ai.mcpdirect.studio.app.compose.TooltipIconButton
+import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.mcpServerIntegrationViewModel
+import ai.mcpdirect.studio.app.toolDetailViewModel
 import ai.mcpdirect.studio.dao.entity.MCPServer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -26,16 +35,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
+private var dialog by mutableStateOf<ConnectMCPDialog>(ConnectMCPDialog.None)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MCPServerIntegrationScreen(
@@ -47,20 +55,11 @@ fun MCPServerIntegrationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("MCP Servers") },
-//                navigationIcon = {
-//                    IconButton(onClick = onBack) {
-//                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-//                    }
-//                },
+                title = { Text("Connect MCP") },
                 actions = {
-                    IconButton(onClick = { viewModel.showAddServerDialog = true }) {
-                        Icon(
-                            painterResource(Res.drawable.add),
-                            contentDescription = "Add MCP Server"
-                        )
+                    Button(onClick = { viewModel.showAddServerDialog = true }) {
+                        Text("Add MCP Server")
                     }
-
                 }
             )
         }
@@ -71,11 +70,12 @@ fun MCPServerIntegrationScreen(
             else -> MakerListView(viewModel, padding)
         }
     }
-
-    if (viewModel.showAddServerDialog) {
-        AddServerDialog(viewModel)
+    when(dialog){
+        ConnectMCPDialog.None->{}
+        ConnectMCPDialog.AddServer->{ AddServerDialog(viewModel)}
+        ConnectMCPDialog.EditServerName->{EditServerNameDialog()}
+        ConnectMCPDialog.EditServerTags->{EditServerTagsDialog()}
     }
-
     // Error Dialog
     if (viewModel.errorMessage != null) {
         AlertDialog(
@@ -96,14 +96,14 @@ private fun MakerListView(
     viewModel: MCPServerIntegrationViewModel,
     padding: PaddingValues
 ) {
-    val selectedMaker by viewModel.selectedMaker
-    val makerSummaries by viewModel.makerSummaries.collectAsState()
-    val localMakerSummaries by viewModel.localMakerSummaries.collectAsState()
-    val searchQuery by viewModel.searchQuery
+    val selectedMaker = viewModel.selectedMaker
+//    val makerSummaries by viewModel.makerSummaries.collectAsState()
+//    val localMakerSummaries by viewModel.localMakerSummaries.collectAsState()
+//    val searchQuery by viewModel.searchQuery
 
     Column(modifier = Modifier.padding(padding)) {
         SearchView(
-            query = searchQuery,
+            query = viewModel.searchQuery,
             onQueryChange = { viewModel.updateSearchQuery(it) },
             placeholder = "Search makers..."
         )
@@ -132,33 +132,79 @@ private fun MakerListView(
 //                        }
 //                    }
 //                }
-                val summaries = mutableListOf<MCPServer>()
-                summaries.addAll(makerSummaries)
-                summaries.addAll(localMakerSummaries)
-                if (summaries.isEmpty()) {
-                    Column(modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceAround,
-                        horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(painterResource(Res.drawable.draft),
-                            contentDescription = "Empty",
-                            modifier = Modifier.size(64.dp)
-                        )
+//                val summaries = mutableListOf<MCPServer>()
+//                summaries.addAll(makerSummaries)
+//                summaries.addAll(localMakerSummaries)
+                var currentTabIndex by remember { mutableStateOf(0) }
+                Column(modifier = Modifier.weight(3.0f)) {
+//                    LazyColumn(modifier = Modifier.weight(3.0f)) {
+//                        items(mcpServerIntegrationViewModel.test){
+//                            Text(it)
+//                        }
+//                    }
+                    val tabs = listOf("MCPdirect", "Local")
+                    TabRow(selectedTabIndex = currentTabIndex) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                selected = currentTabIndex == index,
+                                onClick = { currentTabIndex = index },
+                                text = { Text(title) }
+                            )
+                        }
                     }
-                }else {
+                    val makers =  if(currentTabIndex==0) viewModel.makers else viewModel.localMakers
                     LazyColumn(modifier = Modifier.weight(3.0f)) {
-                        items(summaries) { maker ->
-                            MakerItem(maker) {
-                                viewModel.selectMaker(maker)
-                            }
-                        }
-                    }
-                    if (selectedMaker != null) {
-                        VerticalDivider()
-                        Column(modifier = Modifier.weight(5.0f)) {
-                            MakerToolView(viewModel)
-                        }
+//                        when(currentTabIndex){
+//                            0 -> {
+                                items(makers) { maker ->
+                                    MakerItem(maker) {
+                                        viewModel.selectMaker(maker)
+                                    }
+                                }
+//                            }
+//                            1 -> {
+//                                items(mcpServerIntegrationViewModel.localMakers) { maker ->
+//                                    MakerItem(maker) {
+//                                        viewModel.selectMaker(maker)
+//                                    }
+//                                }
+//
+//                            }
+//                        }
                     }
                 }
+
+                if (selectedMaker != null) {
+                    VerticalDivider()
+                    Column(modifier = Modifier.weight(5.0f)) {
+                        MakerToolView(viewModel)
+                    }
+                }
+
+//                if (makers.isEmpty()) {
+//                    Column(modifier = Modifier.fillMaxSize(),
+//                        verticalArrangement = Arrangement.SpaceAround,
+//                        horizontalAlignment = Alignment.CenterHorizontally) {
+//                        Icon(painterResource(Res.drawable.draft),
+//                            contentDescription = "Empty",
+//                            modifier = Modifier.size(64.dp)
+//                        )
+//                    }
+//                }else {
+//                    LazyColumn(modifier = Modifier.weight(3.0f)) {
+//                        items(makers) { maker ->
+//                            MakerItem(maker) {
+//                                viewModel.selectMaker(maker)
+//                            }
+//                        }
+//                    }
+//                    if (selectedMaker != null) {
+//                        VerticalDivider()
+//                        Column(modifier = Modifier.weight(5.0f)) {
+//                            MakerToolView(viewModel)
+//                        }
+//                    }
+//                }
             }
         }
 //        LazyVerticalGrid(
@@ -179,36 +225,53 @@ private fun MakerItem(
     maker: MCPServer,
     onClick: () -> Unit
 ) {
-//    StudioCard(
-//        modifier = Modifier
-//            .padding(8.dp)
-//            .fillMaxWidth()
-//            .clickable(onClick = onClick),
-//    ) {
-    Column (modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),){
-        BadgedBox(
-            modifier = Modifier.padding(16.dp),
-            badge = {
-                if(maker.id==0L) Badge(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ) {
-                    Text("Local")
-                } else Badge(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Text("MCPdirect")
-                }
-            }
-        ){
+    ListItem(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        headlineContent = {
             Text(
-//                text = "${maker.name}(${maker.tools.size})",
                 text = maker.name,
-                style = MaterialTheme.typography.titleLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-        }
-    }
+        },
+        supportingContent = {
+            maker.tags?.let {
+                Text("Tags :$it")
+            }
+        },
+//        trailingContent = {
+//            if(maker.id==0L){
+//                Tag("Local")
+//            } else{
+//                Tag("MCPdirect", color = MaterialTheme.colorScheme.primary)
+//            }
+//        }
+    )
+//    Column (modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),){
+//
+//        BadgedBox(
+//            modifier = Modifier.padding(16.dp),
+//            badge = {
+//                if(maker.id==0L) Badge(
+//                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+//                ) {
+//                    Text("Local")
+//                } else Badge(
+//                    containerColor = MaterialTheme.colorScheme.primary
+//                ) {
+//                    Text("MCPdirect")
+//                }
+//            }
+//        ){
+//            Text(
+////                text = "${maker.name}(${maker.tools.size})",
+//                text = maker.name,
+//                style = MaterialTheme.typography.titleLarge,
+//                maxLines = 1,
+//                overflow = TextOverflow.Ellipsis
+//            )
+//        }
+//    }
 
 
 //    }
@@ -219,7 +282,7 @@ private fun MakerToolView(
     viewModel: MCPServerIntegrationViewModel,
 ) {
     val tools by viewModel.currentTools.collectAsState()
-    val selectedMaker by viewModel.selectedMaker
+    val selectedMaker = viewModel.selectedMaker
     
 //    Column(modifier = Modifier.padding(padding)) {
     Column{
@@ -253,7 +316,7 @@ private fun MakerToolView(
                             painterResource(Res.drawable.delete),
                             contentDescription = "Remove Local MCP Server"
                         )}
-                    if(selectedMaker!!.tools!!.isNotEmpty()) {
+                    if(selectedMaker.tools!!.isNotEmpty()) {
                         IconButton(onClick = { viewModel.publishMCPServer() }) {
                             Icon(
                                 painterResource(Res.drawable.cloud_upload),
@@ -263,16 +326,26 @@ private fun MakerToolView(
                     }
                 }
                 else -> {
-                    IconButton(onClick = { viewModel.unpublishMCPServer() }) {
-                        Icon(
-                            painterResource(Res.drawable.cloud_off),
-                            contentDescription = "Abandon MCP Server"
-                        )}
-                    IconButton(onClick = { viewModel.publishMCPServer() }) {
-                        Icon(
-                            painterResource(Res.drawable.sync),
-                            contentDescription = "Update MCP Server"
-                        )}
+                    TooltipIconButton(
+                        Res.drawable.sell,
+                        tooltipText = "Edit tags",
+                        onClick = {
+                            dialog = ConnectMCPDialog.EditServerTags
+                        })
+                    TooltipIconButton(
+                        Res.drawable.badge,
+                        tooltipText = "Edit name",
+                        onClick = {
+                            dialog = ConnectMCPDialog.EditServerName
+                        })
+                    TooltipIconButton(
+                        Res.drawable.cloud_off,
+                        tooltipText = "Abandon MCP Server",
+                        onClick = { viewModel.unpublishMCPServer() })
+                    TooltipIconButton(
+                        Res.drawable.sync,
+                        tooltipText = "Update MCP Server",
+                        onClick = { viewModel.publishMCPServer() })
                 }
             }
 
@@ -322,47 +395,86 @@ private fun ToolItem(
     tool: AIPortTool,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().clickable { viewModel.selectedTool.value=tool},
+        modifier = Modifier.fillMaxWidth().clickable {
+//            viewModel.selectedTool.value=tool
+            toolDetailViewModel.toolId = tool.id
+            toolDetailViewModel.toolName = tool.name
+            generalViewModel.currentScreen = Screen.ToolDetails
+            generalViewModel.backToScreen = Screen.MCPServerIntegration
+        },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.weight(1f).padding(16.dp)) {
-            BadgedBox(
-                badge = {
-                    when(tool.lastUpdated.toInt()){
-                        -1 -> {
-                            Badge(
-                                containerColor = MaterialTheme.colorScheme.error
-                            ) {
-                                Text("Abandoned")
-                            }
-                        }
-                        0 -> {}
-                        1 -> {
-                            Badge(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            ) {
-                                Text("New")
-                            }
-                        }
-                        else -> {
-                            Badge(
-                                containerColor = MaterialTheme.colorScheme.tertiary
-                            ) {
-                                Text("Updates")
-                            }
-                        }
+        ListItem(
+            headlineContent = { Text(tool.name) },
+            supportingContent = {Text(tool.metaData, maxLines = 1, overflow = TextOverflow.Ellipsis)},
+            trailingContent = {
+                when(tool.lastUpdated.toInt()){
+                    -1 -> {
+                        Tag(
+                            "Abandoned",
+                            color= MaterialTheme.colorScheme.error
+                        )
+                    }
+                    0 -> {}
+                    1 -> {
+                        Tag("New")
+//                        Badge(
+//                            containerColor = MaterialTheme.colorScheme.primary
+//                        ) {
+//                            println(tool.name)
+//                            Text("New")
+//                        }
+                    }
+                    else -> {
+                        Tag("Updates")
+//                        Badge(
+//                            containerColor = MaterialTheme.colorScheme.tertiary
+//                        ) {
+//                            Text("Updates")
+//                        }
                     }
                 }
-            ){
-                Text(tool.name)
             }
-            Text(
-                tool.metaData,
-                style = MaterialTheme.typography.bodySmall,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
-        }
+        )
+//        Column(modifier = Modifier.weight(1f).padding(16.dp)) {
+//            BadgedBox(
+//                badge = {
+//                    when(tool.lastUpdated.toInt()){
+//                        -1 -> {
+//                            Badge(
+//                                containerColor = MaterialTheme.colorScheme.error
+//                            ) {
+//                                Text("Abandoned")
+//                            }
+//                        }
+//                        0 -> {}
+//                        1 -> {
+//                            Badge(
+//                                containerColor = MaterialTheme.colorScheme.primary
+//                            ) {
+//                                println(tool.name)
+//                                Text("New")
+//                            }
+//                        }
+//                        else -> {
+//                            Badge(
+//                                containerColor = MaterialTheme.colorScheme.tertiary
+//                            ) {
+//                                Text("Updates")
+//                            }
+//                        }
+//                    }
+//                }
+//            ){
+//
+//            }
+//            Text(
+//                tool.metaData,
+//                style = MaterialTheme.typography.bodySmall,
+//                overflow = TextOverflow.Ellipsis,
+//                maxLines = 1
+//            )
+//        }
 
     }
 }
@@ -414,22 +526,32 @@ fun AddServerDialog(viewModel: MCPServerIntegrationViewModel) {
     val formScrollState = rememberScrollState()
     AlertDialog(
         onDismissRequest = { viewModel.dismissAddServerDialog() },
-        title = { Text("Add New MCP Server") },
+        title = { Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text("Add New MCP Server")
+            Button({
+                viewModel.pasteJsonFromClipboard()
+            }){
+                Text("Paste from clipboard")
+            }
+        } },
         text = {
             Column (modifier = Modifier.height(500.dp),){
-                TabRow(selectedTabIndex = if (viewModel.showJsonView) 1 else 0) {
-                    Tab(
-                        selected = !viewModel.showJsonView,
-                        onClick = { viewModel.showJsonView = false; viewModel.convertFormToJson() },
-                        text = { Text("Form") },
-                    )
-                    Tab(
-                        selected = viewModel.showJsonView,
-                        onClick = { viewModel.showJsonView = true },
-                        text = { Text("JSON") },
-                    )
-                }
-                if (!viewModel.showJsonView) {
+//                TabRow(selectedTabIndex = if (viewModel.showJsonView) 1 else 0) {
+//                    Tab(
+//                        selected = !viewModel.showJsonView,
+//                        onClick = { viewModel.showJsonView = false; viewModel.convertFormToJson() },
+//                        text = { Text("Form") },
+//                    )
+//                    Tab(
+//                        selected = viewModel.showJsonView,
+//                        onClick = { viewModel.showJsonView = true },
+//                        text = { Text("JSON") },
+//                    )
+//                }
+//                if (!viewModel.showJsonView) {
                     Column(Modifier.verticalScroll(formScrollState)) {
                         OutlinedTextField(
                             value = viewModel.newServerName,
@@ -446,15 +568,17 @@ fun AddServerDialog(viewModel: MCPServerIntegrationViewModel) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("Server Type:")
                             Spacer(modifier = Modifier.width(8.dp))
-                            RadioButton(selected = viewModel.newServerType == "stdio", onClick = { viewModel.onNewServerTypeChange("stdio") })
+                            RadioButton(selected = viewModel.newServerType == 0, onClick = { viewModel.onNewServerTypeChange(0) })
                             Text("Stdio")
                             Spacer(modifier = Modifier.width(16.dp))
-                            RadioButton(selected = viewModel.newServerType == "sse", onClick = { viewModel.onNewServerTypeChange("sse") })
+                            RadioButton(selected = viewModel.newServerType == 1, onClick = { viewModel.onNewServerTypeChange(1) })
                             Text("SSE")
+                            RadioButton(selected = viewModel.newServerType == 2, onClick = { viewModel.onNewServerTypeChange(2) })
+                            Text("Streamable Http")
                         }
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        if (viewModel.newServerType == "stdio") {
+                        if (viewModel.newServerType == 0) {
                             OutlinedTextField(
                                 value = viewModel.newServerCommand,
                                 onValueChange = { viewModel.onNewServerCommandChange(it) },
@@ -538,26 +662,26 @@ fun AddServerDialog(viewModel: MCPServerIntegrationViewModel) {
                             }
                         }
                     }
-                } else {
-                    Column (Modifier.verticalScroll(jsonScrollState)){
-                        OutlinedTextField(
-                            value = viewModel.serverJsonString,
-                            onValueChange = { viewModel.serverJsonString = it },
-                            label = { Text("Server JSON") },
-                            modifier = Modifier.fillMaxWidth().height(350.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                            Button(onClick = { viewModel.pasteJsonFromClipboard() }) {
-                                Icon(painterResource(Res.drawable.content_paste), contentDescription = "Paste from Clipboard")
-                                Text("Paste from Clipboard")
-                            }
-//                            Button(onClick = { viewModel.convertFormToJson() }) {
-//                                Text("Generate JSON")
+//                } else {
+//                    Column (Modifier.verticalScroll(jsonScrollState)){
+//                        OutlinedTextField(
+//                            value = viewModel.serverJsonString,
+//                            onValueChange = { viewModel.serverJsonString = it },
+//                            label = { Text("Server JSON") },
+//                            modifier = Modifier.fillMaxWidth().height(350.dp)
+//                        )
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+//                            Button(onClick = { viewModel.pasteJsonFromClipboard() }) {
+//                                Icon(painterResource(Res.drawable.content_paste), contentDescription = "Paste from Clipboard")
+//                                Text("Paste from Clipboard")
 //                            }
-                        }
-                    }
-                }
+////                            Button(onClick = { viewModel.convertFormToJson() }) {
+////                                Text("Generate JSON")
+////                            }
+//                        }
+//                    }
+//                }
             }
         },
         confirmButton = {
@@ -569,6 +693,55 @@ fun AddServerDialog(viewModel: MCPServerIntegrationViewModel) {
             Button(onClick = { viewModel.dismissAddServerDialog() }) {
                 Text("Cancel")
             }
+        }
+    )
+}
+@Composable
+fun EditServerNameDialog() {
+    val viewModel = mcpServerIntegrationViewModel
+    var userNotExist by remember { mutableStateOf(false) }
+    OutlinedTextFieldDialog(
+        title = {Text("Edit MCP server name for ${viewModel.selectedMaker!!.name}")},
+        label = {Text("MCP Server Name")},
+        supportingText = { value, isValid ->
+            if(!isValid) Text("MCP server name length must less than 33")
+        },
+        onValueChange = { value,onValueChanged->
+            onValueChanged(value.replace(" ","_"),value.length<33)
+        },
+        confirmButton = { value,isValid->
+            Button(
+                enabled = value.isNotEmpty()&&isValid,
+                onClick = {viewModel.updateServerName(value){ code, message ->
+                    when(code){
+                        0-> dialog = ConnectMCPDialog.None
+                        else -> {}
+                    }
+                }}
+            ){
+                Text("Save")
+            }
+        },
+        onDismissRequest = { value, isValid ->
+            dialog = ConnectMCPDialog.None
+        }
+    )
+}
+
+@Composable
+fun EditServerTagsDialog() {
+    val viewModel = mcpServerIntegrationViewModel
+    OutlinedTagFieldDialog(
+        title = {Text("Edit MCP server tags for ${viewModel.selectedMaker!!.name}")},
+        label = {Text("MCP Server Tag")},
+        tags = viewModel.selectedMaker?.tags,
+        onDismissRequest = { submit, tags, isValid ->
+            if(submit) viewModel.updateServerTags(tags){ code, message ->
+                when(code){
+                    0-> dialog = ConnectMCPDialog.None
+                    else -> {}
+                }
+            }else dialog = ConnectMCPDialog.None
         }
     )
 }

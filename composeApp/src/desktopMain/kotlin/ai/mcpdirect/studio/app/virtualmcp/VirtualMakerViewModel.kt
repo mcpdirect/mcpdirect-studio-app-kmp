@@ -131,7 +131,8 @@ class VirtualMakerViewModel: ViewModel() {
 
     fun updateServerName() {
         selectedVirtualMaker?.let {
-            MCPDirectStudio.modifyToolMakerName(it.id, serverName) { code, message, data ->
+            MCPDirectStudio.modifyToolMaker(it.id, serverName,null,null) {
+                code, message, data ->
                 if (code == 0 && data != null) {
                     _virtualMakers[data.id] = data
                 }
@@ -141,7 +142,8 @@ class VirtualMakerViewModel: ViewModel() {
 
     fun updateServerTags() {
         selectedVirtualMaker?.let {
-            MCPDirectStudio.modifyToolMakerTags(it.id, serverTags.joinToString()) { code, message, data ->
+            MCPDirectStudio.modifyToolMaker(it.id,null, serverTags.joinToString(),null) {
+                code, message, data ->
                 if (code == 0 && data != null) {
                     _virtualMakers[data.id] = data
                 }
@@ -150,7 +152,7 @@ class VirtualMakerViewModel: ViewModel() {
     }
 
     fun setServerStatus(id:Long, status:Int) {
-        MCPDirectStudio.modifyToolMakerStatus(id, status){
+        MCPDirectStudio.modifyToolMaker(id, null,null,status){
                 code,message,data->
             if(code==0&&data!=null){
                 _virtualMakers[data.id]=data

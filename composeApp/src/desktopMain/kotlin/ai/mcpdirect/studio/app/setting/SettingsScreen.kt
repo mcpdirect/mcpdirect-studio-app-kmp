@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import ai.mcpdirect.backend.dao.entity.account.AIPortUser
+import ai.mcpdirect.studio.app.settingsViewModel
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
 import mcpdirectstudioapp.composeapp.generated.resources.block
@@ -84,7 +85,6 @@ fun SettingsScreen(
         ) {
             // Device Name Section
             SettingItem(
-                title = "Device Name",
                 value = state.deviceName,
                 onClick = { showDeviceNameDialog = true }
             )
@@ -201,7 +201,10 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(
-                    onClick = { showDeviceNameDialog = false }
+                    onClick = {
+                        showDeviceNameDialog = false
+                        settingsViewModel.saveDeviceName(state.deviceName)
+                    }
                 ) {
                     Text("Save")
                 }
@@ -220,7 +223,6 @@ fun SettingsScreen(
 
 @Composable
 private fun SettingItem(
-    title: String,
     value: String,
     onClick: () -> Unit
 ) {
@@ -235,10 +237,9 @@ private fun SettingItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text("Device Name :", style = MaterialTheme.typography.bodyLarge)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(value, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.width(16.dp))

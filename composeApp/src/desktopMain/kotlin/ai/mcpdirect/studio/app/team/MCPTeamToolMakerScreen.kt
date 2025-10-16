@@ -91,9 +91,10 @@ fun MCPToolMakerTeamScreen() {
                         Row(modifier = Modifier.fillMaxWidth()) {
                             LazyColumn(modifier = Modifier.weight(3.0f)) {
                                 items(generalViewModel.toolMakers) {
-                                    ToolMakerItem(it) {
-                                        viewModel.toolMaker(it)
-                                    }
+                                    if(it.userId==authViewModel.userInfo.value!!.id)
+                                        ToolMakerItem(it) {
+                                            viewModel.toolMaker(it)
+                                        }
                                     HorizontalDivider()
                                 }
                             }

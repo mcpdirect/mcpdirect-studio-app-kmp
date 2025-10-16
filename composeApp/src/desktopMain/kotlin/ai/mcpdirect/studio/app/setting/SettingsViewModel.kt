@@ -9,6 +9,7 @@ import ai.mcpdirect.backend.dao.entity.account.AIPortUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // Model.kt
 data class SettingsState(
@@ -130,5 +131,17 @@ class SettingsViewModel : ViewModel() {
     }
     fun getAnonymousKey():String{
         return MCPDirectStudio.getAnonymousKey()
+    }
+    fun saveDeviceName(name:String){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                MCPDirectStudio.modifyToolAgent(
+                    MCPDirectStudio.getLocalToolAgentDetails().toolAgent.id,
+                    name,null,null
+                ){
+                    code, message, data ->
+                }
+            }
+        }
     }
 }

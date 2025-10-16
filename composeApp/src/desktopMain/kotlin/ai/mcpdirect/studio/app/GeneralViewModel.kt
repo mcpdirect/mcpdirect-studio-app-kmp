@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app
 
 import ai.mcpdirect.backend.dao.entity.account.AIPortAccessKeyCredential
 import ai.mcpdirect.backend.dao.entity.account.AIPortTeam
+import ai.mcpdirect.backend.dao.entity.account.AIPortTeamMember
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolAgent
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker
@@ -66,27 +67,11 @@ class GeneralViewModel() : ViewModel() {
         _teams.values.toList()
     }
 
-    fun toolMaker(id:Long): AIPortToolMaker?{
-        return _toolMakers[id]
+    private val _teamMembers = mutableStateMapOf<Long, AIPortTeamMember>()
+    val teamMembers by derivedStateOf {
+        _teamMembers.values.toList()
     }
-    fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
-        return _toolMakers.values.filter {
-            if(agent.id==0L) {
-                if(!(it.type== AIPortToolMaker.TYPE_VIRTUAL&&it.userId == authViewModel.userInfo.value!!.id)){
-                    println(it.type)
-                    println(it.userId)
-                }
-                it.type== AIPortToolMaker.TYPE_VIRTUAL&&it.userId == authViewModel.userInfo.value!!.id
-            }
-            else it.agentId==agent.id
-        }
-    }
-    fun toolMakers(team: AIPortTeam): List<AIPortToolMaker>{
-        return _teamToolMakers.values.filter {it.teamId==team.id}
-    }
-    fun team(team: AIPortTeam){
-        _teams[team.id]=team
-    }
+
     fun refreshable():Boolean{
         return System.currentTimeMillis()-lastRefreshed>60000
     }
@@ -158,6 +143,27 @@ class GeneralViewModel() : ViewModel() {
                 }
             }
         }
+    }
+    fun toolMaker(id:Long): AIPortToolMaker?{
+        return _toolMakers[id]
+    }
+    fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
+        return _toolMakers.values.filter {
+            if(agent.id==0L) {
+                if(!(it.type== AIPortToolMaker.TYPE_VIRTUAL&&it.userId == authViewModel.userInfo.value!!.id)){
+                    println(it.type)
+                    println(it.userId)
+                }
+                it.type== AIPortToolMaker.TYPE_VIRTUAL&&it.userId == authViewModel.userInfo.value!!.id
+            }
+            else it.agentId==agent.id
+        }
+    }
+    fun toolMakers(team: AIPortTeam): List<AIPortToolMaker>{
+        return _teamToolMakers.values.filter {it.teamId==team.id}
+    }
+    fun team(team: AIPortTeam){
+        _teams[team.id]=team
     }
 
     fun copyToClipboard(key: AIPortAccessKeyCredential) {

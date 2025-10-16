@@ -96,9 +96,14 @@ fun MCPTeamScreen() {
     }
 
     LaunchedEffect(Unit) {
-        generalViewModel.refreshTeams(){
+        generalViewModel.refreshTeams{
             code, message ->
-            if(code==0) viewModel.uiState = UIState.Success
+            if(code==0) {
+                generalViewModel.refreshToolMakers(){
+                    code, message ->
+                    viewModel.uiState = UIState.Success
+                }
+            }
         }
     }
 }
@@ -241,7 +246,7 @@ private fun TeamListView(
                         // Content based on selected tab
                         when (currentTabIndex) {
                             0 -> TeamMemberList()
-                            1 -> Text("Search Content")
+                            1 -> TeamToolMakerList()
                         }
                     }
                 }
@@ -352,20 +357,16 @@ fun InviteTeamDialog() {
     OutlinedTextFieldDialog(
         title = {Text("Invite member for ${viewModel.mcpTeam!!.name}")},
         label = {Text("Member account")},
-        supportingText = {
-            value, isValid ->
+        supportingText = { value, isValid ->
             if(userNotExist) Text("Member not exists", color = MaterialTheme.colorScheme.error)
         },
-        onValueChange = {
-            value,onValueChange->
-            onValueChange(value,isValidEmail(value))
+        onValueChange = { value,onValueChanged->
+            onValueChanged(value,isValidEmail(value))
         },
-        confirmButton = {
-            value,isValid->
+        confirmButton = { value,isValid->
             Button(
                 enabled = value.isNotEmpty()&&isValid,
-                onClick = {viewModel.inviteMCPTeamMember(value){
-                    code, message ->
+                onClick = {viewModel.inviteMCPTeamMember(value){ code, message ->
                     when(code){
                         0-> dialog = MCPTeamDialog.None
                         AccountServiceErrors.USER_NOT_EXIST -> {userNotExist=true}
@@ -375,8 +376,7 @@ fun InviteTeamDialog() {
                 Text("Invite")
             }
         },
-        onDismissRequest = {
-            value, isValid ->
+        onDismissRequest = { value, isValid ->
             dialog = MCPTeamDialog.None
         }
     )
@@ -388,17 +388,18 @@ private fun TeamToolMakerList() {
     val myId = authViewModel.userInfo.value?.id
     val team = viewModel.mcpTeam!!
     val toolMakers = generalViewModel.toolMakers(team)
-    val teamOwner = team.ownerId==authViewModel.userInfo.value!!.id
+
     LazyColumn {
         items(toolMakers){
             val me = it.userId==myId
+            val member = viewModel.teamMember(it.userId)
             ListItem(
                 headlineContent = {
                     Text(it.name)
                 },
                 overlineContent = {
                     if(me) Text("Me", color = MaterialTheme.colorScheme.primary)
-                    else Text(it.u)
+                    else member?.let { Text("${it.name} (${it.account})") }
                 },
                 supportingContent = {
                     Box(

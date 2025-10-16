@@ -2,11 +2,12 @@
 
 **Summary:**
 
-Add Team Tool Maker functionality, restructure packages, and enhance UI components
+Add Tag Field Dialog, restructure MCP Server Integration, and enhance various components
 
 **Details:**
 
 - **New Feature:**
+    - Added OutlinedTagFieldDialog component for consistent tag-based input dialogs throughout the application.
     - Added MCP Team Tool Maker functionality with dedicated screens and view models (`MCPTeamToolMakerScreen`, `MCPTeamToolMakerViewModel`).
     - Introduced comprehensive team tool maker management allowing users to manage tools for team members.
     - Added MCP Team Management functionality with dedicated screens and view models (`MCPTeamScreen`, `MCPTeamViewModel`).
@@ -56,6 +57,8 @@ Add Team Tool Maker functionality, restructure packages, and enhance UI componen
     - Added `Validator.kt` file to centralize input validation logic.
     - Renamed `MCPTeamToolMakerScreen` to `MCPToolMakerTeamScreen` and back to `MCPTeamToolMakerScreen`.
     - Renamed `MCPTeamToolMakerViewModel` to `MCPToolMakerTeamViewModel` and back to `MCPTeamToolMakerViewModel`.
+    - Moved `MCPServerIntegrationScreen.kt` to the `mcp` package directory.
+    - Created `OutlinedTagFieldDialog.kt` component for tag-based input fields.
 
 - **Dependency Updates:**
     - Updated `mcpdirect-studio-core` dependency from version `1.1.2-SNAPSHOT` to `1.2.0-SNAPSHOT`.
@@ -97,6 +100,8 @@ Add Team Tool Maker functionality, restructure packages, and enhance UI componen
     - Further refined team screen and view model with additional improvements and bug fixes.
     - Enhanced team tool maker functionality with comprehensive management tools.
     - Updated GeneralViewModel, AccessKeyToolPermissionScreen, AccessKeyToolPermissionViewModel, and MCPTeamToolMakerViewModel with minor improvements and bug fixes.
+    - Updated MCP Server Integration, Settings, and Virtual Maker components with improvements and bug fixes.
+    - Refined OutlinedTextFieldDialog component for better functionality and reusability.
 
 ### 2025-09-11
 

@@ -21,15 +21,17 @@ import androidx.compose.ui.text.input.ImeAction
 fun OutlinedTextFieldDialog(
     title: @Composable (() -> Unit)?,
     label: @Composable (() -> Unit)?=null,
+    placeholder: @Composable (() -> Unit)?=null,
     supportingText: @Composable ((value:String,isValid:Boolean) -> Unit)?=null,
     onValueChange: (value: String,onValueChanged:(value:String,isValid:Boolean)->Unit) -> Unit,
     confirmButton: @Composable ((value:String,isValid:Boolean) -> Unit),
     onDismissRequest: (value:String,isValid:Boolean) -> Unit,
+    content: @Composable (() -> Unit)?=null
 ) {
     var text by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
     val nameFocusRequester = remember { FocusRequester() }
-    val addFocusRequester = remember { FocusRequester() }
+//    val addFocusRequester = remember { FocusRequester() }
     val formScrollState = rememberScrollState()
 
     AlertDialog(
@@ -39,12 +41,12 @@ fun OutlinedTextFieldDialog(
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth().focusRequester(nameFocusRequester),
                     value = text,
-                    onValueChange = { onValueChange(it){
-                        value, isValid ->
+                    onValueChange = { onValueChange(it){ value, isValid ->
                         text = value
                         isError = !isValid
                     } },
                     label = label,
+                    placeholder = placeholder,
                     singleLine = true,
                     isError = isError,
                     keyboardOptions = KeyboardOptions(
@@ -57,11 +59,12 @@ fun OutlinedTextFieldDialog(
                                 text = value
                                 isError = !isValid
                             }
-                            addFocusRequester.requestFocus(FocusDirection.Next)
+//                            addFocusRequester.requestFocus(FocusDirection.Next)
                         }
                     ),
                     supportingText = { supportingText?.invoke(text,!isError) }
                 )
+                content?.invoke()
             }
             LaunchedEffect(Unit) {
                 nameFocusRequester.requestFocus()
