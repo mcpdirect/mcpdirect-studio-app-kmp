@@ -57,7 +57,8 @@ Add Tag Field Dialog, restructure MCP Server Integration, and enhance various co
     - Added `Validator.kt` file to centralize input validation logic.
     - Renamed `MCPTeamToolMakerScreen` to `MCPToolMakerTeamScreen` and back to `MCPTeamToolMakerScreen`.
     - Renamed `MCPTeamToolMakerViewModel` to `MCPToolMakerTeamViewModel` and back to `MCPTeamToolMakerViewModel`.
-    - Moved `MCPServerIntegrationScreen.kt` to the `mcp` package directory.
+    - Renamed `MCPServerIntegrationScreen` to `ConnectMCPScreen` for better clarity.
+    - Renamed `MCPServerIntegrationViewModel` to `ConnectMCPViewModel` for better clarity.
     - Created `OutlinedTagFieldDialog.kt` component for tag-based input fields.
 
 - **Dependency Updates:**
@@ -100,8 +101,10 @@ Add Tag Field Dialog, restructure MCP Server Integration, and enhance various co
     - Further refined team screen and view model with additional improvements and bug fixes.
     - Enhanced team tool maker functionality with comprehensive management tools.
     - Updated GeneralViewModel, AccessKeyToolPermissionScreen, AccessKeyToolPermissionViewModel, and MCPTeamToolMakerViewModel with minor improvements and bug fixes.
-    - Updated MCP Server Integration, Settings, and Virtual Maker components with improvements and bug fixes.
+    - Renamed MCPServerIntegrationScreen to ConnectMCPScreen and MCPServerIntegrationViewModel to ConnectMCPViewModel for better consistency.
+    - Updated Settings and Virtual Maker components with improvements and bug fixes.
     - Refined OutlinedTextFieldDialog component for better functionality and reusability.
+    - Updated dependencies in gradle/libs.versions.toml as needed.
 
 ### 2025-09-11
 

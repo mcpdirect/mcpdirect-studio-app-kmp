@@ -12,8 +12,8 @@ import ai.mcpdirect.studio.app.key.AccessKeyViewModel
 import ai.mcpdirect.studio.app.logbook.ToolsLogHandlerImplement
 import ai.mcpdirect.studio.app.logbook.ToolsLogViewModel
 import ai.mcpdirect.studio.app.logbook.ToolsLogbookScreen
-import ai.mcpdirect.studio.app.mcp.MCPServerIntegrationScreen
-import ai.mcpdirect.studio.app.mcp.MCPServerIntegrationViewModel
+import ai.mcpdirect.studio.app.mcp.ConnectMCPScreen
+import ai.mcpdirect.studio.app.mcp.ConnectMCPViewModel
 import ai.mcpdirect.studio.app.mcp.MCPServerNotificationHandlerImplement
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
 import ai.mcpdirect.studio.app.setting.SettingsScreen
@@ -46,7 +46,7 @@ val authViewModel = AuthViewModel()
 
 //val repository = ToolsLogRepositoryImpl() // Your implementation
 val toolLogsViewModel = ToolsLogViewModel()
-val mcpServerIntegrationViewModel = MCPServerIntegrationViewModel()
+val connectMCPViewModel = ConnectMCPViewModel()
 
 val accessKeyViewModel = AccessKeyViewModel()
 val accessKeyToolPermissionViewModel = AccessKeyToolPermissionViewModel()
@@ -76,7 +76,7 @@ fun App() {
                     MCPDirectStudio.setToolLogHandler(ToolsLogHandlerImplement(toolLogsViewModel))
                     MCPDirectStudio.setMcpServerNotificationHandler(
                         MCPServerNotificationHandlerImplement(
-                            mcpServerIntegrationViewModel
+                            connectMCPViewModel
                         )
                     )
                     MCPDirectStudio.setAccessKeyNotificationHandler(
@@ -323,7 +323,7 @@ fun MainAppContent() {
         Column {
             when (generalViewModel.currentScreen) {
                 Screen.ToolDevelopment -> ToolDevelopmentScreen()
-                Screen.MCPServerIntegration -> MCPServerIntegrationScreen(mcpServerIntegrationViewModel){}
+                Screen.MCPServerIntegration -> ConnectMCPScreen(connectMCPViewModel){}
 //                Screen.AgentInteraction -> AccessKeyScreen(accessKeyViewModel){
 //                    accessKeyViewModel.apiKey.value = it
 //                    accessKeyToolPermissionViewModel.accessKey = it

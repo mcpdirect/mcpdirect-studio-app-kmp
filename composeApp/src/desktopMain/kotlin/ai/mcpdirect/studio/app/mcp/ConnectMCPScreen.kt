@@ -25,7 +25,7 @@ import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.mcpServerIntegrationViewModel
+import ai.mcpdirect.studio.app.connectMCPViewModel
 import ai.mcpdirect.studio.app.toolDetailViewModel
 import ai.mcpdirect.studio.dao.entity.MCPServer
 import androidx.compose.foundation.clickable
@@ -46,8 +46,8 @@ import org.jetbrains.compose.resources.painterResource
 private var dialog by mutableStateOf<ConnectMCPDialog>(ConnectMCPDialog.None)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MCPServerIntegrationScreen(
-    viewModel: MCPServerIntegrationViewModel,
+fun ConnectMCPScreen(
+    viewModel: ConnectMCPViewModel,
     onBack: () -> Unit
 ) {
 //    val selectedMaker by viewModel.selectedMaker
@@ -93,7 +93,7 @@ fun MCPServerIntegrationScreen(
 
 @Composable
 private fun MakerListView(
-    viewModel: MCPServerIntegrationViewModel,
+    viewModel: ConnectMCPViewModel,
     padding: PaddingValues
 ) {
     val selectedMaker = viewModel.selectedMaker
@@ -279,7 +279,7 @@ private fun MakerItem(
 
 @Composable
 private fun MakerToolView(
-    viewModel: MCPServerIntegrationViewModel,
+    viewModel: ConnectMCPViewModel,
 ) {
     val tools by viewModel.currentTools.collectAsState()
     val selectedMaker = viewModel.selectedMaker
@@ -361,7 +361,7 @@ private fun MakerToolView(
 
 @Composable
 private fun ToolList(
-    viewModel: MCPServerIntegrationViewModel,
+    viewModel: ConnectMCPViewModel,
     tools: List<AIPortTool>,
     onFilter: (String) -> Unit
 ) {
@@ -391,16 +391,12 @@ private fun ToolList(
 
 @Composable
 private fun ToolItem(
-    viewModel: MCPServerIntegrationViewModel,
+    viewModel: ConnectMCPViewModel,
     tool: AIPortTool,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().clickable {
-//            viewModel.selectedTool.value=tool
-            toolDetailViewModel.toolId = tool.id
-            toolDetailViewModel.toolName = tool.name
-            generalViewModel.currentScreen = Screen.ToolDetails
-            generalViewModel.backToScreen = Screen.MCPServerIntegration
+            viewModel.selectedTool.value=tool
         },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -481,7 +477,7 @@ private fun ToolItem(
 
 @Composable
 private fun ToolDetailView(
-    viewModel: MCPServerIntegrationViewModel,
+    viewModel: ConnectMCPViewModel,
     padding: PaddingValues
 ) {
     val selectedTool by viewModel.selectedTool
@@ -521,7 +517,7 @@ private fun ToolDetailView(
 }
 
 @Composable
-fun AddServerDialog(viewModel: MCPServerIntegrationViewModel) {
+fun AddServerDialog(viewModel: ConnectMCPViewModel) {
     val jsonScrollState = rememberScrollState()
     val formScrollState = rememberScrollState()
     AlertDialog(
@@ -698,7 +694,7 @@ fun AddServerDialog(viewModel: MCPServerIntegrationViewModel) {
 }
 @Composable
 fun EditServerNameDialog() {
-    val viewModel = mcpServerIntegrationViewModel
+    val viewModel = connectMCPViewModel
     var userNotExist by remember { mutableStateOf(false) }
     OutlinedTextFieldDialog(
         title = {Text("Edit MCP server name for ${viewModel.selectedMaker!!.name}")},
@@ -730,7 +726,7 @@ fun EditServerNameDialog() {
 
 @Composable
 fun EditServerTagsDialog() {
-    val viewModel = mcpServerIntegrationViewModel
+    val viewModel = connectMCPViewModel
     OutlinedTagFieldDialog(
         title = {Text("Edit MCP server tags for ${viewModel.selectedMaker!!.name}")},
         label = {Text("MCP Server Tag")},

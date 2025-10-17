@@ -27,7 +27,7 @@ sealed class ConnectMCPDialog() {
     object EditServerName : ConnectMCPDialog()
     object EditServerTags : ConnectMCPDialog()
 }
-class MCPServerIntegrationViewModel(private val repository: MCPServerRepository = MCPServerRepositoryImpl()): ViewModel()  {
+class ConnectMCPViewModel(private val repository: MCPServerRepository = MCPServerRepositoryImpl()): ViewModel()  {
     val _makers = mutableStateMapOf<String, MCPServer>()
     val makers by derivedStateOf {
         if (searchQuery.isNotEmpty()) {
