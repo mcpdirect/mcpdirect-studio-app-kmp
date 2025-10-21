@@ -2,10 +2,8 @@
 .kotlin
 .gradle
 **/build/
-**/logs/
 xcuserdata
 !src/**/build/
-!src/**/logs/
 local.properties
 .idea
 .DS_Store
@@ -18,5 +16,4 @@ captures
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
-/sh/
-/prompts/
+node_modules/

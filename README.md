@@ -1,71 +1,58 @@
-![MCPdirect Studio](assets/images/mcpdirect_studio_256.png)
-# MCPdirect: Connect your MCP servers anywhere directly to AI agents worldwide
-![mcpdirect_diagram.png](assets/images/mcpdirect_diagram.png)
-## Quick Start
+This is a Kotlin Multiplatform project targeting Web, Desktop (JVM).
 
-### Prepare
-1.  Download MCPdirect Studio App from [Release Page](https://github.com/mcpdirect/mcpdirect-studio-ui-kmp/releases/tag/pre-release)
-2.  Anonymous sign in
+* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
+  It contains several subfolders:
+    - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
+    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
+      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
+      the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
+      Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
+      folder is the appropriate location.
 
-### Three steps to Enable Any Agent to Securely Connect to Your MCP Servers
+### Build and Run Desktop (JVM) Application
 
-1.  **Add a MCP Server:** In the MCPdirect Studio App, add your local or cloud-based MCP server and publish it to MCPdirect.
-2.  **Create a Key:** Generate a secure key for the AI Agent and copy the generated configuration.
-3.  **Configure the Agent:** Paste the copied configuration into your Agent's MCP server settings.
+To build and run the development version of the desktop app, use the run configuration from the run widget
+in your IDE’s toolbar or run it directly from the terminal:
 
-### Config in AI Agent
-- [<img height="24px" src="assets/images/logo/coze_space.svg"> https://space.coze.cn](https://space.coze.cn/)
-- [<img height="24px" src="https://img.alicdn.com/imgextra/i2/O1CN01BttLIk1JTn0mP2a3x_!!6000000001030-2-tps-321-96.png"></img> (macOS) https://qwen.ai/download](https://qwen.ai/download)
-- [<img height="24px" src="https://open-agents-web-cdn-prd.hunyuan.tencent.com/public/a3b4421c99292fe5e097.png"> https://yuanqi.tencent.com/](https://yuanqi.tencent.com/)
-- [<img height="24px" src="assets/images/logo/dify.svg"> https://cloud.dify.ai/](https://cloud.dify.ai/)
-- [<img height="24px" src="assets/images/logo/claude.svg"> https://claude.ai/download](https://claude.ai/download)
+- on macOS/Linux
+  ```shell
+  ./gradlew :composeApp:run
+  ```
+- on Windows
+  ```shell
+  .\gradlew.bat :composeApp:run
+  ```
+
+### Build and Run Web Application
+
+To build and run the development version of the web app, use the run configuration from the run widget
+in your IDE's toolbar or run it directly from the terminal:
+
+- for the Wasm target (faster, modern browsers):
+    - on macOS/Linux
+      ```shell
+      ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
+      ```
+    - on Windows
+      ```shell
+      .\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
+      ```
+- for the JS target (slower, supports older browsers):
+    - on macOS/Linux
+      ```shell
+      ./gradlew :composeApp:jsBrowserDevelopmentRun
+      ```
+    - on Windows
+      ```shell
+      .\gradlew.bat :composeApp:jsBrowserDevelopmentRun
+      ```
+
 ---
 
-## Overview
+Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
+[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
+[Kotlin/Wasm](https://kotl.in/wasm/)…
 
-## Features
-
-* **Connect MCP:** The core feature of the application, allowing users to add, monitor, and manage MCP servers. It supports both "stdio" and "sse" server types.
-* **Agent Keys:** Manage API keys for connecting to MCP servers. Users can generate, view, enable/disable, and revoke keys.
-* **Tool Permission:** Fine-grained permission control for each API key, allowing users to specify which tools a key can access.
-* **Multi-Device Support:** A single key can be used to connect and authenticate from multiple different devices or AI agents simultaneously.
-* **Tools Logbook:** Logs the usage of various tools, providing insights from both "manufacturer" and "agent" perspectives.
-* **Settings:**
-    * Customize device information such as name and tags.
-    * Manage your account, including password changes and logout.
-* **DIY Tools:** (Coming Soon) This feature is currently under development.
-
-## Getting Started with Development
-
-### Prerequisites
-
-* Java Development Kit (JDK) 17 or later.
-
-### Installation & Running the App from Source
-
-1.  Clone the repository to your local machine.
-2.  Open a terminal or command prompt in the project's root directory.
-3.  Run the application using the Gradle wrapper:
-    * On Windows: `gradlew.bat run`
-    * On macOS/Linux: `./gradlew run`
-
-## Technology Stack
-
-* **Language:** Kotlin
-* **UI Framework:** Jetpack Compose for Desktop
-
-## Roadmap
-
-* Implementation of the "DIY Tools" feature.
-* ...
-* ...
-
-## Contributing
-
-We welcome contributions! Please see our `CONTRIBUTING.md` for details on how to get started.
-
-## License
-
-**License:** AGPL-3.0-or-later — see [LICENSE](./LICENSE).   
-**Affero notice (AGPL §13):** If this software is used to provide a network service, you must make the complete corresponding **source code** available to the service’s users.   
-**Get the source:** [Github](https://github.com/mcpdirect/).
+We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack
+channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
+If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).

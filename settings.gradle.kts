@@ -1,4 +1,4 @@
-rootProject.name = "MCPDirectStudioApp"
+rootProject.name = "mcpdirectstudioapp"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -12,8 +12,6 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
-        maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-serialization/maven")
-        maven("https://plugins.gradle.org/m2/")
     }
 }
 
@@ -28,11 +26,6 @@ dependencyResolutionManagement {
         }
         mavenCentral()
         mavenLocal()
-        maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-serialization/maven")
-        maven {
-            setUrl("http://192.168.1.3:3000/api/packages/robin.shang/maven")
-            isAllowInsecureProtocol=true
-        }
     }
 }
 
