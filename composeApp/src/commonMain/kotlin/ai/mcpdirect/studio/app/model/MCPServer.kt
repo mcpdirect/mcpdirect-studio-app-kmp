@@ -8,7 +8,7 @@ class MCPServer: AIPortToolMaker(){
     var transport:Int = 0
     var url: String? = null
     var command: String? = null
-    var args: MutableList<String>? = null
-    var env: MutableMap<String, String>? = null
+    var args: List<String>? = null
+    var env: Map<String, String>? = null
     var statusMessage:String? = null
 }

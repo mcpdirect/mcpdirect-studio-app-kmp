@@ -54,7 +54,8 @@ data class ServerData(
 
 @Composable
 fun ConnectMCPServerDialog(
-    toolAgent: AIPortToolAgent,
+//    toolAgent: AIPortToolAgent,
+    title:String?=null,
     onConfirmRequest: (Map<String, MCPServerConfig>) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
@@ -112,7 +113,7 @@ fun ConnectMCPServerDialog(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-            Text("Connect MCP Servers to ${toolAgent.name}")
+            Text("Connect MCP Servers${title?.let { " to ${it}" }}")
 //            Button({
 //                pasteJsonFromClipboard()
 //            }){

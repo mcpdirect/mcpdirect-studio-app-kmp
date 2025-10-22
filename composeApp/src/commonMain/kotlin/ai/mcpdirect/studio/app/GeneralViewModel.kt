@@ -3,26 +3,12 @@ package ai.mcpdirect.studio.app
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
-import ai.mcpdirect.studio.app.model.aitool.AIPortTool
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
-import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
-import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
-import androidx.compose.foundation.isSystemInDarkTheme
+import ai.mcpdirect.studio.app.model.aitool.*
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 val generalViewModel = GeneralViewModel()
 class GeneralViewModel() : ViewModel() {

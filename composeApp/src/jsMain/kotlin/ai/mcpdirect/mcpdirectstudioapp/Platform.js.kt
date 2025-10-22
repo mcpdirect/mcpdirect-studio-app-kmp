@@ -28,6 +28,8 @@ class JsPlatform : WebPlatform() {
     override fun pasteFromClipboard(): String? {
         return null
     }
+
+    override val studioId: Long = 0
 //    override fun sha256(value: String): String {
 //        return _sha256(value)
 //    }

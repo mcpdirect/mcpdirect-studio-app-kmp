@@ -78,7 +78,7 @@ fun MyStudioScreen(
                     TextButton(
                         onClick = {dialog=MyStudioScreenDialog.ConnectMCP}
                     ){
-                        Text("Add MCP Server")
+                        Text("Connect MCP Server")
                     }
                 }
 //                Column {
@@ -133,8 +133,8 @@ fun MyStudioScreen(
                                                 contentDescription = "On local device"
                                             )
                                         },
-                                        headlineContent = {Text(it.name)},
-                                        supportingContent = {Text(it.tags)},
+                                        headlineContent = {Text(it.name?:"")},
+                                        supportingContent = { it.tags?.let { Text(it) } },
                                         trailingContent = {
                                             if (it.status == 0) StudioIcon(
                                                 Res.drawable.mobiledata_off,
@@ -227,7 +227,7 @@ fun MyStudioScreen(
     when(dialog){
         MyStudioScreenDialog.None ->{}
         MyStudioScreenDialog.ConnectMCP -> ConnectMCPServerDialog(
-            toolAgent = myStudioViewModel.toolAgent,
+            title = myStudioViewModel.toolAgent.name,
             onDismissRequest = {dialog=MyStudioScreenDialog.None},
             onConfirmRequest = { configs ->
                 myStudioViewModel.connectMCPServer(configs)
