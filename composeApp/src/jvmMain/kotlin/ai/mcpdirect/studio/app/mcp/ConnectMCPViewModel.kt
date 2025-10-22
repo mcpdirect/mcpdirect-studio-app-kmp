@@ -9,7 +9,9 @@ import ai.mcpdirect.studio.dao.entity.MCPServer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ai.mcpdirect.backend.dao.entity.aitool.AIPortTool
+//import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.handler.MCPServerNotificationHandler
+import ai.mcpdirect.studio.tool.util.MCPServerConfig
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import kotlinx.coroutines.CoroutineScope
@@ -141,7 +143,7 @@ class ConnectMCPViewModel(): ViewModel(), MCPServerNotificationHandler {
     var selectedServer by mutableStateOf<MCPServer?>(null)
     var showAddServerDialog by mutableStateOf(false)
     var newServerName by mutableStateOf("")
-    var newServerType by mutableStateOf(0) // "stdio" or "sse"
+    var newServerTransport by mutableStateOf(0) // "stdio" or "sse"
     var newServerCommand by mutableStateOf("")
     var newServerArgs by mutableStateOf(mutableStateListOf<String>())
     var newServerUrl by mutableStateOf("")
@@ -162,7 +164,7 @@ class ConnectMCPViewModel(): ViewModel(), MCPServerNotificationHandler {
             newServerName = name
         }
     }
-    fun onNewServerTypeChange(type: Int) { newServerType = type }
+    fun onNewServerTypeChange(type: Int) { newServerTransport = type }
     fun onNewServerCommandChange(command: String) { newServerCommand = command }
 //    fun onNewServerArgsChange(args: List<String>) { newServerArgs = args }
     fun onNewServerUrlChange(url: String) { newServerUrl = url }
@@ -182,17 +184,17 @@ class ConnectMCPViewModel(): ViewModel(), MCPServerNotificationHandler {
         }
     }
 
-    fun selectServer(serverName: String?) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                selectedServer = if (serverName != null) {
-                    MCPDirectStudio.getMCPServer(serverName)
-                } else {
-                    null
-                }
-            }
-        }
-    }
+//    fun selectServer(serverName: String?) {
+//        viewModelScope.launch {
+//            withContext(Dispatchers.IO){
+//                selectedServer = if (serverName != null) {
+//                    MCPDirectStudio.getMCPServer(serverName)
+//                } else {
+//                    null
+//                }
+//            }
+//        }
+//    }
 
     @Serializable
     data class ConfigData(
@@ -228,7 +230,7 @@ class ConnectMCPViewModel(): ViewModel(), MCPServerNotificationHandler {
 
             serverEntry?.let { (name, serverData) ->
                 newServerName = name
-                if(serverData.command!=null) newServerType=0
+                if(serverData.command!=null) newServerTransport=0
                 newServerCommand = serverData.command ?: ""
                 newServerArgs.clear()
                 serverData.args?.let { newServerArgs.addAll(it) }
@@ -258,7 +260,7 @@ class ConnectMCPViewModel(): ViewModel(), MCPServerNotificationHandler {
         isServerNameValid = newServerName.isNotBlank() && newServerName.length<17
 
         if (!showJsonView) {
-            if (newServerType == 0) {
+            if (newServerTransport == 0) {
                 isCommandValid = newServerCommand.isNotBlank()
                 if (!isCommandValid) {
                     showValidationError = true
@@ -291,13 +293,15 @@ class ConnectMCPViewModel(): ViewModel(), MCPServerNotificationHandler {
             val environmentVariables = newServerEnv.associate { it.first to it.second }
             CoroutineScope(Dispatchers.Main).launch {
                 try {
-                    val newServer = MCPDirectStudio.addMCPServer(
+                    val newServer = MCPDirectStudio.connectMCPServer(
                         newServerName,
-                        newServerType,
-                        newServerUrl,
-                        newServerCommand,
-                        newServerArgs,
-                        environmentVariables
+                        MCPServerConfig(
+                            newServerTransport,
+                            newServerUrl,
+                            newServerCommand,
+                            newServerArgs,
+                            environmentVariables
+                        )
                     )
                     println("Server added to repository.")
 //                    loadSummaries();
@@ -305,7 +309,7 @@ class ConnectMCPViewModel(): ViewModel(), MCPServerNotificationHandler {
                     dismissAddServerDialog()
                     // Clear input fields
                     newServerName = ""
-                    newServerType = 0
+                    newServerTransport = 0
                     newServerCommand = ""
                     newServerArgs.clear()
                     newServerUrl = ""
@@ -337,7 +341,10 @@ class ConnectMCPViewModel(): ViewModel(), MCPServerNotificationHandler {
             withContext(Dispatchers.IO){
                 _selectedMaker?.let {
                     try {
-                        _selectedMaker = MCPDirectStudio.publishTools(it)
+                        MCPDirectStudio.publishTools(it){
+                            code, message, data ->
+                            if(code==0&&data!=null) _selectedMaker =data
+                        }
                     }catch (e: Exception){
                         errorMessage = "Error publishing MCP tools: ${e.message}"
                     }

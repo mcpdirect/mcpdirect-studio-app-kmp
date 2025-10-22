@@ -1,6 +1,5 @@
 package ai.mcpdirect.studio.app.mcp
 
-import ai.mcpdirect.mcpdirectstudioapp.json
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.serialization.json.JsonPrimitive
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.delete
 import org.jetbrains.compose.resources.painterResource
@@ -41,7 +39,7 @@ fun ConfigMCPServerDialog(
     onConfirmRequest: (MCPServerConfig) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    var newServerType by remember { mutableStateOf(mcpServer.type)  }
+    var newServerTransport by remember { mutableStateOf(mcpServer.transport)  }
     var newServerUrl by remember { mutableStateOf(mcpServer.url?:"")}
     var newServerCommand by remember { mutableStateOf(mcpServer.command?:"")}
     val newServerArgs = remember { mutableStateListOf<String>()}
@@ -58,7 +56,7 @@ fun ConfigMCPServerDialog(
     fun onNewServerCommandChange(command: String) { newServerCommand = command }
     //    fun onNewServerArgsChange(args: List<String>) { newServerArgs = args }
     fun onNewServerUrlChange(url: String) { newServerUrl = url }
-    fun onNewServerTypeChange(type: Int) { newServerType = type }
+    fun onNewServerTypeChange(type: Int) { newServerTransport = type }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -74,17 +72,17 @@ fun ConfigMCPServerDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Server Type:")
                         Spacer(modifier = Modifier.width(8.dp))
-                        RadioButton(selected = newServerType == 0, onClick = { onNewServerTypeChange(0) })
+                        RadioButton(selected = newServerTransport == 0, onClick = { onNewServerTypeChange(0) })
                         Text("Stdio")
                         Spacer(modifier = Modifier.width(16.dp))
-                        RadioButton(selected = newServerType == 1, onClick = { onNewServerTypeChange(1) })
+                        RadioButton(selected = newServerTransport == 1, onClick = { onNewServerTypeChange(1) })
                         Text("SSE")
-                        RadioButton(selected = newServerType == 2, onClick = { onNewServerTypeChange(2) })
+                        RadioButton(selected = newServerTransport == 2, onClick = { onNewServerTypeChange(2) })
                         Text("Streamable Http")
                     }
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    if (newServerType == 0) {
+                    if (newServerTransport == 0) {
                         OutlinedTextField(
                             value = newServerCommand,
                             onValueChange = { onNewServerCommandChange(it) },
@@ -177,10 +175,10 @@ fun ConfigMCPServerDialog(
         },
         confirmButton = {
             Button(
-                enabled = (newServerType==0&&newServerCommand.isNotBlank()&&isCommandValid) ||(newServerUrl.isNotBlank()&&isUrlValid),
+                enabled = (newServerTransport==0&&newServerCommand.isNotBlank()&&isCommandValid) ||(newServerUrl.isNotBlank()&&isUrlValid),
                 onClick = {
                     val config = MCPServerConfig()
-                    config.type = newServerType
+                    config.transport = newServerTransport
                     config.url = newServerUrl
                     config.command = newServerCommand
                     if(newServerArgs.isNotEmpty()) config.args = newServerArgs

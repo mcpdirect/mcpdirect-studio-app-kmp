@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class MCPServer: AIPortToolMaker(){
+    var transport:Int = 0
     var url: String? = null
     var command: String? = null
     var args: MutableList<String>? = null

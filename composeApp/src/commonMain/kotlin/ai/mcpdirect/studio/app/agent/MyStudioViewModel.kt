@@ -40,9 +40,9 @@ class MyStudioViewModel: ViewModel() {
     private fun updateUIState(code:Int){
         uiState = if(code==0) UIState.Success else UIState.Error(code)
     }
-    private fun makerId(name:String):Long{
-        return name.hashCode().toLong() or Long.MIN_VALUE
-    }
+//    private fun makerId(name:String):Long{
+//        return name.hashCode().toLong() or Long.MIN_VALUE
+//    }
     fun connectMCPServer( configs:Map<String, MCPServerConfig>){
         viewModelScope.launch {
             uiState = UIState.Loading
@@ -50,7 +50,7 @@ class MyStudioViewModel: ViewModel() {
                 updateUIState(it.code)
                 if(it.code==0) it.data?.let {
                     it.forEach {
-                        it.id = makerId(it.name)
+//                        it.id = makerId(it.name)
                         _toolMakers[it.id] = it
                     }
                 }
@@ -62,11 +62,11 @@ class MyStudioViewModel: ViewModel() {
         viewModelScope.launch {
             uiState = UIState.Loading
             getPlatform().configMCPServerForStudio(
-                toolAgent.engineId, toolMaker.name, config
+                toolAgent.engineId, toolMaker.id, config
             ){
                 updateUIState(it.code)
                 if(it.code==0) it.data?.let {
-                    it.id = makerId(it.name)
+//                    it.id = makerId(it.name)
                     _toolMakers[it.id] = it
                     if(toolMaker.id==it.id){
                         toolMaker = it
@@ -86,7 +86,7 @@ class MyStudioViewModel: ViewModel() {
                     if (it.code == 0) {
                         it.data?.let {
                             it.forEach {
-                                it.id = makerId(it.name)
+//                                it.id = makerId(it.name)
                                 _toolMakers[it.id] = it
                                 if(toolMaker.id==it.id){
                                     toolMaker = it
@@ -102,11 +102,30 @@ class MyStudioViewModel: ViewModel() {
         if(toolMaker.id!=0L){
             uiState = UIState.Loading
             tools.clear()
-            getPlatform().queryMCPToolsFromStudio(toolAgent.engineId,toolMaker.name){
+            getPlatform().queryMCPToolsFromStudio(toolAgent.engineId,toolMaker.id){
                 updateUIState(it.code)
                 if(it.code==0){
                     it.data?.let {
                         tools.addAll(it)
+                    }
+                }
+            }
+        }
+    }
+    fun publishMCPTools(toolMaker: AIPortToolMaker){
+        if(toolMaker.id!=0L){
+            uiState = UIState.Loading
+            tools.clear()
+            getPlatform().publishMCPToolsForStudio(toolAgent.engineId,toolMaker.id){
+                updateUIState(it.code)
+                if(it.code==0){
+                    it.data?.let {
+                        _toolMakers.remove(toolMaker.id)
+                        _toolMakers[it.id]=it
+                        if(this@MyStudioViewModel.toolMaker.name==toolMaker.name){
+                            this@MyStudioViewModel.toolMaker = it
+                            queryMCPTools(it)
+                        }
                     }
                 }
             }

@@ -5,10 +5,8 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.*
-import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.encodeToJsonElement
 
@@ -89,16 +87,16 @@ interface Platform {
     fun connectMCPServerToStudio(studioId:Long, configs:Map<String, MCPServerConfig>,
                                  onResponse: (resp: AIPortServiceResponse<List<MCPServer>>) -> Unit){
         hstpRequest("studio.console@$studioId/mcp_server/connect",
-            json.encodeToString(mapOf("mcpServers" to configs))) {
+            json.encodeToString(mapOf("mcpServerConfigs" to configs))) {
             onResponse(json.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
         }
     }
-    fun configMCPServerForStudio(studioId:Long,mcpServerName:String, config:MCPServerConfig,
+    fun configMCPServerForStudio(studioId:Long, mcpServerId:Long, config:MCPServerConfig,
                                  onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
         hstpRequest("studio.console@$studioId/mcp_server/config",
             json.encodeToString(mapOf(
-                "name" to JsonPrimitive(mcpServerName),
-                "config" to json.encodeToJsonElement(config)
+                "mcpServerId" to JsonPrimitive(mcpServerId),
+                "mcpServerConfig" to json.encodeToJsonElement(config)
             ))) {
             onResponse(json.decodeFromString<AIPortServiceResponse<MCPServer>>(it))
         }
@@ -108,14 +106,23 @@ interface Platform {
             onResponse(json.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
         }
     }
-    fun queryMCPToolsFromStudio(studioId:Long, makerName:String,
+    fun queryMCPToolsFromStudio(studioId:Long, mcpServerId:Long,
                                 onResponse: (resp: AIPortServiceResponse<List<AIPortTool>>) -> Unit){
         hstpRequest("studio.console@$studioId/mcp_server/tool/query", mapOf(
-            "makerName" to JsonPrimitive(makerName)
+            "mcpServerId" to JsonPrimitive(mcpServerId)
         )) {
             onResponse(json.decodeFromString<AIPortServiceResponse<List<AIPortTool>>>(it))
         }
     }
+    fun publishMCPToolsForStudio(studioId:Long, mcpServerId:Long,
+                                onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
+        hstpRequest("studio.console@$studioId/mcp_server/tool/publish", mapOf(
+            "mcpServerId" to JsonPrimitive(mcpServerId)
+        )) {
+            onResponse(json.decodeFromString<AIPortServiceResponse<MCPServer>>(it))
+        }
+    }
+
 }
 
 expect fun getPlatform(): Platform

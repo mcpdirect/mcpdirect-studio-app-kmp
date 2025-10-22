@@ -574,17 +574,17 @@ fun AddServerDialog(viewModel: ConnectMCPViewModel) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("Server Type:")
                             Spacer(modifier = Modifier.width(8.dp))
-                            RadioButton(selected = viewModel.newServerType == 0, onClick = { viewModel.onNewServerTypeChange(0) })
+                            RadioButton(selected = viewModel.newServerTransport == 0, onClick = { viewModel.onNewServerTypeChange(0) })
                             Text("Stdio")
                             Spacer(modifier = Modifier.width(16.dp))
-                            RadioButton(selected = viewModel.newServerType == 1, onClick = { viewModel.onNewServerTypeChange(1) })
+                            RadioButton(selected = viewModel.newServerTransport == 1, onClick = { viewModel.onNewServerTypeChange(1) })
                             Text("SSE")
-                            RadioButton(selected = viewModel.newServerType == 2, onClick = { viewModel.onNewServerTypeChange(2) })
+                            RadioButton(selected = viewModel.newServerTransport == 2, onClick = { viewModel.onNewServerTypeChange(2) })
                             Text("Streamable Http")
                         }
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        if (viewModel.newServerType == 0) {
+                        if (viewModel.newServerTransport == 0) {
                             OutlinedTextField(
                                 value = viewModel.newServerCommand,
                                 onValueChange = { viewModel.onNewServerCommandChange(it) },

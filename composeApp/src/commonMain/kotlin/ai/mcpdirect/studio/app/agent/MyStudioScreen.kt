@@ -163,13 +163,19 @@ fun MyStudioScreen(
                                             Res.drawable.refresh,
                                             contentDescription = "Refresh MCP Server Tools",
                                             onClick = {
-                                            myStudioViewModel.queryMCPTools(it)
-                                        })
+                                                myStudioViewModel.queryMCPTools(it)
+                                            })
                                         TooltipIconButton(
                                             Res.drawable.edit,
                                             contentDescription = "Config MCP Server",
                                             onClick = {
                                                 dialog = MyStudioScreenDialog.ConfigMCP
+                                            })
+                                        TooltipIconButton(
+                                            Res.drawable.cloud_upload,
+                                            contentDescription = "Publish to MCPdirect",
+                                            onClick = {
+                                                myStudioViewModel.publishMCPTools(it)
                                             })
                                     }
                                 )
@@ -189,6 +195,18 @@ fun MyStudioScreen(
                                             ListItem(
                                                 modifier = Modifier.clickable{
 
+                                                },
+                                                leadingContent = {
+                                                    if(it.lastUpdated==-1L)StudioIcon(
+                                                        Res.drawable.check_indeterminate_small,
+                                                        "Abandoned"
+                                                    ) else if(it.lastUpdated==1L)StudioIcon(
+                                                            Res.drawable.add,
+                                                            "New tool"
+                                                    ) else if(it.lastUpdated>1)StudioIcon(
+                                                        Res.drawable.sync,
+                                                        "Tool updated"
+                                                    )
                                                 },
                                                 headlineContent = {Text(it.name)},
                                                 trailingContent = {Icon(painterResource(Res.drawable.info),
