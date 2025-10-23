@@ -26,34 +26,34 @@ enum class ConnectMCPScreenDialog {
 fun ConnectMCPScreen(
     paddingValues: PaddingValues
 ){
-    LaunchedEffect(null){
+    LaunchedEffect(null) {
     }
 
     var dialog by remember { mutableStateOf(ConnectMCPScreenDialog.None) }
     val uiState = connectMCPViewModel.uiState
     generalViewModel.topBarActions = {
         TextButton(
-            onClick = {dialog=ConnectMCPScreenDialog.ConnectMCP}
-        ){
+            onClick = { dialog = ConnectMCPScreenDialog.ConnectMCP }
+        ) {
             Text("Connect MCP Server")
         }
     }
-    if (uiState == UIState.Loading) LinearProgressIndicator(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primary
-    ) else LinearProgressIndicator(
-        progress = { 1.0f },
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primary
-    )
-    Row(Modifier.fillMaxSize().padding(paddingValues)){
+//    if (uiState == UIState.Loading) LinearProgressIndicator(
+//        modifier = Modifier.fillMaxWidth().height(4.dp),
+//        color = MaterialTheme.colorScheme.primary
+//    ) else LinearProgressIndicator(
+//        progress = { 1.0f },
+//        modifier = Modifier.fillMaxWidth().height(4.dp),
+//        color = MaterialTheme.colorScheme.primary
+//    )
+    Row(Modifier.fillMaxSize().padding(paddingValues)) {
         LazyColumn(Modifier.wrapContentHeight().width(300.dp).padding(start = 8.dp, top = 16.dp, bottom = 16.dp)) {
             val makers = connectMCPViewModel.toolMakers
-            items(makers){
+            items(makers) {
                 StudioListItem(
                     modifier = Modifier.clickable(
-                        enabled = it.id!=connectMCPViewModel.toolMaker.id
-                    ){
+                        enabled = it.id != connectMCPViewModel.toolMaker.id && it.status>-1
+                    ) {
                         connectMCPViewModel.toolMaker(it)
                     },
                     selected = connectMCPViewModel.toolMaker.id == it.id,
@@ -67,13 +67,18 @@ fun ConnectMCPScreen(
                         )
                     },
                     headlineContent = {Text(it.name?:"")},
-                    supportingContent = {it.tags?.let{ Text(it) }},
+                    supportingContent
+                    = { if(it.tags!=null&& it.tags!!.isNotBlank()) Text(it.tags!!) },
                     trailingContent = {
                         if (it.status == 0) StudioIcon(
                             Res.drawable.mobiledata_off,
                             contentDescription = "Disconnect",
                             tint = MaterialTheme.colorScheme.error
-                        ) else if (it.status < 0) StudioIcon(
+                        ) else if(it.status==Int.MIN_VALUE){
+                            CircularProgressIndicator(
+                                Modifier.size(16.dp)
+                            )
+                        } else if (it.status < 0) StudioIcon(
                             Res.drawable.error,
                             contentDescription = "Disconnect",
                             tint = MaterialTheme.colorScheme.error
@@ -83,11 +88,11 @@ fun ConnectMCPScreen(
             }
         }
         StudioCard(Modifier.fillMaxSize().padding(top = 8.dp, bottom = 8.dp, end = 8.dp)) {
-            if(connectMCPViewModel.toolMaker.id==0L){
+            if (connectMCPViewModel.toolMaker.id == 0L) {
                 StudioBoard(Modifier.weight(2.0f)) {
                     Text("Select a MCP server to view")
                 }
-            }else connectMCPViewModel.toolMaker.let {
+            } else connectMCPViewModel.toolMaker.let {
                 Column(Modifier.weight(2.0f)) {
                     StudioToolbar(
                         actions = {
@@ -112,37 +117,42 @@ fun ConnectMCPScreen(
                         }
                     )
                     HorizontalDivider()
-                    when(it.status){
+                    when (it.status) {
                         -1 -> {
-                            if(it is MCPServer){
-                                it.statusMessage?.let{
+                            if (it is MCPServer) {
+                                it.statusMessage?.let {
                                     StudioBoard {
                                         Text(it, color = MaterialTheme.colorScheme.error)
                                     }
                                 }
                             }
                         }
+
                         else -> LazyColumn(Modifier.weight(1.0f)) {
-                            items(connectMCPViewModel.tools){
+                            items(connectMCPViewModel.tools) {
                                 ListItem(
-                                    modifier = Modifier.clickable{
+                                    modifier = Modifier.clickable {
 
                                     },
                                     leadingContent = {
-                                        if(it.lastUpdated==-1L)StudioIcon(
+                                        if (it.lastUpdated == -1L) StudioIcon(
                                             Res.drawable.check_indeterminate_small,
                                             "Abandoned"
-                                        ) else if(it.lastUpdated==1L)StudioIcon(
+                                        ) else if (it.lastUpdated == 1L) StudioIcon(
                                             Res.drawable.add,
                                             "New tool"
-                                        ) else if(it.lastUpdated>1)StudioIcon(
+                                        ) else if (it.lastUpdated > 1) StudioIcon(
                                             Res.drawable.sync,
                                             "Tool updated"
                                         )
                                     },
-                                    headlineContent = {Text(it.name)},
-                                    trailingContent = {Icon(painterResource(Res.drawable.info),
-                                        contentDescription = "Details")}
+                                    headlineContent = { Text(it.name) },
+                                    trailingContent = {
+                                        Icon(
+                                            painterResource(Res.drawable.info),
+                                            contentDescription = "Details"
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -152,20 +162,21 @@ fun ConnectMCPScreen(
         }
     }
 
-    when(dialog){
-        ConnectMCPScreenDialog.None ->{}
+    when (dialog) {
+        ConnectMCPScreenDialog.None -> {}
         ConnectMCPScreenDialog.ConnectMCP -> ConnectMCPServerDialog(
-            onDismissRequest = {dialog=ConnectMCPScreenDialog.None},
+            onDismissRequest = { dialog = ConnectMCPScreenDialog.None },
             onConfirmRequest = { configs ->
                 connectMCPViewModel.connectMCPServer(configs)
             }
         )
+
         ConnectMCPScreenDialog.ConfigMCP -> {
             val toolMaker = connectMCPViewModel.toolMaker
-            when(toolMaker){
+            when (toolMaker) {
                 is MCPServer -> ConfigMCPServerDialog(
                     toolMaker,
-                    onDismissRequest = {dialog= ConnectMCPScreenDialog.None},
+                    onDismissRequest = { dialog = ConnectMCPScreenDialog.None },
                     onConfirmRequest = { config ->
                         connectMCPViewModel.configMCPServer(config)
                     }
