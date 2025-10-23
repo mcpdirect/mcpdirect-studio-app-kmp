@@ -18,7 +18,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun NavigationTopBar(
     screens:List<Screen>,
-    content: @Composable ((PaddingValues) -> Unit)
+    content: @Composable (BoxScope.() -> Unit)
 ){
     var showMenu by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -153,6 +153,10 @@ fun NavigationTopBar(
                 }
             )
         }
-        content(paddingValues)
+        Box(
+            Modifier.fillMaxSize().padding(paddingValues),
+            content = content
+        )
+
     }
 }

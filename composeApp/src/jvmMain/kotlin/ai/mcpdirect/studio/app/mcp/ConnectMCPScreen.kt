@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.*
@@ -23,9 +24,7 @@ enum class ConnectMCPScreenDialog {
     ConfigMCP
 }
 @Composable
-fun ConnectMCPScreen(
-    paddingValues: PaddingValues
-){
+fun ConnectMCPScreen(){
     LaunchedEffect(null) {
     }
 
@@ -46,7 +45,7 @@ fun ConnectMCPScreen(
 //        modifier = Modifier.fillMaxWidth().height(4.dp),
 //        color = MaterialTheme.colorScheme.primary
 //    )
-    Row(Modifier.fillMaxSize().padding(paddingValues)) {
+    Row(Modifier.fillMaxSize()) {
         LazyColumn(Modifier.wrapContentHeight().width(300.dp).padding(start = 8.dp, top = 16.dp, bottom = 16.dp)) {
             val makers = connectMCPViewModel.toolMakers
             items(makers) {
@@ -161,7 +160,6 @@ fun ConnectMCPScreen(
             }
         }
     }
-
     when (dialog) {
         ConnectMCPScreenDialog.None -> {}
         ConnectMCPScreenDialog.ConnectMCP -> ConnectMCPServerDialog(

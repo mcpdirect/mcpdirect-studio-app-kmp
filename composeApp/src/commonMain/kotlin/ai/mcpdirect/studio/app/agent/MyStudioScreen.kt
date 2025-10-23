@@ -30,16 +30,14 @@ enum class MyStudioScreenDialog {
     ConfigMCP
 }
 @Composable
-fun MyStudioScreen(
-    paddingValues: PaddingValues
-){
+fun MyStudioScreen(){
     LaunchedEffect(null){
         generalViewModel.refreshToolAgents()
         generalViewModel.refreshToolMakers()
     }
     var dialog by remember { mutableStateOf(MyStudioScreenDialog.None) }
     val uiState = myStudioViewModel.uiState
-    Row(Modifier.fillMaxSize().padding(paddingValues)){
+    Row(Modifier.fillMaxSize()){
         LazyColumn(Modifier.wrapContentHeight().width(250.dp).padding(start = 8.dp, top = 16.dp, bottom = 16.dp)) {
             items(generalViewModel.toolAgents){
                 if(it.id!=0L&&it.id!= getPlatform().toolAgentId) StudioListItem(

@@ -46,19 +46,19 @@ fun App(){
                         Screen.MCPTeam,
                         Screen.VirtualMCP
                     )
-                ){  paddingValues ->
+                ){
                     when (generalViewModel.currentScreen) {
                         Screen.Dashboard -> {}
                         Screen.ToolDevelopment -> {}
                         Screen.ConnectMCP -> {
-                            ConnectMCPScreen(paddingValues)
+                            ConnectMCPScreen()
                         }
                         Screen.MCPAccessKey -> {}
                         Screen.ToolsLogbook -> {}
                         Screen.UserSetting -> {}
                         Screen.ToolPermission -> {}
                         Screen.MyStudio -> {
-                            MyStudioScreen(paddingValues)
+                            MyStudioScreen()
                         }
                         Screen.MCPTeam -> {}
                         Screen.MCPTeamToolMaker -> {}

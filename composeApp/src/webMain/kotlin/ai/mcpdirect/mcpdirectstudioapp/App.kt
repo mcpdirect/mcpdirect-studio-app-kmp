@@ -97,7 +97,7 @@ fun App(){
 //                        Screen.ToolsLogbook,
                         Screen.VirtualMCP
                     )
-                ){  paddingValues ->
+                ){
                     when (generalViewModel.currentScreen) {
                         Screen.Dashboard -> {}
                         Screen.ToolDevelopment -> {}
@@ -107,7 +107,7 @@ fun App(){
                         Screen.UserSetting -> {}
                         Screen.ToolPermission -> {}
                         Screen.MyStudio -> {
-                            MyStudioScreen(paddingValues = paddingValues)
+                            MyStudioScreen()
                         }
                         Screen.MCPTeam -> {}
                         Screen.MCPTeamToolMaker -> {}
