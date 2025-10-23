@@ -23,13 +23,15 @@ actual external fun currentMilliseconds():Long
 class JsPlatform : WebPlatform() {
     override val currentMilliseconds:Long
         get() = currentMilliseconds()
-    override val toolAgentId: Long = -1
 
     override fun pasteFromClipboard(): String? {
         return null
     }
 
-    override val studioId: Long = 0
+    override fun copyToClipboard(text: String) {
+
+    }
+
 //    override fun sha256(value: String): String {
 //        return _sha256(value)
 //    }

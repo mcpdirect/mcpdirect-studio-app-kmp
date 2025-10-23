@@ -1,6 +1,7 @@
 package ai.mcpdirect.mcpdirectstudioapp
 
 import ai.mcpdirect.studio.MCPDirectStudio
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.connectMCPViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
@@ -16,10 +17,10 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.StringSelection
 
 class JVMPlatform : Platform, NotificationHandler, ViewModel() {
-//    var user:User? = null
-    override val name: String = "MCPdirect User Platform"
+    override val name: String = "MCPdirect Studio"
     override val type: Int = 1
     override val currentMilliseconds: Long
         get() = System.currentTimeMillis()
@@ -31,6 +32,16 @@ class JVMPlatform : Platform, NotificationHandler, ViewModel() {
             return clipboard.getData(DataFlavor.stringFlavor) as String
         }
         return null
+    }
+
+    override fun copyToClipboard(text: String) {
+//        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+//        clipboard.setContents(
+//            StringSelection(
+//                MCPDirectStudio.createMCPConfigFromKey(text)
+//            ),
+//            null)
+//        generalViewModel.showSnackbar("Text copied to clipboard!")
     }
 
     override fun onMCPServerNotification(server: ai.mcpdirect.studio.dao.entity.MCPServer?) {

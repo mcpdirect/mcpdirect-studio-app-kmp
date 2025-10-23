@@ -28,7 +28,17 @@ fun NavigationTopBar(
             TopAppBar(
                 navigationIcon = {
                     Row(verticalAlignment = Alignment.CenterVertically){
-                        screens.forEach { screen ->
+                        if(generalViewModel.previousScreen!=null)IconButton(
+                            onClick = {
+                                generalViewModel.topBarActions = {}
+                                generalViewModel.currentScreen(generalViewModel.previousScreen!!)
+                            }
+                        ) {
+                            Icon(
+                                painterResource(Res.drawable.arrow_back),
+                                contentDescription = ""
+                            )
+                        } else screens.forEach { screen ->
                             if (screen == generalViewModel.currentScreen) {
 
                                 StudioListItem(
@@ -52,7 +62,7 @@ fun NavigationTopBar(
                                 IconButton(
                                     onClick = {
                                         generalViewModel.topBarActions = {}
-                                        generalViewModel.currentScreen = screen
+                                        generalViewModel.currentScreen(screen)
                                     }
                                 ) {
                                     Icon(
@@ -74,7 +84,7 @@ fun NavigationTopBar(
                         }
                     }
                 },
-                title = {  },
+                title = { generalViewModel.currentScreenTitle?.let { Text(it) } },
                 actions = {
                     generalViewModel.topBarActions()
                     Text(
@@ -105,7 +115,7 @@ fun NavigationTopBar(
                             text = { Text("Setting") },
                             onClick = {
                                 showMenu = false
-                                generalViewModel.currentScreen = Screen.UserSetting
+                                generalViewModel.currentScreen(Screen.UserSetting)
                             },
                             leadingIcon = {
                                 Icon(painterResource(Res.drawable.settings), "Setting")

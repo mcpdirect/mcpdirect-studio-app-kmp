@@ -29,7 +29,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.workspaces
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
-sealed class Screen(val title: StringResource, val icon: DrawableResource) {
+sealed class Screen(var title: StringResource, val icon: DrawableResource) {
     object ToolDevelopment : Screen(Res.string.tool_development,
         Res.drawable.handyman)
     object ConnectMCP : Screen(Res.string.connect_mcp,

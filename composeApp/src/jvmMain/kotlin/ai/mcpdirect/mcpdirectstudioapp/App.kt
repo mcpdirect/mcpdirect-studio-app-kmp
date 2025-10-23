@@ -12,7 +12,10 @@ import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.ConnectMCPScreen
 import ai.mcpdirect.studio.app.mcp.connectMCPViewModel
+import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
+import ai.mcpdirect.studio.app.tool.ToolDetailScreen
+import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,10 +56,14 @@ fun App(){
                         Screen.ConnectMCP -> {
                             ConnectMCPScreen()
                         }
-                        Screen.MCPAccessKey -> {}
+                        Screen.MCPAccessKey -> {
+                            MCPAccessKeyScreen()
+                        }
                         Screen.ToolsLogbook -> {}
                         Screen.UserSetting -> {}
-                        Screen.ToolPermission -> {}
+                        Screen.ToolPermission -> {
+                            ToolPermissionScreen()
+                        }
                         Screen.MyStudio -> {
                             MyStudioScreen()
                         }
@@ -64,7 +71,9 @@ fun App(){
                         Screen.MCPTeamToolMaker -> {}
                         Screen.VirtualMCP -> {}
                         Screen.VirtualMCPToolConfig -> {}
-                        Screen.ToolDetails -> {}
+                        Screen.ToolDetails -> {
+                            ToolDetailScreen()
+                        }
 
                     }
                 }

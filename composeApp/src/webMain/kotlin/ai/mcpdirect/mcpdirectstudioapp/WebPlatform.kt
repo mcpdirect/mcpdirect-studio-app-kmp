@@ -4,7 +4,6 @@ import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -29,10 +28,10 @@ private var accountDetails : AccountDetails? = null
 @OptIn(ExperimentalWasmJsInterop::class)
 abstract class WebPlatform : Platform {
 //    abstract fun hstpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit)
-    val json = Json{
-        encodeDefaults = true
-        ignoreUnknownKeys = true
-    }
+//    val json = Json{
+//        encodeDefaults = true
+//        ignoreUnknownKeys = true
+//    }
 
     fun accessToken():String{
         return if (accountDetails == null) "" else accountDetails!!.accessToken!!
@@ -41,7 +40,7 @@ abstract class WebPlatform : Platform {
 
     override val name: String = "MCPdirect User Platform"
     override val type: Int = 0
-
+    override val toolAgentId: Long = -1
     override fun login(
         account: String,
         password: String,
@@ -56,7 +55,7 @@ abstract class WebPlatform : Platform {
                 "secretKey" to JsonPrimitive(sha256("$hashPassword$milliseconds")),
                 "timestamp" to JsonPrimitive(milliseconds)
             )){
-            val resp = json.decodeFromString<AIPortServiceResponse<AccountDetails>>(it)
+            val resp = JSON.decodeFromString<AIPortServiceResponse<AccountDetails>>(it)
             if(resp.successful()&&resp.data!=null){
                 accountDetails = resp.data
             }
@@ -66,7 +65,7 @@ abstract class WebPlatform : Platform {
 
     override fun logout(onResponse: (resp: AIPortServiceResponse<Boolean?>) -> Unit) {
         hstpRequest("$accountUsl/logout", mapOf()){
-            val resp = json.decodeFromString<AIPortServiceResponse<Boolean?>>(it)
+            val resp = JSON.decodeFromString<AIPortServiceResponse<Boolean?>>(it)
             if(resp.successful()){
                 accountDetails = null;
             }

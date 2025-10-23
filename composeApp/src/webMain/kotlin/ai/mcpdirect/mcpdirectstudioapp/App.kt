@@ -9,6 +9,7 @@ import ai.mcpdirect.studio.app.auth.AuthScreen
 import ai.mcpdirect.studio.app.auth.LoginScreen
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
 import ai.mcpdirect.studio.app.theme.purple.AppTypography
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -102,7 +103,9 @@ fun App(){
                         Screen.Dashboard -> {}
                         Screen.ToolDevelopment -> {}
                         Screen.ConnectMCP -> {}
-                        Screen.MCPAccessKey -> {}
+                        Screen.MCPAccessKey -> {
+                            MCPAccessKeyScreen()
+                        }
                         Screen.ToolsLogbook -> {}
                         Screen.UserSetting -> {}
                         Screen.ToolPermission -> {}
