@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MCPToolMakerTeamScreen() {
+fun MCPTeamToolMakerScreen() {
     val viewModel = mcpTeamToolMakerViewModel
     val team = mcpTeamViewModel.mcpTeam!!
     Scaffold(

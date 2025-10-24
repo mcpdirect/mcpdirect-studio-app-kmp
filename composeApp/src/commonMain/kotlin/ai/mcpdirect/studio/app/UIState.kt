@@ -4,5 +4,5 @@ sealed class UIState {
     object Idle : UIState()
     object Loading : UIState()
     object Success : UIState()
-    data class Error(val code: Int) : UIState()
+    data class Error(val code: Int=Int.MAX_VALUE,val message:String?=null) : UIState()
 }

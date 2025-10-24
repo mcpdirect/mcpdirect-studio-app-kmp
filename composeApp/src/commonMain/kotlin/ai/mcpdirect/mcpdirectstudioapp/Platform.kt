@@ -3,16 +3,15 @@ package ai.mcpdirect.mcpdirectstudioapp
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
-import ai.mcpdirect.studio.app.model.account.AIPortTeam
-import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
-import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.model.account.*
 import ai.mcpdirect.studio.app.model.aitool.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.encodeToJsonElement
 
+expect fun sha256(value:String):String
+expect fun currentMilliseconds():Long
 
 val adminProvider = "admin.mcpdirect.ai"
 val authUsl = "authentication@$adminProvider"
@@ -26,24 +25,83 @@ interface Platform {
 
     val name: String
     val type: Int
-    val currentMilliseconds:Long
+//    val currentMilliseconds:Long
     val toolAgentId:Long
+    val language:String
     fun pasteFromClipboard():String?
     fun copyToClipboard(text:String)
+    fun httpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit)
     fun hstpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit)
     fun hstpRequest(usl:String, parameters:String, onResponse:(resp:String)->Unit)
     fun login(account:String,password:String,onResponse:(resp: AIPortServiceResponse<AIPortUser?>)->Unit)
     fun logout(onResponse: (resp: AIPortServiceResponse<Boolean?>) -> Unit)
 
+    fun register(account: String, language: String?=null,
+                 onResponse: (resp: AIPortServiceResponse<AIPortOtp>) -> Unit){
+
+        httpRequest("$authUsl/register",mapOf(
+            "account" to JsonPrimitive(account),
+            "userInfo" to JSON.encodeToJsonElement(mapOf(
+                "language" to (language?:this.language)
+            ))
+        )){
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortOtp>>(it))
+        }
+    }
+
+    fun register(account: String, name: String,otpId:Long,otp: String,language: String?=null,
+                 onResponse: (resp: AIPortServiceResponse<AIPortOtp>) -> Unit){
+        httpRequest("$authUsl/register",mapOf(
+            "account" to JsonPrimitive(account),
+            "otpId" to JsonPrimitive(otpId),
+            "otp" to JsonPrimitive(otp),
+            "userInfo" to JSON.encodeToJsonElement(mapOf(
+                "name" to name,
+                "language" to (language?:this.language)
+            ))
+        )){
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortOtp>>(it))
+        }
+    }
+
+    fun forgotPassword(account: String,
+                       onResponse: (resp: AIPortServiceResponse<AIPortOtp>) -> Unit){
+        httpRequest("$authUsl/forgot_password",mapOf(
+            "account" to JsonPrimitive(account),
+        )){
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortOtp>>(it))
+        }
+    }
+
+    fun forgotPassword(account: String,otpId:Long, otp: String, password: String,
+                       onResponse: (resp: AIPortServiceResponse<AIPortOtp>) -> Unit){
+        httpRequest("$authUsl/forgot_password",mapOf(
+            "account" to JsonPrimitive(account),
+            "otpId" to JsonPrimitive(otpId),
+            "otp" to JsonPrimitive(otp),
+            "password" to JsonPrimitive(password)
+        )){
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortOtp>>(it))
+        }
+    }
     fun changePassword(
         currentPassword: String,
         confirmPassword: String,
-        onResponse: (resp: AIPortServiceResponse<List<AIPortToolMaker>>) -> Unit
-    ) {
-        TODO("Not yet implemented")
+        onResponse: (resp: AIPortServiceResponse<Boolean>) -> Unit
+    ){
+        val milliseconds = currentMilliseconds()
+        val hashedPassword = sha256(currentPassword)
+        hstpRequest("$aitoolsUSL/password/change", mapOf(
+            "secretKey" to JsonPrimitive(sha256("$hashedPassword$milliseconds")),
+            "password" to JsonPrimitive(confirmPassword),
+            "timestamp" to JsonPrimitive(milliseconds)
+        )){
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<Boolean>>(it))
+        }
     }
 
-    fun queryToolMakers(type:Int?, name:String?, toolAgentId:Long?, teamId:Long?, lastUpdated:Long,
+    fun queryToolMakers(type:Int?=null, name:String?=null, toolAgentId:Long?=null,
+                        teamId:Long?=null, lastUpdated:Long=-1,
                                  onResponse: (resp: AIPortServiceResponse<List<AIPortToolMaker>>) -> Unit) {
         val parameters = mutableMapOf<String, JsonElement>()
         type?.let {
@@ -294,6 +352,62 @@ interface Platform {
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamToolMaker>>>(it))
+        }
+    }
+
+    fun modifyVirtualTools(makerId: Long, tools: List<AIPortVirtualTool>,
+                           onResponse: (resp: AIPortServiceResponse<List<AIPortVirtualTool>>) -> Unit){
+        hstpRequest(
+            "$aitoolsUSL/tool/virtual/modify", mapOf(
+                "makerId" to JsonPrimitive(makerId),
+                "tools" to JSON.encodeToJsonElement(tools)
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortVirtualTool>>>(it))
+        }
+    }
+    fun createToolMaker(type: Int,name:String,tags:String?=null,
+                           onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit){
+        hstpRequest(
+            "$aitoolsUSL/tool_maker/create", mapOf(
+                "name" to JsonPrimitive(name),
+                "type" to JsonPrimitive(type),
+                "tags" to JsonPrimitive(tags)
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolMaker>>(it))
+        }
+    }
+
+    fun modifyToolMaker(makerId: Long, name: String?=null, tags: String?=null, status: Int?=null,
+                        onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit){
+        hstpRequest(
+            "$aitoolsUSL/tool_maker/modify", mapOf(
+                "makerId" to JsonPrimitive(makerId),
+                "name" to JsonPrimitive(name),
+                "tags" to JsonPrimitive(tags),
+                "status" to JsonPrimitive(status)
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolMaker>>(it))
+        }
+    }
+    fun modifyToolAgent(
+        agentId: Long,
+        name: String?=null,
+        tags: String?=null,
+        status: Int?=null,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolAgent>) -> Unit
+    ) {
+        hstpRequest(
+            "$aitoolsUSL/tool_agent/modify", mapOf(
+                "agentId" to JsonPrimitive(agentId),
+                "name" to JsonPrimitive(name),
+                "tags" to JsonPrimitive(tags),
+                "status" to JsonPrimitive(status)
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolAgent>>(it))
         }
     }
 }

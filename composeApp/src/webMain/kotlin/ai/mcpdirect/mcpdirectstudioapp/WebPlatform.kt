@@ -8,8 +8,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 
 import kotlin.js.ExperimentalWasmJsInterop
-expect fun sha256(value:String):String
-expect fun currentMilliseconds():Long
+//expect fun sha256(value:String):String
+//expect fun currentMilliseconds():Long
 
 //val adminProvider = "admin.mcpdirect.ai"
 //val authUsl = "authentication@$adminProvider"

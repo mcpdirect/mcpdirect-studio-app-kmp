@@ -10,9 +10,15 @@ import ai.mcpdirect.studio.app.auth.LoginScreen
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
+import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
+import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
 import ai.mcpdirect.studio.app.theme.purple.AppTypography
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
+import ai.mcpdirect.studio.app.tool.ToolDetailScreen
+import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
+import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
+import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -108,18 +114,30 @@ fun App(){
                             MCPAccessKeyScreen()
                         }
                         Screen.ToolsLogbook -> {}
-                        Screen.UserSetting -> {}
-                        Screen.ToolPermission -> {}
+                        Screen.UserSetting -> {
+                            SettingsScreen()
+                        }
+                        Screen.ToolPermission -> {
+                            ToolPermissionScreen()
+                        }
                         Screen.MyStudio -> {
                             MyStudioScreen()
                         }
                         Screen.MCPTeam -> {
                             MCPTeamScreen()
                         }
-                        Screen.MCPTeamToolMaker -> {}
-                        Screen.VirtualMCP -> {}
-                        Screen.VirtualMCPToolConfig -> {}
-                        Screen.ToolDetails -> {}
+                        Screen.MCPTeamToolMaker -> {
+                            MCPTeamToolMakerScreen()
+                        }
+                        Screen.VirtualMCP -> {
+                            VirtualMakerScreen()
+                        }
+                        Screen.VirtualMCPToolConfig -> {
+                            VirtualMakerToolConfigScreen()
+                        }
+                        Screen.ToolDetails -> {
+                            ToolDetailScreen()
+                        }
                     }
                 }
             } else Row(

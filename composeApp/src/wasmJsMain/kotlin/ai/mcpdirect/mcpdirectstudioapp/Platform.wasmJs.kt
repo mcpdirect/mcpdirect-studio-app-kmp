@@ -23,44 +23,21 @@ import kotlin.wasm.unsafe.withScopedMemoryAllocator
 external val AI_MCPDIRECT_HSTP_WEBPORT:String
 actual external fun sha256(value:String):String
 actual external fun currentMilliseconds():Long
-suspend fun loadRes(url: String): org.khronos.webgl.ArrayBuffer {
-    return window.fetch(url).await<Response>().arrayBuffer().await()
-}
 
-fun ArrayBuffer.toByteArray(): ByteArray {
-    val source = Int8Array(this, 0, byteLength)
-    return jsInt8ArrayToKotlinByteArray(source)
-}
-
-
-//将 JavaScript 的 Int8Array 数据转换为 Kotlin 的 ByteArray，并且在 WebAssembly (Wasm) 环境中进行内存操作。
-@JsFun(
-    """ (src, size, dstAddr) => {
-        const mem8 = new Int8Array(wasmExports.memory.buffer, dstAddr, size);
-        mem8.set(src);
-    }
-"""
-)
-external fun jsExportInt8ArrayToWasm(src: Int8Array, size: Int, dstAddr: Int)
-
-internal fun jsInt8ArrayToKotlinByteArray(x: Int8Array): ByteArray {
-    val size = x.length
-
-    @OptIn(UnsafeWasmMemoryApi::class)
-    return withScopedMemoryAllocator { allocator ->
-        val memBuffer = allocator.allocate(size)
-        val dstAddress = memBuffer.address.toInt()
-        jsExportInt8ArrayToWasm(x, size, dstAddress)
-        ByteArray(size) { i -> (memBuffer + i).loadByte() }
-    }
-}
 @OptIn(ExperimentalWasmJsInterop::class)
 class WasmPlatform : WebPlatform() {
 
 
-    override val name: String = "Web with Kotlin/Wasm"
+    override val language: String
+        get() = window.navigator.language
+    override fun pasteFromClipboard(): String? {
+        return null
+    }
 
-//    override fun login(
+    override fun copyToClipboard(text: String) {
+    }
+
+    //    override fun login(
 //        account: String,
 //        password: String,
 //        onResponse: (resp: AIPortServiceResponse<AIPortUser?>) -> Unit
@@ -173,42 +150,48 @@ class WasmPlatform : WebPlatform() {
 //            null
 //        }
 //    }
-override fun hstpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit){
-
-    window.fetch(
-        AI_MCPDIRECT_HSTP_WEBPORT,
-        init = RequestInit().apply {
-            method = "POST"
-            credentials = RequestCredentials.OMIT
-            cache = RequestCache.NO_CACHE
-            mode = RequestMode.CORS
-            headers = Headers().apply {
-                append("Content-Type" , "application/json")
-                append("hstp-usl" , usl)
-            }
-            body = Json.encodeToString(parameters).toJsString()
-            redirect = RequestRedirect.FOLLOW
-            referrerPolicy = "strict-origin-when-cross-origin".toJsString()
-        }
-    ).then { response ->
-
-        if (response.ok) {
-
-            response.text().then {
-                null
-            }
-
-        } else {
-            println( "🤷 " + response.status)
-        }
-        null
-    }.catch {
-        val response = AIPortServiceResponse<String?>()
-        response.code = -1;
-        response.message = it.toString()
-        onResponse(Json.encodeToString(response))
-        null
+    override fun httpRequest(usl: String, parameters: Map<String, JsonElement>, onResponse: (resp: String) -> Unit) {
+        hstpRequest(usl,Json.encodeToString(parameters),onResponse)
     }
-}
+    override fun hstpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit){
+        hstpRequest(usl,Json.encodeToString(parameters),onResponse)
+    }
+    override fun hstpRequest(usl:String, parameters:String, onResponse:(resp:String)->Unit){
+
+        window.fetch(
+            AI_MCPDIRECT_HSTP_WEBPORT,
+            init = RequestInit().apply {
+                method = "POST"
+                credentials = RequestCredentials.OMIT
+                cache = RequestCache.NO_CACHE
+                mode = RequestMode.CORS
+                headers = Headers().apply {
+                    append("Content-Type" , "application/json")
+                    append("hstp-usl" , usl)
+                }
+                body = parameters.toJsString()
+                redirect = RequestRedirect.FOLLOW
+                referrerPolicy = "strict-origin-when-cross-origin".toJsString()
+            }
+        ).then { response ->
+
+            if (response.ok) {
+
+                response.text().then {
+                    null
+                }
+
+            } else {
+                println( "🤷 " + response.status)
+            }
+            null
+        }.catch {
+            val response = AIPortServiceResponse<String?>()
+            response.code = -1;
+            response.message = it.toString()
+            onResponse(Json.encodeToString(response))
+            null
+        }
+    }
 }
 actual fun getPlatform(): Platform = WasmPlatform()

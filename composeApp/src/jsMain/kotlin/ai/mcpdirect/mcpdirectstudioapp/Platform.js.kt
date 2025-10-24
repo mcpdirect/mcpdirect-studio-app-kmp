@@ -21,9 +21,10 @@ actual external fun currentMilliseconds():Long
 //}
 @OptIn(ExperimentalWasmJsInterop::class)
 class JsPlatform : WebPlatform() {
-    override val currentMilliseconds:Long
-        get() = currentMilliseconds()
-
+//    override val currentMilliseconds:Long
+//        get() = currentMilliseconds()
+    override val language: String
+        get() = window.navigator.language
     override fun pasteFromClipboard(): String? {
         return null
     }
@@ -104,6 +105,9 @@ class JsPlatform : WebPlatform() {
 //            }
 //
 //    }
+    override fun httpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit){
+        hstpRequest(usl,Json.encodeToString(parameters),onResponse)
+    }
     override fun hstpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit){
         hstpRequest(usl,Json.encodeToString(parameters),onResponse)
     }

@@ -1,13 +1,18 @@
 package ai.mcpdirect.studio.app
 
+import ai.mcpdirect.studio.app.auth.AuthViewModel
+import ai.mcpdirect.studio.app.auth.PasswordChangeState
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.setting.SettingsViewModel
+import ai.mcpdirect.studio.app.setting.settingsViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.*
@@ -101,7 +106,9 @@ fun NavigationTopBar(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false }
                     ) {
-                        Text(authViewModel.account)
+                        Text(authViewModel.account,Modifier.padding(
+                            start = 16.dp, end = 16.dp, bottom = 16.dp))
+                        HorizontalDivider()
                         if(authViewModel.user.type!=AIPortUser.ANONYMOUS)DropdownMenuItem(
                             text = { Text("Change Password") },
                             onClick = {
@@ -157,6 +164,108 @@ fun NavigationTopBar(
                 dismissButton = {
                     TextButton(
                         onClick = { showLogoutDialog = false }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
+        if (showChangePasswordDialog) {
+            var currentPassword by remember { mutableStateOf("") }
+            var newPassword by remember { mutableStateOf("") }
+            var confirmPassword by remember { mutableStateOf("") }
+            val passwordChangeState = authViewModel.passwordChangeState
+            AlertDialog(
+                onDismissRequest = {
+                    showChangePasswordDialog = false
+                    settingsViewModel.resetPasswordChangeState()
+                },
+                title = { Text("Change Password") },
+                // In SettingsScreen.kt - Update the dialog's text section
+                text = {
+                    Column {
+                        // Input fields
+                        OutlinedTextField(
+                            value = currentPassword,
+                            onValueChange = { currentPassword = it },
+                            label = { Text("Current Password") },
+                            visualTransformation = PasswordVisualTransformation(),
+                            isError = passwordChangeState is PasswordChangeState.Error
+                                    && currentPassword.isNotEmpty(),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(Modifier.height(16.dp))
+
+                        OutlinedTextField(
+                            value = newPassword,
+                            onValueChange = { newPassword = it },
+                            label = { Text("New Password") },
+                            visualTransformation = PasswordVisualTransformation(),
+                            isError = passwordChangeState is PasswordChangeState.Error
+                                    && newPassword.isNotEmpty(),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        PasswordRequirements(currentPassword,newPassword,confirmPassword) // Your existing component
+
+                        Spacer(Modifier.height(16.dp))
+
+                        OutlinedTextField(
+                            value = confirmPassword,
+                            onValueChange = { confirmPassword = it },
+                            label = { Text("Confirm Password") },
+                            visualTransformation = PasswordVisualTransformation(),
+                            isError = passwordChangeState is PasswordChangeState.Error
+                                    && confirmPassword.isNotEmpty(),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        // Success/Error message display
+                        when (passwordChangeState) {
+                            is PasswordChangeState.Success -> {
+                                showChangePasswordDialog = false
+                            }
+                            is PasswordChangeState.Error -> {
+                                Text(
+                                    text = passwordChangeState.message,
+                                    color = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                            }
+                            else -> {}
+                        }
+                    }
+                },
+                confirmButton = {
+                    if (passwordChangeState is PasswordChangeState.Loading) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    } else {
+                        TextButton(
+                            onClick = {
+                                authViewModel.changePassword(
+                                    currentPassword,
+                                    confirmPassword
+                                )
+                            },
+                            enabled = currentPassword.isNotBlank()&&
+                                    newPassword.isNotBlank()&&
+                                    newPassword.length >= 8&&
+                                    newPassword.any { it.isDigit() }&&
+                                    newPassword.any { it.isUpperCase() }&&
+                                    newPassword.any { it.isLowerCase() }&&
+                                    newPassword == confirmPassword
+                        ) {
+                            Text("Change Password")
+                        }
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showChangePasswordDialog = false
+                            authViewModel.resetPasswordChangeState()
+                        }
                     ) {
                         Text("Cancel")
                     }

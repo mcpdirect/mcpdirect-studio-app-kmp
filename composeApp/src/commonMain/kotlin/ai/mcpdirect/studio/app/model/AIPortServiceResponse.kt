@@ -19,10 +19,14 @@ data class AIPortServiceResponse<T>(
         const val SERVICE_TIMEOUT: Int = 251
         const val SERVICE_ERROR: Int = 250
 
+        //auth
         const val ACCOUNT_NOT_EXIST: Int = 1001000
         const val ACCOUNT_EXISTED: Int = 1001001
         const val PASSWORD_INCORRECT: Int = 1001002
         const val SIGN_IN_FAILED: Int = 1001003
+        const val ACCOUNT_INCORRECT: Int = 1001004
+        const val OTP_EXPIRED: Int = 1001005
+        const val OTP_FAILED: Int = 1001006
 
         const val TEAM_NOT_EXIST: Int = 1002000
     }

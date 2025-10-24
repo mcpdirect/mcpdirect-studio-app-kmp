@@ -1,30 +1,33 @@
 package ai.mcpdirect.mcpdirectstudioapp
 
-import ai.mcpdirect.studio.MCPDirectStudio
-import ai.mcpdirect.studio.app.NavigationSideBar
 import ai.mcpdirect.studio.app.NavigationTopBar
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.agent.MyStudioScreen
 import ai.mcpdirect.studio.app.auth.AuthScreen
+import ai.mcpdirect.studio.app.auth.ForgotPasswordOtpVerificationScreen
+import ai.mcpdirect.studio.app.auth.ForgotPasswordScreen
 import ai.mcpdirect.studio.app.auth.LoginScreen
+import ai.mcpdirect.studio.app.auth.RegisterOtpVerificationScreen
+import ai.mcpdirect.studio.app.auth.RegisterScreen
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.ConnectMCPScreen
-import ai.mcpdirect.studio.app.mcp.connectMCPViewModel
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
+import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
+import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import ai.mcpdirect.studio.app.tool.ToolDetailScreen
 import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
-import androidx.compose.foundation.isSystemInDarkTheme
+import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
+import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -61,7 +64,9 @@ fun App(){
                             MCPAccessKeyScreen()
                         }
                         Screen.ToolsLogbook -> {}
-                        Screen.UserSetting -> {}
+                        Screen.UserSetting -> {
+                            SettingsScreen()
+                        }
                         Screen.ToolPermission -> {
                             ToolPermissionScreen()
                         }
@@ -71,9 +76,15 @@ fun App(){
                         Screen.MCPTeam -> {
                             MCPTeamScreen()
                         }
-                        Screen.MCPTeamToolMaker -> {}
-                        Screen.VirtualMCP -> {}
-                        Screen.VirtualMCPToolConfig -> {}
+                        Screen.MCPTeamToolMaker -> {
+                            MCPTeamToolMakerScreen()
+                        }
+                        Screen.VirtualMCP -> {
+                            VirtualMakerScreen()
+                        }
+                        Screen.VirtualMCPToolConfig -> {
+                            VirtualMakerToolConfigScreen()
+                        }
                         Screen.ToolDetails -> {
                             ToolDetailScreen()
                         }
@@ -91,6 +102,18 @@ fun App(){
                 when(authViewModel.currentScreen){
                     AuthScreen.Login -> {
                         LoginScreen()
+                    }
+                    AuthScreen.Register ->{
+                        RegisterScreen()
+                    }
+                    AuthScreen.RegisterOtpVerification -> {
+                        RegisterOtpVerificationScreen()
+                    }
+                    AuthScreen.ForgotPassword -> {
+                        ForgotPasswordScreen()
+                    }
+                    AuthScreen.ForgotPasswordOtpVerification -> {
+                        ForgotPasswordOtpVerificationScreen()
                     }
                     else -> {
 

@@ -1,31 +1,37 @@
 package ai.mcpdirect.mcpdirectstudioapp
 
 import ai.mcpdirect.studio.MCPDirectStudio
-import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.auth.AuthScreen
 import ai.mcpdirect.studio.app.mcp.connectMCPViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
+import ai.mcpdirect.studio.app.model.account.AIPortOtp
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.handler.NotificationHandler
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import appnet.util.crypto.SHA256
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.encodeToJsonElement
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
-import java.awt.datatransfer.StringSelection
+import java.util.Locale
+import kotlin.compareTo
 
-class JVMPlatform : Platform, NotificationHandler, ViewModel() {
+
+class JVMPlatform : Platform, NotificationHandler{
     override val name: String = "MCPdirect Studio"
     override val type: Int = 1
-    override val currentMilliseconds: Long
-        get() = System.currentTimeMillis()
+//    override val currentMilliseconds: Long
+//        get() = System.currentTimeMillis()
     override val toolAgentId:Long
         get() = MCPDirectStudio.studioToolAgentId()
+    override val language: String
+        get() = Locale.getDefault().language
     override fun pasteFromClipboard(): String? {
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
@@ -67,17 +73,27 @@ class JVMPlatform : Platform, NotificationHandler, ViewModel() {
         }
 
     }
+
+    override fun httpRequest(
+        usl: String,
+        parameters: Map<String, JsonElement>,
+        onResponse: (resp: String) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            MCPDirectStudio.httpRequest(usl, Json.encodeToString(parameters)) {
+                println(it)
+                onResponse(it)
+            }
+        }
+    }
     override fun hstpRequest(
         usl: String,
         parameters: Map<String, JsonElement>,
         onResponse: (resp: String) -> Unit
     ) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                MCPDirectStudio.hstpRequest(usl, Json.encodeToString(parameters)) {
-                    println(it)
-                    onResponse(it)
-                }
+        CoroutineScope(Dispatchers.IO).launch {
+            MCPDirectStudio.hstpRequest(usl, Json.encodeToString(parameters)) {
+                println(it)
+                onResponse(it)
             }
         }
     }
@@ -138,15 +154,14 @@ class JVMPlatform : Platform, NotificationHandler, ViewModel() {
                 onResponse(AIPortServiceResponse(code,message,data))
             }
         }
-
-//        viewModelScope.launch {
-//            withContext(Dispatchers.IO) {
-//                hstpRequest("$accountUsl/logout", mapOf()){
-//                    onResponse(json.decodeFromString<AIPortServiceResponse<Boolean?>>(it))
-//                }
-//            }
-//        }
     }
 }
 
 actual fun getPlatform(): Platform = JVMPlatform()
+actual fun sha256(value: String): String {
+    return SHA256.digest(value)
+}
+
+actual fun currentMilliseconds(): Long {
+    return System.currentTimeMillis()
+}

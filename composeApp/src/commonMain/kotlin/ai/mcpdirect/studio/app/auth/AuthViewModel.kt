@@ -2,6 +2,8 @@ package ai.mcpdirect.studio.app.auth
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.account.AIPortOtp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -31,18 +33,17 @@ class AuthViewModel() : ViewModel(){
         currentPassword: String,
         confirmPassword: String,
     ) {
-//        passwordChangeState = PasswordChangeState.Loading
-//        viewModelScope.launch {
-//            withContext(Dispatchers.IO)
-//
-//        }
-//            when (MCPDirectStudio.changePassword(currentPassword,confirmPassword)){
-//                0 -> { passwordChangeState.value = PasswordChangeState.Success("Password changed successfully") }
-//                AIPortAccount.PASSWORD_INCORRECT -> {passwordChangeState.value = PasswordChangeState.Error("Incorrect Current password")}
-//                else -> {
-//                    SettingsViewModel.PasswordChangeState.Error("Password change failed") }
-//            }
-//        }
+        viewModelScope.launch {
+            passwordChangeState = PasswordChangeState.Loading
+            getPlatform().changePassword(currentPassword,confirmPassword){
+                when (it.code){
+                    0 -> { passwordChangeState = PasswordChangeState.Success("Password changed successfully") }
+                    AIPortServiceResponse.PASSWORD_INCORRECT -> {passwordChangeState = PasswordChangeState.Error("Incorrect Current password")}
+                    else -> {PasswordChangeState.Error("Password change failed") }
+                }
+            }
+
+        }
     }
 
     fun resetPasswordChangeState() {
@@ -54,21 +55,21 @@ class AuthViewModel() : ViewModel(){
     var uiState by mutableStateOf<UIState>(UIState.Idle)
 ////        private set
 //
-//    var registrationEmail by mutableStateOf("")
-//        private set
-//
-//    var forgotPasswordEmail by mutableStateOf("")
-//        private set
-//
+    var registrationEmail by mutableStateOf("")
+        private set
+
+    var forgotPasswordEmail by mutableStateOf("")
+        private set
+
     var isLoginEmailValid by mutableStateOf(true)
     var isLoginPasswordValid by mutableStateOf(true)
-//    var isRegisterEmailValid by mutableStateOf(true)
-//    var isRegisterPasswordValid by mutableStateOf(true)
-//    var isForgotPasswordEmailValid by mutableStateOf(true)
-//    var isSetNewPasswordValid by mutableStateOf(true)
-//    var isConfirmNewPasswordValid by mutableStateOf(true)
-//    var isRegisterSetPasswordValid by mutableStateOf(true)
-//    var isRegisterConfirmPasswordValid by mutableStateOf(true)
+    var isRegisterEmailValid by mutableStateOf(true)
+    var isRegisterPasswordValid by mutableStateOf(true)
+    var isForgotPasswordEmailValid by mutableStateOf(true)
+    var isSetNewPasswordValid by mutableStateOf(true)
+    var isConfirmNewPasswordValid by mutableStateOf(true)
+    var isRegisterSetPasswordValid by mutableStateOf(true)
+    var isRegisterConfirmPasswordValid by mutableStateOf(true)
 //
     fun login(email: String, password: String) {
         isLoginEmailValid = email.isNotBlank()
@@ -79,6 +80,7 @@ class AuthViewModel() : ViewModel(){
                 it.data?.let {
                     user = it
                 }
+                account = email
                 uiState = UIState.Success
             }else{
                 uiState = UIState.Error(it.code)
@@ -160,62 +162,60 @@ class AuthViewModel() : ViewModel(){
 //        }
 //    }
 //
+    private var otp = AIPortOtp()
     fun sendOtpForRegistration(email: String) {
-//        isRegisterEmailValid = email.isNotBlank()
-//
-//        if (!isRegisterEmailValid) {
-//            uiState = UiState.Error("Email cannot be empty.")
-//            return
-//        }
-//
-//        uiState = UiState.Loading
-//        CoroutineScope(Dispatchers.Main).launch {
-////            val result = userRepository.sendOtpForRegistration(email)
-//            val locale:Locale? = null
-//            val result = MCPDirectStudio.register(email,locale)
-//            uiState = if (result==0) {
-//                registrationEmail = email
-//                UiState.SuccessWithData(email)
-//            } else {
-//                val message = when(result){
-//                    AIPortAccount.ACCOUNT_EXISTED -> "Account Exists"
-//                    -1 -> "OTP Expired"
-//                    else -> {"Register Failed"}
-//                }
-//                UiState.Error(message)
-//            }
-//        }
+        isRegisterEmailValid = email.isNotBlank()
+
+        if (!isRegisterEmailValid) {
+            uiState = UIState.Error(AIPortServiceResponse.ACCOUNT_INCORRECT)
+            return
+        }
+
+        uiState = UIState.Loading
+        viewModelScope.launch {
+            getPlatform().register(email){
+                if(it.code==0){
+                    it.data?.let {
+                        otp = it
+                        uiState = UIState.Success
+                    }
+                } else uiState = UIState.Error(it.code)
+            }
+        }
     }
 
     fun register(name:String,otp: String, password: String,confirmedPassword:String) {
-//        if(password != confirmedPassword){
-//            uiState = UiState.Error("Password not confirmed.")
-//            return
-//        }
-//        if(name.isBlank()){
-//            uiState = UiState.Error("Name cannot be empty.")
-//            return
-//        }
-//        isRegisterPasswordValid = password.isNotBlank()
-//        isRegisterSetPasswordValid = password.isNotBlank()
-//        isRegisterConfirmPasswordValid = password.isNotBlank()
-//
-//        if (!isRegisterPasswordValid) {
-//            uiState = UiState.Error("Password cannot be empty.")
-//            return
-//        }
-//
-//        uiState = UiState.Loading
-//        CoroutineScope(Dispatchers.Main).launch {
-////            val result = userRepository.register(email, password)
-//            val result = MCPDirectStudio.register(registrationEmail,name,Locale.getDefault(),otp,password)
-//            uiState = if (result) {
-//                currentScreen = AuthScreen.Login
-//                UiState.Idle
-//            } else {
-//                UiState.Error("Register Failed")
-//            }
-//        }
+        if(password != confirmedPassword){
+            uiState = UIState.Error(message = "Password not confirmed.")
+            return
+        }
+        if(name.isBlank()){
+            uiState = UIState.Error(message = "Name cannot be empty.")
+            return
+        }
+        isRegisterPasswordValid = password.isNotBlank()
+        isRegisterSetPasswordValid = password.isNotBlank()
+        isRegisterConfirmPasswordValid = password.isNotBlank()
+
+        if (!isRegisterPasswordValid) {
+            uiState = UIState.Error(message = "Password cannot be empty.")
+            return
+        }
+
+        uiState = UIState.Loading
+        viewModelScope.launch {
+            getPlatform().register(registrationEmail,name,this@AuthViewModel.otp.id,otp){
+                if(it.code==0){
+                    getPlatform().forgotPassword(registrationEmail,
+                        this@AuthViewModel.otp.id,otp,password){
+                        if(it.code==0){
+                            currentScreen = AuthScreen.Login
+                            uiState = UIState.Success
+                        }
+                    }
+                }else uiState = UIState.Error(it.code)
+            }
+        }
     }
 //
 ////    fun verifyOtpForRegistration(email: String, otp: String,password:String) {
@@ -233,28 +233,22 @@ class AuthViewModel() : ViewModel(){
 ////    }
 //
     fun sendOtpForForgotPassword(email: String) {
-//        isForgotPasswordEmailValid = email.isNotBlank()
-//
-//        if (!isForgotPasswordEmailValid) {
-//            uiState = UiState.Error("Email cannot be empty.")
-//            return
-//        }
-//
-//        uiState = UiState.Loading
-//        CoroutineScope(Dispatchers.Main).launch {
-////            val result = userRepository.sendOtpForForgotPassword(email)
-//            val result = MCPDirectStudio.forgotPassword(email,Locale.getDefault())
-//            uiState = if (result==0) {
-//                forgotPasswordEmail = email
-//                UiState.SuccessWithData(email)
-//            } else {
-//                val message = when(result){
-//                    AIPortAccount.ACCOUNT_NOT_EXIST -> "Account not Exists"
-//                    else -> {"Send OTP Failed"}
-//                }
-//                UiState.Error(message)
-//            }
-//        }
+        isForgotPasswordEmailValid = email.isNotBlank()
+
+        if (!isForgotPasswordEmailValid) {
+            uiState = UIState.Error(message = "Email cannot be empty.")
+            return
+        }
+
+        uiState = UIState.Loading
+        viewModelScope.launch {
+            getPlatform().forgotPassword(email){
+                if(it.code==0){
+                    it.data?.let { otp = it }
+                    uiState = UIState.Success
+                } else uiState = UIState.Error(it.code)
+            }
+        }
     }
 //
 ////    fun verifyOtpForForgotPassword(email: String, otp: String) {
@@ -271,25 +265,26 @@ class AuthViewModel() : ViewModel(){
 ////    }
 //
     fun setNewPassword(email: String, otp: String, newPassword: String) {
-//        isSetNewPasswordValid = newPassword.isNotBlank()
-//        isConfirmNewPasswordValid = newPassword.isNotBlank()
-//
-//        if (!isSetNewPasswordValid) {
-//            uiState = UiState.Error("New password cannot be empty.")
-//            return
-//        }
-//
-//        uiState = UiState.Loading
-//        CoroutineScope(Dispatchers.Main).launch {
-//            MCPDirectStudio.forgotPassword(email,otp,newPassword)
-//            val result = userRepository.setNewPassword(email, otp, newPassword)
-//            uiState = if (result.isSuccess) {
-//                currentScreen = AuthScreen.Login
-//                UiState.Idle
-//            } else {
-//                UiState.Error(result.exceptionOrNull()?.message ?: "Unknown error")
-//            }
-//        }
+        isSetNewPasswordValid = newPassword.isNotBlank()
+        isConfirmNewPasswordValid = newPassword.isNotBlank()
+
+        if (!isSetNewPasswordValid) {
+            uiState = UIState.Error(message ="New password cannot be empty.")
+            return
+        }
+
+        uiState = UIState.Loading
+        viewModelScope.launch {
+            getPlatform().forgotPassword(email,
+                this@AuthViewModel.otp.id,otp,newPassword){
+                if(it.code==0){
+                    it.data?.let {
+                        currentScreen = AuthScreen.Login
+                        uiState = UIState.Success
+                    }
+                }else uiState = UIState.Error(it.code)
+            }
+        }
     }
 //
 //    fun loginWithGoogle() {
