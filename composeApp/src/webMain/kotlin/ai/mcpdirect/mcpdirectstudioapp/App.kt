@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.auth.LoginScreen
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
+import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.theme.purple.AppTypography
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -112,7 +113,9 @@ fun App(){
                         Screen.MyStudio -> {
                             MyStudioScreen()
                         }
-                        Screen.MCPTeam -> {}
+                        Screen.MCPTeam -> {
+                            MCPTeamScreen()
+                        }
                         Screen.MCPTeamToolMaker -> {}
                         Screen.VirtualMCP -> {}
                         Screen.VirtualMCPToolConfig -> {}

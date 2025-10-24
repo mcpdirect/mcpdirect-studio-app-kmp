@@ -89,7 +89,9 @@ class GeneralViewModel() : ViewModel() {
     val teams by derivedStateOf {
         _teams.values.toList()
     }
-
+    fun team(team: AIPortTeam){
+        _teams[team.id]=team
+    }
     private val _teamMembers = mutableStateMapOf<Long, AIPortTeamMember>()
     val teamMembers by derivedStateOf {
         _teamMembers.values.toList()
@@ -122,8 +124,8 @@ class GeneralViewModel() : ViewModel() {
     }
 //    private var toolMakersLastQueried = 0L
     fun refreshToolMakers(force:Boolean=false,
-                          type:Int?=null,name:String?=null,toolAgentId:Long?=null,
-                          teamId:Long?=null){
+                          type:Int?=null,name:String?=null,toolAgentId:Long?=null, teamId:Long?=null,
+                          onResponse:((code:Int,message:String?) -> Unit)? = null){
         getPlatform().queryToolMakers(
             type = type,name=name,toolAgentId=toolAgentId,teamId = teamId,
             lastUpdated = -1,
@@ -137,6 +139,7 @@ class GeneralViewModel() : ViewModel() {
                     }
                 }
             }
+            onResponse?.invoke(it.code, it.message)
         }
     }
 

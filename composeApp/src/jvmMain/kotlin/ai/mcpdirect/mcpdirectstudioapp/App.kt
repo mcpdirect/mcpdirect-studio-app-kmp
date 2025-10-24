@@ -13,6 +13,7 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.ConnectMCPScreen
 import ai.mcpdirect.studio.app.mcp.connectMCPViewModel
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
+import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import ai.mcpdirect.studio.app.tool.ToolDetailScreen
 import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
@@ -67,7 +68,9 @@ fun App(){
                         Screen.MyStudio -> {
                             MyStudioScreen()
                         }
-                        Screen.MCPTeam -> {}
+                        Screen.MCPTeam -> {
+                            MCPTeamScreen()
+                        }
                         Screen.MCPTeamToolMaker -> {}
                         Screen.VirtualMCP -> {}
                         Screen.VirtualMCPToolConfig -> {}

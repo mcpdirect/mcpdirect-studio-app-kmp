@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 class AIPortTeamMember {
     var teamId: Long = 0
     var memberId: Long = 0
-    var status: Int? = null
+    var status: Int = 0
     var created: Long = 0
-    var expirationDate: Long? = null
+    var expirationDate: Long = 0
     var lastUpdated: Long = 0
     var name: String = ""
     var account: String = ""
@@ -23,7 +23,7 @@ class AIPortTeamMember {
         return this
     }
 
-    fun status(status: Int?): AIPortTeamMember {
+    fun status(status: Int): AIPortTeamMember {
         this.status = status
         return this
     }
@@ -33,7 +33,7 @@ class AIPortTeamMember {
         return this
     }
 
-    fun expirationDate(expirationDate: Long?): AIPortTeamMember {
+    fun expirationDate(expirationDate: Long): AIPortTeamMember {
         this.expirationDate = expirationDate
         return this
     }

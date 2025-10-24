@@ -30,7 +30,7 @@ import kotlin.collections.listOf
 fun ToolPermissionScreen() {
     var showPermissionChangedDialog by remember { mutableStateOf(false) }
     val viewModel = toolPermissionViewModel
-    LaunchedEffect(null){
+    LaunchedEffect(viewModel){
         viewModel.refresh()
     }
     generalViewModel.topBarActions =  {
@@ -48,10 +48,10 @@ fun ToolPermissionScreen() {
     }
     Row{
         var currentTabIndex by remember { mutableStateOf(0) }
-        Column(Modifier.width(200.dp)) {
+        Column(Modifier.width(250.dp)) {
 
             val tabs = listOf("My Studio", "My MCP Team")
-            TabRow(selectedTabIndex = currentTabIndex) {
+            SecondaryTabRow(selectedTabIndex = currentTabIndex) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = currentTabIndex == index,
@@ -77,7 +77,7 @@ fun ToolPermissionScreen() {
                 toolMakers = generalViewModel.toolMakers(it)
             }
             Row {
-                LazyColumn(Modifier.width(200.dp)) {
+                LazyColumn(Modifier.width(250.dp)) {
                     items(toolMakers){
                         ListItem(
                             modifier = Modifier.clickable{

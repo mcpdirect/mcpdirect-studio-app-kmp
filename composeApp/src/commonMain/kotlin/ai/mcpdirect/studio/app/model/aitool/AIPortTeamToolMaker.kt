@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 class AIPortTeamToolMaker {
     var toolMakerId: Long = 0
     var teamId: Long = 0
-    var status: Int? = null
+    var status: Int = 0
     var created: Long = 0
     var lastUpdated: Long = 0
 
@@ -20,7 +20,7 @@ class AIPortTeamToolMaker {
         return this
     }
 
-    fun status(status: Int?): AIPortTeamToolMaker {
+    fun status(status: Int): AIPortTeamToolMaker {
         this.status = status
         return this
     }

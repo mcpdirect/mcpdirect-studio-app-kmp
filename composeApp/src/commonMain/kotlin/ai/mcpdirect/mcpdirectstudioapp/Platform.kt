@@ -5,6 +5,7 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
+import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.*
 import kotlinx.serialization.json.Json
@@ -209,6 +210,90 @@ interface Platform {
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortVirtualToolPermission>>>(it))
+        }
+    }
+
+    fun createTeam(mcpTeamName: String,
+                   onResponse: (resp: AIPortServiceResponse<AIPortTeam>) -> Unit
+    ) {
+        hstpRequest(
+            "$accountUsl/team/create", mapOf(
+                "name" to JsonPrimitive(mcpTeamName)
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortTeam>>(it))
+        }
+    }
+    fun modifyTeam(teamId: Long, name: String?, status: Int?,
+                   onResponse: (resp: AIPortServiceResponse<AIPortTeam>) -> Unit
+    ) {
+        hstpRequest(
+            "$accountUsl/team/modify", mapOf(
+                "teamId" to JsonPrimitive(teamId),
+                "name" to JsonPrimitive(name),
+                "status" to JsonPrimitive(status)
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortTeam>>(it))
+        }
+    }
+    fun inviteTeamMember(teamId: Long, account: String?,
+                         onResponse: (resp: AIPortServiceResponse<AIPortTeamMember>) -> Unit
+    ) {
+        hstpRequest(
+            "$accountUsl/team/member/invite", mapOf(
+                "teamId" to JsonPrimitive(teamId),
+                "account" to JsonPrimitive(account),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortTeamMember>>(it))
+        }
+    }
+    fun queryTeamMembers(teamId: Long,
+                         onResponse: (resp: AIPortServiceResponse<List<AIPortTeamMember>>) -> Unit
+    ) {
+        hstpRequest(
+            "$accountUsl/team/member/query", mapOf(
+                "teamId" to JsonPrimitive(teamId),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamMember>>>(it))
+        }
+    }
+    fun acceptTeamMember(teamId: Long, memberId: Long,
+                         onResponse: (resp: AIPortServiceResponse<AIPortTeamMember>) -> Unit
+    ) {
+        hstpRequest(
+            "$accountUsl/team/member/invite", mapOf(
+                "teamId" to JsonPrimitive(teamId),
+                "memberId" to JsonPrimitive(memberId),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortTeamMember>>(it))
+        }
+    }
+
+    fun queryTeamToolMakers(team: AIPortTeam,
+                            onResponse: (resp: AIPortServiceResponse<List<AIPortTeamToolMaker>>) -> Unit){
+        hstpRequest(
+            "$aitoolsUSL/tool_maker/team/query", mapOf(
+                "teamId" to JsonPrimitive(team.id),
+                "teamOwnerId" to  JsonPrimitive(team.ownerId),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamToolMaker>>>(it))
+        }
+    }
+    fun modifyTeamToolMakers(team: AIPortTeam, teamToolMakers: List<AIPortTeamToolMaker>,
+                             onResponse: (resp: AIPortServiceResponse<List<AIPortTeamToolMaker>>) -> Unit){
+        hstpRequest(
+            "$aitoolsUSL/tool_maker/team/modify", mapOf(
+                "teamId" to JsonPrimitive(team.id),
+                "teamOwnerId" to  JsonPrimitive(team.ownerId),
+                "teamToolMakers" to JSON.encodeToJsonElement(teamToolMakers)
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamToolMaker>>>(it))
         }
     }
 }
