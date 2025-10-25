@@ -177,9 +177,11 @@ class AuthViewModel() : ViewModel(){
                 if(it.code==0){
                     it.data?.let {
                         otp = it
-                        uiState = UIState.Success
+                        registrationEmail = email
+                        uiState = UIState.Idle
+                        currentScreen = AuthScreen.RegisterOtpVerification
                     }
-                } else uiState = UIState.Error(it.code)
+                } else uiState = UIState.Error(it.code,"Send OTP failed, please try again")
             }
         }
     }
@@ -210,7 +212,7 @@ class AuthViewModel() : ViewModel(){
                         this@AuthViewModel.otp.id,otp,password){
                         if(it.code==0){
                             currentScreen = AuthScreen.Login
-                            uiState = UIState.Success
+                            uiState = UIState.Idle
                         }
                     }
                 }else uiState = UIState.Error(it.code)
@@ -245,8 +247,10 @@ class AuthViewModel() : ViewModel(){
             getPlatform().forgotPassword(email){
                 if(it.code==0){
                     it.data?.let { otp = it }
-                    uiState = UIState.Success
-                } else uiState = UIState.Error(it.code)
+                    forgotPasswordEmail = email
+                    uiState = UIState.Idle
+                    currentScreen = AuthScreen.ForgotPasswordOtpVerification
+                } else uiState = UIState.Error(it.code,"Send OTP failed, please try again")
             }
         }
     }
@@ -280,7 +284,7 @@ class AuthViewModel() : ViewModel(){
                 if(it.code==0){
                     it.data?.let {
                         currentScreen = AuthScreen.Login
-                        uiState = UIState.Success
+                        uiState = UIState.Idle
                     }
                 }else uiState = UIState.Error(it.code)
             }
@@ -332,6 +336,7 @@ class AuthViewModel() : ViewModel(){
         viewModelScope.launch {
             getPlatform().logout {
                 uiState = UIState.Idle
+                currentScreen = AuthScreen.Login
             }
         }
     }

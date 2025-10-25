@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.virtualmcp
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
@@ -12,12 +13,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 val virtualMakerViewModel = VirtualMakerViewModel()
 class VirtualMakerViewModel: ViewModel() {
+    var uiState by mutableStateOf<UIState>(UIState.Idle)
     var errorMessage by mutableStateOf<String?>(null)
     var showAddServerDialog by mutableStateOf(false)
     var showEditServerNameDialog by mutableStateOf(false)
@@ -78,16 +83,20 @@ class VirtualMakerViewModel: ViewModel() {
         }
     }
     fun queryToolMakers(){
-        getPlatform().queryToolMakers(){
-            (code, message, data) ->
-            if(code==0&&data!=null){
-                data.forEach {
-                    if(it.type== AIPortToolMaker.TYPE_VIRTUAL){
-                        _virtualMakers[it.id]=it
-                    }else{
-                        _makers[it.id]=it
+        uiState = UIState.Loading
+        viewModelScope.launch {
+            getPlatform().queryToolMakers(){
+                    (code, message, data) ->
+                if(code==0&&data!=null){
+                    data.forEach {
+                        if(it.type== AIPortToolMaker.TYPE_VIRTUAL){
+                            _virtualMakers[it.id]=it
+                        }else{
+                            _makers[it.id]=it
+                        }
                     }
-                }
+                    uiState = UIState.Success
+                }else uiState = UIState.Error(code)
             }
         }
     }
@@ -122,21 +131,32 @@ class VirtualMakerViewModel: ViewModel() {
     }
 
     fun createServer() {
-        getPlatform().createToolMaker(
-            AIPortToolMaker.TYPE_VIRTUAL, serverName,
-            serverTags.joinToString()){ (code,message,data)->
-            if(code==0&&data!=null){
-                _virtualMakers[data.id]=data
+        uiState = UIState.Loading
+        viewModelScope.launch {
+            getPlatform().createToolMaker(
+                AIPortToolMaker.TYPE_VIRTUAL, serverName,
+                serverTags.joinToString()){ (code,message,data)->
+                if(code==0){
+                    data?.let {
+                        _virtualMakers[it.id]=it
+                    }
+                    uiState = UIState.Success
+                }else uiState = UIState.Error(code)
             }
         }
+
     }
 
     fun updateServerName() {
         selectedVirtualMaker?.let {
-            getPlatform().modifyToolMaker(it.id, serverName,null,null) {
-                (code, message, data) ->
-                if (code == 0 && data != null) {
-                    _virtualMakers[data.id] = data
+            uiState = UIState.Loading
+            viewModelScope.launch {
+                getPlatform().modifyToolMaker(it.id, serverName,null,null) {
+                        (code, message, data) ->
+                    if (code == 0) data?.let{
+                        _virtualMakers[data.id] = data
+                        uiState = UIState.Success
+                    }else uiState = UIState.Error(code)
                 }
             }
         }

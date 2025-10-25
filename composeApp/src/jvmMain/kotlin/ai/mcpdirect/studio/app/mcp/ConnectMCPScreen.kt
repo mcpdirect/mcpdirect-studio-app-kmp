@@ -4,6 +4,7 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.mcpkey.MCPKeyDialog
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.tool.MCPTool
 import androidx.compose.foundation.clickable
@@ -25,29 +26,35 @@ enum class ConnectMCPScreenDialog {
 }
 @Composable
 fun ConnectMCPScreen(){
-    LaunchedEffect(null) {
-    }
-
     var dialog by remember { mutableStateOf(ConnectMCPScreenDialog.None) }
     val uiState = connectMCPViewModel.uiState
-    generalViewModel.topBarActions = {
-        TextButton(
-            onClick = { dialog = ConnectMCPScreenDialog.ConnectMCP }
-        ) {
-            Text("Connect MCP Server")
+    val makers = connectMCPViewModel.toolMakers
+    if(uiState== UIState.Loading) Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(48.dp),
+            color = MaterialTheme.colorScheme.primary
+        )
+    } else if(makers.isEmpty()) Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = { dialog = ConnectMCPScreenDialog.ConnectMCP }){
+            Text("Connect your first MCP Server for this Studio")
         }
-    }
-//    if (uiState == UIState.Loading) LinearProgressIndicator(
-//        modifier = Modifier.fillMaxWidth().height(4.dp),
-//        color = MaterialTheme.colorScheme.primary
-//    ) else LinearProgressIndicator(
-//        progress = { 1.0f },
-//        modifier = Modifier.fillMaxWidth().height(4.dp),
-//        color = MaterialTheme.colorScheme.primary
-//    )
-    Row(Modifier.fillMaxSize()) {
+    } else Row(Modifier.fillMaxSize()) {
+        generalViewModel.topBarActions = {
+            TextButton(
+                onClick = { dialog = ConnectMCPScreenDialog.ConnectMCP }
+            ) {
+                Text("Connect MCP Server")
+            }
+        }
         LazyColumn(Modifier.wrapContentHeight().width(300.dp).padding(start = 8.dp, top = 16.dp, bottom = 16.dp)) {
-            val makers = connectMCPViewModel.toolMakers
             items(makers) {
                 StudioListItem(
                     modifier = Modifier.clickable(

@@ -79,7 +79,7 @@ interface Platform {
             "account" to JsonPrimitive(account),
             "otpId" to JsonPrimitive(otpId),
             "otp" to JsonPrimitive(otp),
-            "password" to JsonPrimitive(password)
+            "password" to JsonPrimitive(sha256(password))
         )){
             onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortOtp>>(it))
         }

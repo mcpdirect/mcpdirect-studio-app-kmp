@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.virtualmcp
 
 import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.SearchView
 import ai.mcpdirect.studio.app.compose.StudioCard
@@ -44,36 +45,36 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun VirtualMakerScreen() {
     val viewModel = virtualMakerViewModel
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = { Text(stringResource(Screen.VirtualMCP.title) ) },
-//                actions = {
-//                    IconButton(onClick = { viewModel.showAddServerDialog = true }) {
-//                        Icon(
-//                            painterResource(Res.drawable.add),
-//                            contentDescription = "Add Virtual MCP Server"
-//                        )
-//                    }
-//                }
-//            )
-//        }
-//    ) { padding ->
-////        when {
-////            viewModel.selectedMaker.value != null -> ToolsView(viewModel,padding)
-////            else -> MakerListView(viewModel, padding)
-////        }
-//
-//    }
+    val uiState = viewModel.uiState
     LaunchedEffect(viewModel) {
         viewModel.queryToolMakers()
+    }
+    val makers = viewModel.virtualMakers
+    if(uiState== UIState.Loading) Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(48.dp),
+            color = MaterialTheme.colorScheme.primary
+        )
+    } else if(makers.isEmpty()) Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = { viewModel.showAddServerDialog = true }){
+            Text("Create Virtual MCP Server")
+        }
+    }else {
         generalViewModel.topBarActions = {
             TextButton(onClick = { viewModel.showAddServerDialog = true }) {
-                Text("Add Virtual MCP Server")
+                Text("Create your first Virtual MCP Server")
             }
         }
+        MakerListView()
     }
-    MakerListView()
     if (viewModel.showAddServerDialog) {
         AddServerDialog(viewModel)
     }else if(viewModel.showEditServerNameDialog){
