@@ -4,6 +4,8 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermissionMakerSummary
 import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
@@ -25,7 +27,7 @@ class MCPAccessKeyViewModel : ViewModel(){
     var mcpKeyName by mutableStateOf("")
         private set
     var mcpKeyNameErrors by mutableStateOf<MCPKeyNameError>(MCPKeyNameError.None)
-    private val _accessKeys = mutableStateMapOf<Long, AIPortAccessKeyCredential>()
+    private val _accessKeys = mutableStateMapOf<Long, AIPortAccessKey>()
     val accessKeys by derivedStateOf {
         _accessKeys.values.toList()
     }
@@ -85,24 +87,29 @@ class MCPAccessKeyViewModel : ViewModel(){
         }
     }
 
-    fun getMCPAccessKeyFromLocal(id:Long): String?{
-//        return MCPDirectStudio.getAccessKey(id)
-        return null
+    fun getMCPAccessKeyCredential(id:Long,
+                                  onResponse: (resp: AIPortAccessKeyCredential?) -> Unit){
+        viewModelScope.launch {
+            getPlatform().getAccessKeyCredential(id){
+                onResponse(it.data)
+            }
+        }
+
     }
 
-    fun setMCPKeyStatus(key: AIPortAccessKeyCredential, status:Int) {
+    fun setMCPKeyStatus(key: AIPortAccessKey, status:Int) {
         viewModelScope.launch {
             getPlatform().modifyAccessKey(key.id,status){
                     (code, message, data) ->
                 if(code==0&&data!=null){
                     _accessKeys.remove(key.id)
                     key.status = status
-                    _accessKeys[key.id]=key
+                    _accessKeys[key.id]=data
                 }
             }
         }
     }
-    fun setMCPKeyName(key: AIPortAccessKeyCredential) {
+    fun setMCPKeyName(key: AIPortAccessKey) {
         viewModelScope.launch {
             try {
                 getPlatform().modifyAccessKey(key.id, mcpKeyName=mcpKeyName){
@@ -110,7 +117,7 @@ class MCPAccessKeyViewModel : ViewModel(){
                     if(code==0&&data!=null){
                         _accessKeys.remove(key.id)
                         key.name = mcpKeyName
-                        _accessKeys[key.id]=key
+                        _accessKeys[key.id]=data
                         mcpKeyNameErrors = MCPKeyNameError.None
                     }else if(message!=null){
                         mcpKeyNameErrors = MCPKeyNameError.Duplicate

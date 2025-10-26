@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcpkey.mcpAccessKeyViewModel
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
+import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
@@ -25,7 +25,7 @@ import kotlin.collections.forEach
 
 val toolPermissionViewModel = ToolPermissionViewModel()
 class ToolPermissionViewModel : ViewModel(){
-    var accessKey by mutableStateOf<AIPortAccessKeyCredential?>(null)
+    var accessKey by mutableStateOf<AIPortAccessKey?>(null)
     private val _virtualToolAgent = AIPortToolAgent("Virtual MCP",-1)
     var toolAgent by mutableStateOf<AIPortToolAgent?>(null)
         private set
@@ -196,7 +196,7 @@ class ToolPermissionViewModel : ViewModel(){
         toolAgent?.let {
             tools.clear()
             viewModelScope.launch {
-                generalViewModel.refreshToolMakers(type=if(it.id==0L) 0 else -1 , toolAgentId = it.id)
+                generalViewModel.refreshToolMakers(toolAgentId = it.id)
             }
         }
     }

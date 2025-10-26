@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
 import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
 import androidx.compose.foundation.border
@@ -16,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,7 +43,7 @@ sealed class MCPKeyNameError() {
     object Invalid : MCPKeyNameError()
     object Duplicate : MCPKeyNameError()
 }
-private var mcpKey by mutableStateOf<AIPortAccessKeyCredential?>(null)
+private var mcpKey by mutableStateOf<AIPortAccessKey?>(null)
 private var dialog by mutableStateOf<MCPKeyDialog>(MCPKeyDialog.None)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -249,9 +251,13 @@ fun GenerateMCPKeyDialog() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowMCPKeyDialog() {
-    val viewModel = mcpAccessKeyViewModel
-    val key = viewModel.getMCPAccessKeyFromLocal(mcpKey!!.id)
-    mcpKey!!.secretKey = key?:""
+//    val viewModel = mcpAccessKeyViewModel
+//    val key = viewModel.getMCPAccessKeyFromLocal(mcpKey!!.id)
+//    mcpKey!!.secretKey = key?:""
+    var key by remember { mutableStateOf<AIPortAccessKeyCredential?>(null) }
+    mcpAccessKeyViewModel.getMCPAccessKeyCredential(mcpKey!!.id){
+        key = it
+    }
     AlertDialog(
         onDismissRequest = {
             mcpKey==null
@@ -261,17 +267,26 @@ fun ShowMCPKeyDialog() {
             StudioCard(
                 modifier = Modifier.fillMaxWidth(),
             ){
-
-                Text(text = key ?: "Key not found in local!",
-                    modifier = Modifier.padding(24.dp),
-                    style = MaterialTheme.typography.bodyMedium)
+                SelectionContainer {
+                    Text(text = key?.secretKey ?: "",
+                        modifier = Modifier.padding(24.dp),
+                        style = MaterialTheme.typography.bodyMedium)
+                }
             }
         },
         confirmButton = {
             Button(
                 enabled = key!=null,
                 onClick = {
-                    getPlatform().copyToClipboard(mcpKey!!.secretKey)
+                    var host: String? = getPlatform().getenv("AI_MCPDIRECT_GATEWAY_HOST")
+                    if (host == null) {
+                        host = "https://connect.mcpdirect.ai/sse"
+                    }
+                    val text ="""
+                        {"mcpServers":{"${key!!.name}":{"url":"$host","env":{"X-MCPdirect-Key":"${key!!.secretKey}"}}}}"
+                    """.trimIndent()
+
+                    getPlatform().copyToClipboard(text)
                     mcpKey = null
                     dialog= MCPKeyDialog.DisplayMCPKey
                 }

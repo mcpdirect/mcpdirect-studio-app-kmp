@@ -29,6 +29,7 @@ fun NavigationTopBar(
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     Scaffold (
+        snackbarHost = { SnackbarHost(generalViewModel.snackbarHostState) },
         topBar = {
             TopAppBar(
                 navigationIcon = {

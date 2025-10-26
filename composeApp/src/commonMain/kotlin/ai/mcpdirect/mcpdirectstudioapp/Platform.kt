@@ -30,6 +30,7 @@ interface Platform {
     val language:String
     fun pasteFromClipboard():String?
     fun copyToClipboard(text:String)
+    fun getenv(key:String):String?
     fun httpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit)
     fun hstpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit)
     fun hstpRequest(usl:String, parameters:String, onResponse:(resp:String)->Unit)
@@ -148,29 +149,29 @@ interface Platform {
     }
     fun connectMCPServerToStudio(studioId:Long, configs:Map<String, MCPServerConfig>,
                                  onResponse: (resp: AIPortServiceResponse<List<MCPServer>>) -> Unit){
-        hstpRequest("studio.console@$studioId/mcp_server/connect",
-            JSON.encodeToString(mapOf("mcpServerConfigs" to configs))) {
+        httpRequest("studio.console@$studioId/mcp_server/connect",
+            mapOf("mcpServerConfigs" to JSON.encodeToJsonElement(configs))) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
         }
     }
     fun configMCPServerForStudio(studioId:Long, mcpServerId:Long, config:MCPServerConfig,
                                  onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
-        hstpRequest("studio.console@$studioId/mcp_server/config",
-            JSON.encodeToString(mapOf(
+        httpRequest("studio.console@$studioId/mcp_server/config",
+            mapOf(
                 "mcpServerId" to JsonPrimitive(mcpServerId),
                 "mcpServerConfig" to JSON.encodeToJsonElement(config)
-            ))) {
+            )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<MCPServer>>(it))
         }
     }
     fun queryMCPServersFromStudio(studioId:Long, onResponse: (resp: AIPortServiceResponse<List<MCPServer>>) -> Unit){
-        hstpRequest("studio.console@$studioId/mcp_server/query", mapOf()) {
+        httpRequest("studio.console@$studioId/mcp_server/query", mapOf()) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
         }
     }
     fun queryMCPToolsFromStudio(studioId:Long, mcpServerId:Long,
                                 onResponse: (resp: AIPortServiceResponse<List<AIPortTool>>) -> Unit){
-        hstpRequest("studio.console@$studioId/mcp_server/tool/query", mapOf(
+        httpRequest("studio.console@$studioId/mcp_server/tool/query", mapOf(
             "mcpServerId" to JsonPrimitive(mcpServerId)
         )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTool>>>(it))
@@ -178,32 +179,41 @@ interface Platform {
     }
     fun publishMCPToolsForStudio(studioId:Long, mcpServerId:Long,
                                 onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
-        hstpRequest("studio.console@$studioId/mcp_server/tool/publish", mapOf(
+        httpRequest("studio.console@$studioId/mcp_server/tool/publish", mapOf(
             "mcpServerId" to JsonPrimitive(mcpServerId)
         )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<MCPServer>>(it))
         }
     }
 
-    fun queryAccessKeys(onResponse: (resp: AIPortServiceResponse<List<AIPortAccessKeyCredential>>) -> Unit) {
+    fun queryAccessKeys(onResponse: (resp: AIPortServiceResponse<List<AIPortAccessKey>>) -> Unit) {
         hstpRequest("$accountUsl/access_key/query", mapOf()){
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortAccessKeyCredential>>>(it))
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortAccessKey>>>(it))
         }
+    }
+    fun getAccessKeyCredential(keyId:Long,onResponse: (resp: AIPortServiceResponse<AIPortAccessKeyCredential>) -> Unit) {
+        hstpRequest("$accountUsl/access_key/credential/get", mapOf(
+            "keyId" to JsonPrimitive(keyId)
+        )){
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortAccessKeyCredential>>(it))
+        }
+
     }
     fun queryToolPermissionMakerSummaries(onResponse: (resp: AIPortServiceResponse<List<AIPortToolPermissionMakerSummary>>) -> Unit) {
         hstpRequest("$aitoolsUSL/tool/permission/maker/summary/query", mapOf()){
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortToolPermissionMakerSummary>>>(it))
         }
     }
-    fun generateAccessKey(mcpKeyName:String,onResponse: (resp: AIPortServiceResponse<AIPortAccessKeyCredential>) -> Unit) {
+    fun generateAccessKey(mcpKeyName:String,onResponse: (resp: AIPortServiceResponse<AIPortAccessKey>) -> Unit) {
         hstpRequest("$accountUsl/access_key/create", mapOf(
             "name" to JsonPrimitive(mcpKeyName)
         )){
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortAccessKeyCredential>>(it))
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortAccessKey>>(it))
         }
     }
 
-    fun modifyAccessKey(mcpKeyId:Long,mcpKeyStatus:Int?=null,mcpKeyName:String?=null,onResponse: (resp: AIPortServiceResponse<AIPortAccessKeyCredential>) -> Unit) {
+    fun modifyAccessKey(mcpKeyId:Long,mcpKeyStatus:Int?=null,mcpKeyName:String?=null,
+                        onResponse: (resp: AIPortServiceResponse<AIPortAccessKey>) -> Unit) {
         hstpRequest(
             "$accountUsl/access_key/modify", mapOf(
                 "id" to JsonPrimitive(mcpKeyId),
@@ -211,7 +221,7 @@ interface Platform {
                 "status" to JsonPrimitive(mcpKeyStatus),
             )
         ) {
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortAccessKeyCredential>>(it))
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortAccessKey>>(it))
         }
     }
 
@@ -238,7 +248,7 @@ interface Platform {
         onResponse: (resp: AIPortServiceResponse<List<AIPortToolPermissionMakerSummary>>) -> Unit
     ) {
         hstpRequest(
-            "$aitoolsUSL/tool/get", mapOf(
+            "$aitoolsUSL/tool/permission/grant", mapOf(
                 "permissions" to JSON.encodeToJsonElement(permissions),
                 "virtualPermissions" to JSON.encodeToJsonElement(virtualPermissions)
             )

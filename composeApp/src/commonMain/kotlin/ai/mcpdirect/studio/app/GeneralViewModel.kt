@@ -26,6 +26,7 @@ class GeneralViewModel() : ViewModel() {
 
     fun previousScreen(){
         if(previousScreen!=null){
+            currentScreenTitle = null
             currentScreen = previousScreen!!
             previousScreen = null
         }
