@@ -332,7 +332,7 @@ interface Platform {
                          onResponse: (resp: AIPortServiceResponse<AIPortTeamMember>) -> Unit
     ) {
         hstpRequest(
-            "$accountUsl/team/member/invite", mapOf(
+            "$accountUsl/team/member/accept", mapOf(
                 "teamId" to JsonPrimitive(teamId),
                 "memberId" to JsonPrimitive(memberId),
             )

@@ -33,22 +33,27 @@ import org.jetbrains.compose.resources.stringResource
 fun MCPTeamToolMakerScreen() {
     val viewModel = mcpTeamToolMakerViewModel
     val team = mcpTeamViewModel.mcpTeam!!
-    Scaffold(
-        snackbarHost = { SnackbarHost(generalViewModel.snackbarHostState) },
-        topBar = {
-            TopAppBar(
-                title = { Text("${stringResource(Screen.MCPTeamToolMaker.title)} for team ${team.name}") },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        generalViewModel.previousScreen()
-                    }) {
-                        Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    Button(
+    when(viewModel.uiState){
+        is UIState.Error -> {}
+        UIState.Idle -> {}
+        UIState.Loading -> {
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+        UIState.Success -> {
+            Column{
+                generalViewModel.topBarActions = {
+                    TextButton(
                         onClick = {viewModel.saveTeamToolMakers(team){
-                            code, message ->
+                                code, message ->
                             if(code==0){
                                 generalViewModel.previousScreen()
                             }
@@ -57,99 +62,78 @@ fun MCPTeamToolMakerScreen() {
                         Text("Share")
                     }
                 }
-            )
-        }
-    ) { padding ->
-        when(viewModel.uiState){
-            is UIState.Error -> {}
-            UIState.Idle -> {}
-            UIState.Loading -> {
-                Column(
-                    Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-            UIState.Success -> {
-                Column(modifier = Modifier.padding(padding)) {
-                    SearchView(
-                        query = viewModel.searchQuery,
-                        onQueryChange = { viewModel.updateSearchQuery(it) },
-                        placeholder = "Search MCP teams..."
-                    )
-                    StudioCard(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxSize()
-                    ){
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            LazyColumn(modifier = Modifier.weight(3.0f)) {
-                                items(generalViewModel.toolMakers) {
-                                    if(it.userId==authViewModel.user.id)
-                                        ToolMakerItem(it) {
-                                            viewModel.toolMaker(it)
-                                        }
-                                    HorizontalDivider()
-                                }
-                            }
-                            viewModel.toolMaker?.let {
-                                VerticalDivider()
-                                Column(Modifier.weight(5.0f)) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        IconButton(onClick = { viewModel.toolMaker(null)}) {
-                                            Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
-                                        }
+                SearchView(
+                    query = viewModel.searchQuery,
+                    onQueryChange = { viewModel.updateSearchQuery(it) },
+                    placeholder = "Search MCP teams..."
+                )
+                StudioCard(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxSize()
+                ){
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        LazyColumn(modifier = Modifier.weight(3.0f)) {
+                            items(generalViewModel.toolMakers) {
+                                if(it.userId==authViewModel.user.id)
+                                    ToolMakerItem(it) {
+                                        viewModel.toolMaker(it)
                                     }
-                                    HorizontalDivider()
-                                    if(it.type==0) LazyColumn {
-                                        viewModel.virtualTools.forEach {
-                                            item {
-                                                Row (verticalAlignment = Alignment.CenterVertically,){
-                                                    Text(it.name,
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis)
-                                                    Spacer(Modifier.weight(1.0f))
-                                                    IconButton(onClick = {
-                                                        toolDetailViewModel.toolId = it.toolId
-                                                        toolDetailViewModel.toolName = it.name
-                                                        generalViewModel.currentScreen(Screen.ToolDetails,
-                                                            "Tool Details of ${it.name}",
+                                HorizontalDivider()
+                            }
+                        }
+                        viewModel.toolMaker?.let {
+                            VerticalDivider()
+                            Column(Modifier.weight(5.0f)) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    IconButton(onClick = { viewModel.toolMaker(null)}) {
+                                        Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
+                                    }
+                                }
+                                HorizontalDivider()
+                                if(it.type==0) LazyColumn {
+                                    viewModel.virtualTools.forEach {
+                                        item {
+                                            Row (verticalAlignment = Alignment.CenterVertically,){
+                                                Text(it.name,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis)
+                                                Spacer(Modifier.weight(1.0f))
+                                                IconButton(onClick = {
+                                                    toolDetailViewModel.toolId = it.toolId
+                                                    toolDetailViewModel.toolName = it.name
+                                                    generalViewModel.currentScreen(Screen.ToolDetails,
+                                                        "Tool Details of ${it.name}",
                                                         Screen.MCPTeamToolMaker)
-                                                    }) {
-                                                        Icon(painterResource(Res.drawable.info), contentDescription = "Details")
-                                                    }
+                                                }) {
+                                                    Icon(painterResource(Res.drawable.info), contentDescription = "Details")
                                                 }
                                             }
                                         }
-                                    } else LazyColumn {
-                                        viewModel.tools.forEach {
-                                            item {
-                                                Row (verticalAlignment = Alignment.CenterVertically,){
-                                                    Text(it.name,
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis)
-                                                    Spacer(Modifier.weight(1.0f))
-                                                    IconButton(onClick = {
-                                                        toolDetailViewModel.toolId = it.id
-                                                        toolDetailViewModel.toolName = it.name
-                                                        generalViewModel.currentScreen(Screen.ToolDetails,
-                                                            "Tool Details of ${it.name}",
-                                                            Screen.MCPTeamToolMaker)                                                    }) {
-                                                        Icon(painterResource(Res.drawable.info), contentDescription = "Details")
-                                                    }
+                                    }
+                                } else LazyColumn {
+                                    viewModel.tools.forEach {
+                                        item {
+                                            Row (verticalAlignment = Alignment.CenterVertically,){
+                                                Text(it.name,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis)
+                                                Spacer(Modifier.weight(1.0f))
+                                                IconButton(onClick = {
+                                                    toolDetailViewModel.toolId = it.id
+                                                    toolDetailViewModel.toolName = it.name
+                                                    generalViewModel.currentScreen(Screen.ToolDetails,
+                                                        "Tool Details of ${it.name}",
+                                                        Screen.MCPTeamToolMaker)                                                    }) {
+                                                    Icon(painterResource(Res.drawable.info), contentDescription = "Details")
                                                 }
                                             }
                                         }
@@ -164,10 +148,7 @@ fun MCPTeamToolMakerScreen() {
     }
     LaunchedEffect(null){
         viewModel.uiState = UIState.Loading
-        viewModel.refreshTeamToolMakers(team){
-            code, message ->
-            if(code==0) viewModel.uiState = UIState.Success
-        }
+        viewModel.refreshTeamToolMakers(team)
     }
 }
 

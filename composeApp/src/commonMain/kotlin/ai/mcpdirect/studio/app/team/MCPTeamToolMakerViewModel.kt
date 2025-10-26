@@ -24,6 +24,9 @@ class MCPToolMakerTeamViewModel: ViewModel() {
     var searchQuery by mutableStateOf("")
         private set
     var uiState by mutableStateOf<UIState>(UIState.Idle)
+    private fun updateUIState(code:Int){
+        uiState = if(code==0) UIState.Success else UIState.Error(code)
+    }
     fun updateSearchQuery(query: String) {
         searchQuery = query
     }
@@ -68,25 +71,24 @@ class MCPToolMakerTeamViewModel: ViewModel() {
         toolMaker = null
     }
 
-    fun refreshTeamToolMakers(team: AIPortTeam,onResponse: (code: Int, message: String?) -> Unit){
+    fun refreshTeamToolMakers(team: AIPortTeam){
         viewModelScope.launch {
             getPlatform().queryTeamToolMakers(team){ (code, message, data) ->
-                if(code==0&&data!=null){
+                if(code==0){
                     var loadToolMakers = false
-                    data.forEach {
+                    data?.forEach {
                         _teamToolMakers[it.toolMakerId]=it
                         teamToolMakers[it.toolMakerId] = it.copy()
                         if(generalViewModel.toolMaker(it.toolMakerId)==null){
                             loadToolMakers = true
                         }
-                        if(loadToolMakers) generalViewModel.refreshToolMakers {
-                                code, message ->
-                            onResponse(code,message)
-                        }else{
-                            onResponse(code,message)
-                        }
+                    }
+                    if(loadToolMakers) generalViewModel.refreshToolMakers {
+                            code, message ->
+                        updateUIState(code)
                     }
                 }
+                updateUIState(code)
             }
         }
     }

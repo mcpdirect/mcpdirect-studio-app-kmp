@@ -20,6 +20,7 @@ class GeneralViewModel() : ViewModel() {
         this.currentScreen = currentScreen
         this.currentScreenTitle = currentScreenTitle
         this.previousScreen = previousScreen
+        this.topBarActions = {}
     }
     var currentScreenTitle by mutableStateOf<String?>(null)
     var previousScreen by mutableStateOf<Screen?>(null)

@@ -62,12 +62,12 @@ fun VirtualMakerScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(onClick = { viewModel.showAddServerDialog = true }){
-            Text("Create Virtual MCP Server")
+            Text("Create your first Virtual MCP Server")
         }
     }else {
         generalViewModel.topBarActions = {
             TextButton(onClick = { viewModel.showAddServerDialog = true }) {
-                Text("Create your first Virtual MCP Server")
+                Text("Create Virtual MCP Server")
             }
         }
         MakerListView()
