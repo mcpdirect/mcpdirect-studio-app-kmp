@@ -96,6 +96,20 @@ class GeneralViewModel() : ViewModel() {
     val teamMembers by derivedStateOf {
         _teamMembers.values.toList()
     }
+
+    fun reset(){
+        _toolAgents.clear()
+        _toolMakers.clear()
+        _tools.clear()
+        _toolPermissions.clear()
+        _virtualTools.clear()
+        _virtualToolPermissions.clear()
+        _teamToolMakers.clear()
+        _teams.clear()
+        _teamMembers.clear()
+        currentScreen = Screen.Dashboard
+        previousScreen = null
+    }
     fun refreshTeams(onResponse:((code:Int,message:String?) -> Unit)? = null){
         _teams.clear()
         viewModelScope.launch {

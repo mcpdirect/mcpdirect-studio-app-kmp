@@ -30,6 +30,10 @@ class MCPAccessKeyViewModel : ViewModel(){
         _accessKeys.values.toList()
     }
     val toolPermissionMakerSummary = mutableStateListOf<AIPortToolPermissionMakerSummary>()
+    fun reset(){
+        _accessKeys.clear()
+        toolPermissionMakerSummary.clear()
+    }
     fun refreshMCPAccessKeys() {
         uiState = UIState.Loading
         _accessKeys.clear()

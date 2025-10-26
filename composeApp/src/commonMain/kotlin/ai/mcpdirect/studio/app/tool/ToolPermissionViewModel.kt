@@ -44,6 +44,19 @@ class ToolPermissionViewModel : ViewModel(){
     val toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
     val virtualToolPermissions = mutableStateMapOf<Long, AIPortVirtualToolPermission>()
 
+    fun reset(){
+        toolAgent = null
+        toolMaker = null
+        team = null
+        toolAgents.clear()
+        toolPermissions.clear()
+        virtualToolPermissions.clear()
+        tools.clear()
+        virtualTools.clear()
+        _toolPermissions.clear()
+        _virtualToolPermissions.clear()
+    }
+
     fun toolSelected(tool: AIPortVirtualTool): Boolean{
         val permission = virtualToolPermissions[tool.toolId]
         return permission!=null&&permission.status>0

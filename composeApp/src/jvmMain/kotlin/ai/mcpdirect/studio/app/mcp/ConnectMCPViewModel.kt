@@ -20,7 +20,7 @@ class ConnectMCPViewModel: ViewModel() {
         _toolMakers.values.toList()
     }
     //    val toolMakers = mutableStateListOf<AIPortToolMaker>()
-    var toolMaker by mutableStateOf<AIPortToolMaker>(AIPortToolMaker())
+    var toolMaker by mutableStateOf(AIPortToolMaker())
         private set
     fun toolMaker(maker:AIPortToolMaker){
         if(maker.id!=toolMaker.id){
@@ -29,6 +29,11 @@ class ConnectMCPViewModel: ViewModel() {
         toolMaker = maker
     }
     val tools = mutableStateListOf<AIPortTool>()
+    fun reset(){
+        toolMaker = AIPortToolMaker()
+        _toolMakers.clear()
+        tools.clear()
+    }
     private fun updateUIState(code:Int){
         uiState = if(code==0) UIState.Success else UIState.Error(code)
     }

@@ -51,6 +51,10 @@ class MCPTeamViewModel : ViewModel(){
     val mcpTeamMembers by derivedStateOf {
         _mcpTeamMembers.values.toList()
     }
+    fun reset(){
+        mcpTeam = null
+        _mcpTeamMembers.clear()
+    }
     fun teamMember(id:Long): AIPortTeamMember?{
         return _mcpTeamMembers[id]
     }

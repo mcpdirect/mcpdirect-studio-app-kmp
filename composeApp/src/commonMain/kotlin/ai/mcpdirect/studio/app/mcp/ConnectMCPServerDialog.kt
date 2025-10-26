@@ -1,8 +1,6 @@
 package ai.mcpdirect.studio.app.mcp
 
 import ai.mcpdirect.studio.app.model.MCPServerConfig
-import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

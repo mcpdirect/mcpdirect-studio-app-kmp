@@ -72,6 +72,11 @@ class VirtualMakerViewModel: ViewModel() {
 
     val newVirtualMakerTools = mutableStateMapOf<Long, AIPortTool>()
 
+    fun reset(){
+        _virtualMakers.clear()
+        _makers.clear()
+    }
+
     fun selectAllSelectedMakerTools(){
         selectedMakerTools.forEach { tool ->
             newVirtualMakerTools[tool.id]=tool

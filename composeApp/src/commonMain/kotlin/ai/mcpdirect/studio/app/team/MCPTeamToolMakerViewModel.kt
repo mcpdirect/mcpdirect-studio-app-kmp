@@ -60,6 +60,13 @@ class MCPToolMakerTeamViewModel: ViewModel() {
     val tools = mutableStateListOf<AIPortTool>()
 
     val virtualTools = mutableStateListOf<AIPortVirtualTool>()
+    fun reset(){
+        _teamToolMakers.clear()
+        teamToolMakers.clear()
+        tools.clear()
+        virtualTools.clear()
+        toolMaker = null
+    }
 
     fun refreshTeamToolMakers(team: AIPortTeam,onResponse: (code: Int, message: String?) -> Unit){
         viewModelScope.launch {

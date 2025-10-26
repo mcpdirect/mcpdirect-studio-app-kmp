@@ -28,7 +28,7 @@ class MyStudioViewModel: ViewModel() {
         _toolMakers.values.toList()
     }
 //    val toolMakers = mutableStateListOf<AIPortToolMaker>()
-    var toolMaker by mutableStateOf<AIPortToolMaker>(AIPortToolMaker())
+    var toolMaker by mutableStateOf(AIPortToolMaker())
         private set
     fun toolMaker(maker:AIPortToolMaker){
         if(maker.id!=toolMaker.id){
@@ -40,9 +40,11 @@ class MyStudioViewModel: ViewModel() {
     private fun updateUIState(code:Int){
         uiState = if(code==0) UIState.Success else UIState.Error(code)
     }
-//    private fun makerId(name:String):Long{
-//        return name.hashCode().toLong() or Long.MIN_VALUE
-//    }
+    fun reset(){
+        toolAgent = AIPortToolAgent("",-1)
+        toolMaker = AIPortToolMaker()
+        tools.clear()
+    }
     fun connectMCPServer( configs:Map<String, MCPServerConfig>){
         viewModelScope.launch {
             uiState = UIState.Loading

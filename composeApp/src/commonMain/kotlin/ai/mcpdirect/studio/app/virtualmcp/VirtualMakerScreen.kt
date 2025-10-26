@@ -11,14 +11,12 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.tool.toolDetailViewModel
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -39,7 +37,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -356,7 +353,7 @@ private fun MakerDetailView(
         HorizontalDivider()
         LazyColumn {
             items(viewModel.selectedVirtualMakerTools) { tool ->
-                ToolItem(tool, viewModel)
+                ToolItem(tool)
             }
         }
     }
@@ -513,7 +510,7 @@ fun EditServerTagsDialog(viewModel: VirtualMakerViewModel) {
 
 
 @Composable
-private fun ToolItem(tool: AIPortVirtualTool, viewModel: VirtualMakerViewModel) {
+private fun ToolItem(tool: AIPortVirtualTool) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

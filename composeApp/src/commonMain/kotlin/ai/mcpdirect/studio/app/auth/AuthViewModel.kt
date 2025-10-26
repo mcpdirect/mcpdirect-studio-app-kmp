@@ -2,6 +2,8 @@ package ai.mcpdirect.studio.app.auth
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.mcpkey.mcpAccessKeyViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortOtp
 import androidx.compose.runtime.getValue
@@ -9,6 +11,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.team.mcpTeamToolMakerViewModel
+import ai.mcpdirect.studio.app.team.mcpTeamViewModel
+import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
+import ai.mcpdirect.studio.app.virtualmcp.virtualMakerViewModel
 //import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -331,12 +337,18 @@ class AuthViewModel() : ViewModel(){
         currentScreen = screen
         uiState = UIState.Idle // Reset UI state on navigation
     }
-//
     fun logout(){
+        user = AIPortUser(id=-1)
+        uiState = UIState.Idle
+        currentScreen = AuthScreen.Login
+        generalViewModel.reset()
+        mcpAccessKeyViewModel.reset()
+        mcpTeamViewModel.reset()
+        mcpTeamToolMakerViewModel.reset()
+        toolPermissionViewModel.reset()
+        virtualMakerViewModel.reset()
         viewModelScope.launch {
             getPlatform().logout {
-                uiState = UIState.Idle
-                currentScreen = AuthScreen.Login
             }
         }
     }

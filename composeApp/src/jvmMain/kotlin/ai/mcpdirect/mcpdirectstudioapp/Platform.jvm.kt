@@ -1,26 +1,20 @@
 package ai.mcpdirect.mcpdirectstudioapp
 
 import ai.mcpdirect.studio.MCPDirectStudio
-import ai.mcpdirect.studio.app.auth.AuthScreen
 import ai.mcpdirect.studio.app.mcp.connectMCPViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
-import ai.mcpdirect.studio.app.model.account.AIPortOtp
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.handler.NotificationHandler
 import appnet.util.crypto.SHA256
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.encodeToJsonElement
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
-import java.util.Locale
-import kotlin.compareTo
+import java.util.*
 
 
 class JVMPlatform : Platform, NotificationHandler{
@@ -148,6 +142,7 @@ class JVMPlatform : Platform, NotificationHandler{
     }
 
     override fun logout(onResponse: (resp: AIPortServiceResponse<Boolean?>) -> Unit) {
+        connectMCPViewModel.reset()
         CoroutineScope(Dispatchers.IO).launch {
             MCPDirectStudio.logout {
                 code, message, data ->
