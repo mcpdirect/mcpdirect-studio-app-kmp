@@ -9,6 +9,7 @@ import org.w3c.fetch.*
 external val AI_MCPDIRECT_HSTP_WEBPORT:String
 actual external fun sha256(value:String):String
 actual external fun currentMilliseconds():Long
+external fun env(value:String):String?
 
 //@Serializable
 //private  class AccountDetails {
@@ -33,7 +34,11 @@ class JsPlatform : WebPlatform() {
 
     }
 
-//    override fun sha256(value: String): String {
+    override fun getenv(key: String): String? {
+        return env(key)
+    }
+
+    //    override fun sha256(value: String): String {
 //        return _sha256(value)
 //    }
 //

@@ -283,7 +283,7 @@ fun ShowMCPKeyDialog() {
                         host = "https://connect.mcpdirect.ai/"
                     }
                     val text ="""
-                        {"mcpServers":{"${key!!.name}":{"url":"$host${key!!.secretKey.substring(4)}/mcp"}}}"
+                        {"mcpServers":{"${key!!.name}":{"url":"$host${key!!.secretKey.substring(4)}/sse"}}}
                     """.trimIndent()
 
                     getPlatform().copyToClipboard(text)
