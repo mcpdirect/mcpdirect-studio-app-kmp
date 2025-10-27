@@ -45,9 +45,9 @@ sealed class Screen(var title: StringResource, val icon: DrawableResource) {
     object ToolPermission : Screen(Res.string.tool_permission,
         Res.drawable.shield_toggle)
     object MyStudio : Screen(Res.string.my_studio,
-        Res.drawable.workspaces)
-    object MCPTeam : Screen(Res.string.mcp_team,
         Res.drawable.graph_5)
+    object MCPTeam : Screen(Res.string.mcp_team,
+        Res.drawable.diversity_3)
 
     object MCPTeamToolMaker : Screen(Res.string.share_mcp_server,
         Res.drawable.share)

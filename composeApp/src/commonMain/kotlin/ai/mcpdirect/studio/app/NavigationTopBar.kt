@@ -4,6 +4,7 @@ import ai.mcpdirect.studio.app.auth.AuthViewModel
 import ai.mcpdirect.studio.app.auth.PasswordChangeState
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioListItem
+import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import ai.mcpdirect.studio.app.setting.settingsViewModel
@@ -46,7 +47,6 @@ fun NavigationTopBar(
                             )
                         } else screens.forEach { screen ->
                             if (screen == generalViewModel.currentScreen) {
-
                                 StudioListItem(
                                     modifier = Modifier.width(140.dp),
                                     selected = true,
@@ -65,29 +65,26 @@ fun NavigationTopBar(
                                     }}
                                 )
                             }else{
-                                IconButton(
+                                TooltipIconButton(
+                                    screen.icon,
+                                    contentDescription = stringResource(screen.title),
                                     onClick = {
                                         generalViewModel.topBarActions = {}
                                         generalViewModel.currentScreen(screen)
                                     }
-                                ) {
-                                    Icon(
-                                        painterResource(screen.icon),
-                                        contentDescription = stringResource(screen.title)
-                                    )
-                                }
+                                )
                             }
                         }
-                        IconButton(
-                            onClick = {
-                                generalViewModel.darkMode = !(generalViewModel.darkMode)
-                            }
-                        ){
-                            Icon(painterResource(
-                                if(generalViewModel.darkMode) Res.drawable.light_mode else Res.drawable.dark_mode),
-                                contentDescription = ""
-                            )
-                        }
+//                        IconButton(
+//                            onClick = {
+//                                generalViewModel.darkMode = !(generalViewModel.darkMode)
+//                            }
+//                        ){
+//                            Icon(painterResource(
+//                                if(generalViewModel.darkMode) Res.drawable.light_mode else Res.drawable.dark_mode),
+//                                contentDescription = ""
+//                            )
+//                        }
                     }
                 },
                 title = { generalViewModel.currentScreenTitle?.let { Text(it) } },
