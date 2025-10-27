@@ -13,5 +13,5 @@ data class AIPortAccessKeyCredential(
     var created: Long = 0,
     var status: Int = 0,
     var name: String = "",
-    var usageAmount: Int = 0
+    var usage: Int = 0
 )

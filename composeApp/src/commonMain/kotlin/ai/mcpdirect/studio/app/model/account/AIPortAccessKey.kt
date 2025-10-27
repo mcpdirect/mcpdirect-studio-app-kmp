@@ -12,7 +12,7 @@ data class AIPortAccessKey(
     var created: Long = 0,
     var status: Int = 0,
     var name: String = "",
-    var usageAmount: Int = 0
+    var usage: Int = 0
 ) {
     companion object {
         const val STATUS_ENABLE = 1

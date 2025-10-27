@@ -11,6 +11,7 @@ import ai.mcpdirect.studio.app.auth.LoginScreen
 import ai.mcpdirect.studio.app.auth.RegisterOtpVerificationScreen
 import ai.mcpdirect.studio.app.auth.RegisterScreen
 import ai.mcpdirect.studio.app.auth.authViewModel
+import ai.mcpdirect.studio.app.dashboard.DashboardScreen
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.ConnectMCPScreen
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
@@ -48,14 +49,16 @@ fun App(){
                         Screen.Dashboard,
                         Screen.ConnectMCP,
                         Screen.MCPAccessKey,
-                        Screen.ToolsLogbook,
+//                        Screen.ToolsLogbook,
                         Screen.MyStudio,
                         Screen.MCPTeam,
                         Screen.VirtualMCP
                     )
                 ){
                     when (generalViewModel.currentScreen) {
-                        Screen.Dashboard -> {}
+                        Screen.Dashboard -> {
+                            DashboardScreen()
+                        }
                         Screen.ToolDevelopment -> {}
                         Screen.ConnectMCP -> {
                             ConnectMCPScreen()

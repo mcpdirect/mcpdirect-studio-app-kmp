@@ -13,7 +13,8 @@ open class AIPortTool {
     var metaData: String = ""
     var tags: String = ""
     var agentId: Long = 0
-
+    var usage: Int=0
+    var userId: Long =0
     constructor()
 
     constructor(id: Long, makerId: Long, status: Int, lastUpdated: Long, name: String, hash: Int, metaData: String, tags: String) {

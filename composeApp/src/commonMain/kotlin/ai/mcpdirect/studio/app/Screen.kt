@@ -7,6 +7,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.data_info_alert
 import mcpdirectstudioapp.composeapp.generated.resources.design_services
 import mcpdirectstudioapp.composeapp.generated.resources.diversity_3
 import mcpdirectstudioapp.composeapp.generated.resources.graph_2
+import mcpdirectstudioapp.composeapp.generated.resources.graph_5
 import mcpdirectstudioapp.composeapp.generated.resources.handyman
 import mcpdirectstudioapp.composeapp.generated.resources.info
 import mcpdirectstudioapp.composeapp.generated.resources.key
@@ -14,6 +15,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.mcp
 import mcpdirectstudioapp.composeapp.generated.resources.mcp_keys
 import mcpdirectstudioapp.composeapp.generated.resources.my_studio
 import mcpdirectstudioapp.composeapp.generated.resources.mcp_team
+import mcpdirectstudioapp.composeapp.generated.resources.plug_connect
 import mcpdirectstudioapp.composeapp.generated.resources.settings
 import mcpdirectstudioapp.composeapp.generated.resources.share
 import mcpdirectstudioapp.composeapp.generated.resources.share_mcp_server
@@ -33,7 +35,7 @@ sealed class Screen(var title: StringResource, val icon: DrawableResource) {
     object ToolDevelopment : Screen(Res.string.tool_development,
         Res.drawable.handyman)
     object ConnectMCP : Screen(Res.string.connect_mcp,
-        Res.drawable.mcp)
+        Res.drawable.plug_connect)
     object ToolsLogbook : Screen(Res.string.tools_logbook,
         Res.drawable.data_info_alert)
     //    object AgentInteraction : Screen(Res.string.mcp_keys,
@@ -45,7 +47,7 @@ sealed class Screen(var title: StringResource, val icon: DrawableResource) {
     object MyStudio : Screen(Res.string.my_studio,
         Res.drawable.workspaces)
     object MCPTeam : Screen(Res.string.mcp_team,
-        Res.drawable.diversity_3)
+        Res.drawable.graph_5)
 
     object MCPTeamToolMaker : Screen(Res.string.share_mcp_server,
         Res.drawable.share)
@@ -55,14 +57,14 @@ sealed class Screen(var title: StringResource, val icon: DrawableResource) {
 
     object VirtualMCP : Screen(
         Res.string.virtual_mcp,
-        Res.drawable.graph_2)
+        Res.drawable.design_services)
     object VirtualMCPToolConfig : Screen(
         Res.string.virtual_mcp,
-        Res.drawable.graph_2)
+        Res.drawable.design_services)
     object ToolDetails: Screen(
         Res.string.tool_details,
         Res.drawable.info)
     object Dashboard: Screen(
         Res.string.dashboard,
-        Res.drawable.info)
+        Res.drawable.dashboard)
 }
