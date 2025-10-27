@@ -232,7 +232,7 @@ fun GenerateMCPKeyDialog() {
                 enabled = viewModel.mcpKeyNameErrors== MCPKeyNameError.None,
                 modifier = Modifier.focusRequester(addFocusRequester),
                 onClick = {
-                    dialog= MCPKeyDialog.GenerateMCPKey
+                    dialog= MCPKeyDialog.None
                     viewModel.generateMCPKey()
                 }
             ) {
@@ -280,10 +280,10 @@ fun ShowMCPKeyDialog() {
                 onClick = {
                     var host: String? = getPlatform().getenv("AI_MCPDIRECT_GATEWAY_HOST")
                     if (host == null) {
-                        host = "https://connect.mcpdirect.ai/sse"
+                        host = "https://connect.mcpdirect.ai/"
                     }
                     val text ="""
-                        {"mcpServers":{"${key!!.name}":{"url":"$host","env":{"X-MCPdirect-Key":"${key!!.secretKey}"}}}}"
+                        {"mcpServers":{"${key!!.name}":{"url":"$host${key!!.secretKey.substring(4)}/mcp"}}}"
                     """.trimIndent()
 
                     getPlatform().copyToClipboard(text)

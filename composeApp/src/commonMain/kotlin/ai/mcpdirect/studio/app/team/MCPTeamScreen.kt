@@ -224,7 +224,7 @@ private fun TeamListView() {
                             )
                         }
                         HorizontalDivider()
-                        TabRow(selectedTabIndex = currentTabIndex) {
+                        SecondaryTabRow(selectedTabIndex = currentTabIndex) {
                             tabs.forEachIndexed { index, title ->
                                 Tab(
                                     selected = currentTabIndex == index,
@@ -382,36 +382,40 @@ private fun TeamToolMakerList() {
 
     LazyColumn {
         items(toolMakers){
-            val me = it.userId==myId
-            val member = viewModel.teamMember(it.userId)
-            ListItem(
-                headlineContent = {
-                    it.name?.let { Text(it) }
-                },
-                overlineContent = {
-                    if(me) Text("Me", color = MaterialTheme.colorScheme.primary)
-                    else member?.let { Text("${it.name} (${it.account})") }
-                },
-                supportingContent = {
-                    Box(
-                        Modifier.border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                    ) { if (it.status == 0) Tag(
-                            "inactive",
-                            color = MaterialTheme.colorScheme.error,
-                        ) else Tag(
-                            "active",
-                        )
-                    }
-                },
-                trailingContent = {
+            val teamToolMaker = viewModel.teamToolMaker(it.id)
+            if(teamToolMaker!=null&&teamToolMaker.status>0) {
+                val me = it.userId==myId
+                val member = viewModel.teamMember(it.userId)
+                ListItem(
+                    headlineContent = {
+                        it.name?.let { Text(it) }
+                    },
+                    overlineContent = {
+                        if (me) Text("Me", color = MaterialTheme.colorScheme.primary)
+                        else member?.let { Text("${it.name} (${it.account})") }
+                    },
+                    supportingContent = {
+                        Box(
+                            Modifier.border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                        ) {
+                            if (it.status == 0) Tag(
+                                "inactive",
+                                color = MaterialTheme.colorScheme.error,
+                            ) else Tag(
+                                "active",
+                            )
+                        }
+                    },
+                    trailingContent = {
 
-                }
-            )
-            HorizontalDivider()
+                    }
+                )
+                HorizontalDivider()
+            }
         }
     }
 }

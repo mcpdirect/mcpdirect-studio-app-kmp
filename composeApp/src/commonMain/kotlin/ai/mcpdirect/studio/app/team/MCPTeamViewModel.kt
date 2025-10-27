@@ -5,6 +5,7 @@ import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
+import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -51,6 +52,13 @@ class MCPTeamViewModel : ViewModel(){
     val mcpTeamMembers by derivedStateOf {
         _mcpTeamMembers.values.toList()
     }
+    private val _mcpTeamToolMakers = mutableStateMapOf<Long, AIPortTeamToolMaker>()
+    val mcpTeamToolMakers by derivedStateOf {
+        _mcpTeamToolMakers.values.toList()
+    }
+    fun teamToolMaker(makerId:Long): AIPortTeamToolMaker?{
+        return _mcpTeamToolMakers[makerId]
+    }
     fun reset(){
         mcpTeam = null
         _mcpTeamMembers.clear()
@@ -95,7 +103,10 @@ class MCPTeamViewModel : ViewModel(){
     }
     fun setMCPTeam(team: AIPortTeam?){
         mcpTeam = team
-        if(team!=null) queryMCPTeamMembers(team.id)
+        if(team!=null) {
+            queryMCPTeamToolMakers(team)
+            queryMCPTeamMembers(team.id)
+        }
     }
     fun createMCPTeam(onResponse: (code:Int,message:String?) -> Unit) {
         viewModelScope.launch {
@@ -142,6 +153,18 @@ class MCPTeamViewModel : ViewModel(){
                 if(code==0&&data!=null){
                     data.forEach {
                         _mcpTeamMembers[it.memberId]=it
+                    }
+                }
+            }
+        }
+    }
+    fun queryMCPTeamToolMakers(team: AIPortTeam){
+        viewModelScope.launch {
+            getPlatform().queryTeamToolMakers(team){
+                    (code, message, data) ->
+                if(code==0&&data!=null){
+                    data.forEach {
+                        _mcpTeamToolMakers[it.toolMakerId]=it
                     }
                 }
             }
