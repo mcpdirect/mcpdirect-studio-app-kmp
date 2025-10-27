@@ -23,7 +23,7 @@ import kotlin.wasm.unsafe.withScopedMemoryAllocator
 external val AI_MCPDIRECT_HSTP_WEBPORT:String
 actual external fun sha256(value:String):String
 actual external fun currentMilliseconds():Long
-
+external fun env(value:String):String?
 @OptIn(ExperimentalWasmJsInterop::class)
 class WasmPlatform : WebPlatform() {
 
@@ -36,7 +36,9 @@ class WasmPlatform : WebPlatform() {
 
     override fun copyToClipboard(text: String) {
     }
-
+    override fun getenv(key: String): String? {
+        return env(key)
+    }
     //    override fun login(
 //        account: String,
 //        password: String,

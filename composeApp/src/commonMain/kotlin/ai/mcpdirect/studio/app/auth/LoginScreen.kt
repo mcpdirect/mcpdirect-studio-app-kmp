@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.auth
 
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import androidx.compose.foundation.Image
@@ -17,7 +18,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_platform_logo
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_studio_256
+import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_studio_logo
+import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_text_logo
 import mcpdirectstudioapp.composeapp.generated.resources.visibility
 import mcpdirectstudioapp.composeapp.generated.resources.visibility_off
 import org.jetbrains.compose.resources.painterResource
@@ -35,11 +39,22 @@ fun LoginScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(Res.drawable.mcpdirect_studio_256),
+            painter = painterResource(Res.drawable.mcpdirect_text_logo),
             contentDescription = "MCPdirect Studio",
             modifier = Modifier.width(256.dp)
         )
+        if(getPlatform().type==0) Image(
+            painter = painterResource(Res.drawable.mcpdirect_platform_logo),
+            contentDescription = "MCPdirect Studio",
+            modifier = Modifier.width(256.dp)
+        ) else Image(
+            painter = painterResource(Res.drawable.mcpdirect_studio_logo),
+            contentDescription = "MCPdirect Studio",
+            modifier = Modifier.width(256.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
+            modifier = Modifier.width(256.dp),
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
@@ -55,6 +70,7 @@ fun LoginScreen() {
         var passwordVisibility by remember { mutableStateOf(false) }
 
         OutlinedTextField(
+            modifier = Modifier.width(256.dp),
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
@@ -95,10 +111,10 @@ fun LoginScreen() {
                 Text("Forgot Password?")
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        TextButton(onClick = { authViewModel.navigateTo(AuthScreen.AuthOption) }) {
-            Text("Back")
-        }
+//        Spacer(modifier = Modifier.height(16.dp))
+//        TextButton(onClick = { authViewModel.navigateTo(AuthScreen.AuthOption) }) {
+//            Text("Back")
+//        }
 //        Spacer(modifier = Modifier.height(32.dp))
 //        Row {
 //            Button(onClick = { authViewModel.loginWithGoogle() }) {

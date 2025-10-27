@@ -1,13 +1,14 @@
 package ai.mcpdirect.studio.app.agent
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.StudioIcon
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.StudioToolbar
-import ai.mcpdirect.studio.app.compose.TooltipIcon
+import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerDialog
@@ -40,14 +41,20 @@ fun MyStudioScreen(){
     Row(Modifier.fillMaxSize()){
         LazyColumn(Modifier.wrapContentHeight().width(250.dp).padding(start = 8.dp, top = 16.dp, bottom = 16.dp)) {
             items(generalViewModel.toolAgents){
-                if(it.id!=0L&&it.id!= getPlatform().toolAgentId) StudioListItem(
+                if(it.id!=0L) StudioListItem(
                     selected = it.id==myStudioViewModel.toolAgent.id,
                     modifier = Modifier.clickable(
                         enabled = uiState !is UIState.Loading && it.id!=myStudioViewModel.toolAgent.id
                     ){
-                        myStudioViewModel.toolAgent(it)
+                        if(it.id== getPlatform().toolAgentId)
+                            generalViewModel.currentScreen(Screen.ConnectMCP)
+                        else myStudioViewModel.toolAgent(it)
                     },
                     headlineContent = {Text(it.name)},
+                    supportingContent = {
+                        if(it.id == getPlatform().toolAgentId)
+                            Tag("This device")
+                    },
                     trailingContent = {
                         if(it.status==0) Icon(
                             painterResource(Res.drawable.cloud_off),

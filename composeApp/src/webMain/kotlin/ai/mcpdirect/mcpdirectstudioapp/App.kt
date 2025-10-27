@@ -6,7 +6,11 @@ import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.agent.MyStudioScreen
 import ai.mcpdirect.studio.app.auth.AuthScreen
+import ai.mcpdirect.studio.app.auth.ForgotPasswordOtpVerificationScreen
+import ai.mcpdirect.studio.app.auth.ForgotPasswordScreen
 import ai.mcpdirect.studio.app.auth.LoginScreen
+import ai.mcpdirect.studio.app.auth.RegisterOtpVerificationScreen
+import ai.mcpdirect.studio.app.auth.RegisterScreen
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
@@ -145,12 +149,21 @@ fun App(){
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Column(Modifier.weight(1.0f)){
-
-                }
                 when(authViewModel.currentScreen){
                     AuthScreen.Login -> {
                         LoginScreen()
+                    }
+                    AuthScreen.Register ->{
+                        RegisterScreen()
+                    }
+                    AuthScreen.RegisterOtpVerification -> {
+                        RegisterOtpVerificationScreen()
+                    }
+                    AuthScreen.ForgotPassword -> {
+                        ForgotPasswordScreen()
+                    }
+                    AuthScreen.ForgotPasswordOtpVerification -> {
+                        ForgotPasswordOtpVerificationScreen()
                     }
                     else -> {
 

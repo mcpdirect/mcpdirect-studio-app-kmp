@@ -6,6 +6,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_logo_48
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_studio_icon_transparent_48
 import org.jetbrains.compose.resources.painterResource
 
@@ -19,7 +20,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "MCPdirect Studio v$version",
         state = windowState,
-        icon = painterResource(Res.drawable.mcpdirect_studio_icon_transparent_48)
+        icon = painterResource(Res.drawable.mcpdirect_logo_48)
     ) {
         App()
     }

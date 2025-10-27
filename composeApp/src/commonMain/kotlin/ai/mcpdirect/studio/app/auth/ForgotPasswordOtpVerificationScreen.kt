@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.auth
 
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -37,10 +38,20 @@ fun ForgotPasswordOtpVerificationScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(Res.drawable.mcpdirect_studio_256),
+            painter = painterResource(Res.drawable.mcpdirect_text_logo),
             contentDescription = "MCPdirect Studio",
             modifier = Modifier.width(256.dp)
         )
+        if(getPlatform().type==0) Image(
+            painter = painterResource(Res.drawable.mcpdirect_platform_logo),
+            contentDescription = "MCPdirect Studio",
+            modifier = Modifier.width(256.dp)
+        ) else Image(
+            painter = painterResource(Res.drawable.mcpdirect_studio_logo),
+            contentDescription = "MCPdirect Studio",
+            modifier = Modifier.width(256.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         Text("Set new password for ${authViewModel.forgotPasswordEmail}")
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
@@ -49,6 +60,7 @@ fun ForgotPasswordOtpVerificationScreen() {
             label = { Text("OTP") },
             singleLine = true,
             modifier = Modifier
+                .width(256.dp)
                 .focusRequester(otpFocusRequester)
                 .onKeyEvent {
                     if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
@@ -78,6 +90,7 @@ fun ForgotPasswordOtpVerificationScreen() {
                 }
             },
             modifier = Modifier
+                .width(256.dp)
                 .focusRequester(newPasswordFocusRequester)
                 .onKeyEvent {
                     if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
@@ -107,6 +120,7 @@ fun ForgotPasswordOtpVerificationScreen() {
                 }
             },
             modifier = Modifier
+                .width(256.dp)
                 .focusRequester(confirmNewPasswordFocusRequester)
                 .onKeyEvent {
                     if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {

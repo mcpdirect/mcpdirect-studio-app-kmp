@@ -96,9 +96,6 @@ fun App(){
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Column(Modifier.weight(1.0f)){
-
-                }
                 when(authViewModel.currentScreen){
                     AuthScreen.Login -> {
                         LoginScreen()

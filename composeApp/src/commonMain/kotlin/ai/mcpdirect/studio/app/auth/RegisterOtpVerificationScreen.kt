@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.auth
 
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -39,13 +40,24 @@ fun RegisterOtpVerificationScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(Res.drawable.mcpdirect_studio_256),
+            painter = painterResource(Res.drawable.mcpdirect_text_logo),
             contentDescription = "MCPdirect Studio",
             modifier = Modifier.width(256.dp)
         )
+        if(getPlatform().type==0) Image(
+            painter = painterResource(Res.drawable.mcpdirect_platform_logo),
+            contentDescription = "MCPdirect Studio",
+            modifier = Modifier.width(256.dp)
+        ) else Image(
+            painter = painterResource(Res.drawable.mcpdirect_studio_logo),
+            contentDescription = "MCPdirect Studio",
+            modifier = Modifier.width(256.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         Text("Enter OTP sent to ${authViewModel.registrationEmail}")
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
+            modifier = Modifier.width(256.dp),
             value = otp,
             onValueChange = { otp = it },
             label = { Text("OTP") }
@@ -59,6 +71,7 @@ fun RegisterOtpVerificationScreen() {
             label = { Text("Your Name") },
             singleLine = true,
             modifier = Modifier
+                .width(256.dp)
                 .focusRequester(passwordFocusRequester)
                 .onKeyEvent {
                     if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
@@ -88,6 +101,7 @@ fun RegisterOtpVerificationScreen() {
                 }
             },
             modifier = Modifier
+                .width(256.dp)
                 .focusRequester(passwordFocusRequester)
                 .onKeyEvent {
                     if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
@@ -117,6 +131,7 @@ fun RegisterOtpVerificationScreen() {
                 }
             },
             modifier = Modifier
+                .width(256.dp)
                 .focusRequester(confirmPasswordFocusRequester)
                 .onKeyEvent {
                     if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
