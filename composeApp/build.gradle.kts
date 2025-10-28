@@ -51,15 +51,20 @@ kotlin {
     }
 }
 
-
 compose.desktop {
     application {
+        val version = System.getenv("AI_MCPDIRECT_STUDIO_APP_VERSION")
         mainClass = "ai.mcpdirect.mcpdirectstudioapp.MainKt"
-
+        jvmArgs += listOf(
+            "-Dai.mcpdirect.studio.app.version=${version}",
+            "-Dai.mcpdirect.gateway.endpoint=${System.getenv("AI_MCPDIRECT_GATEWAY_ENDPOINT")}",
+            "-Dai.mcpdirect.hstp.webport=${System.getenv("AI_MCPDIRECT_HSTP_WEBPORT")}",
+            "-Dai.mcpdirect.hstp.service.gateway=${System.getenv("AI_MCPDIRECT_HSTP_SERVICE_GATEWAY")}",
+        )
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "ai.mcpdirect.mcpdirectstudioapp"
-            packageVersion = "1.0.0"
+            packageVersion = version
         }
     }
 }
