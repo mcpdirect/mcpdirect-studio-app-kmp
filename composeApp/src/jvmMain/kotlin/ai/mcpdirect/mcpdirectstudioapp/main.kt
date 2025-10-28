@@ -12,13 +12,10 @@ import org.jetbrains.compose.resources.painterResource
 
 fun main() = application {
     val windowState = rememberWindowState(size = DpSize(1024.dp, 768.dp))
-    val version = System.getProperty("ai.mcpdirect.studio.app.version")
-    println(System.getProperty("ai.mcpdirect.studio.app.version"))
-    println(System.getProperty("ai.mcpdirect.hstp.webport"))
-    println(System.getProperty("ai.mcpdirect.hstp.service.gateway"))
+    val version = System.getProperty("ai.mcpdirect.studio.app.version")?:""
     Window(
         onCloseRequest = ::exitApplication,
-        title = "MCPdirect Studio v$version",
+        title = "MCPdirect Studio $version",
         state = windowState,
         icon = painterResource(Res.drawable.mcpdirect_logo_48)
     ) {

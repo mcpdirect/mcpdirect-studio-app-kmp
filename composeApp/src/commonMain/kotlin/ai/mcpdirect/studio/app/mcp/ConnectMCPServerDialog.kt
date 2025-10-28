@@ -111,7 +111,7 @@ fun ConnectMCPServerDialog(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-            Text("Connect MCP Servers${title?.let { " to ${it}" }}")
+            Text("Connect MCP Servers${title?.let { " to ${it}" }?:""}")
 //            Button({
 //                pasteJsonFromClipboard()
 //            }){

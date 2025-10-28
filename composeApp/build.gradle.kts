@@ -43,10 +43,10 @@ kotlin {
             implementation("ai.mcpdirect:mcpdirect-studio-core:1.2.0-SNAPSHOT")
         }
         jsMain.dependencies {
-            implementation(compose.material)
+            implementation(compose.material3)
         }
         wasmJsMain.dependencies {
-            implementation(compose.material)
+            implementation(compose.material3)
         }
     }
 }

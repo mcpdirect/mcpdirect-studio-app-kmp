@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-10-29
+### Changed
+- Updated UI components from material to material3
+- Fixed potential null pointer issue in ConnectMCP server dialog
+- Improved null safety handling in application startup
+
 ## 2025-10-22
 ### Added
 - Third iteration of changelog generation and git commit workflow
