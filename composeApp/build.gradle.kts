@@ -63,8 +63,19 @@ compose.desktop {
         )
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "ai.mcpdirect.mcpdirectstudioapp"
+            packageName = "MCPdirect Studio"
             packageVersion = version
+            windows {
+                iconFile.set(project.file("icons/icon.ico")) // For Windows
+                menu = true
+            }
+            macOS {
+                iconFile.set(project.file("icons/icon.icns")) // For macOS
+                dockName = "MCPdirect Studio"
+            }
+            linux {
+                iconFile.set(project.file("icons/icon.png")) // For Linux
+            }
         }
     }
 }
