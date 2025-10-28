@@ -63,6 +63,7 @@ compose.desktop {
         )
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            modules("java.naming")
             packageName = "MCPdirect Studio"
             packageVersion = version
             windows {
