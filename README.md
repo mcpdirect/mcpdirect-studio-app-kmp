@@ -1,58 +1,91 @@
-This is a Kotlin Multiplatform project targeting Web, Desktop (JVM).
-
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-    - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-      the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-      Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-      folder is the appropriate location.
-
-### Build and Run Desktop (JVM) Application
-
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
-
-### Build and Run Web Application
-
-To build and run the development version of the web app, use the run configuration from the run widget
-in your IDE's toolbar or run it directly from the terminal:
-
-- for the Wasm target (faster, modern browsers):
-    - on macOS/Linux
-      ```shell
-      ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
-      ```
-    - on Windows
-      ```shell
-      .\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
-      ```
-- for the JS target (slower, supports older browsers):
-    - on macOS/Linux
-      ```shell
-      ./gradlew :composeApp:jsBrowserDevelopmentRun
-      ```
-    - on Windows
-      ```shell
-      .\gradlew.bat :composeApp:jsBrowserDevelopmentRun
-      ```
+<img src="composeApp/icons/icon.png" alt=""> 
 
 ---
+# MCPDirect: Universal MCP Access Gateway
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+With MCPdirect, you can centrally manage, authorize, and access all your MCP Servers and tools.
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack
-channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+<img src="assets/image/unified-access-gateway.png" alt="">
+
+---
+## Features
+
+### Deploy Anywhere, Access Everywhere
+* MCP Server can be deployed in any network environment: Home / Office / Mobile Device / Cloud
+* MCP Client can access from anywhere: Home / Office / Mobile Device / Cloud
+
+### Flexible Management, Customizable on Demand
+* Centrally manage all MCP Server and tool statuses
+* Each tool can be individually enabled/disabled for easier testing and isolation
+* Virtual MCP Server. Quickly build customized services by logically combining different tool sets
+* Enhance team collaboration. Team members can share their MCP Servers and tools with each other
+* Maintains existing MCP Server/Client unchanged, enabling smooth upgrades
+
+### Unified Authentication, Fine-grained Authorization
+* Create different keys for different user scenarios
+* Different keys access different MCP Servers and tool sets
+* Grant tool access permissions for each key
+
+---
+## New Features in MCPdirect 2.0
+
+* Virtual MCP Server
+* MCP Team
+* Remote MCP Server Management
+
+---
+## Quick Start
+
+### Prerequisites
+* Download MCPdirect Studio
+* Register/Log in
+
+### Usage
+<div>
+  <img src="composeApp/src/commonMain/composeResources/drawable/plug_connect.svg" alt="" style="vertical-align: middle;" /> 
+  <span style="vertical-align: middle;">Connect MCP</span>
+</div>
+<div>
+  <img src="composeApp/src/commonMain/composeResources/drawable/key.svg" alt="" style="vertical-align: middle;" /> 
+  <span style="vertical-align: middle;">MCP Key</span>
+</div>
+<div>
+  <img src="composeApp/src/commonMain/composeResources/drawable/graph_5.svg" alt="" style="vertical-align: middle;" /> 
+  <span style="vertical-align: middle;">My Studios</span>
+</div>
+<div>
+  <img src="composeApp/src/commonMain/composeResources/drawable/diversity_3.svg" alt="" style="vertical-align: middle;" /> 
+  <span style="vertical-align: middle;">MCP Team</span>
+</div>
+<div>
+  <img src="composeApp/src/commonMain/composeResources/drawable/design_services.svg" alt="" style="vertical-align: middle;" /> 
+  <span style="vertical-align: middle;">Virtual MCP</span>
+</div>
+
+---
+#### Connect MCP
+![connect_mcp.png](assets/screenshot/connected_mcp.png)
+
+![connect_mcp.png](assets/screenshot/connect_mcp.png)
+
+---
+#### MCP Keys
+
+![mcp_key.png](assets/screenshot/mcp_key.png)
+
+![tool_permission.png](assets/screenshot/tool_permission.png)
+
+---
+#### My Studio
+
+![my_studio.png](assets/screenshot/my_studio.png)
+
+---
+#### MCP Team
+
+![mcp_team.png](assets/screenshot/mcp_team.png)
+
+---
+#### Virtual MCP
+
+![virtual_mcp.png](assets/screenshot/virtual_mcp.png)
