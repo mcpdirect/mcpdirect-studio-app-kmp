@@ -1,12 +1,26 @@
-<img src="composeApp/icons/icon.png" alt=""> 
+<img height="64" src="composeApp/icons/icon.png">
+<img height="64" src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_text_logo.png" alt=""/>
 
----
 # MCPDirect：通用MCP访问网关
+[English](README.md)
 * **用一个URL访问你所有的 MCP Server 和工具**
 * **统一管理，统一授权，统一访问你所有的MCP Server和工具**
 * **并且可以和你的团队分享你的MCP Server 和工具**
 
 <img src="assets/image/unified-access-gateway.png" alt="">
+
+---
+## MCPdirect解决了哪些问题
+### 1. AI Agent重复配置MCP Server
+在每一个AI Agent中都需要重复配置之前的众多MCP Server
+
+使用MCPdirect只需要配置一次，之后在任何AI Agent中只需要用统一的URL就可以访问
+
+### 2. AI Agent无法通过Internet访问运行在私有空间(办公室/家)的MCP Server
+使用MCPdirect，AI Agent可以从任何地方安全的访问运行在私有空间的MCP Server
+
+### 3. 在团队合作中如何分享MCP Server
+使用MCPdirect，任何团队成员都可以安全的分享自己MCP Server，任何团队成员都可以安全的使用分享的MCP Server
 
 ---
 ## 特点
@@ -26,17 +40,35 @@
 * 为每个 Key 授权 Tools 的访问权限
 
 ---
-## MCPdirect 2.0 新功能
+## 如何使用MCPdirect
+1. 下载/运行MCPdirect Studio
+2. 在MCPdirect Studio中连接一些MCP Server
+3. 在MCPdirect Studio中创建MCPdirect Key
+4. 授权MCPdirect Key访问某些MCP Server
+5. AI Agent通过https://connect.mcpdirect.ai/your_MCPdirect_key/sse 或 https://connect.mcpdirect.ai/your_MCPdirect_key/mcp 访问MCP Server
 
+---
+## MCPdirect 2.0 新功能
 * Virtual MCP Server
 * MCP Team
 * 远程管理 MCP Server
 
 ---
-## 快速入门
+<img height="64" src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_text_logo.png" alt=""/>
+<img height="64" src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_studio_logo.png" alt=""/>
+
+## MCPdirect Studio是什么
+* MCPdirect Studio是一个MCP Server的集中器。可以同时连接多个MCP Server，并通过MCPdirect统一访问
+* 连接到 MCPdirect Studio 上的 MCP Server，都可以通过 https://connect.mcpdirect.ai/your_MCPdirect_key/sse 或 https://connect.mcpdirect.ai/your_MCPdirect_key/mcp 被AI Agent访问到
+* MCPdirect Studio允许安装在私有环境中(办公室/家)，连接私有的MCP Server
+
+---
+
+## MCPdirect Studio快速入门
 
 ### 准备
 * 下载 [MCPdirect Studio](https://github.com/mcpdirect/mcpdirect-studio-app-kmp/releases)
+
 * 注册/登录
 
 ### 使用

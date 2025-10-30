@@ -2,6 +2,7 @@
 
 ---
 # MCPDirect: Universal MCP Access Gateway
+[中文](README.zh-CN.md)
 
 With MCPdirect, you can centrally manage, authorize, and access all your MCP Servers and tools.
 
