@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-02
 ### Added
+- New template list view and view model for MCP templates
+- Enhanced template management functionality
+- Improved user and team member data models
+
+### Changed
+- Updated platform-specific code and general view model
+- Enhanced My Studio screen and tool management
+- Improved web platform app components
+- Updated navigation and screen components
+
+## 2025-11-02
+### Added
 - New team tool maker template screen and view model
 - Enhanced team tool maker functionality with template support
 

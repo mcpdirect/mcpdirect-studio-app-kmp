@@ -84,8 +84,8 @@ fun App(){
                 NavigationTopBar(
                     screens = listOf(
                         Screen.Dashboard,
-                        Screen.MCPTools,
                         Screen.MyStudio,
+                        Screen.MCPTools,
                         Screen.MCPTeam,
 //                        Screen.ToolDevelopment -> {}
                         Screen.MCPAccessKey,

@@ -100,7 +100,13 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<Boolean>>(it))
         }
     }
-
+    fun getUser(userId:Long,onResponse: (resp: AIPortServiceResponse<AIPortUser>) -> Unit) {
+        hstpRequest("$accountUsl/user/get", mapOf(
+            "userId" to JsonPrimitive(userId)
+        )){
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortUser>>(it))
+        }
+    }
     fun queryToolMakers(type:Int?=null, name:String?=null, toolAgentId:Long?=null,
                         teamId:Long?=null, lastUpdated:Long=-1,
                                  onResponse: (resp: AIPortServiceResponse<List<AIPortToolMaker>>) -> Unit) {
@@ -333,6 +339,18 @@ interface Platform {
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamMember>>>(it))
+        }
+    }
+    fun getTeamMember(teamId: Long,memberId: Long,
+                         onResponse: (resp: AIPortServiceResponse<AIPortTeamMember>) -> Unit
+    ) {
+        hstpRequest(
+            "$accountUsl/team/member/get", mapOf(
+                "teamId" to JsonPrimitive(teamId),
+                "memberId" to JsonPrimitive(memberId)
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortTeamMember>>(it))
         }
     }
     fun acceptTeamMember(teamId: Long, memberId: Long,

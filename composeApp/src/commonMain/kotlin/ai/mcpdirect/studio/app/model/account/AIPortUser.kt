@@ -8,7 +8,8 @@ data class AIPortUser(
     var name: String = "",
     var language: String = "",
     var created: Long = 0,
-    var type: Int = 0
+    var type: Int = 0,
+    var account:String = ""
 ) {
     constructor() : this(0, "", "", 0, 0)
     companion object{

@@ -8,6 +8,8 @@ import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
+import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
+import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.template.CreateMCPServerTemplateDialog
@@ -204,7 +206,7 @@ fun MCPServerItem(){
 
 @Composable
 fun MCPTemplateList(){
-    val viewModel = remember { mcpToolsViewModel }
+    val viewModel = mcpToolsViewModel
     LaunchedEffect(viewModel){
         viewModel.queryToolMakerTemplates()
     }
@@ -212,10 +214,15 @@ fun MCPTemplateList(){
         items(viewModel.toolMakerTemplates){ template ->
             val me = template.userId== authViewModel.user.id
             var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
+            var user by remember { mutableStateOf<AIPortUser?>(null)}
             LaunchedEffect(null){
                 generalViewModel.toolAgent(template.agentId){
                     code, message, data ->
                     toolAgent = data
+                }
+                generalViewModel.user(template.userId){
+                    code, message, data ->
+                    user = data;
                 }
             }
             toolAgent?.let { agent ->
@@ -224,21 +231,23 @@ fun MCPTemplateList(){
                     modifier = Modifier.clickable{
                         viewModel.toolMakerTemplate(template)
                     },
-                overlineContent = {
-                    Row {
-                        StudioIcon(
-                            Res.drawable.person,
-                            "Owner",
-                            modifier = Modifier.size(18.dp).padding(end = 4.dp)
-                        )
-                        if(me) Text("Me")
-//                        else if(team!=null) TooltipText(
-//                            team.ownerName,
-//                            contentDescription = team.ownerAccount,
-//                            overflow = TextOverflow.Ellipsis
-//                        )
-                    }
-                },
+                    overlineContent = {
+                        Row {
+                            StudioIcon(
+                                Res.drawable.person,
+                                "Owner",
+                                modifier = Modifier.size(18.dp).padding(end = 4.dp)
+                            )
+                            if(me) Text("Me")
+                            else user?.let {
+                                TooltipText(
+                                    it.name,
+                                    contentDescription = it.account,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    },
                     headlineContent = { Text(
                         template.name,
                         maxLines = 1,

@@ -1,4 +1,4 @@
-package ai.mcpdirect.studio.app.tool
+package ai.mcpdirect.studio.app.template
 
 import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
@@ -15,12 +15,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-val mcpToolsViewModel = MCPToolsViewModel()
-class MCPToolsViewModel: ViewModel() {
-    var toolMaker by mutableStateOf<AIPortToolMaker?>(null)
-        private  set
-    var mcpServerConfig by mutableStateOf<MCPServerConfig?>(null)
-        private set
+val mcpTemplateListViewModel = MCPTemplateListViewModel()
+class MCPTemplateListViewModel: ViewModel() {
     private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
 
     val toolMakerTemplates by derivedStateOf {
@@ -29,31 +25,8 @@ class MCPToolsViewModel: ViewModel() {
     var toolMakerTemplate by mutableStateOf<AIPortToolMakerTemplate?>(null)
         private  set
 
-    fun toolMaker(maker: AIPortToolMaker?){
-        toolMaker = maker
-        mcpServerConfig = null
-    }
     fun toolMakerTemplate(template: AIPortToolMakerTemplate?){
         toolMakerTemplate = template
-    }
-    fun getMCPServerConfig(id:Long) {
-        viewModelScope.launch {
-            getPlatform().getMCPServerConfig(id) {
-                if (it.code == AIPortServiceResponse.SERVICE_SUCCESSFUL) {
-                    it.data?.let {
-                        if (it.id == id) {
-                            val config = MCPServerConfig()
-                            config.transport = it.transport
-                            config.url = it.url
-                            config.command = it.command
-                            config.args = JSON.decodeFromString(it.args)
-                            config.env = JSON.decodeFromString(it.env)
-                            mcpServerConfig = config
-                        }
-                    }
-                }
-            }
-        }
     }
     fun createToolMakerTemplate(name:String,type:Int,agentId:Long,config:String,inputs:String){
         viewModelScope.launch {

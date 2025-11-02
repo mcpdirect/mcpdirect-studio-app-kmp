@@ -44,6 +44,10 @@ class AIPortTeamMember {
     }
 
     companion object {
+        data class Key(val teamId: Long,val memberId: Long)
+        fun key(teamId: Long,memberId: Long):Key{
+            return Key(teamId,memberId)
+        }
         fun build(): AIPortTeamMember {
             return AIPortTeamMember()
         }

@@ -5,6 +5,7 @@ import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
+import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.*
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
@@ -136,9 +137,40 @@ class GeneralViewModel() : ViewModel() {
     fun team(id:Long): AIPortTeam?{
         return _teams[id]
     }
-    private val _teamMembers = mutableStateMapOf<Long, AIPortTeamMember>()
+    private val _teamMembers = mutableStateMapOf<AIPortTeamMember.Companion.Key, AIPortTeamMember>()
     val teamMembers by derivedStateOf {
         _teamMembers.values.toList()
+    }
+
+    fun teamMember(teamId:Long,memberId:Long,onResponse:((code:Int,message:String?,data: AIPortTeamMember?) -> Unit)){
+        val member = _teamMembers[AIPortTeamMember.key(teamId,memberId)]
+        if(member!=null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL,null,member)
+        else viewModelScope.launch {
+            getPlatform().getTeamMember(teamId,memberId){
+                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+                    it.data?.let {
+                        _teamMembers[AIPortTeamMember.key(it.teamId,it.memberId)] = it
+                    }
+                }
+                onResponse(it.code,it.message,it.data)
+            }
+        }
+    }
+
+    private val _users = mutableStateMapOf<Long, AIPortUser>()
+    fun user(userId:Long,onResponse:((code:Int,message:String?,data: AIPortUser?) -> Unit)) {
+        val member = _users[userId]
+        if (member != null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL, null, member)
+        else viewModelScope.launch {
+            getPlatform().getUser(userId) {
+                if (it.code == AIPortServiceResponse.SERVICE_SUCCESSFUL) {
+                    it.data?.let {
+                        _users[it.id] = it
+                    }
+                }
+                onResponse(it.code, it.message, it.data)
+            }
+        }
     }
 
     fun reset(){
