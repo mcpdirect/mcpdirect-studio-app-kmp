@@ -420,6 +420,18 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolAgent>>(it))
         }
     }
+    fun getMCPServerConfig(
+        configId: Long,
+        onResponse: (resp: AIPortServiceResponse<AIPortMCPServerConfig>) -> Unit
+    ) {
+        hstpRequest(
+            "$aitoolsUSL/tool_maker/mcp_server_config/get", mapOf(
+                "configId" to JsonPrimitive(configId),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortMCPServerConfig>>(it))
+        }
+    }
 }
 
 expect fun getPlatform(): Platform

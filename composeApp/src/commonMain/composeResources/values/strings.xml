@@ -18,4 +18,5 @@
     <string name="virtual_mcp">Virtual MCP</string>
     <string name="tool_details">Tool Details</string>
     <string name="dashboard">Dashboard</string>
+    <string name="mcp_tools">MCP Tools</string>
 </resources>

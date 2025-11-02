@@ -226,7 +226,7 @@ fun ToolPermissionScreen() {
 }
 
 @Composable
-fun AgentList(){
+private fun AgentList(){
     val viewModel = toolPermissionViewModel
     LazyColumn() {
         items(viewModel.toolAgents){
@@ -257,7 +257,7 @@ fun AgentList(){
 }
 
 @Composable
-fun TeamList(){
+private fun TeamList(){
     generalViewModel.refreshTeams()
     val viewModel = toolPermissionViewModel
     LazyColumn(Modifier.fillMaxHeight()) {

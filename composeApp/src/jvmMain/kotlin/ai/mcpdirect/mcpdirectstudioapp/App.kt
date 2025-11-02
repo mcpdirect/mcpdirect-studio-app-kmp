@@ -19,12 +19,12 @@ import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
+import ai.mcpdirect.studio.app.tool.MCPToolsScreen
 import ai.mcpdirect.studio.app.tool.ToolDetailScreen
 import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -48,6 +48,7 @@ fun App(){
 //                        Screen.ToolDevelopment -> {}
                         Screen.Dashboard,
                         Screen.ConnectMCP,
+                        Screen.MCPTools,
                         Screen.MCPAccessKey,
 //                        Screen.ToolsLogbook,
                         Screen.MyStudio,
@@ -91,6 +92,7 @@ fun App(){
                         Screen.ToolDetails -> {
                             ToolDetailScreen()
                         }
+                        Screen.MCPTools -> MCPToolsScreen()
 
                     }
                 }

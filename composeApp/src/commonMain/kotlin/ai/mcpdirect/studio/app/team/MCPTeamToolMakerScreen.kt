@@ -26,7 +26,6 @@ import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
 import mcpdirectstudioapp.composeapp.generated.resources.info
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -154,7 +153,7 @@ fun MCPTeamToolMakerScreen() {
 
 
 @Composable
-private fun ToolMakerItem(
+fun ToolMakerItem(
     maker: AIPortToolMaker,
     onClick: () -> Unit
 ) {

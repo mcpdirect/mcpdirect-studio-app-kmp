@@ -46,6 +46,9 @@ class GeneralViewModel() : ViewModel() {
     val toolAgents by derivedStateOf {
         _toolAgents.values.toList()
     }
+    fun toolAgent(id:Long): AIPortToolAgent?{
+        return _toolAgents[id]
+    }
     private val _toolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
     val toolMakers by derivedStateOf {
         _toolMakers.values.toList()
@@ -93,6 +96,9 @@ class GeneralViewModel() : ViewModel() {
     }
     fun team(team: AIPortTeam){
         _teams[team.id]=team
+    }
+    fun team(id:Long): AIPortTeam?{
+        return _teams[id]
     }
     private val _teamMembers = mutableStateMapOf<Long, AIPortTeamMember>()
     val teamMembers by derivedStateOf {

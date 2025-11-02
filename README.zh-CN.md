@@ -36,31 +36,27 @@
 ## 快速入门
 
 ### 准备
-* 下载 [MCPdirect Studio](https://github.com/mcpdirect/mcpdirect-studio-app-kmp/releases)
+* 下载 MCPdirect Studio
 * 注册/登录
 
 ### 使用
-* <div>
+<div>
   <img src="composeApp/src/commonMain/composeResources/drawable/plug_connect.svg" alt="" style="vertical-align: middle;" /> 
   <span style="vertical-align: middle;">Connect MCP</span>
 </div>
-
-* <div>
+<div>
   <img src="composeApp/src/commonMain/composeResources/drawable/key.svg" alt="" style="vertical-align: middle;" /> 
-  <span style="vertical-align: middle;">MCP Key</span> 
+  <span style="vertical-align: middle;">MCP Key</span>
 </div>
-
-* <div>
+<div>
   <img src="composeApp/src/commonMain/composeResources/drawable/graph_5.svg" alt="" style="vertical-align: middle;" /> 
   <span style="vertical-align: middle;">My Studios</span>
 </div>
-
-* <div>
+<div>
   <img src="composeApp/src/commonMain/composeResources/drawable/diversity_3.svg" alt="" style="vertical-align: middle;" /> 
   <span style="vertical-align: middle;">MCP Team</span>
 </div>
-
-* <div>
+<div>
   <img src="composeApp/src/commonMain/composeResources/drawable/design_services.svg" alt="" style="vertical-align: middle;" /> 
   <span style="vertical-align: middle;">Virtual MCP</span>
 </div>

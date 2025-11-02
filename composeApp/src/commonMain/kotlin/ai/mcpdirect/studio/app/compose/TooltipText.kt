@@ -11,24 +11,31 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StudioIcon(
-    icon: DrawableResource,
+fun TooltipText(
+    text: String,
     contentDescription: String,
-    tint: Color = LocalContentColor.current,
-    modifier: Modifier = Modifier,
-
+    overflow: TextOverflow = TextOverflow.Clip,
 ) {
-    Icon(
-        modifier = modifier,
-        tint = tint,
-        painter = painterResource(icon),
-        contentDescription = contentDescription // tooltip provides description
-    )
+    val tooltipState = rememberTooltipState()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        state = tooltipState,
+        tooltip = {
+            PlainTooltip {
+                Text(contentDescription)
+            }
+        },
+    ) {
+        Text(
+            text,
+            overflow = overflow
+        )
+    }
 }

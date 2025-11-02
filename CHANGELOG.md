@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 
 ## 2025-10-29
+### Added
+- New template functionality for creating MCP server templates
+- Tooltips implementation for improved UI experience
+- New SVG icons for UI elements
+- Template-related view models and screens
+
+### Changed
+- Updated UI components and navigation elements
+- Enhanced tool management and permission screens
+- Improved authentication and authorization view models
+- Updated gradle wrapper and build configurations
+- UI state and screen navigation improvements
+
+## 2025-10-29
 ### Changed
 - Translated README content from Chinese to English
 - Replaced README.md content with English translation of README.zh-CN.md
