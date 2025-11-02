@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.auth.authViewModel
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.aitool.*
@@ -49,6 +50,20 @@ class GeneralViewModel() : ViewModel() {
     fun toolAgent(id:Long): AIPortToolAgent?{
         return _toolAgents[id]
     }
+    fun toolAgent(id:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
+        val agent = _toolAgents[id]
+        if(agent!=null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL,null,agent)
+        else viewModelScope.launch {
+            getPlatform().getToolAgent(id){
+                onResponse(it.code,it.message,it.data)
+                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+                    it.data?.let {
+                        _toolAgents[it.id] = it
+                    }
+                }
+            }
+        }
+    }
     private val _toolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
     val toolMakers by derivedStateOf {
         _toolMakers.values.toList()
@@ -78,6 +93,27 @@ class GeneralViewModel() : ViewModel() {
     val teamToolMakers by derivedStateOf {
         _teamToolMakers.values.toList()
     }
+
+    // tool maker template
+    private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
+    val toolMakerTemplates by derivedStateOf {
+        _toolMakerTemplates.values.toList()
+    }
+    fun toolMakerTemplateExists(templateId: Long):Boolean{
+        return _toolMakerTemplates.contains(templateId)
+    }
+    fun toolMakerTemplate(id:Long): AIPortToolMakerTemplate?{
+        return _toolMakerTemplates[id]
+    }
+//    fun toolMakerTemplates(team: AIPortTeam): List<AIPortToolMakerTemplate>{
+//        return _teamToolMakerTemplates.values.filter {it.teamId==team.id}
+//    }
+//    private val _teamToolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
+//    val teamToolMakerTemplates by derivedStateOf {
+//        _teamToolMakerTemplates.values.toList()
+//    }
+
+    // tool
     private val _tools = mutableStateMapOf<Long, AIPortTool>()
     private val _virtualTools = mutableStateListOf<AIPortVirtualTool>()
 
@@ -113,6 +149,7 @@ class GeneralViewModel() : ViewModel() {
         _virtualTools.clear()
         _virtualToolPermissions.clear()
         _teamToolMakers.clear()
+//        _teamToolMakerTemplates.clear()
         _teams.clear()
         _teamMembers.clear()
         currentScreen = Screen.Dashboard
@@ -162,6 +199,22 @@ class GeneralViewModel() : ViewModel() {
                 }
             }
             onResponse?.invoke(it.code, it.message)
+        }
+    }
+
+    fun refreshToolMakerTemplates(){
+        getPlatform().queryToolMakerTemplates(
+            lastUpdated = -1,
+        ){
+            if(it.successful()){
+                it.data?.let {
+//                    toolMakersLastQueried = getPlatform().currentMilliseconds
+                    it.forEach {
+//                        if(it.teamId!=0L) _teamToolMakerTemplates[it.id]=it
+                        _toolMakerTemplates[it.id]=it
+                    }
+                }
+            }
         }
     }
 

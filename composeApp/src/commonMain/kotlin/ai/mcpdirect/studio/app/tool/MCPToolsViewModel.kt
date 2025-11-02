@@ -5,7 +5,10 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -18,9 +21,20 @@ class MCPToolsViewModel: ViewModel() {
         private  set
     var mcpServerConfig by mutableStateOf<MCPServerConfig?>(null)
         private set
+    private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
+
+    val toolMakerTemplates by derivedStateOf {
+        _toolMakerTemplates.values.toList()
+    }
+    var toolMakerTemplate by mutableStateOf<AIPortToolMakerTemplate?>(null)
+        private  set
+
     fun toolMaker(maker: AIPortToolMaker?){
         toolMaker = maker
         mcpServerConfig = null
+    }
+    fun toolMakerTemplate(template: AIPortToolMakerTemplate?){
+        toolMakerTemplate = template
     }
     fun getMCPServerConfig(id:Long) {
         viewModelScope.launch {
@@ -35,6 +49,31 @@ class MCPToolsViewModel: ViewModel() {
                             config.args = JSON.decodeFromString(it.args)
                             config.env = JSON.decodeFromString(it.env)
                             mcpServerConfig = config
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fun createToolMakerTemplate(name:String,type:Int,agentId:Long,config:String,inputs:String){
+        viewModelScope.launch {
+            getPlatform().createToolMakerTemplate(name,type,agentId,config,inputs){
+                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+                    it.data?.let {
+                        _toolMakerTemplates[it.id] = it
+                    }
+                }
+            }
+        }
+    }
+    fun queryToolMakerTemplates(){
+        viewModelScope.launch {
+            getPlatform().queryToolMakerTemplates {
+                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+                    it.data?.let {
+                        it.forEach {
+                            _toolMakerTemplates[it.id] = it
+                            println(_toolMakerTemplates)
                         }
                     }
                 }

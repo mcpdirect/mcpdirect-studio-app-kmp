@@ -1,14 +1,17 @@
 package ai.mcpdirect.studio.app.model.aitool
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class AIPortTeamToolMakerTemplate {
-    var templateId: Long = 0
+    var toolMakerTemplateId: Long = 0
     var teamId: Long = 0
-    var status: Int? = null
+    var status: Int = -1
     var created: Long = 0
     var lastUpdated: Long = 0
 
     fun templateId(templateId: Long): AIPortTeamToolMakerTemplate {
-        this.templateId = templateId
+        this.toolMakerTemplateId = templateId
         return this
     }
 
@@ -17,7 +20,7 @@ class AIPortTeamToolMakerTemplate {
         return this
     }
 
-    fun status(status: Int?): AIPortTeamToolMakerTemplate {
+    fun status(status: Int): AIPortTeamToolMakerTemplate {
         this.status = status
         return this
     }
@@ -32,6 +35,14 @@ class AIPortTeamToolMakerTemplate {
         return this
     }
 
+    fun copy(): AIPortTeamToolMakerTemplate {
+        return build()
+            .templateId(toolMakerTemplateId)
+            .teamId(teamId)
+            .status(status)
+            .created(created)
+            .lastUpdated(lastUpdated)
+    }
     companion object {
         fun build(): AIPortTeamToolMakerTemplate {
             return AIPortTeamToolMakerTemplate()

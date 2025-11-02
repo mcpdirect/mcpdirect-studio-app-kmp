@@ -19,6 +19,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.service_toolbox
 import mcpdirectstudioapp.composeapp.generated.resources.settings
 import mcpdirectstudioapp.composeapp.generated.resources.share
 import mcpdirectstudioapp.composeapp.generated.resources.share_mcp_server
+import mcpdirectstudioapp.composeapp.generated.resources.share_mcp_template
 import mcpdirectstudioapp.composeapp.generated.resources.shield_toggle
 import mcpdirectstudioapp.composeapp.generated.resources.table_view
 import mcpdirectstudioapp.composeapp.generated.resources.tool_details
@@ -49,6 +50,9 @@ sealed class Screen(var title: StringResource, val icon: DrawableResource) {
         Res.drawable.diversity_3)
 
     object MCPTeamToolMaker : Screen(Res.string.share_mcp_server,
+        Res.drawable.share)
+
+    object MCPTeamToolMakerTemplate : Screen(Res.string.share_mcp_template,
         Res.drawable.share)
 
     object MCPAccessKey : Screen(Res.string.mcp_keys,

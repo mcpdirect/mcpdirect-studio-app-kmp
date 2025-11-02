@@ -15,12 +15,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.collections.set
 
-val mcpTeamToolMakerViewModel = MCPToolMakerTeamViewModel()
-class MCPToolMakerTeamViewModel: ViewModel() {
+val mcpTeamToolMakerViewModel = MCPTeamToolMakerViewModel()
+class MCPTeamToolMakerViewModel: ViewModel() {
     var searchQuery by mutableStateOf("")
         private set
     var uiState by mutableStateOf<UIState>(UIState.Idle)

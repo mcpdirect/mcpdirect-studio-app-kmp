@@ -36,7 +36,7 @@ class AIPortTeamToolMaker {
     }
     
     fun copy(): AIPortTeamToolMaker {
-        return _root_ide_package_.ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker.Companion.build()
+        return build()
             .toolMakerId(toolMakerId)
             .teamId(teamId)
             .status(status)

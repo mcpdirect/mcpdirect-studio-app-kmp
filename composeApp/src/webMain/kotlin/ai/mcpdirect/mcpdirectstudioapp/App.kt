@@ -17,6 +17,7 @@ import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
 import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
+import ai.mcpdirect.studio.app.team.MCPTeamToolMakerTemplateScreen
 import ai.mcpdirect.studio.app.template.MCPTemplateScreen
 import ai.mcpdirect.studio.app.theme.purple.AppTypography
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
@@ -118,6 +119,9 @@ fun App(){
                         Screen.MCPTeamToolMaker -> {
                             MCPTeamToolMakerScreen()
                         }
+                        Screen.MCPTeamToolMakerTemplate -> {
+                            MCPTeamToolMakerTemplateScreen()
+                        }
                         Screen.VirtualMCP -> {
                             VirtualMakerScreen()
                         }
@@ -127,7 +131,6 @@ fun App(){
                         Screen.ToolDetails -> {
                             ToolDetailScreen()
                         }
-
                         Screen.MCPTools -> {
                             MCPToolsScreen()
                         }

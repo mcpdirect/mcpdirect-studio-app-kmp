@@ -128,6 +128,13 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortToolAgent>>>(it))
         }
     }
+    fun getToolAgent(toolAgentId:Long,onResponse: (resp: AIPortServiceResponse<AIPortToolAgent>) -> Unit) {
+        hstpRequest("$aitoolsUSL/tool_agent/get", mapOf(
+            "toolAgentId" to JsonPrimitive(toolAgentId)
+        )){
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolAgent>>(it))
+        }
+    }
     fun queryTools(userId:Long?=null,status:Int?=null,agentId:Long?=null,makerId:Long?=null,name:String?=null,
                    onResponse: (resp: AIPortServiceResponse<List<AIPortTool>>) -> Unit) {
         hstpRequest("$aitoolsUSL/tool/query", mapOf(
@@ -352,6 +359,17 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamToolMaker>>>(it))
         }
     }
+    fun queryTeamToolMakerTemplates(team: AIPortTeam,
+                            onResponse: (resp: AIPortServiceResponse<List<AIPortTeamToolMakerTemplate>>) -> Unit){
+        hstpRequest(
+            "$aitoolsUSL/tool_maker/template/team/query", mapOf(
+                "teamId" to JsonPrimitive(team.id),
+                "teamOwnerId" to  JsonPrimitive(team.ownerId),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamToolMakerTemplate>>>(it))
+        }
+    }
     fun modifyTeamToolMakers(team: AIPortTeam, teamToolMakers: List<AIPortTeamToolMaker>,
                              onResponse: (resp: AIPortServiceResponse<List<AIPortTeamToolMaker>>) -> Unit){
         hstpRequest(
@@ -364,7 +382,17 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamToolMaker>>>(it))
         }
     }
-
+    fun modifyTeamToolMakerTemplates(teamId:Long, teamToolMakerTemplates: List<AIPortTeamToolMakerTemplate>,
+                             onResponse: (resp: AIPortServiceResponse<List<AIPortTeamToolMakerTemplate>>) -> Unit){
+        hstpRequest(
+            "$aitoolsUSL/tool_maker/template/team/modify", mapOf(
+                "teamId" to JsonPrimitive(teamId),
+                "teamToolMakerTemplates" to JSON.encodeToJsonElement(teamToolMakerTemplates)
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamToolMakerTemplate>>>(it))
+        }
+    }
     fun modifyVirtualTools(makerId: Long, tools: List<AIPortVirtualTool>,
                            onResponse: (resp: AIPortServiceResponse<List<AIPortVirtualTool>>) -> Unit){
         hstpRequest(
@@ -430,6 +458,36 @@ interface Platform {
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortMCPServerConfig>>(it))
+        }
+    }
+
+    fun createToolMakerTemplate(
+        name:String,type:Int,agentId:Long,config:String,inputs:String,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolMakerTemplate>) -> Unit
+    ) {
+        hstpRequest(
+            "$aitoolsUSL/tool_maker/template/create", mapOf(
+                "name" to JsonPrimitive(name),
+                "type" to JsonPrimitive(type),
+                "agentId" to JsonPrimitive(agentId),
+                "config" to JsonPrimitive(config),
+                "inputs" to JsonPrimitive(inputs),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolMakerTemplate>>(it))
+        }
+    }
+
+    fun queryToolMakerTemplates(
+        lastUpdated: Long = -1,
+        onResponse: (resp: AIPortServiceResponse<List<AIPortToolMakerTemplate>>) -> Unit
+    ) {
+        hstpRequest(
+            "$aitoolsUSL/tool_maker/template/query", mapOf(
+                "lastUpdated" to JsonPrimitive(lastUpdated),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortToolMakerTemplate>>>(it))
         }
     }
 }

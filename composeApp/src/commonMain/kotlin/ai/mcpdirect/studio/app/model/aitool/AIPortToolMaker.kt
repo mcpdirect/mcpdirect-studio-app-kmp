@@ -9,11 +9,11 @@ open class AIPortToolMaker {
     var status: Int = 0
     var lastUpdated: Long = 0
     var type: Int = 0
-    var name: String? = ""
+    var name: String = ""
     var tags: String? = ""
     var agentId: Long = 0
     var agentStatus: Int = 0
-    var agentName: String? = null
+    var agentName: String = ""
     var userId: Long = 0
     var teamId: Long = 0
 

@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMakerTemplate
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -56,8 +57,16 @@ class MCPTeamViewModel : ViewModel(){
     val mcpTeamToolMakers by derivedStateOf {
         _mcpTeamToolMakers.values.toList()
     }
+
+    private val _mcpTeamToolMakerTemplates = mutableStateMapOf<Long, AIPortTeamToolMakerTemplate>()
+    val mcpTeamToolMakerTemplates by derivedStateOf {
+        _mcpTeamToolMakerTemplates.values.toList()
+    }
     fun teamToolMaker(makerId:Long): AIPortTeamToolMaker?{
         return _mcpTeamToolMakers[makerId]
+    }
+    fun teamToolMakerTemplate(templateId:Long): AIPortTeamToolMakerTemplate?{
+        return _mcpTeamToolMakerTemplates[templateId]
     }
     fun reset(){
         mcpTeam = null
@@ -105,6 +114,7 @@ class MCPTeamViewModel : ViewModel(){
         mcpTeam = team
         if(team!=null) {
             queryMCPTeamToolMakers(team)
+            queryMCPTeamToolMakerTemplates(team)
             queryMCPTeamMembers(team.id)
         }
     }
@@ -165,6 +175,18 @@ class MCPTeamViewModel : ViewModel(){
                 if(code==0&&data!=null){
                     data.forEach {
                         _mcpTeamToolMakers[it.toolMakerId]=it
+                    }
+                }
+            }
+        }
+    }
+    fun queryMCPTeamToolMakerTemplates(team: AIPortTeam){
+        viewModelScope.launch {
+            getPlatform().queryTeamToolMakerTemplates(team){
+                    (code, message, data) ->
+                if(code==0&&data!=null){
+                    data.forEach {
+                        _mcpTeamToolMakerTemplates[it.toolMakerTemplateId]=it
                     }
                 }
             }

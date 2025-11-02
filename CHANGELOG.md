@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-02
+### Added
+- New team tool maker template screen and view model
+- Enhanced team tool maker functionality with template support
+
+### Changed
+- Improved team management and tool maker screens
+- Updated string resources and platform-specific code
+- Enhanced general view model functionality
+- Improved template creation and tool management
+- Updated app components for web platform
+
 ## 2025-10-29
 ### Added
 - New template functionality for creating MCP server templates
