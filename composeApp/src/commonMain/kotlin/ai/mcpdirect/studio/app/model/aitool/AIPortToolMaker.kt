@@ -16,6 +16,7 @@ open class AIPortToolMaker {
     var agentName: String = ""
     var userId: Long = 0
     var teamId: Long = 0
+    var templateId: Long =0
 
     companion object {
         const val TYPE_VIRTUAL = 0

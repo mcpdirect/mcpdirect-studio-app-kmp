@@ -18,6 +18,7 @@ class GeneralViewModel() : ViewModel() {
     var darkMode by mutableStateOf(false)
     var lastRefreshed = 0;
     var currentScreen by mutableStateOf<Screen>(Screen.Dashboard)
+        private set
     fun currentScreen(currentScreen:Screen,currentScreenTitle:String?=null,previousScreen: Screen?=null){
         this.currentScreen = currentScreen
         this.currentScreenTitle = currentScreenTitle
@@ -26,7 +27,7 @@ class GeneralViewModel() : ViewModel() {
     }
     var currentScreenTitle by mutableStateOf<String?>(null)
     var previousScreen by mutableStateOf<Screen?>(null)
-
+        private set
     fun previousScreen(){
         if(previousScreen!=null){
             currentScreenTitle = null

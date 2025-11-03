@@ -181,8 +181,8 @@ fun ToolPermissionScreen() {
                                         IconButton(onClick = {
                                             toolDetailViewModel.toolId = it.id
                                             toolDetailViewModel.toolName = it.name
-                                            generalViewModel.currentScreen = Screen.ToolDetails
-                                            generalViewModel.previousScreen = Screen.ToolPermission
+                                            generalViewModel.currentScreen(Screen.ToolDetails,
+                                                previousScreen = Screen.ToolPermission)
                                         }) {
                                             Icon(painterResource(Res.drawable.info), contentDescription = "Details")
                                         }

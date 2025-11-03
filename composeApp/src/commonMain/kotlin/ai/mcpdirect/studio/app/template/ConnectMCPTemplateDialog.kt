@@ -1,5 +1,7 @@
 package ai.mcpdirect.studio.app.template
 
+import ai.mcpdirect.mcpdirectstudioapp.JSON
+import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import androidx.compose.foundation.layout.Column
@@ -34,7 +36,6 @@ fun ConnectMCPTemplateDialog(
     }
     fun onTemplateVariableChange(key:String,value:String){
         inputMap[key] = value
-        println(inputMap)
         isInputError = value.isBlank()||value.length>500
         inputErrorMap[key] = isInputError
     }
@@ -75,8 +76,14 @@ fun ConnectMCPTemplateDialog(
             Button(
                 enabled = !isNameError&&!isInputError&&inputMap.isNotEmpty(),
                 onClick = {
-                    val config = Json.decodeFromString<AIPortMCPServerConfig>(template.config)
-                    config.inputs = Json.encodeToJsonElement(inputMap).toString()
+                    val temp = JSON.decodeFromString<MCPServerConfig>(template.config)
+                    val config = AIPortMCPServerConfig()
+                    config.transport = temp.transport
+                    config.url = temp.url
+                    config.command = temp.command
+                    config.args = JSON.encodeToJsonElement(temp.args).toString()
+                    config.env = JSON.encodeToJsonElement(temp.env).toString()
+                    config.inputs = JSON.encodeToString(inputMap.toMap())
                     onConfirmRequest(name,config)
                     onDismissRequest()
                 }

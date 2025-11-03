@@ -21,21 +21,21 @@ class MCPToolsViewModel: ViewModel() {
         private  set
     var mcpServerConfig by mutableStateOf<MCPServerConfig?>(null)
         private set
-    private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
-
-    val toolMakerTemplates by derivedStateOf {
-        _toolMakerTemplates.values.toList()
-    }
-    var toolMakerTemplate by mutableStateOf<AIPortToolMakerTemplate?>(null)
-        private  set
+//    private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
+//
+//    val toolMakerTemplates by derivedStateOf {
+//        _toolMakerTemplates.values.toList()
+//    }
+//    var toolMakerTemplate by mutableStateOf<AIPortToolMakerTemplate?>(null)
+//        private  set
 
     fun toolMaker(maker: AIPortToolMaker?){
         toolMaker = maker
         mcpServerConfig = null
     }
-    fun toolMakerTemplate(template: AIPortToolMakerTemplate?){
-        toolMakerTemplate = template
-    }
+//    fun toolMakerTemplate(template: AIPortToolMakerTemplate?){
+//        toolMakerTemplate = template
+//    }
     fun getMCPServerConfig(id:Long) {
         viewModelScope.launch {
             getPlatform().getMCPServerConfig(id) {
@@ -46,8 +46,12 @@ class MCPToolsViewModel: ViewModel() {
                             config.transport = it.transport
                             config.url = it.url
                             config.command = it.command
-                            config.args = JSON.decodeFromString(it.args)
-                            config.env = JSON.decodeFromString(it.env)
+                            it.args?.let{
+                                config.args = JSON.decodeFromString(it)
+                            }
+                            it.env?.let {
+                                config.env = JSON.decodeFromString(it)
+                            }
                             mcpServerConfig = config
                         }
                     }
@@ -55,28 +59,28 @@ class MCPToolsViewModel: ViewModel() {
             }
         }
     }
-    fun createToolMakerTemplate(name:String,type:Int,agentId:Long,config:String,inputs:String){
-        viewModelScope.launch {
-            getPlatform().createToolMakerTemplate(name,type,agentId,config,inputs){
-                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
-                    it.data?.let {
-                        _toolMakerTemplates[it.id] = it
-                    }
-                }
-            }
-        }
-    }
-    fun queryToolMakerTemplates(){
-        viewModelScope.launch {
-            getPlatform().queryToolMakerTemplates {
-                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
-                    it.data?.let {
-                        it.forEach {
-                            _toolMakerTemplates[it.id] = it
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    fun createToolMakerTemplate(name:String,type:Int,agentId:Long,config:String,inputs:String){
+//        viewModelScope.launch {
+//            getPlatform().createToolMakerTemplate(name,type,agentId,config,inputs){
+//                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+//                    it.data?.let {
+//                        _toolMakerTemplates[it.id] = it
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    fun queryToolMakerTemplates(){
+//        viewModelScope.launch {
+//            getPlatform().queryToolMakerTemplates {
+//                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+//                    it.data?.let {
+//                        it.forEach {
+//                            _toolMakerTemplates[it.id] = it
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

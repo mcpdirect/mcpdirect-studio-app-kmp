@@ -12,6 +12,7 @@ import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
+import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -55,7 +56,7 @@ fun MCPToolsScreen() {
                         config = it,
                         onConfirmRequest = { name,type,agentId,config,inputs ->
                             dialog = MCPToolsScreenDialog.NONE
-                            mcpToolsViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
+                            mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
                         },
                         onDismissRequest = {
                             dialog = MCPToolsScreenDialog.NONE
@@ -205,7 +206,7 @@ fun MCPServerItem(){
 
 @Composable
 fun MCPTemplateList(){
-    val viewModel = mcpToolsViewModel
+    val viewModel = mcpTemplateListViewModel
     LaunchedEffect(viewModel){
         viewModel.queryToolMakerTemplates()
     }
@@ -287,7 +288,7 @@ fun MCPTemplateList(){
 
 @Composable
 fun MCPTemplateItem(){
-    mcpToolsViewModel.toolMakerTemplate?.let {
+    mcpTemplateListViewModel.toolMakerTemplate?.let {
         Column {
             Row(Modifier.padding(start = 8.dp, end = 8.dp),
                 verticalAlignment = Alignment.CenterVertically){

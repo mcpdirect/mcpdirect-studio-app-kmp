@@ -41,6 +41,7 @@ class MyStudioViewModel: ViewModel() {
         toolMaker = maker
     }
     val tools = mutableStateListOf<AIPortTool>()
+
     private fun updateUIState(code:Int){
         uiState = if(code==0) UIState.Success else UIState.Error(code)
     }
@@ -149,17 +150,19 @@ class MyStudioViewModel: ViewModel() {
                 ){ (code,message,data)->
                 if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
                     data?.let {
+                        _toolMakers[it.id]=it
                     }
-                    onResponse(code,message,data)
                 }
+                onResponse(code,message,data)
                 uiState = UIState.state(code,message)
             }
         }
     }
 
-    fun connectToolMaker(studioId: Long, makerId: Long){
-        getPlatform().connectToolMakerToStudio(studioId,makerId){
-
+    fun connectToolMaker(studioId: Long, makerId: Long,agentId:Long,
+                         onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit){
+        getPlatform().connectToolMakerToStudio(studioId,makerId,agentId){
+            onResponse(it.code,it.message,it.data)
         }
     }
 }
