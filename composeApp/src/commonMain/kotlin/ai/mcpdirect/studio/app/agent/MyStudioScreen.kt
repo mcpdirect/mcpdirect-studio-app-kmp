@@ -15,7 +15,9 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerDialog
 import ai.mcpdirect.studio.app.mcp.ConnectMCPServerDialog
 import ai.mcpdirect.studio.app.model.MCPServer
+import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.MCPTemplateListView
+import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,13 +28,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
 enum class MyStudioScreenDialog {
     None,
     ConnectMCP,
-    ConfigMCP
+    ConfigMCP,
+    ConnectMCPTemplate
 }
 
 @Composable
@@ -74,7 +78,9 @@ fun MyStudioScreen(){
                 0 -> ToolMakerListView{
                     dialog = it
                 }
-                1 -> {}
+                1 -> ToolMakerByTemplateListView{
+                    dialog = it
+                }
             }
         }
     }
@@ -95,6 +101,32 @@ fun MyStudioScreen(){
                     onDismissRequest = {dialog=MyStudioScreenDialog.None},
                     onConfirmRequest = { config ->
                         myStudioViewModel.configMCPServer(config)
+                    }
+                )
+            }
+        }
+        MyStudioScreenDialog.ConnectMCPTemplate -> {
+            mcpTemplateListViewModel.toolMakerTemplate?.let {
+                ConnectMCPTemplateDialog(
+                    it,
+                    onDismissRequest = {dialog=MyStudioScreenDialog.None},
+                    onConfirmRequest = { name, config ->
+                        myStudioViewModel.createToolMakerByTemplate(
+                            it.id,it.agentId,name,config
+                        ){ code, message, mcpServer ->
+                            if(code==0){
+                                mcpServer?.let {
+                                    generalViewModel.toolAgent(it.agentId){
+                                        code, message, data ->
+                                        if(code==0){
+                                            data?.let {
+                                                myStudioViewModel.connectToolMaker(it.engineId,mcpServer.id)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 )
             }
@@ -293,6 +325,19 @@ fun ToolMakerListView(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ToolMakerByTemplateListView(
+    onDialogRequest: (dialog: MyStudioScreenDialog) -> Unit
+){
+    generalViewModel.topBarActions = {
+        TextButton(
+            onClick = {onDialogRequest(MyStudioScreenDialog.ConnectMCPTemplate)}
+        ){
+            Text("Connect MCP Template")
         }
     }
 }

@@ -8,11 +8,10 @@ import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
-import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.template.CreateMCPServerTemplateDialog
+import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -51,7 +50,7 @@ fun MCPToolsScreen() {
             mcpToolsViewModel.toolMaker?.let {
                 toolMaker ->
                 mcpToolsViewModel.mcpServerConfig?.let {
-                    CreateMCPServerTemplateDialog(
+                    CreateMCPTemplateDialog(
                         toolMaker,
                         config = it,
                         onConfirmRequest = { name,type,agentId,config,inputs ->

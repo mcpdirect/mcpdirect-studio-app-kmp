@@ -14,7 +14,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 
 @Composable
-fun CreateMCPServerTemplateDialog(
+fun CreateMCPTemplateDialog(
     toolMaker: AIPortToolMaker,
     config: MCPServerConfig,
     onConfirmRequest: (name:String,type:Int,agentId:Long,config:String,inputs:String) -> Unit,

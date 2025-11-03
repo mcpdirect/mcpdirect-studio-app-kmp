@@ -167,6 +167,13 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
         }
     }
+    fun connectToolMakerToStudio(studioId:Long, makerId:Long,
+                                 onResponse: (resp: AIPortServiceResponse<List<MCPServer>>) -> Unit){
+        httpRequest("studio.console@$studioId/tool_maker/connect",
+            mapOf("makerId" to JsonPrimitive(makerId))) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
+        }
+    }
     fun configMCPServerForStudio(studioId:Long, mcpServerId:Long, config:MCPServerConfig,
                                  onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
         httpRequest("studio.console@$studioId/mcp_server/config",
@@ -423,12 +430,20 @@ interface Platform {
         }
     }
     fun createToolMaker(type: Int,name:String,tags:String?=null,
-                           onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit){
+                        templateId: Long? = null,
+                        userId: Long? = null,
+                        agentId: Long? = null,
+                        mcpServerConfig: AIPortMCPServerConfig? = null,
+                        onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit){
         hstpRequest(
             "$aitoolsUSL/tool_maker/create", mapOf(
+                "templated" to JsonPrimitive(templateId),
+                "userId" to JsonPrimitive(userId),
+                "agentId" to JsonPrimitive(agentId),
                 "name" to JsonPrimitive(name),
                 "type" to JsonPrimitive(type),
-                "tags" to JsonPrimitive(tags)
+                "tags" to JsonPrimitive(tags),
+                "mcpServerConfig" to JSON.encodeToJsonElement(mcpServerConfig)
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolMaker>>(it))

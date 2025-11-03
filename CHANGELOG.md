@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-02
 ### Added
+- New connect template dialog for MCP templates
+- Renamed CreateMCPServerTemplateDialog to CreateMCPTemplateDialog for better clarity
+- Updated library versions in gradle dependencies
+
+### Changed
+- Improved My Studio screen and view model functionality
+- Enhanced template management and tool screen functionality
+- Updated README.zh-CN.md documentation
+- Updated platform-specific code and app components
+- Modified MCP server configuration model
+
+## 2025-11-02
+### Added
 - New template list view and view model for MCP templates
 - Enhanced template management functionality
 - Improved user and team member data models

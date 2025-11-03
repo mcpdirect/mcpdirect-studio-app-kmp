@@ -11,4 +11,5 @@ open class AIPortMCPServerConfig {
     var command: String = ""
     var args: String = ""
     var env: String = ""
+    var inputs:String = "{}"
 }

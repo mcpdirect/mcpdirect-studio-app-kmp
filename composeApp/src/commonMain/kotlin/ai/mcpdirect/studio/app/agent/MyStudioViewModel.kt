@@ -3,7 +3,11 @@ package ai.mcpdirect.studio.app.agent
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.auth.authViewModel
+import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
+import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
@@ -131,6 +135,31 @@ class MyStudioViewModel: ViewModel() {
                     }
                 }
             }
+        }
+    }
+    fun createToolMakerByTemplate(
+        templateId:Long, agentId:Long, name:String, mcpServerConfig: AIPortMCPServerConfig,
+        onResponse:(code:Int, message:String?, mcpServer: AIPortToolMaker?) -> Unit) {
+        uiState = UIState.Loading
+        viewModelScope.launch {
+            getPlatform().createToolMaker(
+                AIPortToolMaker.TYPE_MCP, name,
+                templateId = templateId, userId = authViewModel.user.id, agentId = agentId,
+                mcpServerConfig = mcpServerConfig
+                ){ (code,message,data)->
+                if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+                    data?.let {
+                    }
+                    onResponse(code,message,data)
+                }
+                uiState = UIState.state(code,message)
+            }
+        }
+    }
+
+    fun connectToolMaker(studioId: Long, makerId: Long){
+        getPlatform().connectToolMakerToStudio(studioId,makerId){
+
         }
     }
 }
