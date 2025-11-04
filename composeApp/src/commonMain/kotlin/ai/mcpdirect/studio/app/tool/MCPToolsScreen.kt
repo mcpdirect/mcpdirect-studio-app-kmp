@@ -50,19 +50,29 @@ fun MCPToolsScreen() {
         MCPToolsScreenDialog.MCPServerTemplate -> {
             mcpToolsViewModel.toolMaker?.let {
                 toolMaker ->
-                mcpToolsViewModel.mcpServerConfig?.let {
-                    CreateMCPTemplateDialog(
-                        toolMaker,
-                        config = it,
-                        onConfirmRequest = { name,type,agentId,config,inputs ->
-                            dialog = MCPToolsScreenDialog.NONE
-                            mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
-                        },
-                        onDismissRequest = {
-                            dialog = MCPToolsScreenDialog.NONE
-                        }
-                    )
-                }
+                CreateMCPTemplateDialog(
+                    toolMaker,
+                    onConfirmRequest = { name,type,agentId,config,inputs ->
+                        dialog = MCPToolsScreenDialog.NONE
+                        mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
+                    },
+                    onDismissRequest = {
+                        dialog = MCPToolsScreenDialog.NONE
+                    }
+                )
+//                mcpToolsViewModel.mcpServerConfig?.let {
+//                    CreateMCPTemplateDialog(
+//                        toolMaker,
+//                        config = it,
+//                        onConfirmRequest = { name,type,agentId,config,inputs ->
+//                            dialog = MCPToolsScreenDialog.NONE
+//                            mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
+//                        },
+//                        onDismissRequest = {
+//                            dialog = MCPToolsScreenDialog.NONE
+//                        }
+//                    )
+//                }
             }
         }
     }

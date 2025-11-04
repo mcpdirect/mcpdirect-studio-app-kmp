@@ -1,5 +1,6 @@
 package ai.mcpdirect.mcpdirectstudioapp
 
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
@@ -10,20 +11,8 @@ external val AI_MCPDIRECT_HSTP_WEBPORT:String
 actual external fun sha256(value:String):String
 actual external fun currentMilliseconds():Long
 external fun env(value:String):String?
-
-//@Serializable
-//private  class AccountDetails {
-//    var account: String? = null
-//    var accountKeySeed: String? = null
-//    var accessToken: String? = null
-//    var accessTokenType: Int = 0
-//    var newAccount: Boolean = false
-//    var userInfo: AIPortUser? = null
-//}
 @OptIn(ExperimentalWasmJsInterop::class)
 class JsPlatform : WebPlatform() {
-//    override val currentMilliseconds:Long
-//        get() = currentMilliseconds()
     override val language: String
         get() = window.navigator.language
     override fun pasteFromClipboard(): String? {
@@ -31,7 +20,14 @@ class JsPlatform : WebPlatform() {
     }
 
     override fun copyToClipboard(text: String) {
-
+        window.navigator.clipboard.writeText(text).then(
+            onRejected = {
+                generalViewModel.showSnackbar("copy to clipboard failed")
+            },
+            onFulfilled = {
+                generalViewModel.showSnackbar("copied to clipboard")
+            }
+        )
     }
 
     override fun getenv(key: String): String? {

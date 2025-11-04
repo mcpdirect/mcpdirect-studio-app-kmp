@@ -109,11 +109,17 @@ class MyStudioViewModel: ViewModel() {
         if(toolMaker.id!=0L){
             uiState = UIState.Loading
             tools.clear()
-            getPlatform().queryMCPToolsFromStudio(toolAgent.engineId,toolMaker.id){
-                updateUIState(it.code)
-                if(it.code==0){
-                    it.data?.let {
-                        tools.addAll(it)
+            generalViewModel.toolAgent(toolMaker.agentId) { code, message, data ->
+                if (code == 0) {
+                    data?.let {
+                        getPlatform().queryMCPToolsFromStudio(it.engineId,toolMaker.id){
+                            updateUIState(it.code)
+                            if(it.code==0){
+                                it.data?.let {
+                                    tools.addAll(it)
+                                }
+                            }
+                        }
                     }
                 }
             }

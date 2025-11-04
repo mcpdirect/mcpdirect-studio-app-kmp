@@ -1,7 +1,9 @@
 package ai.mcpdirect.studio.app.template
 
 import ai.mcpdirect.mcpdirectstudioapp.JSON
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import androidx.compose.foundation.layout.*
@@ -16,36 +18,51 @@ import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 @Composable
 fun CreateMCPTemplateDialog(
     toolMaker: AIPortToolMaker,
-    config: MCPServerConfig,
+//    config: MCPServerConfig,
+//    agentId:Long,
+//    makerId:Long?=null,
     onConfirmRequest: (name:String,type:Int,agentId:Long,config:String,inputs:String) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-//    val regex = Regex("""\$\{([^}]+)\}""")
-    val regex = Regex("""\$\{([A-Za-z0-9_-]+)\}""")
-    val templateInputs = remember { mutableStateListOf<String>()}
-    var templateName by remember { mutableStateOf("${toolMaker.name}_template")}
     val prettyJson = Json { prettyPrint = true }
+    var config by remember { mutableStateOf<MCPServerConfig?>(null)}
     var serverJson = mutableMapOf(
         "url" to JsonPrimitive(""),
         "command" to JsonPrimitive(""),
         "args" to JsonArray(listOf()),
         "env" to JsonObject(mapOf())
     )
-    config.let {
-        it.url?.let {
-            serverJson["url"] = JsonPrimitive(it)
-        }
-        it.command?.let {
-            serverJson["command"]  = JsonPrimitive(it)
-        }
-        it.args?.let {
-            serverJson["args"] = JSON.encodeToJsonElement(it)
-        }
-        it.env?.let {
-            serverJson["env"] = JSON.encodeToJsonElement(it)
+    var serverJsonString by remember { mutableStateOf(prettyJson.encodeToString(serverJson)) }
+    LaunchedEffect(null){
+        getPlatform().getMCPServerConfig(toolMaker.id) {
+            if (it.code == AIPortServiceResponse.SERVICE_SUCCESSFUL) {
+                it.data?.let {
+                    if (it.id == toolMaker.id) {
+                        config = MCPServerConfig(it)
+                        config?.let {
+                            it.url?.let {
+                                serverJson["url"] = JsonPrimitive(it)
+                            }
+                            it.command?.let {
+                                serverJson["command"]  = JsonPrimitive(it)
+                            }
+                            it.args?.let {
+                                serverJson["args"] = JSON.encodeToJsonElement(it)
+                            }
+                            it.env?.let {
+                                serverJson["env"] = JSON.encodeToJsonElement(it)
+                            }
+                            serverJsonString = prettyJson.encodeToString(serverJson)
+                        }
+                    }
+                }
+            }
         }
     }
-    var serverJsonString by remember { mutableStateOf(prettyJson.encodeToString(serverJson)) }
+//    val regex = Regex("""\$\{([^}]+)\}""")
+    val regex = Regex("""\$\{([A-Za-z0-9_-]+)\}""")
+    val templateInputs = remember { mutableStateListOf<String>()}
+    var templateName by remember { mutableStateOf("${toolMaker.name}_template")}
     var isJsonError by remember { mutableStateOf(false) }
     var isTemplateNameError by remember { mutableStateOf(false) }
     fun onJsonValueChange(value:String){
@@ -75,74 +92,75 @@ fun CreateMCPTemplateDialog(
             Text("from ${toolMaker.name}", style = MaterialTheme.typography.titleLarge)
         } },
         text = {
-            Column{
-                val transportType = when(config.transport){
-                    1 -> "SSE"
-                    2 -> "Streamable Http"
-                    else -> "Stdio"
-                }
-                Text("MCP Server Transport: $transportType")
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = templateName,
-                    onValueChange = { onTemplateNameChange(it) },
-                    label = { Text("Template Name") },
-                    isError = isTemplateNameError,
-                    supportingText = {
-                        Text("The template must not be empty and the length less than 33")
+            config?.let {
+                mCPServerConfig ->
+                Column{
+                    val transportType = when(mCPServerConfig.transport){
+                        1 -> "SSE"
+                        2 -> "Streamable Http"
+                        else -> "Stdio"
                     }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().height(400.dp),
-                    value = serverJsonString,
-                    onValueChange = { onJsonValueChange(it) },
-                    label = { Text("MCP Server Template") },
-                    isError = isJsonError,
-                    supportingText = {
-                        if(isJsonError)Text("invalid json format")
-                        else Text("the variable name consists only of allowed characters (A-Z, a-z, 0-9, -, and _)")
-                    }
-                )
-                Text("Variables:", Modifier.padding(top = 8.dp, bottom = 8.dp))
-                FlowRow(){
-                    TooltipIconButton(
-                        Res.drawable.reset_settings,
-                        "Reset to default",
-                        onClick = {
-                            config.let {
-                                it.url?.let {
-                                    serverJson["url"] = JsonPrimitive(it)
-                                }
-                                it.command?.let {
-                                    serverJson["command"]  = JsonPrimitive(it)
-                                }
-                                it.args?.let {
-                                    serverJson["args"] = JSON.encodeToJsonElement(it)
-                                }
-                                it.env?.let {
-                                    serverJson["env"] = JSON.encodeToJsonElement(it)
-                                }
-                            }
-                            serverJsonString = prettyJson.encodeToString(serverJson)
+                    Text("MCP Server Transport: $transportType")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = templateName,
+                        onValueChange = { onTemplateNameChange(it) },
+                        label = { Text("Template Name") },
+                        isError = isTemplateNameError,
+                        supportingText = {
+                            Text("The template must not be empty and the length less than 33")
                         }
                     )
-                    templateInputs.forEach {
-                        AssistChip(
-                            modifier = Modifier.padding(start = 4.dp),
-                            onClick = {},
-                            label = { Text(it) }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth().height(400.dp),
+                        value = serverJsonString,
+                        onValueChange = { onJsonValueChange(it) },
+                        label = { Text("MCP Server Template") },
+                        isError = isJsonError,
+                        supportingText = {
+                            if(isJsonError)Text("invalid json format")
+                            else Text("the variable name consists only of allowed characters (A-Z, a-z, 0-9, -, and _)")
+                        }
+                    )
+                    Text("Variables:", Modifier.padding(top = 8.dp, bottom = 8.dp))
+                    FlowRow(){
+                        TooltipIconButton(
+                            Res.drawable.reset_settings,
+                            "Reset to default",
+                            onClick = {
+                                mCPServerConfig.url?.let {
+                                    serverJson["url"] = JsonPrimitive(it)
+                                }
+                                mCPServerConfig.command?.let {
+                                    serverJson["command"]  = JsonPrimitive(it)
+                                }
+                                mCPServerConfig.args?.let {
+                                    serverJson["args"] = JSON.encodeToJsonElement(it)
+                                }
+                                mCPServerConfig.env?.let {
+                                    serverJson["env"] = JSON.encodeToJsonElement(it)
+                                }
+                                serverJsonString = prettyJson.encodeToString(serverJson)
+                            }
                         )
+                        templateInputs.forEach {
+                            AssistChip(
+                                modifier = Modifier.padding(start = 4.dp),
+                                onClick = {},
+                                label = { Text(it) }
+                            )
+                        }
                     }
                 }
             }
         },
         confirmButton = {
             Button(
-                enabled = !isJsonError&&!isTemplateNameError&&templateInputs.isNotEmpty(),
+                enabled = config!=null&&!isJsonError&&!isTemplateNameError&&templateInputs.isNotEmpty(),
                 onClick = {
-                    serverJson["transport"] = JsonPrimitive(config.transport)
+                    serverJson["transport"] = JsonPrimitive(config!!.transport)
                     val config = JSON.encodeToString(serverJson)
                     val inputs = templateInputs.joinToString(",")
                     onConfirmRequest(templateName.trim(),toolMaker.type,toolMaker.agentId,

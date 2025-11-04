@@ -1,12 +1,9 @@
 package ai.mcpdirect.studio.app.mcp
 
-import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.mcpkey.MCPKeyDialog
 import ai.mcpdirect.studio.app.model.MCPServer
-import ai.mcpdirect.studio.tool.MCPTool
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -100,7 +97,7 @@ fun ConnectMCPScreen(){
                 }
             } else connectMCPViewModel.toolMaker.let {
                 Column(Modifier.weight(2.0f)) {
-                    StudioToolbar(
+                    StudioActionBar(
                         actions = {
                             TooltipIconButton(
                                 Res.drawable.refresh,

@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-04
+### Added
+- New ToolListView component for displaying tools
+- Renamed StudioToolBar to StudioActionBar for better semantic meaning
+
+### Changed
+- Updated My Studio screen and view model with new functionality
+- Enhanced MCP server configuration model
+- Improved template creation dialog
+- Enhanced tools screen and connect MCP screen
+- Updated platform-specific JavaScript code
+- Improved tool list display functionality
+
 ## 2025-11-03
 ### Changed
 - Updated My Studio screen with UI improvements
