@@ -331,7 +331,7 @@ fun ToolMakerListView(
 fun ToolMakerByTemplateListView(
     onDialogRequest: (dialog: MyStudioScreenDialog) -> Unit
 ){
-    val selectedToolMaker by remember { mutableStateOf(AIPortToolMaker()) }
+    var selectedToolMaker by remember { mutableStateOf(AIPortToolMaker()) }
     mcpTemplateListViewModel.toolMakerTemplate?.let {
         generalViewModel.topBarActions = {
             TextButton(
@@ -349,11 +349,41 @@ fun ToolMakerByTemplateListView(
                 Text(template.name)
 
                 Spacer(Modifier.weight(1.0f))
-                if(selectedToolMaker.id!=0L) TooltipIconButton(
-                    Res.drawable.refresh,
-                    contentDescription = "Refresh "
-                ) {
+                if(selectedToolMaker.id!=0L) {
+                    TooltipIconButton(
+                        Res.drawable.plug_connect,
+                        contentDescription = "Connect MCP Server"
+                    ) {
+                        generalViewModel.toolAgent(selectedToolMaker.agentId) { code, message, data ->
+                            if (code == 0) {
+                                data?.let {
+                                    myStudioViewModel.connectToolMaker(
+                                        it.engineId,
+                                        selectedToolMaker.id,
+                                        it.id
+                                    ) { code, message, mcpServer ->
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    TooltipIconButton(
+                        Res.drawable.refresh,
+                        contentDescription = "Refresh MCP Tools"
+                    ) {
+                        generalViewModel.toolAgent(selectedToolMaker.agentId) { code, message, data ->
+                            if (code == 0) {
+                                data?.let {
+                                    getPlatform().queryMCPToolsFromStudio(
+                                        it.engineId,
+                                        selectedToolMaker.id,
+                                    ){
 
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             HorizontalDivider()
@@ -365,19 +395,7 @@ fun ToolMakerByTemplateListView(
                         StudioListItem(
                             modifier = Modifier.clickable(
                                 onClick = {
-                                    generalViewModel.toolAgent(maker.agentId){
-                                            code, message, data ->
-                                        if(code==0){
-                                            data?.let {
-                                                myStudioViewModel.connectToolMaker(
-                                                    it.engineId,
-                                                    maker.id,
-                                                    it.id
-                                                ){ code, message, mcpServer ->
-                                                }
-                                            }
-                                        }
-                                    }
+                                    selectedToolMaker = maker
                                 }
                             ),
                             selected = maker.id == selectedToolMaker.id,

@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-03
 ### Changed
+- Updated My Studio screen with UI improvements
+- Improved platform-specific code functionality
+- Enhanced general view model with additional features
+- Updated My Studio screen and view model with new UI elements
+- Improved MCP server configuration model
+- Enhanced tool maker model with new capabilities
+- Updated connect template dialog with improved UX
+- Enhanced tool management and permission screens
+- Improved tools screen and view model functionality
+
+## 2025-11-03
+### Changed
 - Improved platform-specific code functionality
 - Enhanced general view model with additional features
 - Updated My Studio screen and view model with new UI elements
