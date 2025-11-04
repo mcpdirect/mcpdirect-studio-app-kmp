@@ -48,11 +48,11 @@ fun App(){
                     screens = listOf(
 //                        Screen.ToolDevelopment -> {}
                         Screen.Dashboard,
-                        Screen.ConnectMCP,
-                        Screen.MCPTools,
-                        Screen.MCPAccessKey,
-//                        Screen.ToolsLogbook,
                         Screen.MyStudio,
+                        Screen.MCPAccessKey,
+//                        Screen.ConnectMCP,
+                        Screen.MCPTools,
+//                        Screen.ToolsLogbook,
                         Screen.MCPTeam,
                         Screen.VirtualMCP
                     )

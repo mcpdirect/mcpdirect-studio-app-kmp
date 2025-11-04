@@ -34,7 +34,7 @@ import org.jetbrains.compose.resources.painterResource
 
 private enum class MCPToolsScreenDialog {
     NONE,
-    MCPServerTemplate
+//    MCPServerTemplate
 }
 private var dialog by mutableStateOf(MCPToolsScreenDialog.NONE)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,78 +47,79 @@ fun MCPToolsScreen() {
     }
     when(dialog){
         MCPToolsScreenDialog.NONE -> {}
-        MCPToolsScreenDialog.MCPServerTemplate -> {
-            mcpToolsViewModel.toolMaker?.let {
-                toolMaker ->
-                CreateMCPTemplateDialog(
-                    toolMaker,
-                    onConfirmRequest = { name,type,agentId,config,inputs ->
-                        dialog = MCPToolsScreenDialog.NONE
-                        mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
-                    },
-                    onDismissRequest = {
-                        dialog = MCPToolsScreenDialog.NONE
-                    }
-                )
-//                mcpToolsViewModel.mcpServerConfig?.let {
-//                    CreateMCPTemplateDialog(
-//                        toolMaker,
-//                        config = it,
-//                        onConfirmRequest = { name,type,agentId,config,inputs ->
-//                            dialog = MCPToolsScreenDialog.NONE
-//                            mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
-//                        },
-//                        onDismissRequest = {
-//                            dialog = MCPToolsScreenDialog.NONE
-//                        }
-//                    )
-//                }
-            }
-        }
+//        MCPToolsScreenDialog.MCPServerTemplate -> {
+//            mcpToolsViewModel.toolMaker?.let {
+//                toolMaker ->
+//                CreateMCPTemplateDialog(
+//                    toolMaker,
+//                    onConfirmRequest = { name,type,agentId,config,inputs ->
+//                        dialog = MCPToolsScreenDialog.NONE
+//                        mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
+//                    },
+//                    onDismissRequest = {
+//                        dialog = MCPToolsScreenDialog.NONE
+//                    }
+//                )
+////                mcpToolsViewModel.mcpServerConfig?.let {
+////                    CreateMCPTemplateDialog(
+////                        toolMaker,
+////                        config = it,
+////                        onConfirmRequest = { name,type,agentId,config,inputs ->
+////                            dialog = MCPToolsScreenDialog.NONE
+////                            mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
+////                        },
+////                        onDismissRequest = {
+////                            dialog = MCPToolsScreenDialog.NONE
+////                        }
+////                    )
+////                }
+//            }
+//        }
     }
     Row(Modifier.fillMaxSize()){
-        var currentTabIndex by remember { mutableStateOf(0) }
-        Column(Modifier.width(300.dp)) {
+//        var currentTabIndex by remember { mutableStateOf(0) }
+//        Column(Modifier.width(300.dp)) {
+//
+//            val tabs = listOf("MCP Server", "MCP Template")
+//            SecondaryTabRow(selectedTabIndex = currentTabIndex) {
+//                tabs.forEachIndexed { index, title ->
+//                    Tab(
+//                        selected = currentTabIndex == index,
+//                        onClick = {
+//                            currentTabIndex = index
+//                            generalViewModel.topBarActions = {}
+//                                  },
+//                        text = { Text(title) }
+//                    )
+//                }
+//            }
+//
+//            // Content based on selected tab
+//            when (currentTabIndex) {
+//                0 -> MCPServerList()
+//                1 -> MCPTemplateList()
+//            }
+//
+//        }
 
-            val tabs = listOf("MCP Server", "MCP Template")
-            SecondaryTabRow(selectedTabIndex = currentTabIndex) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = currentTabIndex == index,
-                        onClick = {
-                            currentTabIndex = index
-                            generalViewModel.topBarActions = {}
-                                  },
-                        text = { Text(title) }
-                    )
-                }
-            }
-
-            // Content based on selected tab
-            when (currentTabIndex) {
-                0 -> MCPServerList()
-                1 -> MCPTemplateList()
-            }
-
-        }
-
-
+        MCPServerList(Modifier.width(300.dp))
         StudioCard(Modifier.fillMaxSize().padding(8.dp).weight(2.0f)) {
-            when (currentTabIndex) {
-                0 -> MCPServerItem()
-                1 -> MCPTemplateItem()
-            }
+//            when (currentTabIndex) {
+//                0 -> MCPServerItem()
+//                1 -> MCPTemplateItem()
+//            }
+            MCPServerItem()
         }
     }
 }
 
 @Composable
-fun MCPServerList(){
+fun MCPServerList(modifier: Modifier = Modifier){
     LaunchedEffect(null){
         generalViewModel.refreshToolMakers()
     }
     val viewModel = mcpToolsViewModel
-    LazyColumn {
+    LazyColumn(modifier=modifier) {
         items(generalViewModel.toolMakers){
             val me = it.userId== authViewModel.user.id
             val team: AIPortTeam? = generalViewModel.team(it.teamId)
@@ -195,16 +196,16 @@ fun MCPServerList(){
 @Composable
 fun MCPServerItem(){
     mcpToolsViewModel.toolMaker?.let {
-        if(it.teamId==0L&&it.type != AIPortToolMaker.TYPE_VIRTUAL) {
-            generalViewModel.topBarActions = {
-                TextButton(onClick = {
-                    dialog = MCPToolsScreenDialog.MCPServerTemplate
-                    mcpToolsViewModel.getMCPServerConfig(it.id)
-                }) {
-                    Text("Create MCP Server Template")
-                }
-            }
-        } else generalViewModel.topBarActions = {}
+//        if(it.teamId==0L&&it.type != AIPortToolMaker.TYPE_VIRTUAL) {
+//            generalViewModel.topBarActions = {
+//                TextButton(onClick = {
+//                    dialog = MCPToolsScreenDialog.MCPServerTemplate
+//                    mcpToolsViewModel.getMCPServerConfig(it.id)
+//                }) {
+//                    Text("Create MCP Server Template")
+//                }
+//            }
+//        } else generalViewModel.topBarActions = {}
 
         Column {
             Row {

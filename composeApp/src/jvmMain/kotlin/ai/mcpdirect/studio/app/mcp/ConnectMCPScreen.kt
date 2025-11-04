@@ -1,9 +1,12 @@
 package ai.mcpdirect.studio.app.mcp
 
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.agent.MyStudioScreenDialog
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.MCPServer
+import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
+import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,23 +22,25 @@ import org.jetbrains.compose.resources.painterResource
 enum class ConnectMCPScreenDialog {
     None,
     ConnectMCP,
-    ConfigMCP
+    ConfigMCP,
+    CreateMCPTemplate
 }
 @Composable
 fun ConnectMCPScreen(){
     var dialog by remember { mutableStateOf(ConnectMCPScreenDialog.None) }
-    val uiState = connectMCPViewModel.uiState
+//    val uiState = connectMCPViewModel.uiState
     val makers = connectMCPViewModel.toolMakers
-    if(uiState== UIState.Loading) Column(
-        Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(48.dp),
-            color = MaterialTheme.colorScheme.primary
-        )
-    } else if(makers.isEmpty()) Column(
+//    if(uiState== UIState.Loading) Column(
+//        Modifier.fillMaxSize(),
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        CircularProgressIndicator(
+//            modifier = Modifier.size(48.dp),
+//            color = MaterialTheme.colorScheme.primary
+//        )
+//    } else
+    if(makers.isEmpty()) Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -45,7 +50,15 @@ fun ConnectMCPScreen(){
         }
     } else Row(Modifier.fillMaxSize()) {
         generalViewModel.topBarActions = {
-            TextButton(
+            if(connectMCPViewModel.toolMaker.id>0L){
+                Button(
+                    onClick = { dialog = ConnectMCPScreenDialog.CreateMCPTemplate }
+                ) {
+                    Text("Create MCP Template")
+                }
+                Spacer(Modifier.width(8.dp))
+            }
+            Button(
                 onClick = { dialog = ConnectMCPScreenDialog.ConnectMCP }
             ) {
                 Text("Connect MCP Server")
@@ -172,7 +185,6 @@ fun ConnectMCPScreen(){
                 connectMCPViewModel.connectMCPServer(configs)
             }
         )
-
         ConnectMCPScreenDialog.ConfigMCP -> {
             val toolMaker = connectMCPViewModel.toolMaker
             when (toolMaker) {
@@ -184,6 +196,18 @@ fun ConnectMCPScreen(){
                     }
                 )
             }
+        }
+        ConnectMCPScreenDialog.CreateMCPTemplate -> {
+            if(connectMCPViewModel.toolMaker.id>0L) CreateMCPTemplateDialog(
+                connectMCPViewModel.toolMaker,
+                onConfirmRequest = { name,type,agentId,config,inputs ->
+                    dialog =ConnectMCPScreenDialog.None
+                    mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
+                },
+                onDismissRequest = {
+                    dialog = ConnectMCPScreenDialog.None
+                }
+            )
         }
     }
 }

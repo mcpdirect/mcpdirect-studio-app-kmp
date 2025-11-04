@@ -85,10 +85,10 @@ fun App(){
                     screens = listOf(
                         Screen.Dashboard,
                         Screen.MyStudio,
+                        Screen.MCPAccessKey,
                         Screen.MCPTools,
                         Screen.MCPTeam,
 //                        Screen.ToolDevelopment -> {}
-                        Screen.MCPAccessKey,
 //                        Screen.ToolsLogbook,
                         Screen.VirtualMCP,
 

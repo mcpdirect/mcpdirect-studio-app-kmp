@@ -86,6 +86,7 @@ fun CreateMCPTemplateDialog(
     }
 
     AlertDialog(
+        modifier = Modifier.width(800.dp),
         onDismissRequest =  onDismissRequest ,
         title = { Column{
             Text("Create MCP Server Template")
@@ -103,25 +104,27 @@ fun CreateMCPTemplateDialog(
                     Text("MCP Server Transport: $transportType")
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
                         value = templateName,
                         onValueChange = { onTemplateNameChange(it) },
                         label = { Text("Template Name") },
                         isError = isTemplateNameError,
                         supportingText = {
-                            Text("The template must not be empty and the length less than 33")
+                            Text("The template name must not be empty and the length less than 33")
                         }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth().height(400.dp),
+                        modifier = Modifier.fillMaxWidth().height(350.dp),
                         value = serverJsonString,
                         onValueChange = { onJsonValueChange(it) },
                         label = { Text("MCP Server Template") },
                         isError = isJsonError,
                         supportingText = {
                             if(isJsonError)Text("invalid json format")
-                            else Text("the variable name consists only of allowed characters (A-Z, a-z, 0-9, -, and _)")
+                            else Text("Variable name consists only characters (A-Z, a-z, 0-9, -, and _)\n" +
+                                    $$"And must be wrapped in ${}.\n"+
+                                    $$"Example: {\"API_KEY\":\"${API_KEY}\"}"
+                            )
                         }
                     )
                     Text("Variables:", Modifier.padding(top = 8.dp, bottom = 8.dp))

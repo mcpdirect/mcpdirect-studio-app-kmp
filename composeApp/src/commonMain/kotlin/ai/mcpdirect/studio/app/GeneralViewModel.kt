@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 
 val generalViewModel = GeneralViewModel()
 class GeneralViewModel() : ViewModel() {
+    var loadingProcess by mutableStateOf<Float?>(1.0f)
     var darkMode by mutableStateOf(false)
     var lastRefreshed = 0;
     var currentScreen by mutableStateOf<Screen>(Screen.Dashboard)

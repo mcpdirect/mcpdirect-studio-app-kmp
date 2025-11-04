@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import ai.mcpdirect.studio.app.setting.settingsViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun NavigationTopBar(
     screens:List<Screen>,
-    content: @Composable (BoxScope.() -> Unit)
+    content: @Composable (() -> Unit)
 ){
     var showMenu by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -271,10 +272,15 @@ fun NavigationTopBar(
                 }
             )
         }
-        Box(
+        Column(
             Modifier.fillMaxSize().padding(paddingValues),
-            content = content
-        )
+        ){
+            generalViewModel.loadingProcess?.let {
+                LinearProgressIndicator({ it }, Modifier.fillMaxWidth())
+            }?: LinearProgressIndicator(Modifier.fillMaxWidth())
+
+            content()
+        }
 
     }
 }

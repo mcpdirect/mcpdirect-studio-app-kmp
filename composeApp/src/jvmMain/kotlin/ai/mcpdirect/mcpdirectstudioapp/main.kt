@@ -11,7 +11,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_studio_icon_t
 import org.jetbrains.compose.resources.painterResource
 
 fun main() = application {
-    val windowState = rememberWindowState(size = DpSize(1024.dp, 768.dp))
+    val windowState = rememberWindowState(size = DpSize(1200.dp, 900.dp))
     val version = System.getProperty("ai.mcpdirect.studio.app.version")?:""
     Window(
         onCloseRequest = ::exitApplication,

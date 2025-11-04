@@ -162,7 +162,12 @@ fun ToolAgentListView(){
                     enabled = uiState !is UIState.Loading && it.id!=myStudioViewModel.toolAgent.id
                 ){
                     if(it.id== getPlatform().toolAgentId)
-                        generalViewModel.currentScreen(Screen.ConnectMCP)
+                        generalViewModel.currentScreen(
+                            Screen.ConnectMCP,
+                            it.name,
+                            Screen.MyStudio
+
+                        )
                     else myStudioViewModel.toolAgent(it)
                 },
                 headlineContent = {Text(it.name)},

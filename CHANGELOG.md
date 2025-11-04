@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 
 ## 2025-11-04
+### Changed
+- Enhanced GeneralViewModel with new capabilities
+- Updated NavigationTopBar with improved navigation
+- Enhanced MyStudioScreen with new UI elements and functionality
+- Improved CreateMCPTemplateDialog with better UX
+- Enhanced MCPToolsScreen with improved tool management
+- Updated platform-specific JVM and web app components
+- Improved ConnectMCP screen and view model functionality
+- Enhanced main application startup and configuration
+
+## 2025-11-04
 ### Added
 - New ToolListView component for displaying tools
 - Renamed StudioToolBar to StudioActionBar for better semantic meaning
