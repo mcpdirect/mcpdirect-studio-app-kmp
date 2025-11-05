@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 fun Tag(
     text:String,
     color: Color = MaterialTheme.colorScheme.primary
+
 ){
     Box(
         Modifier.border(

@@ -10,9 +10,11 @@ import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import ai.mcpdirect.studio.app.setting.settingsViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -24,7 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun NavigationTopBar(
     screens:List<Screen>,
-    content: @Composable (BoxScope.() -> Unit)
+    content: @Composable (() -> Unit)
 ){
     var showMenu by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -270,10 +272,60 @@ fun NavigationTopBar(
                 }
             )
         }
-        Box(
+        Column(
             Modifier.fillMaxSize().padding(paddingValues),
-            content = content
-        )
+        ){
+            generalViewModel.loadingProcess?.let {
+                LinearProgressIndicator({ it }, Modifier.fillMaxWidth())
+            }?: LinearProgressIndicator(Modifier.fillMaxWidth())
 
+            content()
+        }
+
+    }
+}
+
+@Composable
+fun PasswordRequirements(
+    currentPassword:String,
+    password: String,
+    confirmPassword:String,
+    isErrorState: Boolean = false
+) {
+    val requirements = listOf(
+        "Current password cannot be empty" to currentPassword.isNotBlank(),
+        "New password cannot be empty" to password.isNotBlank(),
+        "8+ characters" to (password.length >= 8),
+        "1+ number" to password.any { it.isDigit() },
+        "1+ uppercase" to password.any { it.isUpperCase() },
+        "1+ lowercase" to password.any { it.isLowerCase() },
+        "New password match confirm password" to (password.isNotBlank()&&password == confirmPassword)
+    )
+
+    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        Text(
+            "Password must contain:",
+            style = MaterialTheme.typography.labelSmall,
+            color = if (isErrorState) MaterialTheme.colorScheme.error
+            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
+        Spacer(Modifier.height(4.dp))
+        requirements.forEach { (text, met) ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painterResource(if (met) Res.drawable.check else Res.drawable.block),
+                    contentDescription = null,
+                    tint = if (met) Color.Green
+                    else if (isErrorState) MaterialTheme.colorScheme.error
+                    else Color.Gray,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
     }
 }

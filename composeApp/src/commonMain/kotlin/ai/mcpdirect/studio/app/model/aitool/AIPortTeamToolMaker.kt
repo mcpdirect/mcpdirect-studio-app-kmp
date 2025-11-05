@@ -36,7 +36,7 @@ class AIPortTeamToolMaker {
     }
     
     fun copy(): AIPortTeamToolMaker {
-        return _root_ide_package_.ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker.Companion.build()
+        return build()
             .toolMakerId(toolMakerId)
             .teamId(teamId)
             .status(status)
@@ -45,6 +45,10 @@ class AIPortTeamToolMaker {
     }
 
     companion object {
+        data class Key(val teamId: Long,val makerId: Long)
+        fun key(teamId: Long,makerId: Long):Key{
+            return Key(teamId,makerId)
+        }
         fun build(): AIPortTeamToolMaker {
             return AIPortTeamToolMaker()
         }

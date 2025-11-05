@@ -2,10 +2,9 @@
 
 ---
 # MCPDirect: Universal MCP Access Gateway
-[中文](README.zh-CN.md)
-
-With MCPdirect, you can centrally manage, authorize, and access all your MCP Servers and tools.
-
+* **Access all your MCP Servers and tools through a single URL**
+* **Unified management, unified authorization, and unified access to all your MCP Servers and tools**
+* **And easily share your MCP Servers and tools with your team**
 <img src="assets/image/unified-access-gateway.png" alt="">
 
 ---
@@ -38,8 +37,8 @@ With MCPdirect, you can centrally manage, authorize, and access all your MCP Ser
 ## Quick Start
 
 ### Prerequisites
-* Download MCPdirect Studio
-* Register/Log in
+* Download [MCPdirect Studio](https://github.com/mcpdirect/mcpdirect-studio-app-kmp/releases)
+* Register and Login
 
 ### Usage
 <div>

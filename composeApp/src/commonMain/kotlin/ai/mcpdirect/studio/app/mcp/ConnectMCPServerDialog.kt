@@ -28,15 +28,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlin.collections.component1
 import kotlin.collections.component2
 
-//@Composable
-//fun Greeting(user: User) {
-//    var userState by remember { mutableStateOf(user) }
-//    Button(onClick = {
-//        userState = userState.copy(age = userState.age + 1) // 增加年龄并更新状态
-//    }) {
-//        Text("Increase Age")
-//    }
-//}
 @Serializable
 data class ConfigData(
     val mcpServers: Map<String, ServerData>
@@ -73,27 +64,6 @@ fun ConnectMCPServerDialog(
     var serverJsonString by remember { mutableStateOf(prettyJson.encodeToString(serverJson)) }
     var isJsonError by remember { mutableStateOf(false) }
 
-    fun convertJsonToForm() {
-        try {
-
-            val configData = Json.decodeFromString<ConfigData>(serverJsonString)
-            val serverEntry = configData.mcpServers.entries.firstOrNull()
-
-            serverEntry?.let { (name, serverData) ->
-//                newServerName = name
-//                if(serverData.command!=null) newServerType=0
-//                newServerCommand = serverData.command ?: ""
-//                newServerArgs.clear()
-//                serverData.args?.let { newServerArgs.addAll(it) }
-//                newServerUrl = serverData.url ?: ""
-//                newServerEnv.clear()
-//                serverData.env?.forEach { (key, value) -> newServerEnv.add(key to value) }
-            }
-        } catch (e: Exception) {
-//            errorMessage = "Error parsing JSON: ${e.message}"
-        }
-    }
-
     fun onJsonValueChange(value:String){
         try {
             serverJson = prettyJson.decodeFromString(value)
@@ -112,11 +82,6 @@ fun ConnectMCPServerDialog(
             verticalAlignment = Alignment.CenterVertically
         ){
             Text("Connect MCP Servers${title?.let { " to ${it}" }?:""}")
-//            Button({
-//                pasteJsonFromClipboard()
-//            }){
-//                Text("Paste from clipboard")
-//            }
         } },
         text = {
             OutlinedTextField(

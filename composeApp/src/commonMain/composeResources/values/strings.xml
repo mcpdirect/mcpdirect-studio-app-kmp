@@ -15,7 +15,9 @@
     <string name="my_studio">My Studio</string>
     <string name="mcp_team">MCP Team</string>
     <string name="share_mcp_server">Share MCP Server</string>
+    <string name="share_mcp_template">Share MCP Template</string>
     <string name="virtual_mcp">Virtual MCP</string>
     <string name="tool_details">Tool Details</string>
     <string name="dashboard">Dashboard</string>
+    <string name="mcp_tools">MCP Tools</string>
 </resources>

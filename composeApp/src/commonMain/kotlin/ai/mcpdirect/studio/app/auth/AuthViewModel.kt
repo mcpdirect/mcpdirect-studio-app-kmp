@@ -87,10 +87,8 @@ class AuthViewModel() : ViewModel(){
                     user = it
                 }
                 account = email
-                uiState = UIState.Success
-            }else{
-                uiState = UIState.Error(it.code)
             }
+            uiState = UIState.state(it.code)
         }
 
 //        if (!isLoginEmailValid || !isLoginPasswordValid) {
@@ -187,7 +185,8 @@ class AuthViewModel() : ViewModel(){
                         uiState = UIState.Idle
                         currentScreen = AuthScreen.RegisterOtpVerification
                     }
-                } else uiState = UIState.Error(it.code,"Send OTP failed, please try again")
+                }
+                uiState = UIState.state(it.code)
             }
         }
     }
@@ -221,7 +220,8 @@ class AuthViewModel() : ViewModel(){
                             uiState = UIState.Idle
                         }
                     }
-                }else uiState = UIState.Error(it.code)
+                }
+                uiState = UIState.state(it.code)
             }
         }
     }
@@ -256,7 +256,8 @@ class AuthViewModel() : ViewModel(){
                     forgotPasswordEmail = email
                     uiState = UIState.Idle
                     currentScreen = AuthScreen.ForgotPasswordOtpVerification
-                } else uiState = UIState.Error(it.code,"Send OTP failed, please try again")
+                }
+                uiState = UIState.state(it.code)
             }
         }
     }
@@ -292,7 +293,8 @@ class AuthViewModel() : ViewModel(){
                         currentScreen = AuthScreen.Login
                         uiState = UIState.Idle
                     }
-                }else uiState = UIState.Error(it.code)
+                }
+                uiState = UIState.state(it.code)
             }
         }
     }

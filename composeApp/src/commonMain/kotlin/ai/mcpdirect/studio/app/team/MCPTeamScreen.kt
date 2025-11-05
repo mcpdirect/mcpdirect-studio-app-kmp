@@ -29,7 +29,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 private var dialog by mutableStateOf<MCPTeamDialog>(MCPTeamDialog.None)
 
@@ -46,6 +45,7 @@ fun MCPTeamScreen() {
                         code, message ->
                     viewModel.uiState = UIState.Success
                 }
+                generalViewModel.refreshToolMakerTemplates()
             }
         }
     }
@@ -192,7 +192,7 @@ private fun TeamListView() {
                 viewModel.mcpTeam?.let {
                     VerticalDivider()
                     var currentTabIndex by remember { mutableStateOf(0) }
-                    val tabs = listOf("Team Members", "Shared MCP Server")
+                    val tabs = listOf("Team Members", "Shared MCP Servers","Shared MCP Templates")
 
                     Column(Modifier.weight(5.0f)) {
                         Row(
@@ -213,15 +213,27 @@ private fun TeamListView() {
                                     onClick = { dialog = MCPTeamDialog.InviteTeamMember }
                                 )
                             }
-                            TooltipIconButton(
-                                Res.drawable.share,
-                                contentDescription = "Share MCP Server",
-                                onClick = {
-                                    generalViewModel.currentScreen(Screen.MCPTeamToolMaker,
-                                        "Share MCP Server for Team ${it.name}",
-                                        Screen.MCPTeam)
-                                }
-                            )
+                            when(currentTabIndex){
+                                1 -> TooltipIconButton(
+                                    Res.drawable.share,
+                                    contentDescription = "Share MCP Server",
+                                    onClick = {
+                                        generalViewModel.currentScreen(Screen.MCPTeamToolMaker,
+                                            "Share MCP Server to Team ${it.name}",
+                                            Screen.MCPTeam)
+                                    }
+                                )
+                                2 -> TooltipIconButton(
+                                    Res.drawable.share,
+                                    contentDescription = "Share MCP Template",
+                                    onClick = {
+                                        generalViewModel.currentScreen(Screen.MCPTeamToolMakerTemplate,
+                                            "Share MCP Template to Team ${it.name}",
+                                            Screen.MCPTeam)
+                                    }
+                                )
+                            }
+
                         }
                         HorizontalDivider()
                         SecondaryTabRow(selectedTabIndex = currentTabIndex) {
@@ -238,6 +250,7 @@ private fun TeamListView() {
                         when (currentTabIndex) {
                             0 -> TeamMemberList()
                             1 -> TeamToolMakerList()
+                            2 -> TeamToolMakerTemplateList()
                         }
                     }
                 }
@@ -389,6 +402,53 @@ private fun TeamToolMakerList() {
                 ListItem(
                     headlineContent = {
                         it.name?.let { Text(it) }
+                    },
+                    overlineContent = {
+                        if (me) Text("Me", color = MaterialTheme.colorScheme.primary)
+                        else member?.let { Text("${it.name} (${it.account})") }
+                    },
+                    supportingContent = {
+                        Box(
+                            Modifier.border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                        ) {
+                            if (it.status == 0) Tag(
+                                "inactive",
+                                color = MaterialTheme.colorScheme.error,
+                            ) else Tag(
+                                "active",
+                            )
+                        }
+                    },
+                    trailingContent = {
+
+                    }
+                )
+                HorizontalDivider()
+            }
+        }
+    }
+}
+
+@Composable
+private fun TeamToolMakerTemplateList() {
+    val viewModel = mcpTeamViewModel
+    val myId = authViewModel.user.id
+    val team = viewModel.mcpTeam!!
+    val teamToolMakerTemplates = mcpTeamViewModel.mcpTeamToolMakerTemplates
+
+    LazyColumn {
+        items(teamToolMakerTemplates){
+            val toolMakerTemplate = generalViewModel.toolMakerTemplate(it.toolMakerTemplateId)
+            if(toolMakerTemplate!=null&&toolMakerTemplate.status>0) {
+                val me = toolMakerTemplate.userId==myId
+                val member = viewModel.teamMember(toolMakerTemplate.userId)
+                ListItem(
+                    headlineContent = {
+                        Text(toolMakerTemplate.name)
                     },
                     overlineContent = {
                         if (me) Text("Me", color = MaterialTheme.colorScheme.primary)

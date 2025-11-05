@@ -1,7 +1,7 @@
 <img height="64" src="composeApp/icons/icon.png">
 <img height="64" src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_text_logo.png" alt=""/>
 
-# MCPDirect：通用MCP访问网关
+# MCPdirect：通用MCP访问网关
 [English](README.md)
 * **用一个URL访问你所有的 MCP Server 和工具**
 * **统一管理，统一授权，统一访问你所有的MCP Server和工具**
@@ -21,6 +21,15 @@
 
 ### 3. 在团队合作中如何分享MCP Server
 使用MCPdirect，任何团队成员都可以安全的分享自己MCP Server，任何团队成员都可以安全的使用分享的MCP Server
+
+---
+## MCPdirect适用场景
+1. 需要从互联网访问私有环境的MCP Server
+2. 需要简化在不同MCP Client上重复配置 MCP Server
+3. 需要自定义MCP Server上每个工具的访问权限
+4. 需要根据使用场景定义可访问的MCP Server及MCP工具
+5. 需要分享MCP工具给个人
+6. 需要在团队中共享MCP Server
 
 ---
 ## 特点

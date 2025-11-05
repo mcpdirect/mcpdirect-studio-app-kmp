@@ -3,6 +3,7 @@ package ai.mcpdirect.studio.app.mcp
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 val connectMCPViewModel = ConnectMCPViewModel()
 class ConnectMCPViewModel: ViewModel() {
     var uiState by mutableStateOf<UIState>(UIState.Idle)
-
+        private set
     private var _toolMakers = mutableStateMapOf<Long,AIPortToolMaker>()
     val toolMakers by derivedStateOf {
         _toolMakers.values.toList()
@@ -34,8 +35,14 @@ class ConnectMCPViewModel: ViewModel() {
         _toolMakers.clear()
         tools.clear()
     }
-    private fun updateUIState(code:Int){
-        uiState = if(code==0) UIState.Success else UIState.Error(code)
+    private fun updateUIState(code:Int?=null){
+        code?.let {
+            uiState = if (it == 0) UIState.Success else UIState.Error(code)
+            generalViewModel.loadingProcess = 1.0f
+        }?: {
+            uiState = UIState.Loading
+            generalViewModel.loadingProcess = null
+        }
     }
     fun updateToolMaker(maker: AIPortToolMaker){
         viewModelScope.launch {
@@ -45,7 +52,8 @@ class ConnectMCPViewModel: ViewModel() {
     }
     fun connectMCPServer( configs:Map<String, MCPServerConfig>){
         viewModelScope.launch {
-            uiState = UIState.Loading
+//            uiState = UIState.Loading
+            updateUIState()
             getPlatform().connectMCPServerToStudio(MCPDirectStudio.studioId(),configs){
                 updateUIState(it.code)
                 if(it.code==0) it.data?.let {
@@ -60,7 +68,8 @@ class ConnectMCPViewModel: ViewModel() {
 
     fun configMCPServer( config:MCPServerConfig){
         viewModelScope.launch {
-            uiState = UIState.Loading
+//            uiState = UIState.Loading
+            updateUIState()
             getPlatform().configMCPServerForStudio(
                 MCPDirectStudio.studioId(), toolMaker.id, config
             ){
@@ -98,7 +107,8 @@ class ConnectMCPViewModel: ViewModel() {
 //    }
     fun queryMCPTools(toolMaker: AIPortToolMaker){
         if(toolMaker.id!=0L){
-            uiState = UIState.Loading
+//            uiState = UIState.Loading
+            updateUIState()
             tools.clear()
             getPlatform().queryMCPToolsFromStudio(MCPDirectStudio.studioId(),toolMaker.id){
                 updateUIState(it.code)
@@ -112,7 +122,8 @@ class ConnectMCPViewModel: ViewModel() {
     }
     fun publishMCPTools(toolMaker: AIPortToolMaker){
         if(toolMaker.id!=0L){
-            uiState = UIState.Loading
+//            uiState = UIState.Loading
+            updateUIState()
             tools.clear()
             getPlatform().publishMCPToolsForStudio(MCPDirectStudio.studioId(),toolMaker.id){
                 updateUIState(it.code)

@@ -1,6 +1,5 @@
 package ai.mcpdirect.mcpdirectstudioapp
 
-import ai.mcpdirect.studio.app.NavigationSideBar
 import ai.mcpdirect.studio.app.NavigationTopBar
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
@@ -18,13 +17,15 @@ import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
 import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
+import ai.mcpdirect.studio.app.team.MCPTeamToolMakerTemplateScreen
+import ai.mcpdirect.studio.app.template.MCPTemplateScreen
 import ai.mcpdirect.studio.app.theme.purple.AppTypography
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
+import ai.mcpdirect.studio.app.tool.MCPToolsScreen
 import ai.mcpdirect.studio.app.tool.ToolDetailScreen
 import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,36 +80,18 @@ fun App(){
         }
     }else PurpleTheme (typography = typography!!) {
         Surface{
-//            if(authViewModel.uiState == UIState.Success){
-//                NavigationSideBar()
-//            } else Row(
-//                Modifier.fillMaxSize(),
-//                horizontalArrangement = Arrangement.Center,
-//                verticalAlignment = Alignment.CenterVertically
-//            ){
-//                Column(Modifier.weight(1.0f)){
-//
-//                }
-//                when(authViewModel.currentScreen){
-//                    AuthScreen.Login -> {
-//                        LoginScreen()
-//                    }
-//                    else -> {
-//
-//                    }
-//                }
-//            }
-
             if(authViewModel.uiState == UIState.Success){
                 NavigationTopBar(
                     screens = listOf(
                         Screen.Dashboard,
                         Screen.MyStudio,
+                        Screen.MCPAccessKey,
+                        Screen.MCPTools,
                         Screen.MCPTeam,
 //                        Screen.ToolDevelopment -> {}
-                        Screen.MCPAccessKey,
 //                        Screen.ToolsLogbook,
-                        Screen.VirtualMCP
+                        Screen.VirtualMCP,
+
                     )
                 ){
                     when (generalViewModel.currentScreen) {
@@ -136,6 +119,9 @@ fun App(){
                         Screen.MCPTeamToolMaker -> {
                             MCPTeamToolMakerScreen()
                         }
+                        Screen.MCPTeamToolMakerTemplate -> {
+                            MCPTeamToolMakerTemplateScreen()
+                        }
                         Screen.VirtualMCP -> {
                             VirtualMakerScreen()
                         }
@@ -144,6 +130,9 @@ fun App(){
                         }
                         Screen.ToolDetails -> {
                             ToolDetailScreen()
+                        }
+                        Screen.MCPTools -> {
+                            MCPToolsScreen()
                         }
                     }
                 }
