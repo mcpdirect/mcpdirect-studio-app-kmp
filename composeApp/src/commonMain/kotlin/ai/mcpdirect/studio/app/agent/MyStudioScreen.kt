@@ -434,6 +434,12 @@ fun ToolMakerByTemplateListView(
                                         onClick = {
 //                                onDialogRequest(MyStudioScreenDialog.ConfigMCP)
                                         })
+                                    TooltipIconButton(
+                                        Res.drawable.cloud_upload,
+                                        contentDescription = "Publish to MCPdirect",
+                                        onClick = {
+                                            myStudioViewModel.publishMCPTools(it)
+                                        })
                                 }
                             )
                             HorizontalDivider()

@@ -170,7 +170,7 @@ class MCPTeamViewModel : ViewModel(){
     }
     fun queryMCPTeamToolMakers(team: AIPortTeam){
         viewModelScope.launch {
-            getPlatform().queryTeamToolMakers(team){
+            getPlatform().queryTeamToolMakers(team.id){
                     (code, message, data) ->
                 if(code==0&&data!=null){
                     data.forEach {
@@ -182,7 +182,7 @@ class MCPTeamViewModel : ViewModel(){
     }
     fun queryMCPTeamToolMakerTemplates(team: AIPortTeam){
         viewModelScope.launch {
-            getPlatform().queryTeamToolMakerTemplates(team){
+            getPlatform().queryTeamToolMakerTemplates(team.id){
                     (code, message, data) ->
                 if(code==0&&data!=null){
                     data.forEach {

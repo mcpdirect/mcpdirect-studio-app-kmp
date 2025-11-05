@@ -48,7 +48,7 @@ class MCPTeamToolMakerTemplateViewModel: ViewModel() {
 
     fun refreshTeamToolMakerTemplates(team: AIPortTeam){
         viewModelScope.launch {
-            getPlatform().queryTeamToolMakerTemplates(team){ (code, message, data) ->
+            getPlatform().queryTeamToolMakerTemplates(team.id){ (code, message, data) ->
                 if(code==0){
                     var loadToolMakers = false
                     data?.forEach {

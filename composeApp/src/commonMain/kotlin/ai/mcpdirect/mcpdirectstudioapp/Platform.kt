@@ -377,23 +377,24 @@ interface Platform {
         }
     }
 
-    fun queryTeamToolMakers(team: AIPortTeam,
+    fun queryTeamToolMakers(teamId: Long = 0,lastUpdated: Long = -1,
                             onResponse: (resp: AIPortServiceResponse<List<AIPortTeamToolMaker>>) -> Unit){
         hstpRequest(
             "$aitoolsUSL/tool_maker/team/query", mapOf(
-                "teamId" to JsonPrimitive(team.id),
-                "teamOwnerId" to  JsonPrimitive(team.ownerId),
+                "teamId" to JsonPrimitive(teamId),
+                "lastUpdated" to  JsonPrimitive(lastUpdated),
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamToolMaker>>>(it))
         }
     }
-    fun queryTeamToolMakerTemplates(team: AIPortTeam,
+    fun queryTeamToolMakerTemplates(teamId:Long=0,lastUpdated: Long=-1,
                             onResponse: (resp: AIPortServiceResponse<List<AIPortTeamToolMakerTemplate>>) -> Unit){
         hstpRequest(
             "$aitoolsUSL/tool_maker/template/team/query", mapOf(
-                "teamId" to JsonPrimitive(team.id),
-                "teamOwnerId" to  JsonPrimitive(team.ownerId),
+                "teamId" to JsonPrimitive(teamId),
+                "lastUpdated" to JsonPrimitive(lastUpdated),
+//                "teamOwnerId" to  JsonPrimitive(team.ownerId),
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamToolMakerTemplate>>>(it))

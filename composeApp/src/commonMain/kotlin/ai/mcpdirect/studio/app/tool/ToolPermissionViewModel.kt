@@ -357,9 +357,12 @@ class ToolPermissionViewModel : ViewModel(){
         this.team=team
         this.team?.let {
             tools.clear()
-            viewModelScope.launch {
-                generalViewModel.refreshToolMakers()
-            }
+            generalViewModel.refreshTeamToolMakers()
+            generalViewModel.refreshTeamToolMakerTemplates()
+            generalViewModel.refreshToolMakers()
+//            viewModelScope.launch {
+//                generalViewModel.refreshToolMakers()
+//            }
         }
     }
 }

@@ -32,6 +32,8 @@ fun ToolPermissionScreen() {
     val viewModel = toolPermissionViewModel
     LaunchedEffect(viewModel){
         viewModel.refresh()
+        generalViewModel.refreshTeamToolMakers()
+        generalViewModel.refreshTeamToolMakerTemplates()
     }
     generalViewModel.topBarActions =  {
         IconButton(onClick = {
@@ -48,9 +50,9 @@ fun ToolPermissionScreen() {
     }
     Row{
         var currentTabIndex by remember { mutableStateOf(0) }
-        Column(Modifier.width(250.dp)) {
+        Column(Modifier.width(300.dp)) {
 
-            val tabs = listOf("My Studio", "My MCP Team")
+            val tabs = listOf("My Studio", "My Team")
             SecondaryTabRow(selectedTabIndex = currentTabIndex) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
@@ -84,7 +86,7 @@ fun ToolPermissionScreen() {
                                 viewModel.selectToolMaker(it)
                             },
                             headlineContent = { Text(
-                                it.name?:"",
+                                it.name,
                                 style = MaterialTheme.typography.titleSmall,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis) },

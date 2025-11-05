@@ -45,6 +45,10 @@ class AIPortTeamToolMaker {
     }
 
     companion object {
+        data class Key(val teamId: Long,val makerId: Long)
+        fun key(teamId: Long,makerId: Long):Key{
+            return Key(teamId,makerId)
+        }
         fun build(): AIPortTeamToolMaker {
             return AIPortTeamToolMaker()
         }

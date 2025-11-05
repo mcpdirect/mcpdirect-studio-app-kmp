@@ -90,14 +90,24 @@ class GeneralViewModel() : ViewModel() {
         }
     }
     fun toolMakers(team: AIPortTeam): List<AIPortToolMaker>{
-        return _teamToolMakers.values.filter {it.teamId==team.id}
+        val ttmts =_teamToolMakerTemplates.values.filter { it.teamId==team.id }.map { it.toolMakerTemplateId }.toList()
+        val ttms =_teamToolMakers.values.filter { it.teamId==team.id }.map { it.toolMakerId }.toList()
+
+        return _toolMakers.values.filter { it.id in ttms||it.templateId in ttmts}
     }
-    private val _teamToolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
+    private val _teamToolMakers = mutableStateMapOf<AIPortTeamToolMaker.Companion.Key, AIPortTeamToolMaker>()
     val teamToolMakers by derivedStateOf {
         _teamToolMakers.values.toList()
     }
 
-    // tool maker template
+    // team toolmaker template
+
+    private val _teamToolMakerTemplates = mutableStateMapOf<AIPortTeamToolMakerTemplate.Companion.Key, AIPortTeamToolMakerTemplate>()
+    val teamToolMakerTemplates by derivedStateOf {
+        _teamToolMakerTemplates.values.toList()
+    }
+
+    // toolmaker template
     private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
     val toolMakerTemplates by derivedStateOf {
         _toolMakerTemplates.values.toList()
@@ -115,6 +125,7 @@ class GeneralViewModel() : ViewModel() {
 //    val teamToolMakerTemplates by derivedStateOf {
 //        _teamToolMakerTemplates.values.toList()
 //    }
+
 
     // tool
     private val _tools = mutableStateMapOf<Long, AIPortTool>()
@@ -227,12 +238,19 @@ class GeneralViewModel() : ViewModel() {
                 it.data?.let {
 //                    toolMakersLastQueried = getPlatform().currentMilliseconds
                     it.forEach {
-                        if(it.teamId!=0L) _teamToolMakers[it.id]=it
+//                        if(it.teamId!=0L) _teamToolMakers[it.id]=it
                         _toolMakers[it.id]=it
                     }
                 }
             }
             onResponse?.invoke(it.code, it.message)
+        }
+    }
+    fun refreshTeamToolMakers(){
+        getPlatform().queryTeamToolMakers{
+            if(it.successful()) it.data?.forEach {
+                _teamToolMakers[AIPortTeamToolMaker.key(it.teamId,it.toolMakerId)] = it
+            }
         }
     }
 
@@ -247,6 +265,19 @@ class GeneralViewModel() : ViewModel() {
 //                        if(it.teamId!=0L) _teamToolMakerTemplates[it.id]=it
                         _toolMakerTemplates[it.id]=it
                     }
+                }
+            }
+        }
+    }
+    fun refreshTeamToolMakerTemplates(){
+        getPlatform().queryTeamToolMakerTemplates(
+            lastUpdated = -1,
+        ){
+            if(it.successful())it.data?.let {
+//                    toolMakersLastQueried = getPlatform().currentMilliseconds
+                it.forEach {
+//                        if(it.teamId!=0L) _teamToolMakerTemplates[it.id]=it
+                    _teamToolMakerTemplates[AIPortTeamToolMakerTemplate.key(it.teamId,it.toolMakerTemplateId)]=it
                 }
             }
         }
