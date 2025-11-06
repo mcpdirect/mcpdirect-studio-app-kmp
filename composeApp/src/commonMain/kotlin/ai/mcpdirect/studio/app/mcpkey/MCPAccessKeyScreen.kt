@@ -278,17 +278,19 @@ fun ShowMCPKeyDialog() {
             Button(
                 enabled = key!=null,
                 onClick = {
-                    var host: String? = getPlatform().getenv("AI_MCPDIRECT_GATEWAY_HOST")
-                    if (host == null) {
-                        host = "https://connect.mcpdirect.ai/"
-                    }
-                    val text ="""
-                        {"mcpServers":{"${key!!.name}":{"url":"$host${key!!.secretKey.substring(4)}/sse"}}}
-                    """.trimIndent()
+                    key?.let {
+                        var host: String? = getPlatform().getenv("AI_MCPDIRECT_GATEWAY_HOST")
+                        if (host == null) {
+                            host = "https://connect.mcpdirect.ai/"
+                        }
+                        val keyName = it.name.trim().lowercase().replace(" ","_")
+                        val secretKey = it.secretKey.substring(4)
+                        val text ="""{"mcpServers":{"$keyName":{"url":"$host$secretKey/sse"}}}""".trimIndent()
 
-                    getPlatform().copyToClipboard(text)
-                    mcpKey = null
-                    dialog= MCPKeyDialog.DisplayMCPKey
+                        getPlatform().copyToClipboard(text)
+                        mcpKey = null
+                        dialog= MCPKeyDialog.DisplayMCPKey
+                    }
                 }
             ) {
                 Text("Copy as MCP Server Config")

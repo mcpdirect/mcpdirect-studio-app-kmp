@@ -5,7 +5,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.connect_mcp
 import mcpdirectstudioapp.composeapp.generated.resources.dashboard
 import mcpdirectstudioapp.composeapp.generated.resources.data_info_alert
 import mcpdirectstudioapp.composeapp.generated.resources.design_services
-import mcpdirectstudioapp.composeapp.generated.resources.diversity_3
+import mcpdirectstudioapp.composeapp.generated.resources.groups
 import mcpdirectstudioapp.composeapp.generated.resources.graph_5
 import mcpdirectstudioapp.composeapp.generated.resources.handyman
 import mcpdirectstudioapp.composeapp.generated.resources.info
@@ -47,7 +47,7 @@ sealed class Screen(var title: StringResource, val icon: DrawableResource) {
     object MyStudio : Screen(Res.string.connect_mcp,
         Res.drawable.plug_connect)
     object MCPTeam : Screen(Res.string.mcp_team,
-        Res.drawable.diversity_3)
+        Res.drawable.groups)
 
     object MCPTeamToolMaker : Screen(Res.string.share_mcp_server,
         Res.drawable.share)

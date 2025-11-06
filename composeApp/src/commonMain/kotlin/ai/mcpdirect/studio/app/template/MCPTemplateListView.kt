@@ -3,14 +3,18 @@ package ai.mcpdirect.studio.app.template
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioIcon
 import ai.mcpdirect.studio.app.compose.StudioListItem
+import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
@@ -29,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.groups
 import mcpdirectstudioapp.composeapp.generated.resources.graph_5
 import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_right
 import mcpdirectstudioapp.composeapp.generated.resources.person
@@ -37,11 +42,14 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun MCPTemplateListView(){
     val viewModel = mcpTemplateListViewModel
-    LaunchedEffect(viewModel){
-        viewModel.queryToolMakerTemplates()
+    LaunchedEffect(null){
+//        viewModel.queryToolMakerTemplates()
+        generalViewModel.refreshTeams()
+        generalViewModel.refreshTeamToolMakerTemplates()
+        generalViewModel.refreshToolMakerTemplates()
     }
     LazyColumn {
-        items(viewModel.toolMakerTemplates){ template ->
+        items(generalViewModel.toolMakerTemplates){ template ->
             val me = template.userId== authViewModel.user.id
             var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
             var user by remember { mutableStateOf<AIPortUser?>(null)}
@@ -84,17 +92,35 @@ fun MCPTemplateListView(){
                         overflow = TextOverflow.Ellipsis) },
                     supportingContent = {
                         Row{
-                            StudioIcon(
-                                Res.drawable.graph_5,
-                                "From My Studio",
-                                MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp).padding(end = 4.dp)
-                            )
-                            Text(
-                                agent.name,
-                                color = MaterialTheme.colorScheme.primary,
-                                style=MaterialTheme.typography.bodySmall
-                            )
+                            if(me) {
+                                StudioIcon(
+                                    Res.drawable.graph_5,
+                                    "From My Studio",
+                                    MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp).padding(end = 4.dp)
+                                )
+                                Text(
+                                    agent.name,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }else{
+                                val teams = generalViewModel.teams(template)
+                                if(teams.isNotEmpty()){
+                                    StudioIcon(
+                                        Res.drawable.groups,
+                                        "From MCP Team",
+                                        MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    FlowRow{
+                                        teams.forEach {
+                                            Spacer(Modifier.width(4.dp))
+                                            Tag(it.name)
+                                        }
+                                    }
+                                }
+                            }
 
                         }
 

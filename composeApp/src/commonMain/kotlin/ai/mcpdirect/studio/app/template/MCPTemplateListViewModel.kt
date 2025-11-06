@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.template
 
 import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
@@ -17,11 +18,11 @@ import kotlinx.coroutines.launch
 
 val mcpTemplateListViewModel = MCPTemplateListViewModel()
 class MCPTemplateListViewModel: ViewModel() {
-    private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
-
-    val toolMakerTemplates by derivedStateOf {
-        _toolMakerTemplates.values.toList()
-    }
+//    private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
+//
+//    val toolMakerTemplates by derivedStateOf {
+//        _toolMakerTemplates.values.toList()
+//    }
     var toolMakerTemplate by mutableStateOf<AIPortToolMakerTemplate?>(null)
         private  set
 
@@ -32,24 +33,25 @@ class MCPTemplateListViewModel: ViewModel() {
         viewModelScope.launch {
             getPlatform().createToolMakerTemplate(name,type,agentId,config,inputs){
                 if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
-                    it.data?.let {
-                        _toolMakerTemplates[it.id] = it
-                    }
+//                    it.data?.let {
+//                        _toolMakerTemplates[it.id] = it
+//                    }
+                    generalViewModel.refreshToolMakerTemplates()
                 }
             }
         }
     }
-    fun queryToolMakerTemplates(){
-        viewModelScope.launch {
-            getPlatform().queryToolMakerTemplates {
-                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
-                    it.data?.let {
-                        it.forEach {
-                            _toolMakerTemplates[it.id] = it
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    fun queryToolMakerTemplates(){
+//        viewModelScope.launch {
+//            getPlatform().queryToolMakerTemplates {
+//                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+//                    it.data?.let {
+//                        it.forEach {
+//                            _toolMakerTemplates[it.id] = it
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

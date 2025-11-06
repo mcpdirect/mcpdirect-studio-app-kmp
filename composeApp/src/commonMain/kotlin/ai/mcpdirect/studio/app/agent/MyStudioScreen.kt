@@ -111,17 +111,19 @@ fun MyStudioScreen(){
                     onConfirmRequest = { name, config ->
                         myStudioViewModel.createToolMakerByTemplate(
                             template.id,template.agentId,name,config
-                        ){ code, message, mcpServer ->
-                            if(code==0)mcpServer?.let {
+                        ){ code, message, toolMaker ->
+                            if(code==0)toolMaker?.let {
                                 generalViewModel.toolAgent(it.agentId){
                                         code, message, data ->
                                     if(code==0){
                                         data?.let {
                                             myStudioViewModel.connectToolMaker(
                                                 it.engineId,
-                                                mcpServer.id,
-                                                mcpServer.agentId
+                                                toolMaker.id,
+                                                toolMaker.agentId
                                             ){ code, message, mcpServer ->
+                                                generalViewModel.refreshToolMakers()
+                                                myStudioViewModel.queryMCPTools(toolMaker)
                                             }
                                         }
                                     }
@@ -133,19 +135,16 @@ fun MyStudioScreen(){
             }
         }
         MyStudioScreenDialog.CreateMCPTemplate -> {
-            myStudioViewModel.toolMaker?.let {
-                    toolMaker ->
-                CreateMCPTemplateDialog(
-                    toolMaker,
-                    onConfirmRequest = { name,type,agentId,config,inputs ->
-                        dialog = MyStudioScreenDialog.None
-                        mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
-                    },
-                    onDismissRequest = {
-                        dialog = MyStudioScreenDialog.None
-                    }
-                )
-            }
+            CreateMCPTemplateDialog(
+                myStudioViewModel.toolMaker,
+                onConfirmRequest = { name,type,agentId,config,inputs ->
+                    dialog = MyStudioScreenDialog.None
+                    mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
+                },
+                onDismissRequest = {
+                    dialog = MyStudioScreenDialog.None
+                }
+            )
         }
     }
 }

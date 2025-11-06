@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
-import mcpdirectstudioapp.composeapp.generated.resources.diversity_3
+import mcpdirectstudioapp.composeapp.generated.resources.groups
 import mcpdirectstudioapp.composeapp.generated.resources.graph_5
 import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_right
 import mcpdirectstudioapp.composeapp.generated.resources.person
@@ -165,7 +165,7 @@ fun MCPServerList(modifier: Modifier = Modifier){
 
                     } else if(team!=null) Row{
                         StudioIcon(
-                            Res.drawable.diversity_3,
+                            Res.drawable.groups,
                             "From Team",
                             MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.size(20.dp).padding(end = 4.dp)
@@ -218,11 +218,12 @@ fun MCPServerItem(){
 @Composable
 fun MCPTemplateList(){
     val viewModel = mcpTemplateListViewModel
-    LaunchedEffect(viewModel){
-        viewModel.queryToolMakerTemplates()
+    LaunchedEffect(null){
+//        viewModel.queryToolMakerTemplates()
+        generalViewModel.refreshToolMakerTemplates()
     }
     LazyColumn {
-        items(viewModel.toolMakerTemplates){ template ->
+        items(generalViewModel.toolMakerTemplates){ template ->
             val me = template.userId== authViewModel.user.id
             var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
             var user by remember { mutableStateOf<AIPortUser?>(null)}

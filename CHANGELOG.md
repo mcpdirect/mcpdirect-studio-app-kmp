@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-05
+### Changed
+- Enhanced GeneralViewModel with additional functionality
+- Updated navigation screen definitions and routing
+- Improved MyStudioScreen with UI updates
+- Enhanced MCP access key screen functionality
+- Updated team screen and view model with new features
+- Improved template list view and model capabilities
+- Enhanced tools screen with better UX
+- Updated web index.html for improved web experience
+- Updated Gradle wrapper properties
+
 ## 2025-11-04
 ### Changed
 - Updated platform-specific code functionality

@@ -100,11 +100,18 @@ class GeneralViewModel() : ViewModel() {
         _teamToolMakers.values.toList()
     }
 
+    fun teamToolMaker(teamId: Long,makerId:Long): AIPortTeamToolMaker?{
+        return _teamToolMakers[AIPortTeamToolMaker.key(teamId,makerId)]
+    }
+
     // team toolmaker template
 
     private val _teamToolMakerTemplates = mutableStateMapOf<AIPortTeamToolMakerTemplate.Companion.Key, AIPortTeamToolMakerTemplate>()
     val teamToolMakerTemplates by derivedStateOf {
         _teamToolMakerTemplates.values.toList()
+    }
+    fun teamToolMakerTemplates(teamId: Long):List<AIPortTeamToolMakerTemplate>{
+        return _teamToolMakerTemplates.values.filter { it.teamId==teamId }.toList()
     }
 
     // toolmaker template
@@ -143,6 +150,10 @@ class GeneralViewModel() : ViewModel() {
     private val _teams = mutableStateMapOf<Long, AIPortTeam>()
     val teams by derivedStateOf {
         _teams.values.toList()
+    }
+    fun teams(template: AIPortToolMakerTemplate):List<AIPortTeam>{
+        val teamIds = _teamToolMakerTemplates.values.filter { it.toolMakerTemplateId==template.id }.map { it.teamId }.toList()
+        return _teams.values.filter { it.id in teamIds }
     }
     fun team(team: AIPortTeam){
         _teams[team.id]=team

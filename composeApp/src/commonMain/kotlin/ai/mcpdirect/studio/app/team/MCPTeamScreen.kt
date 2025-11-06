@@ -395,7 +395,8 @@ private fun TeamToolMakerList() {
 
     LazyColumn {
         items(toolMakers){
-            val teamToolMaker = viewModel.teamToolMaker(it.id)
+//            val teamToolMaker = viewModel.teamToolMaker(it.id)
+            val teamToolMaker = generalViewModel.teamToolMaker(team.id,it.id)
             if(teamToolMaker!=null&&teamToolMaker.status>0) {
                 val me = it.userId==myId
                 val member = viewModel.teamMember(it.userId)
@@ -438,9 +439,9 @@ private fun TeamToolMakerTemplateList() {
     val viewModel = mcpTeamViewModel
     val myId = authViewModel.user.id
     val team = viewModel.mcpTeam!!
-    val teamToolMakerTemplates = mcpTeamViewModel.mcpTeamToolMakerTemplates
-
-    LazyColumn {
+//    val teamToolMakerTemplates = mcpTeamViewModel.mcpTeamToolMakerTemplates
+    val teamToolMakerTemplates = generalViewModel.teamToolMakerTemplates(team.id)
+        LazyColumn {
         items(teamToolMakerTemplates){
             val toolMakerTemplate = generalViewModel.toolMakerTemplate(it.toolMakerTemplateId)
             if(toolMakerTemplate!=null&&toolMakerTemplate.status>0) {

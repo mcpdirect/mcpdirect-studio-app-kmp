@@ -53,21 +53,21 @@ class MCPTeamViewModel : ViewModel(){
     val mcpTeamMembers by derivedStateOf {
         _mcpTeamMembers.values.toList()
     }
-    private val _mcpTeamToolMakers = mutableStateMapOf<Long, AIPortTeamToolMaker>()
-    val mcpTeamToolMakers by derivedStateOf {
-        _mcpTeamToolMakers.values.toList()
-    }
-
-    private val _mcpTeamToolMakerTemplates = mutableStateMapOf<Long, AIPortTeamToolMakerTemplate>()
-    val mcpTeamToolMakerTemplates by derivedStateOf {
-        _mcpTeamToolMakerTemplates.values.toList()
-    }
-    fun teamToolMaker(makerId:Long): AIPortTeamToolMaker?{
-        return _mcpTeamToolMakers[makerId]
-    }
-    fun teamToolMakerTemplate(templateId:Long): AIPortTeamToolMakerTemplate?{
-        return _mcpTeamToolMakerTemplates[templateId]
-    }
+//    private val _mcpTeamToolMakers = mutableStateMapOf<Long, AIPortTeamToolMaker>()
+//    val mcpTeamToolMakers by derivedStateOf {
+//        _mcpTeamToolMakers.values.toList()
+//    }
+//
+//    private val _mcpTeamToolMakerTemplates = mutableStateMapOf<Long, AIPortTeamToolMakerTemplate>()
+//    val mcpTeamToolMakerTemplates by derivedStateOf {
+//        _mcpTeamToolMakerTemplates.values.toList()
+//    }
+//    fun teamToolMaker(makerId:Long): AIPortTeamToolMaker?{
+//        return _mcpTeamToolMakers[makerId]
+//    }
+//    fun teamToolMakerTemplate(templateId:Long): AIPortTeamToolMakerTemplate?{
+//        return _mcpTeamToolMakerTemplates[templateId]
+//    }
     fun reset(){
         mcpTeam = null
         _mcpTeamMembers.clear()
@@ -113,8 +113,10 @@ class MCPTeamViewModel : ViewModel(){
     fun setMCPTeam(team: AIPortTeam?){
         mcpTeam = team
         if(team!=null) {
-            queryMCPTeamToolMakers(team)
-            queryMCPTeamToolMakerTemplates(team)
+//            queryMCPTeamToolMakers(team)
+//            queryMCPTeamToolMakerTemplates(team)
+            generalViewModel.refreshTeamToolMakers()
+            generalViewModel.refreshTeamToolMakerTemplates()
             queryMCPTeamMembers(team.id)
         }
     }
@@ -158,6 +160,7 @@ class MCPTeamViewModel : ViewModel(){
     }
     fun queryMCPTeamMembers(teamId:Long){
         viewModelScope.launch {
+            _mcpTeamMembers.clear()
             getPlatform().queryTeamMembers(teamId){
                     (code, message, data) ->
                 if(code==0&&data!=null){
@@ -168,30 +171,32 @@ class MCPTeamViewModel : ViewModel(){
             }
         }
     }
-    fun queryMCPTeamToolMakers(team: AIPortTeam){
-        viewModelScope.launch {
-            getPlatform().queryTeamToolMakers(team.id){
-                    (code, message, data) ->
-                if(code==0&&data!=null){
-                    data.forEach {
-                        _mcpTeamToolMakers[it.toolMakerId]=it
-                    }
-                }
-            }
-        }
-    }
-    fun queryMCPTeamToolMakerTemplates(team: AIPortTeam){
-        viewModelScope.launch {
-            getPlatform().queryTeamToolMakerTemplates(team.id){
-                    (code, message, data) ->
-                if(code==0&&data!=null){
-                    data.forEach {
-                        _mcpTeamToolMakerTemplates[it.toolMakerTemplateId]=it
-                    }
-                }
-            }
-        }
-    }
+//    fun queryMCPTeamToolMakers(team: AIPortTeam){
+//        viewModelScope.launch {
+//            _mcpTeamToolMakers.clear()
+//            getPlatform().queryTeamToolMakers(team.id){
+//                    (code, message, data) ->
+//                if(code==0&&data!=null){
+//                    data.forEach {
+//                        _mcpTeamToolMakers[it.toolMakerId]=it
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    fun queryMCPTeamToolMakerTemplates(team: AIPortTeam){
+//        viewModelScope.launch {
+//            _mcpTeamToolMakerTemplates.clear()
+//            getPlatform().queryTeamToolMakerTemplates(team.id){
+//                    (code, message, data) ->
+//                if(code==0&&data!=null){
+//                    data.forEach {
+//                        _mcpTeamToolMakerTemplates[it.toolMakerTemplateId]=it
+//                    }
+//                }
+//            }
+//        }
+//    }
     fun acceptMCPTeamMember(teamId:Long,memberId:Long){
         mcpTeam?.let {
             viewModelScope.launch {
