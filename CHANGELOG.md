@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-06
+### Changed
+- Updated entitlements.plist for composeApp
+- Updated Gradle wrapper to newer version
+- Added entitlements.plist to composeApp resources
+- Removed unified-access-gateway.png asset
+- Updated platform-specific code functionality
+- Updated MCP access key screen with new functionality
+- Updated web index.html with new changes
+- Updated main function in JVM platform
+
+## 2025-11-05
+### Changed
+- Enhanced GeneralViewModel with additional functionality
+- Updated navigation screen definitions and routing
+- Improved MyStudioScreen with UI updates
+- Enhanced MCP access key screen functionality
+- Updated team screen and view model with new features
+- Improved template list view and model capabilities
+- Enhanced tools screen with better UX
+- Updated web index.html for improved web experience
+- Updated Gradle wrapper properties
+
 ## 2025-11-05
 ### Changed
 - Enhanced GeneralViewModel with additional functionality

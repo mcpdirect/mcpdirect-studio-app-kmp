@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.mcpkey
 
+import ai.mcpdirect.mcpdirectstudioapp.AppInfo
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
@@ -279,13 +280,13 @@ fun ShowMCPKeyDialog() {
                 enabled = key!=null,
                 onClick = {
                     key?.let {
-                        var host: String? = getPlatform().getenv("AI_MCPDIRECT_GATEWAY_HOST")
-                        if (host == null) {
-                            host = "https://connect.mcpdirect.ai/"
-                        }
+//                        var host: String? = getPlatform().getenv("AI_MCPDIRECT_GATEWAY_HOST")
+//                        if (host == null) {
+//                            host = "https://connect.mcpdirect.ai/"
+//                        }
                         val keyName = it.name.trim().lowercase().replace(" ","_")
                         val secretKey = it.secretKey.substring(4)
-                        val text ="""{"mcpServers":{"$keyName":{"url":"$host$secretKey/sse"}}}""".trimIndent()
+                        val text ="""{"mcpServers":{"$keyName":{"url":"${AppInfo.MCPDIRECT_GATEWAY_ENDPOINT}$secretKey/sse"}}}""".trimIndent()
 
                         getPlatform().copyToClipboard(text)
                         mcpKey = null

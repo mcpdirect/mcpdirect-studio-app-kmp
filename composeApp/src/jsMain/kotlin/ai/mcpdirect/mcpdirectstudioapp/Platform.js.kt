@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import org.w3c.fetch.*
 
-external val AI_MCPDIRECT_HSTP_WEBPORT:String
+//external val AI_MCPDIRECT_HSTP_WEBPORT:String
 actual external fun sha256(value:String):String
 actual external fun currentMilliseconds():Long
 external fun env(value:String):String?
@@ -115,7 +115,7 @@ class JsPlatform : WebPlatform() {
     override fun hstpRequest(usl:String, parameters:String, onResponse:(resp:String)->Unit){
 
         window.fetch(
-            AI_MCPDIRECT_HSTP_WEBPORT,
+            AppInfo.MCPDIRECT_HSTP_WEBPORT,
             init = RequestInit().apply {
                 method = "POST"
                 credentials = RequestCredentials.OMIT

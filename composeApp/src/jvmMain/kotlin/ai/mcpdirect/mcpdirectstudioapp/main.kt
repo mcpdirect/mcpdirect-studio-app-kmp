@@ -7,12 +7,12 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_logo_48
-import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_studio_icon_transparent_48
 import org.jetbrains.compose.resources.painterResource
 
 fun main() = application {
     val windowState = rememberWindowState(size = DpSize(1200.dp, 900.dp))
-    val version = System.getProperty("ai.mcpdirect.studio.app.version")?:""
+//    val version = System.getProperty("ai.mcpdirect.studio.app.version")?:""
+    val version = AppInfo.APP_VERSION
     Window(
         onCloseRequest = ::exitApplication,
         title = "MCPdirect Studio $version",

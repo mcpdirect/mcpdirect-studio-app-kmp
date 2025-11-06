@@ -10,6 +10,9 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.encodeToJsonElement
 
+//expect object AppInfo {
+//    val version: String
+//}
 expect fun sha256(value:String):String
 expect fun currentMilliseconds():Long
 
