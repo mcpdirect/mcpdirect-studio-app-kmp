@@ -185,8 +185,7 @@ class AuthViewModel() : ViewModel(){
                         uiState = UIState.Idle
                         currentScreen = AuthScreen.RegisterOtpVerification
                     }
-                }
-                uiState = UIState.state(it.code)
+                }else uiState = UIState.state(it.code)
             }
         }
     }
@@ -220,8 +219,7 @@ class AuthViewModel() : ViewModel(){
                             uiState = UIState.Idle
                         }
                     }
-                }
-                uiState = UIState.state(it.code)
+                }else uiState = UIState.state(it.code)
             }
         }
     }
@@ -256,8 +254,7 @@ class AuthViewModel() : ViewModel(){
                     forgotPasswordEmail = email
                     uiState = UIState.Idle
                     currentScreen = AuthScreen.ForgotPasswordOtpVerification
-                }
-                uiState = UIState.state(it.code)
+                }else uiState = UIState.state(it.code)
             }
         }
     }
@@ -293,8 +290,7 @@ class AuthViewModel() : ViewModel(){
                         currentScreen = AuthScreen.Login
                         uiState = UIState.Idle
                     }
-                }
-                uiState = UIState.state(it.code)
+                } else uiState = UIState.state(it.code)
             }
         }
     }
