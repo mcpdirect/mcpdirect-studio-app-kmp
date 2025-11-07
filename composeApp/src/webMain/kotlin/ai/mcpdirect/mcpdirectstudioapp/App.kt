@@ -90,8 +90,7 @@ fun App(){
                         Screen.MCPTeam,
 //                        Screen.ToolDevelopment -> {}
 //                        Screen.ToolsLogbook,
-                        Screen.VirtualMCP,
-
+//                        Screen.VirtualMCP,
                     )
                 ){
                     when (generalViewModel.currentScreen) {

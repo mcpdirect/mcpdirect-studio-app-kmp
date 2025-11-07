@@ -4,32 +4,26 @@ import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.StudioIcon
 import ai.mcpdirect.studio.app.compose.StudioListItem
-import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
+import ai.mcpdirect.studio.app.virtualmcp.VirtualToolMakerDetailView
+import ai.mcpdirect.studio.app.virtualmcp.VirtualToolMakerListView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import mcpdirectstudioapp.composeapp.generated.resources.Res
-import mcpdirectstudioapp.composeapp.generated.resources.groups
-import mcpdirectstudioapp.composeapp.generated.resources.graph_5
-import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_right
-import mcpdirectstudioapp.composeapp.generated.resources.person
-import mcpdirectstudioapp.composeapp.generated.resources.share
+import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
 private enum class MCPToolsScreenDialog {
@@ -77,38 +71,38 @@ fun MCPToolsScreen() {
 //        }
     }
     Row(Modifier.fillMaxSize()){
-//        var currentTabIndex by remember { mutableStateOf(0) }
-//        Column(Modifier.width(300.dp)) {
-//
-//            val tabs = listOf("MCP Server", "MCP Template")
-//            SecondaryTabRow(selectedTabIndex = currentTabIndex) {
-//                tabs.forEachIndexed { index, title ->
-//                    Tab(
-//                        selected = currentTabIndex == index,
-//                        onClick = {
-//                            currentTabIndex = index
-//                            generalViewModel.topBarActions = {}
-//                                  },
-//                        text = { Text(title) }
-//                    )
-//                }
-//            }
-//
-//            // Content based on selected tab
-//            when (currentTabIndex) {
-//                0 -> MCPServerList()
-//                1 -> MCPTemplateList()
-//            }
-//
-//        }
+        var currentTabIndex by remember { mutableStateOf(0) }
+        Column(Modifier.width(300.dp)) {
 
-        MCPServerList(Modifier.width(300.dp))
+            val tabs = listOf("MCP Server", "Virtual MCP")
+            SecondaryTabRow(selectedTabIndex = currentTabIndex) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = currentTabIndex == index,
+                        onClick = {
+                            currentTabIndex = index
+                            generalViewModel.topBarActions = {}
+                                  },
+                        text = { Text(title) }
+                    )
+                }
+            }
+
+            // Content based on selected tab
+            when (currentTabIndex) {
+                0 -> MCPServerList()
+                1 -> VirtualToolMakerListView()
+            }
+
+        }
+
+//        MCPServerList(Modifier.width(300.dp))
         StudioCard(Modifier.fillMaxSize().padding(8.dp).weight(2.0f)) {
-//            when (currentTabIndex) {
-//                0 -> MCPServerItem()
-//                1 -> MCPTemplateItem()
-//            }
-            MCPServerItem()
+            when (currentTabIndex) {
+                0 -> MCPServerItem()
+                1 -> VirtualToolMakerDetailView()
+            }
+//            MCPServerItem()
         }
     }
 }
@@ -144,7 +138,7 @@ fun MCPServerList(modifier: Modifier = Modifier){
                     }
                 },
                 headlineContent = { Text(
-                    it.name?:"",
+                    it.name,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis) },
                 supportingContent = {
@@ -215,104 +209,104 @@ fun MCPServerItem(){
     }
 }
 
-@Composable
-fun MCPTemplateList(){
-    val viewModel = mcpTemplateListViewModel
-    LaunchedEffect(null){
-//        viewModel.queryToolMakerTemplates()
-        generalViewModel.refreshToolMakerTemplates()
-    }
-    LazyColumn {
-        items(generalViewModel.toolMakerTemplates){ template ->
-            val me = template.userId== authViewModel.user.id
-            var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
-            var user by remember { mutableStateOf<AIPortUser?>(null)}
-            LaunchedEffect(null){
-                generalViewModel.toolAgent(template.agentId){
-                    code, message, data ->
-                    toolAgent = data
-                }
-                generalViewModel.user(template.userId){
-                    code, message, data ->
-                    user = data;
-                }
-            }
-            toolAgent?.let { agent ->
-                StudioListItem(
-                    selected = viewModel.toolMakerTemplate?.id == template.id,
-                    modifier = Modifier.clickable{
-                        viewModel.toolMakerTemplate(template)
-                    },
-                    overlineContent = {
-                        Row {
-                            StudioIcon(
-                                Res.drawable.person,
-                                "Owner",
-                                modifier = Modifier.size(18.dp).padding(end = 4.dp)
-                            )
-                            if(me) Text("Me")
-                            else user?.let {
-                                TooltipText(
-                                    it.name,
-                                    contentDescription = it.account,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
-                    },
-                    headlineContent = { Text(
-                        template.name,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis) },
-                    supportingContent = {
-                        Row{
-                            StudioIcon(
-                                Res.drawable.graph_5,
-                                "From My Studio",
-                                MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp).padding(end = 4.dp)
-                            )
-                            Text(
-                                agent.name,
-                                color = MaterialTheme.colorScheme.primary,
-                                style=MaterialTheme.typography.bodySmall
-                            )
+//@Composable
+//fun MCPTemplateList(){
+//    val viewModel = mcpTemplateListViewModel
+//    LaunchedEffect(null){
+////        viewModel.queryToolMakerTemplates()
+//        generalViewModel.refreshToolMakerTemplates()
+//    }
+//    LazyColumn {
+//        items(generalViewModel.toolMakerTemplates){ template ->
+//            val me = template.userId== authViewModel.user.id
+//            var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
+//            var user by remember { mutableStateOf<AIPortUser?>(null)}
+//            LaunchedEffect(null){
+//                generalViewModel.toolAgent(template.agentId){
+//                    code, message, data ->
+//                    toolAgent = data
+//                }
+//                generalViewModel.user(template.userId){
+//                    code, message, data ->
+//                    user = data;
+//                }
+//            }
+//            toolAgent?.let { agent ->
+//                StudioListItem(
+//                    selected = viewModel.toolMakerTemplate?.id == template.id,
+//                    modifier = Modifier.clickable{
+//                        viewModel.toolMakerTemplate(template)
+//                    },
+//                    overlineContent = {
+//                        Row {
+//                            StudioIcon(
+//                                Res.drawable.person,
+//                                "Owner",
+//                                modifier = Modifier.size(18.dp).padding(end = 4.dp)
+//                            )
+//                            if(me) Text("Me")
+//                            else user?.let {
+//                                TooltipText(
+//                                    it.name,
+//                                    contentDescription = it.account,
+//                                    overflow = TextOverflow.Ellipsis
+//                                )
+//                            }
+//                        }
+//                    },
+//                    headlineContent = { Text(
+//                        template.name,
+//                        maxLines = 1,
+//                        overflow = TextOverflow.Ellipsis) },
+//                    supportingContent = {
+//                        Row{
+//                            StudioIcon(
+//                                Res.drawable.graph_5,
+//                                "From My Studio",
+//                                MaterialTheme.colorScheme.primary,
+//                                modifier = Modifier.size(20.dp).padding(end = 4.dp)
+//                            )
+//                            Text(
+//                                agent.name,
+//                                color = MaterialTheme.colorScheme.primary,
+//                                style=MaterialTheme.typography.bodySmall
+//                            )
+//
+//                        }
+//
+//                    },
+//                    trailingContent = {
+//                        if(viewModel.toolMakerTemplate!=null&&viewModel.toolMakerTemplate!!.id==template.id)
+//                            Icon(painterResource(Res.drawable.keyboard_arrow_right),
+//                                contentDescription = "")
+//                    },
+//                    colors = ListItemDefaults.colors(
+//                        containerColor = if(viewModel.toolMakerTemplate==template)
+//                            MaterialTheme.colorScheme.surfaceContainer
+//                        else Color.Transparent
+//                    )
+//                )
+//                HorizontalDivider()
+//            }
+//        }
+//    }
+//}
 
-                        }
-
-                    },
-                    trailingContent = {
-                        if(viewModel.toolMakerTemplate!=null&&viewModel.toolMakerTemplate!!.id==template.id)
-                            Icon(painterResource(Res.drawable.keyboard_arrow_right),
-                                contentDescription = "")
-                    },
-                    colors = ListItemDefaults.colors(
-                        containerColor = if(viewModel.toolMakerTemplate==template)
-                            MaterialTheme.colorScheme.surfaceContainer
-                        else Color.Transparent
-                    )
-                )
-                HorizontalDivider()
-            }
-        }
-    }
-}
-
-@Composable
-fun MCPTemplateItem(){
-    mcpTemplateListViewModel.toolMakerTemplate?.let {
-        Column {
-            Row(Modifier.padding(start = 8.dp, end = 8.dp),
-                verticalAlignment = Alignment.CenterVertically){
-                Text(it.name)
-                Spacer(Modifier.weight(1.0f))
-                TooltipIconButton(
-                    Res.drawable.share,
-                    "Share MCP Template to Team",
-                    onClick = {}
-                )
-            }
-            HorizontalDivider()
-        }
-    }
-}
+//@Composable
+//fun MCPTemplateItem(){
+//    mcpTemplateListViewModel.toolMakerTemplate?.let {
+//        Column {
+//            Row(Modifier.padding(start = 8.dp, end = 8.dp),
+//                verticalAlignment = Alignment.CenterVertically){
+//                Text(it.name)
+//                Spacer(Modifier.weight(1.0f))
+//                TooltipIconButton(
+//                    Res.drawable.share,
+//                    "Share MCP Template to Team",
+//                    onClick = {}
+//                )
+//            }
+//            HorizontalDivider()
+//        }
+//    }
+//}

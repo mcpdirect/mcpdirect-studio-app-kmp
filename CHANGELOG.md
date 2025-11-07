@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 
 ## 2025-11-06
+### Added
+- New VirtualToolMakerListView component for displaying virtual tools
+
+### Changed
+- Updated dependencies in build configuration and libraries versions
+- Enhanced MCP tools screen with improved functionality
+- Improved virtual maker tool configuration screen
+- Updated platform-specific application components for JVM and web
+- Updated build configurations with new dependencies
+
+## 2025-11-06
 ### Changed
 - Updated entitlements.plist for composeApp
 - Updated Gradle wrapper to newer version
