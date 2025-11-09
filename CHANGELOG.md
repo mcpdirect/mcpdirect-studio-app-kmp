@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-09
 ### Changed
+- Updated platform-specific code in Platform.kt and Platform.jvm.kt
+- Enhanced ConnectMCPScreen and ConnectMCPViewModel with improved functionality
+
+## 2025-11-09
+### Changed
 - Updated GeneralViewModel with enhanced functionality
 - Improved MyStudioScreen and MyStudioViewModel with further UI enhancements
 - Enhanced configuration dialog for MCP server with improved UX

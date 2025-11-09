@@ -535,7 +535,7 @@ interface Platform {
     }
     fun modifyMCPServerConfig(config:AIPortMCPServerConfig,
                         onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit){
-        httpRequest("$aitoolsUSL/tool_maker/mcp_server_config/modify",
+        hstpRequest("$aitoolsUSL/tool_maker/mcp_server_config/modify",
             mapOf(
                 "mcpServerConfig" to JSON.encodeToJsonElement(config)
             )) {

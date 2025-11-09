@@ -78,6 +78,8 @@ class JVMPlatform : Platform, NotificationHandler{
         onResponse: (resp: String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             MCPDirectStudio.httpRequest(usl, Json.encodeToString(parameters)) {
+                println("httpRequest")
+                println(usl)
                 println(it)
                 onResponse(it)
             }
@@ -90,6 +92,8 @@ class JVMPlatform : Platform, NotificationHandler{
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             MCPDirectStudio.hstpRequest(usl, Json.encodeToString(parameters)) {
+                println("hstpRequest")
+                println(usl)
                 println(it)
                 onResponse(it)
             }
@@ -102,6 +106,9 @@ class JVMPlatform : Platform, NotificationHandler{
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             MCPDirectStudio.hstpRequest(usl, parameters) {
+                println("httpRequest1")
+                println(usl)
+                println(it)
                 onResponse(it)
             }
         }

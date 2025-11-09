@@ -4,6 +4,7 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
@@ -68,12 +69,31 @@ class ConnectMCPViewModel: ViewModel() {
         }
     }
 
-    fun configMCPServer( config:MCPServerConfig){
+    fun modifyMCPServerName(toolMaker: AIPortToolMaker, toolMakerName:String) {
         viewModelScope.launch {
-//            uiState = UIState.Loading
-            updateUIState()
-            getPlatform().configMCPServerForStudio(
-                MCPDirectStudio.studioId(), toolMaker.id, config
+            getPlatform().modifyToolMaker(toolMaker.id, toolMakerName,null,null) {
+                    (code, message, data) ->
+                if (code == 0) data?.let{
+                    val maker = _toolMakers[data.id]
+                    maker?.let {
+                        maker.name = data.name
+                        _toolMakers[data.id] = maker
+                    }
+                    if(toolMaker is MCPServer) modifyMCPServerNameForStudio(
+                        toolMaker,toolMakerName
+                    )
+                }
+            }
+        }
+    }
+
+    fun modifyMCPServerConfigForStudio(mcpServer: MCPServer,
+                                       config:MCPServerConfig,
+                                       onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit){
+        viewModelScope.launch {
+            uiState = UIState.Loading
+            getPlatform().modifyMCPServerForStudio(
+                MCPDirectStudio.studioId(), mcpServer.id, serverConfig = config
             ){
                 updateUIState(it.code)
                 if(it.code==0) it.data?.let {
@@ -83,25 +103,56 @@ class ConnectMCPViewModel: ViewModel() {
                         toolMaker = it
                     }
                 }
+                onResponse(it.code,it.message,it.data)
             }
         }
     }
-    fun configMCPServer(toolAgent: AIPortToolAgent,config:AIPortMCPServerConfig){
+    fun modifyMCPServerNameForStudio(mcpServer: MCPServer, name:String){
         viewModelScope.launch {
             uiState = UIState.Loading
-            getPlatform().configMCPServer(
+            getPlatform().modifyMCPServerForStudio(
+                MCPDirectStudio.studioId(), mcpServer.id, serverName = name
+            ){
+                updateUIState(it.code)
+                if(it.code==0) it.data?.let {
+                    _toolMakers.remove(mcpServer.id)
+                    _toolMakers[it.id] = it
+                    if(toolMaker.id==it.id){
+                        toolMaker = it
+                    }
+                }
+            }
+        }
+    }
+
+    fun modifyToolMakerTags(toolMaker: AIPortToolMaker, toolMakerTags:String) {
+        viewModelScope.launch {
+            getPlatform().modifyToolMaker(toolMaker.id, null, toolMakerTags, null) { (code, message, data) ->
+                if (code == 0 && data != null) {
+                    val maker = _toolMakers[data.id]
+                    maker?.let {
+                        it.tags = data.tags
+                        _toolMakers[data.id] = data
+                    }
+                }
+            }
+        }
+    }
+    fun modifyMCPServerConfig(config:AIPortMCPServerConfig){
+        viewModelScope.launch {
+            uiState = UIState.Loading
+            getPlatform().modifyMCPServerConfig(
                 config
             ){
                 updateUIState(it.code)
                 if(it.code==0) it.data?.let {
                         maker ->
                     getPlatform().connectToolMakerToStudio(
-                        studioId = toolAgent.engineId,
+                        studioId = MCPDirectStudio.studioId(),
                         makerId = maker.id,
                         agentId = maker.agentId
                     ) {
                         if(it.code==0) it.data?.let {
-//                    it.id = makerId(it.name)
                             _toolMakers[it.id] = it
                             if (toolMaker.id == it.id) {
                                 toolMaker = it
@@ -112,35 +163,6 @@ class ConnectMCPViewModel: ViewModel() {
             }
         }
     }
-    fun modifyMCPServerTags(toolMaker: AIPortToolMaker,toolMakerTags:String) {
-        viewModelScope.launch {
-            getPlatform().modifyToolMaker(toolMaker.id, null, toolMakerTags, null) { (code, message, data) ->
-                if (code == 0 && data != null) {
-                    _toolMakers[data.id] = data
-                }
-            }
-        }
-    }
-//    fun queryMCPServers(){
-//        uiState = UIState.Loading
-//        _toolMakers.clear()
-//        viewModelScope.launch {
-//            getPlatform().queryMCPServersFromStudio(MCPDirectStudio.studioId()) {
-//                updateUIState(it.code)
-//                if (it.code == 0) {
-//                    it.data?.let {
-//                        it.forEach {
-////                                it.id = makerId(it.name)
-//                            _toolMakers[it.id] = it
-//                            if(toolMaker.id==it.id){
-//                                toolMaker = it
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
     fun queryMCPTools(toolMaker: AIPortToolMaker){
         if(toolMaker.id!=0L){
 //            uiState = UIState.Loading
