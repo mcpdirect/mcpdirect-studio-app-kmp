@@ -67,7 +67,8 @@ class MyStudioViewModel: ViewModel() {
 
     fun modifyMCPServerConfigForStudio(toolAgent: AIPortToolAgent,
                                        mcpServer: MCPServer,
-                                       config:MCPServerConfig){
+                                       config:MCPServerConfig,
+                                       onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit){
         viewModelScope.launch {
             uiState = UIState.Loading
             getPlatform().modifyMCPServerForStudio(
@@ -81,6 +82,7 @@ class MyStudioViewModel: ViewModel() {
                         toolMaker = it
                     }
                 }
+                onResponse(it.code,it.message,it.data)
             }
         }
     }

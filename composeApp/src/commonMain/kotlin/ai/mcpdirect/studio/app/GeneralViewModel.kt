@@ -39,9 +39,10 @@ class GeneralViewModel() : ViewModel() {
     var topBarActions by mutableStateOf<@Composable (() -> Unit)>({})
     val snackbarHostState = SnackbarHostState()
 
-    fun showSnackbar(message: String) {
+    fun showSnackbar(message: String,actionLabel: String? = null,
+                     withDismissAction: Boolean = false,) {
         viewModelScope.launch {
-            snackbarHostState.showSnackbar(message)
+            snackbarHostState.showSnackbar(message,actionLabel,withDismissAction)
         }
     }
 

@@ -184,6 +184,7 @@ fun ConfigMCPServerDialog(
                     if(newServerArgs.isNotEmpty()) config.args = newServerArgs
                     if(newServerEnv.isNotEmpty()) config.env = newServerEnv.associate { it.first to it.second }
                     onConfirmRequest(config)
+                    onDismissRequest()
                 }
             ) {
                 Text("Submit")

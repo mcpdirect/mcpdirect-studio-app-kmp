@@ -354,6 +354,7 @@ fun ToolMakerListView(
                     Text("Select a MCP server to view")
                 }
             }else myStudioViewModel.toolMaker.let {
+                val me = it.id<Int.MAX_VALUE||it.userId==authViewModel.user.id
                 Column(Modifier.weight(2.0f)) {
                     StudioActionBar(
                         actions = {
@@ -363,7 +364,7 @@ fun ToolMakerListView(
                                 onClick = {
                                     myStudioViewModel.queryMCPTools(it)
                                 })
-                            if(it.userId==authViewModel.user.id) {
+                            if(me) {
                                 if (it.id > Int.MAX_VALUE) TooltipIconButton(
                                     Res.drawable.sell,
                                     contentDescription = "Edit tags",
@@ -461,19 +462,28 @@ fun ToolMakerListView(
                         toolMaker,
                         onDismissRequest = { showEditServerConfigDialog=false },
                         onConfirmRequest = {
-                            if(toolMaker.id<0) myStudioViewModel.modifyMCPServerConfigForStudio(
+                            myStudioViewModel.modifyMCPServerConfigForStudio(
                                 toolAgent,toolMaker,it
-                            ) else {
-                                val config = AIPortMCPServerConfig()
-                                config.transport = it.transport
-                                config.url = it.url
-                                config.command = it.command
-                                config.args = JSON.encodeToJsonElement(it.args).toString()
-                                config.env = JSON.encodeToJsonElement(it.env).toString()
-                                myStudioViewModel.modifyMCPServerConfig(
-                                    myStudioViewModel.toolAgent,
-                                    config
-                                )
+                            ){ code, message, mcpServer ->
+                                if(code==0) {
+                                    val config = AIPortMCPServerConfig()
+                                    config.id = toolMaker.id
+                                    config.transport = it.transport
+                                    config.url = it.url
+                                    config.command = it.command
+                                    config.args = JSON.encodeToJsonElement(it.args).toString()
+                                    config.env = JSON.encodeToJsonElement(it.env).toString()
+                                    myStudioViewModel.modifyMCPServerConfig(
+                                        myStudioViewModel.toolAgent,
+                                        config
+                                    )
+                                }else{
+                                    generalViewModel.showSnackbar(
+                                        message?:"Config MCP Server ${toolMaker.name} Error",
+                                        actionLabel = "Error",
+                                        withDismissAction = true
+                                    )
+                                }
                             }
                         }
                     )
@@ -655,15 +665,6 @@ fun ToolMakerByTemplateListView(
                                     myStudioViewModel.modifyMCPServerConfig(
                                         data,config
                                     )
-//                                    data?.let {
-//                                        myStudioViewModel.connectToolMaker(
-//                                            it.engineId,
-//                                            toolMaker.id,
-//                                            toolMaker.agentId
-//                                        ){
-//                                            code, message, mcpServer ->
-//                                        }
-//                                    }
                                 }
                             }
                         },
@@ -675,8 +676,4 @@ fun ToolMakerByTemplateListView(
             }
         }
     }
-//        }
-
-
-
 }
