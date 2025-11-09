@@ -451,8 +451,7 @@ fun ToolMakerListView(
                     onDismissRequest = {
                         showEditServerTagsDialog = false
                     },
-                    onConfirmRequest = {
-                            toolMaker,toolMakerTags ->
+                    onConfirmRequest = { toolMaker,toolMakerTags ->
                         myStudioViewModel.modifyToolMakerTags(toolMaker,toolMakerTags)
                     }
                 )
@@ -625,8 +624,12 @@ fun ToolMakerByTemplateListView(
                             generalViewModel.toolAgent(selectedToolMaker.agentId) {
                                     code, message, data ->
                                 if (code == 0&&data!=null) {
-                                    myStudioViewModel.modifyMCPServerName(
-                                        data,toolMaker,toolMakerName)
+                                    if(toolMaker.id>Int.MAX_VALUE) {
+                                        myStudioViewModel.modifyMCPServerName(
+                                            data,toolMaker, toolMakerName)
+                                    }else myStudioViewModel.modifyMCPServerNameForStudio(
+                                        data, toolMaker as MCPServer,toolMakerName
+                                    )
                                 }
                             }
                         },
@@ -637,8 +640,7 @@ fun ToolMakerByTemplateListView(
                         onDismissRequest = {
                             showEditServerTagsDialog = false
                         },
-                        onConfirmRequest = {
-                                toolMaker,toolMakerTags ->
+                        onConfirmRequest = { toolMaker,toolMakerTags ->
                             myStudioViewModel.modifyToolMakerTags(toolMaker,toolMakerTags)
                         }
                     )
