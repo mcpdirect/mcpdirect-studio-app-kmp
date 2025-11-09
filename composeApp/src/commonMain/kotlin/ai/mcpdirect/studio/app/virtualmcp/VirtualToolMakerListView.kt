@@ -6,6 +6,8 @@ import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.mcp.EditMCPServerNameDialog
+import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.border
@@ -32,7 +34,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -116,11 +121,13 @@ fun VirtualToolMakerListView() {
 
     if (viewModel.showAddServerDialog) {
         AddVirtualMCPServerDialog(viewModel)
-    }else if(viewModel.showEditServerNameDialog){
-        EditVirtualMCPServerNameDialog(viewModel)
-    }else if(viewModel.showEditServerTagsDialog){
-        EditVirtualMCPServerTagsDialog(viewModel)
     }
+//    else if(viewModel.showEditServerNameDialog){
+//        EditVirtualMCPServerNameDialog(viewModel)
+//    }
+//    else if(viewModel.showEditServerTagsDialog){
+//        EditVirtualMCPServerTagsDialog(viewModel)
+//    }
 
     // Error Dialog
     if (viewModel.errorMessage != null) {
@@ -139,6 +146,8 @@ fun VirtualToolMakerListView() {
 
 @Composable
 fun VirtualToolMakerDetailView() {
+    var showEditServerNameDialog by remember { mutableStateOf(false) }
+    var showEditServerTagsDialog by remember { mutableStateOf(false) }
     val viewModel = virtualMakerViewModel
     viewModel.selectedVirtualMaker?.let {
         maker ->
@@ -188,8 +197,9 @@ fun VirtualToolMakerDetailView() {
                     Res.drawable.badge,
                     contentDescription = "Edit name",
                     onClick = {
-                        viewModel.onServerNameChange(maker.name)
-                        viewModel.showEditServerNameDialog = true
+//                        viewModel.onServerNameChange(maker.name)
+//                        viewModel.showEditServerNameDialog = true
+                        showEditServerNameDialog = true
                     })
                 Spacer(
                     Modifier.border(
@@ -220,6 +230,30 @@ fun VirtualToolMakerDetailView() {
                     VirtualToolItem(tool)
                 }
             }
+        }
+        if(showEditServerNameDialog){
+            EditMCPServerNameDialog(
+                maker,
+                onDismissRequest = {
+                    showEditServerNameDialog = false
+                },
+                onConfirmRequest = {
+                  toolMaker,toolMakerName ->
+//                    viewModel.onServerNameChange(serverName)
+                    viewModel.updateServerName(toolMaker,toolMakerName)
+                },
+            )
+        }else if(showEditServerTagsDialog){
+            EditMCPServerTagsDialog(
+                maker,
+                onDismissRequest = {
+                    showEditServerTagsDialog = false
+                },
+                onConfirmRequest = {
+                    toolMaker,toolMakerTags ->
+                    viewModel.updateServerTags(toolMaker,toolMakerTags)
+                }
+            )
         }
     }
 }
@@ -367,153 +401,6 @@ fun AddVirtualMCPServerDialog(viewModel: VirtualMakerViewModel) {
             Button(
                 colors = ButtonDefaults.textButtonColors(),
                 onClick = { viewModel.showAddServerDialog=false }) {
-                Text("Cancel")
-            }
-        }
-    )
-}
-
-@Composable
-fun EditVirtualMCPServerNameDialog(viewModel: VirtualMakerViewModel) {
-    val nameFocusRequester = remember { FocusRequester() }
-    val addFocusRequester = remember { FocusRequester() }
-    val formScrollState = rememberScrollState()
-
-    AlertDialog(
-        onDismissRequest = { viewModel.showEditServerNameDialog=false },
-        title = { Text("Add New Virtual MCP Server") },
-        text = {
-            Column(Modifier.verticalScroll(formScrollState)) {
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().focusRequester(nameFocusRequester),
-                    value = viewModel.serverName,
-                    onValueChange = { viewModel.onServerNameChange(it) },
-                    label = { Text("Server Name") },
-                    singleLine = true,
-                    isError = viewModel.serverNameErrors && viewModel.showValidationError,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Send
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onSend = {
-                            addFocusRequester.requestFocus(FocusDirection.Next)
-                        }
-                    ),
-                    supportingText = {
-                        if (viewModel.serverNameErrors && viewModel.showValidationError) {
-                            Text("Server Name cannot be empty and the max length is 32", color = MaterialTheme.colorScheme.error)
-                        }
-                    }
-                )
-            }
-            LaunchedEffect(Unit) {
-                nameFocusRequester.requestFocus()
-            }
-        },
-        confirmButton = {
-            Button(
-                enabled = !viewModel.serverNameErrors,
-                modifier = Modifier.focusRequester(addFocusRequester),
-                onClick = {
-                    viewModel.showEditServerNameDialog =false
-                    viewModel.updateServerName()
-                }
-            ) {
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            Button(
-                colors = ButtonDefaults.textButtonColors(),
-                onClick = { viewModel.showEditServerNameDialog =false }) {
-                Text("Cancel")
-            }
-        }
-    )
-}
-
-@Composable
-fun EditVirtualMCPServerTagsDialog(viewModel: VirtualMakerViewModel) {
-    val tagFocusRequester = remember { FocusRequester() }
-    val addFocusRequester = remember { FocusRequester() }
-    val formScrollState = rememberScrollState()
-
-    AlertDialog(
-        onDismissRequest = { viewModel.showEditServerTagsDialog=false },
-        title = { Text("Add New Virtual MCP Server") },
-        text = {
-            Column(Modifier.verticalScroll(formScrollState)) {
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().focusRequester(tagFocusRequester),
-                    value = viewModel.serverTag,
-                    onValueChange = { viewModel.onServerTagChange(it) },
-                    label = { Text("Server Tags") },
-                    placeholder = {Text("Input server tag, end with \",\"")},
-                    singleLine = true,
-                    isError = viewModel.serverTagErrors && viewModel.showValidationError,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Send
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onSend = {
-                            if(viewModel.serverTag.isEmpty())
-                                addFocusRequester.requestFocus(FocusDirection.Next)
-                            else
-                                viewModel.onServerTagChange(viewModel.serverTag+",")
-                        }
-                    )
-                )
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(align = Alignment.Top),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    viewModel.serverTags.forEach {
-                        AssistChip(
-                            modifier = Modifier.padding(horizontal = 2.dp)
-                                .align(Alignment.CenterVertically),
-                            colors = AssistChipDefaults.assistChipColors(containerColor = ButtonDefaults.buttonColors().containerColor),
-                            onClick = { viewModel.removeServerTag(it)},
-                            leadingIcon = {
-                                Icon(
-                                    painterResource(
-                                        Res.drawable.cancel),
-                                    contentDescription = "Delete tag",
-                                    tint = ButtonDefaults.buttonColors().contentColor
-                                )
-                            },
-                            label = {
-                                Text(
-                                    it,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = ButtonDefaults.buttonColors().contentColor
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-            LaunchedEffect(Unit) {
-                tagFocusRequester.requestFocus()
-            }
-        },
-        confirmButton = {
-            Button(
-                enabled = !viewModel.serverNameErrors,
-                modifier = Modifier.focusRequester(addFocusRequester),
-                onClick = {
-                    viewModel.showEditServerTagsDialog = false
-                    viewModel.updateServerTags()
-                }
-            ) {
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            Button(
-                colors = ButtonDefaults.textButtonColors(),
-                onClick = { viewModel.showEditServerTagsDialog = false }) {
                 Text("Cancel")
             }
         }

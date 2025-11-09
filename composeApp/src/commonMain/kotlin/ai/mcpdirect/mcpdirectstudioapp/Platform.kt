@@ -181,12 +181,14 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<MCPServer>>(it))
         }
     }
-    fun configMCPServerForStudio(studioId:Long, mcpServerId:Long, config:MCPServerConfig,
+    fun modifyMCPServerForStudio(studioId:Long, mcpServerId:Long,
+                                 serverName:String?=null, serverConfig:MCPServerConfig?=null,
                                  onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/config",
+        httpRequest("studio.console@$studioId/mcp_server/modify",
             mapOf(
                 "mcpServerId" to JsonPrimitive(mcpServerId),
-                "mcpServerConfig" to JSON.encodeToJsonElement(config)
+                "mcpServerName" to JsonPrimitive(serverName),
+                "mcpServerConfig" to JSON.encodeToJsonElement(serverConfig)
             )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<MCPServer>>(it))
         }
@@ -529,6 +531,15 @@ interface Platform {
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortToolMakerTemplate>>>(it))
+        }
+    }
+    fun modifyMCPServerConfig(config:AIPortMCPServerConfig,
+                        onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit){
+        httpRequest("$aitoolsUSL/tool_maker/mcp_server_config/modify",
+            mapOf(
+                "mcpServerConfig" to JSON.encodeToJsonElement(config)
+            )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolMaker>>(it))
         }
     }
 }

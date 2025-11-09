@@ -50,7 +50,7 @@ class MyStudioViewModel: ViewModel() {
         toolMaker = AIPortToolMaker()
         tools.clear()
     }
-    fun connectMCPServer( configs:Map<String, MCPServerConfig>){
+    fun connectMCPServer(configs:Map<String, MCPServerConfig>){
         viewModelScope.launch {
             uiState = UIState.Loading
             getPlatform().connectMCPServerToStudio(toolAgent.engineId,configs){
@@ -65,15 +65,36 @@ class MyStudioViewModel: ViewModel() {
         }
     }
 
-    fun configMCPServer( config:MCPServerConfig){
+    fun modifyMCPServerConfigForStudio(toolAgent: AIPortToolAgent,
+                                       mcpServer: MCPServer,
+                                       config:MCPServerConfig){
         viewModelScope.launch {
             uiState = UIState.Loading
-            getPlatform().configMCPServerForStudio(
-                toolAgent.engineId, toolMaker.id, config
+            getPlatform().modifyMCPServerForStudio(
+                toolAgent.engineId, mcpServer.id, serverConfig = config
             ){
                 updateUIState(it.code)
                 if(it.code==0) it.data?.let {
 //                    it.id = makerId(it.name)
+                    _toolMakers[it.id] = it
+                    if(toolMaker.id==it.id){
+                        toolMaker = it
+                    }
+                }
+            }
+        }
+    }
+    fun modifyMCPServerNameForStudio(toolAgent: AIPortToolAgent,
+                                     mcpServer: MCPServer,
+                                     name:String){
+        viewModelScope.launch {
+            uiState = UIState.Loading
+            getPlatform().modifyMCPServerForStudio(
+                toolAgent.engineId, mcpServer.id, serverName = name
+            ){
+                updateUIState(it.code)
+                if(it.code==0) it.data?.let {
+                    _toolMakers.remove(mcpServer.id)
                     _toolMakers[it.id] = it
                     if(toolMaker.id==it.id){
                         toolMaker = it
@@ -174,6 +195,51 @@ class MyStudioViewModel: ViewModel() {
                          onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit){
         getPlatform().connectToolMakerToStudio(studioId,makerId,agentId){
             onResponse(it.code,it.message,it.data)
+        }
+    }
+
+    fun modifyMCPServerName(toolMaker: AIPortToolMaker,toolMakerName:String) {
+        viewModelScope.launch {
+            getPlatform().modifyToolMaker(toolMaker.id, toolMakerName,null,null) {
+                    (code, message, data) ->
+                if (code == 0) data?.let{
+                    _toolMakers[data.id] = data
+                }
+            }
+        }
+    }
+    fun modifyMCPServerConfig(toolAgent: AIPortToolAgent,config:AIPortMCPServerConfig){
+        viewModelScope.launch {
+            uiState = UIState.Loading
+            getPlatform().modifyMCPServerConfig(
+                config
+            ){
+                updateUIState(it.code)
+                if(it.code==0) it.data?.let {
+                        maker ->
+                    getPlatform().connectToolMakerToStudio(
+                        studioId = toolAgent.engineId,
+                        makerId = maker.id,
+                        agentId = maker.agentId
+                    ) {
+                        if(it.code==0) it.data?.let {
+                            _toolMakers[it.id] = it
+                            if (toolMaker.id == it.id) {
+                                toolMaker = it
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fun modifyMCPServerTags(toolMaker: AIPortToolMaker,toolMakerTags:String) {
+        viewModelScope.launch {
+            getPlatform().modifyToolMaker(toolMaker.id, null, toolMakerTags, null) { (code, message, data) ->
+                if (code == 0 && data != null) {
+                    _toolMakers[data.id] = data
+                }
+            }
         }
     }
 }

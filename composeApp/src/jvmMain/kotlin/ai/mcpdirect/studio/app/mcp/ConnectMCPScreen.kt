@@ -1,10 +1,13 @@
 package ai.mcpdirect.studio.app.mcp
 
+import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.agent.MyStudioScreenDialog
+import ai.mcpdirect.studio.app.agent.myStudioViewModel
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.MCPServer
+import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
 import androidx.compose.foundation.clickable
@@ -16,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.json.encodeToJsonElement
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
@@ -23,7 +27,9 @@ enum class ConnectMCPScreenDialog {
     None,
     ConnectMCP,
     ConfigMCP,
-    CreateMCPTemplate
+    CreateMCPTemplate,
+    EditMCPServerName,
+    EditMCPServerTags,
 }
 @Composable
 fun ConnectMCPScreen(){
@@ -118,6 +124,20 @@ fun ConnectMCPScreen(){
                                 onClick = {
                                     connectMCPViewModel.queryMCPTools(it)
                                 })
+                            if(it.id>Int.MAX_VALUE) {
+                                TooltipIconButton(
+                                    Res.drawable.sell,
+                                    contentDescription = "Edit tags",
+                                    onClick = {
+                                        dialog = ConnectMCPScreenDialog.EditMCPServerTags
+                                    })
+                            }
+                            TooltipIconButton(
+                                Res.drawable.badge,
+                                contentDescription = "Edit name",
+                                onClick = {
+                                    dialog = ConnectMCPScreenDialog.EditMCPServerName
+                                })
                             TooltipIconButton(
                                 Res.drawable.edit,
                                 contentDescription = "Config MCP Server",
@@ -186,13 +206,24 @@ fun ConnectMCPScreen(){
             }
         )
         ConnectMCPScreenDialog.ConfigMCP -> {
-            val toolMaker = connectMCPViewModel.toolMaker
-            when (toolMaker) {
+            when (val toolMaker = connectMCPViewModel.toolMaker) {
                 is MCPServer -> ConfigMCPServerDialog(
                     toolMaker,
                     onDismissRequest = { dialog = ConnectMCPScreenDialog.None },
-                    onConfirmRequest = { config ->
-                        connectMCPViewModel.configMCPServer(config)
+                    onConfirmRequest = { it ->
+                        if(toolMaker.id<0L) connectMCPViewModel.configMCPServer(it)
+                        else {
+                            val config = AIPortMCPServerConfig()
+                            config.transport = it.transport
+                            config.url = it.url
+                            config.command = it.command
+                            config.args = JSON.encodeToJsonElement(it.args).toString()
+                            config.env = JSON.encodeToJsonElement(it.env).toString()
+                            myStudioViewModel.configMCPServer(
+                                myStudioViewModel.toolAgent,
+                                config
+                            )
+                        }
                     }
                 )
             }
@@ -208,6 +239,23 @@ fun ConnectMCPScreen(){
                     dialog = ConnectMCPScreenDialog.None
                 }
             )
+        }
+        ConnectMCPScreenDialog.EditMCPServerName->{
+
+        }
+        ConnectMCPScreenDialog.EditMCPServerTags->{
+            if(connectMCPViewModel.toolMaker.id>Int.MAX_VALUE){
+                EditMCPServerTagsDialog(
+                    connectMCPViewModel.toolMaker,
+                    onDismissRequest = {
+                        dialog = ConnectMCPScreenDialog.None
+                    },
+                    onConfirmRequest = {
+                            toolMaker,toolMakerTags ->
+                        connectMCPViewModel.modifyMCPServerTags(toolMaker,toolMakerTags)
+                    }
+                )
+            }
         }
     }
 }

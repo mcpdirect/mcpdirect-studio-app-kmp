@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.agent
 
+import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
@@ -7,9 +8,13 @@ import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerDialog
+import ai.mcpdirect.studio.app.mcp.ConfigMCPServerFromTemplatesDialog
 import ai.mcpdirect.studio.app.mcp.ConnectMCPServerDialog
+import ai.mcpdirect.studio.app.mcp.EditMCPServerNameDialog
+import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
+import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
@@ -25,13 +30,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.json.encodeToJsonElement
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
 enum class MyStudioScreenDialog {
     None,
     ConnectMCP,
-    ConfigMCP,
+//    ConfigMCP,
     ConnectMCPTemplate,
     CreateMCPTemplate
 }
@@ -91,17 +97,29 @@ fun MyStudioScreen(){
                 myStudioViewModel.connectMCPServer(configs)
             }
         )
-        MyStudioScreenDialog.ConfigMCP -> {
-            when(val toolMaker = myStudioViewModel.toolMaker){
-                is MCPServer -> ConfigMCPServerDialog(
-                    toolMaker,
-                    onDismissRequest = {dialog=MyStudioScreenDialog.None},
-                    onConfirmRequest = { config ->
-                        myStudioViewModel.configMCPServer(config)
-                    }
-                )
-            }
-        }
+//        MyStudioScreenDialog.ConfigMCP -> {
+//            when(val toolMaker = myStudioViewModel.toolMaker){
+//                is MCPServer -> ConfigMCPServerDialog(
+//                    toolMaker,
+//                    onDismissRequest = { dialog = MyStudioScreenDialog.None },
+//                    onConfirmRequest = { it ->
+//                        if(toolMaker.id<0) myStudioViewModel.configMCPServer(it)
+//                        else {
+//                            val config = AIPortMCPServerConfig()
+//                            config.transport = it.transport
+//                            config.url = it.url
+//                            config.command = it.command
+//                            config.args = JSON.encodeToJsonElement(it.args).toString()
+//                            config.env = JSON.encodeToJsonElement(it.env).toString()
+//                            myStudioViewModel.configMCPServer(
+//                                myStudioViewModel.toolAgent,
+//                                config
+//                            )
+//                        }
+//                    }
+//                )
+//            }
+//        }
         MyStudioScreenDialog.ConnectMCPTemplate -> {
             mcpTemplateListViewModel.toolMakerTemplate?.let {
                 template ->
@@ -189,6 +207,9 @@ fun ToolAgentListView(){
 fun ToolMakerListView(
     onDialogRequest: (dialog: MyStudioScreenDialog) -> Unit
 ){
+    var showEditServerNameDialog by remember { mutableStateOf(false) }
+    var showEditServerTagsDialog by remember { mutableStateOf(false) }
+    var showEditServerConfigDialog by remember { mutableStateOf(false) }
     val toolAgents = generalViewModel.toolAgents
     val uriHandler = LocalUriHandler.current
     val uiState = myStudioViewModel.uiState
@@ -301,11 +322,24 @@ fun ToolMakerListView(
                                 onClick = {
                                     myStudioViewModel.queryMCPTools(it)
                                 })
+                            if(it.id>Int.MAX_VALUE) TooltipIconButton(
+                                Res.drawable.sell,
+                                contentDescription = "Edit tags",
+                                onClick = {
+                                    showEditServerTagsDialog = true
+                                })
                             TooltipIconButton(
-                                Res.drawable.edit,
+                                Res.drawable.badge,
+                                contentDescription = "Edit name",
+                                onClick = {
+                                    showEditServerNameDialog = true
+                                })
+                            TooltipIconButton(
+                                Res.drawable.data_object,
                                 contentDescription = "Config MCP Server",
                                 onClick = {
-                                    onDialogRequest(MyStudioScreenDialog.ConfigMCP)
+//                                    onDialogRequest(MyStudioScreenDialog.ConfigMCP)
+                                    showEditServerConfigDialog = true
                                 })
                             TooltipIconButton(
                                 Res.drawable.cloud_upload,
@@ -353,6 +387,55 @@ fun ToolMakerListView(
                     }
                 }
             }
+            if(showEditServerNameDialog){
+                EditMCPServerNameDialog(
+                    myStudioViewModel.toolMaker,
+                    onDismissRequest = {
+                        showEditServerNameDialog = false
+                    },
+                    onConfirmRequest = { toolMaker,toolMakerName ->
+                        if(toolMaker.id>Int.MAX_VALUE) {
+                            myStudioViewModel.modifyMCPServerName(toolMaker, toolMakerName)
+                        }else myStudioViewModel.modifyMCPServerNameForStudio(
+                            toolAgent, toolMaker as MCPServer,toolMakerName
+                        )
+                    },
+                )
+            }else if(showEditServerTagsDialog){
+                EditMCPServerTagsDialog(
+                    myStudioViewModel.toolMaker,
+                    onDismissRequest = {
+                        showEditServerTagsDialog = false
+                    },
+                    onConfirmRequest = {
+                            toolMaker,toolMakerTags ->
+                        myStudioViewModel.modifyMCPServerTags(toolMaker,toolMakerTags)
+                    }
+                )
+            }else if(showEditServerConfigDialog){
+                when(val toolMaker = myStudioViewModel.toolMaker){
+                    is MCPServer -> ConfigMCPServerDialog(
+                        toolMaker,
+                        onDismissRequest = { showEditServerConfigDialog=false },
+                        onConfirmRequest = {
+                            if(toolMaker.id<0) myStudioViewModel.modifyMCPServerConfigForStudio(
+                                toolAgent,toolMaker,it
+                            ) else {
+                                val config = AIPortMCPServerConfig()
+                                config.transport = it.transport
+                                config.url = it.url
+                                config.command = it.command
+                                config.args = JSON.encodeToJsonElement(it.args).toString()
+                                config.env = JSON.encodeToJsonElement(it.env).toString()
+                                myStudioViewModel.modifyMCPServerConfig(
+                                    myStudioViewModel.toolAgent,
+                                    config
+                                )
+                            }
+                        }
+                    )
+                }
+            }
         }
     }
 }
@@ -361,6 +444,9 @@ fun ToolMakerListView(
 fun ToolMakerByTemplateListView(
     onDialogRequest: (dialog: MyStudioScreenDialog) -> Unit
 ){
+    var showEditServerNameDialog by remember { mutableStateOf(false) }
+    var showEditServerTagsDialog by remember { mutableStateOf(false) }
+    var showConfigServerFromTemplateDialog  by remember { mutableStateOf(false) }
     var selectedToolMaker by remember { mutableStateOf(AIPortToolMaker()) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
     mcpTemplateListViewModel.toolMakerTemplate?.let {
@@ -372,108 +458,169 @@ fun ToolMakerByTemplateListView(
             }
         }
     }
-            mcpTemplateListViewModel.toolMakerTemplate?.let {
-                    template ->
-                Row {
-                    LazyColumn(Modifier.weight(1.0f)) {
-                        items(generalViewModel.toolMakers) { maker ->
-                            if (maker.templateId == template.id) {
-                                StudioListItem(
-                                    modifier = Modifier.clickable(
-                                        onClick = {
-                                            selectedToolMaker = maker
-                                            myStudioViewModel.toolMaker(maker)
-                                        }
-                                    ),
-                                    selected = maker.id == selectedToolMaker.id,
-                                    headlineContent = { Text(maker.name) }
-                                )
-                            }
-                        }
+    mcpTemplateListViewModel.toolMakerTemplate?.let {
+            template ->
+        Row {
+            LazyColumn(Modifier.weight(1.0f)) {
+                items(generalViewModel.toolMakers) { maker ->
+                    if (maker.templateId == template.id) {
+                        StudioListItem(
+                            modifier = Modifier.clickable(
+                                onClick = {
+                                    selectedToolMaker = maker
+                                    myStudioViewModel.toolMaker(maker)
+                                }
+                            ),
+                            selected = maker.id == selectedToolMaker.id,
+                            headlineContent = { Text(maker.name) }
+                        )
                     }
-                    VerticalDivider()
-                    if(selectedToolMaker.id==0L){
-                        StudioBoard(Modifier.weight(2.0f)) {
-                            Text("Select a MCP server to view")
-                        }
-                    }else selectedToolMaker.let {
-                        Column(Modifier.weight(2.0f)) {
-                            StudioActionBar(
-                                actions = {
-                                    TooltipIconButton(
-                                        Res.drawable.plug_connect,
-                                        contentDescription = "Connect MCP Server"
-                                    ) {
-                                        statusMessage = null
-                                        generalViewModel.toolAgent(selectedToolMaker.agentId) { code, message, data ->
-                                            if (code == 0) {
-                                                data?.let {
-                                                    myStudioViewModel.connectToolMaker(
-                                                        it.engineId,
-                                                        selectedToolMaker.id,
-                                                        it.id
-                                                    ) { code, message, mcpServer ->
-                                                        if(code!= AIPortServiceResponse.SERVICE_SUCCESSFUL){
-                                                            statusMessage = message
-                                                        }
-                                                    }
+                }
+            }
+            VerticalDivider()
+            if(selectedToolMaker.id==0L){
+                StudioBoard(Modifier.weight(2.0f)) {
+                    Text("Select a MCP server to view")
+                }
+            }else selectedToolMaker.let {
+                Column(Modifier.weight(2.0f)) {
+                    StudioActionBar(
+                        actions = {
+                            TooltipIconButton(
+                                Res.drawable.plug_connect,
+                                contentDescription = "Connect MCP Server"
+                            ) {
+                                statusMessage = null
+                                generalViewModel.toolAgent(selectedToolMaker.agentId) {
+                                    code, message, data ->
+                                    if (code == 0) {
+                                        data?.let {
+                                            myStudioViewModel.connectToolMaker(
+                                                it.engineId,
+                                                selectedToolMaker.id,
+                                                it.id
+                                            ) { code, message, mcpServer ->
+                                                if(code!= AIPortServiceResponse.SERVICE_SUCCESSFUL){
+                                                    statusMessage = message
                                                 }
                                             }
                                         }
                                     }
-                                    TooltipIconButton(
-                                        Res.drawable.refresh,
-                                        contentDescription = "Refresh MCP Server Tools",
-                                        onClick = {
-                                            myStudioViewModel.queryMCPTools(it)
-                                        })
-                                    TooltipIconButton(
-                                        Res.drawable.edit,
-                                        contentDescription = "Config MCP Server",
-                                        onClick = {
-//                                onDialogRequest(MyStudioScreenDialog.ConfigMCP)
-                                        })
-                                    TooltipIconButton(
-                                        Res.drawable.cloud_upload,
-                                        contentDescription = "Publish to MCPdirect",
-                                        onClick = {
-                                            myStudioViewModel.publishMCPTools(it)
-                                        })
-                                }
-                            )
-                            HorizontalDivider()
-                            statusMessage?.let{
-                                StudioBoard {
-                                    Text(it, color = MaterialTheme.colorScheme.error)
-                                }
-                            }?:LazyColumn(Modifier.weight(1.0f)) {
-                                items(myStudioViewModel.tools){
-                                    ListItem(
-                                        modifier = Modifier.clickable{
-
-                                        },
-                                        leadingContent = {
-                                            if(it.lastUpdated==-1L)StudioIcon(
-                                                Res.drawable.check_indeterminate_small,
-                                                "Abandoned"
-                                            ) else if(it.lastUpdated==1L)StudioIcon(
-                                                Res.drawable.add,
-                                                "New tool"
-                                            ) else if(it.lastUpdated>1)StudioIcon(
-                                                Res.drawable.sync,
-                                                "Tool updated"
-                                            )
-                                        },
-                                        headlineContent = {Text(it.name)},
-                                        trailingContent = {Icon(painterResource(Res.drawable.info),
-                                            contentDescription = "Details")}
-                                    )
                                 }
                             }
+                            TooltipIconButton(
+                                Res.drawable.refresh,
+                                contentDescription = "Refresh MCP Server Tools",
+                                onClick = {
+                                    myStudioViewModel.queryMCPTools(it)
+                                })
+                            TooltipIconButton(
+                                Res.drawable.sell,
+                                contentDescription = "Edit tags",
+                                onClick = {
+                                    showEditServerTagsDialog = true
+                                })
+                            TooltipIconButton(
+                                Res.drawable.badge,
+                                contentDescription = "Edit name",
+                                onClick = {
+                                    showEditServerNameDialog = true
+                                })
+                            TooltipIconButton(
+                                Res.drawable.data_object,
+                                contentDescription = "Config MCP Server",
+                                onClick = {
+                                    showConfigServerFromTemplateDialog = true
+                                })
+                            TooltipIconButton(
+                                Res.drawable.cloud_upload,
+                                contentDescription = "Publish to MCPdirect",
+                                onClick = {
+                                    myStudioViewModel.publishMCPTools(it)
+                                })
+                        }
+                    )
+                    HorizontalDivider()
+                    statusMessage?.let{
+                        StudioBoard {
+                            Text(it, color = MaterialTheme.colorScheme.error)
+                        }
+                    }?:LazyColumn(Modifier.weight(1.0f)) {
+                        items(myStudioViewModel.tools){
+                            ListItem(
+                                modifier = Modifier.clickable{
+
+                                },
+                                leadingContent = {
+                                    if(it.lastUpdated==-1L)StudioIcon(
+                                        Res.drawable.check_indeterminate_small,
+                                        "Abandoned"
+                                    ) else if(it.lastUpdated==1L)StudioIcon(
+                                        Res.drawable.add,
+                                        "New tool"
+                                    ) else if(it.lastUpdated>1)StudioIcon(
+                                        Res.drawable.sync,
+                                        "Tool updated"
+                                    )
+                                },
+                                headlineContent = {Text(it.name)},
+                                trailingContent = {Icon(painterResource(Res.drawable.info),
+                                    contentDescription = "Details")}
+                            )
                         }
                     }
                 }
+                if(showEditServerNameDialog){
+                    EditMCPServerNameDialog(
+                        selectedToolMaker,
+                        onDismissRequest = {
+                            showEditServerNameDialog = false
+                        },
+                        onConfirmRequest = {
+                                toolMaker,toolMakerName ->
+//                    viewModel.onServerNameChange(serverName)
+                            myStudioViewModel.modifyMCPServerName(toolMaker,toolMakerName)
+                        },
+                    )
+                }else if(showEditServerTagsDialog){
+                    EditMCPServerTagsDialog(
+                        selectedToolMaker,
+                        onDismissRequest = {
+                            showEditServerTagsDialog = false
+                        },
+                        onConfirmRequest = {
+                                toolMaker,toolMakerTags ->
+                            myStudioViewModel.modifyMCPServerTags(toolMaker,toolMakerTags)
+                        }
+                    )
+                } else if(showConfigServerFromTemplateDialog){
+                    ConfigMCPServerFromTemplatesDialog(
+                        selectedToolMaker,
+                        template,
+                        onConfirmRequest = { toolMaker,config->
+                            generalViewModel.toolAgent(toolMaker.agentId) {
+                                    code, message, data ->
+                                if (code == 0) {
+                                    data?.let {
+                                        myStudioViewModel.connectToolMaker(
+                                            it.engineId,
+                                            toolMaker.id,
+                                            toolMaker.agentId
+                                        ){
+                                            code, message, mcpServer ->
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        onDismissRequest = {
+                            showConfigServerFromTemplateDialog = false
+                        }
+                    )
+                }
             }
+        }
+    }
 //        }
 
 

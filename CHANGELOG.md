@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 
 ## 2025-11-07
+### Added
+- New ConfigMCPServerFromTemplateDialog for configuring servers from templates
+- New EditMCPServerNameDialog for editing server names
+- New EditMCPServerTagsDialog for editing server tags
+- New data_object.svg drawable resource
+
+### Changed
+- Enhanced platform-specific code functionality
+- Updated GeneralViewModel with new capabilities
+- Improved MyStudioScreen and MyStudioViewModel with new features
+- Enhanced virtual maker view model and tool list view
+- Updated connect MCP screen and view model with improved functionality
+
+## 2025-11-07
 ### Changed
 - Enhanced authentication view model with improved functionality
 

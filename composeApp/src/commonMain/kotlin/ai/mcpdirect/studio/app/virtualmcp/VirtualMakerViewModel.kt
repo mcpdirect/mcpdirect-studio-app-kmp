@@ -166,6 +166,18 @@ class VirtualMakerViewModel: ViewModel() {
             }
         }
     }
+    fun updateServerName(toolMaker: AIPortToolMaker,toolMakerName:String) {
+        uiState = UIState.Loading
+        viewModelScope.launch {
+            getPlatform().modifyToolMaker(toolMaker.id, toolMakerName,null,null) {
+                    (code, message, data) ->
+                if (code == 0) data?.let{
+                    _virtualMakers[data.id] = data
+                    uiState = UIState.Success
+                }else uiState = UIState.Error(code)
+            }
+        }
+    }
 
     fun updateServerTags() {
         selectedVirtualMaker?.let {
@@ -174,6 +186,14 @@ class VirtualMakerViewModel: ViewModel() {
                 if (code == 0 && data != null) {
                     _virtualMakers[data.id] = data
                 }
+            }
+        }
+    }
+    fun updateServerTags(toolMaker: AIPortToolMaker,toolMakerTags:String) {
+        getPlatform().modifyToolMaker(toolMaker.id,null, toolMakerTags,null) {
+                (code, message, data) ->
+            if (code == 0 && data != null) {
+                _virtualMakers[data.id] = data
             }
         }
     }

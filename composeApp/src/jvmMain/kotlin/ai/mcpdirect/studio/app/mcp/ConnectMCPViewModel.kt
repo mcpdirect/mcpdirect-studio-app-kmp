@@ -5,7 +5,9 @@ import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.MCPServerConfig
+import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -84,7 +86,41 @@ class ConnectMCPViewModel: ViewModel() {
             }
         }
     }
-
+    fun configMCPServer(toolAgent: AIPortToolAgent,config:AIPortMCPServerConfig){
+        viewModelScope.launch {
+            uiState = UIState.Loading
+            getPlatform().configMCPServer(
+                config
+            ){
+                updateUIState(it.code)
+                if(it.code==0) it.data?.let {
+                        maker ->
+                    getPlatform().connectToolMakerToStudio(
+                        studioId = toolAgent.engineId,
+                        makerId = maker.id,
+                        agentId = maker.agentId
+                    ) {
+                        if(it.code==0) it.data?.let {
+//                    it.id = makerId(it.name)
+                            _toolMakers[it.id] = it
+                            if (toolMaker.id == it.id) {
+                                toolMaker = it
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fun modifyMCPServerTags(toolMaker: AIPortToolMaker,toolMakerTags:String) {
+        viewModelScope.launch {
+            getPlatform().modifyToolMaker(toolMaker.id, null, toolMakerTags, null) { (code, message, data) ->
+                if (code == 0 && data != null) {
+                    _toolMakers[data.id] = data
+                }
+            }
+        }
+    }
 //    fun queryMCPServers(){
 //        uiState = UIState.Loading
 //        _toolMakers.clear()
