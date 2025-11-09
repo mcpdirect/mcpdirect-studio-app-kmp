@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.mcp
 
+import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +34,7 @@ fun EditMCPServerNameDialog(
     val nameFocusRequester = remember { FocusRequester() }
     val addFocusRequester = remember { FocusRequester() }
     val formScrollState = rememberScrollState()
-    var serverName by remember { mutableStateOf("") }
+    var serverName by remember { mutableStateOf("${toolMaker.name}-${currentMilliseconds()}") }
     var serverNameErrors by remember { mutableStateOf(false) }
     fun onServerNameChange(name: String) {
         val text = name.replace(" ","_")
@@ -44,7 +45,10 @@ fun EditMCPServerNameDialog(
     }
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("Edit MCP Server Name of ${toolMaker.name}") },
+        title = { Column {
+            Text("Edit MCP Server Name")
+            Text("of ${toolMaker.name}", style = MaterialTheme.typography.titleLarge)
+        } },
         text = {
             Column(Modifier.verticalScroll(formScrollState)) {
                 OutlinedTextField(

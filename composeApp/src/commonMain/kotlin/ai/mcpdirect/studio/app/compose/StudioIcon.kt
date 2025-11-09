@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun StudioIcon(
     icon: DrawableResource,
-    contentDescription: String,
+    contentDescription: String="",
     tint: Color = LocalContentColor.current,
     modifier: Modifier = Modifier,
 

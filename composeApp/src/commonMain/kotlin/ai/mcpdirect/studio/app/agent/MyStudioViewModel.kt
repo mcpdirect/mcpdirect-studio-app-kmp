@@ -198,12 +198,21 @@ class MyStudioViewModel: ViewModel() {
         }
     }
 
-    fun modifyMCPServerName(toolMaker: AIPortToolMaker,toolMakerName:String) {
+    fun modifyMCPServerName(toolAgent: AIPortToolAgent,
+                            toolMaker: AIPortToolMaker,
+                            toolMakerName:String) {
         viewModelScope.launch {
             getPlatform().modifyToolMaker(toolMaker.id, toolMakerName,null,null) {
                     (code, message, data) ->
                 if (code == 0) data?.let{
-                    _toolMakers[data.id] = data
+                    val maker = _toolMakers[data.id]
+                    maker?.let {
+                        maker.name = data.name
+                        _toolMakers[data.id] = maker
+                    }
+                    if(toolMaker is MCPServer) modifyMCPServerNameForStudio(
+                        toolAgent, toolMaker,toolMakerName
+                    )
                 }
             }
         }

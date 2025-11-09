@@ -71,7 +71,10 @@ fun EditMCPServerTagsDialog(
     }
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("Edit MCP Server Tags of ${toolMaker.name}") },
+        title = {Column {
+            Text("Edit MCP Server Tags")
+            Text("of ${toolMaker.name}", style = MaterialTheme.typography.titleLarge)
+        } },
         text = {
             Column(Modifier.verticalScroll(formScrollState)) {
                 OutlinedTextField(

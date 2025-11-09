@@ -14,6 +14,7 @@ import ai.mcpdirect.studio.app.mcp.EditMCPServerNameDialog
 import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
+import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
@@ -274,6 +275,19 @@ fun ToolMakerListView(
                 LazyColumn {
                     val makers = myStudioViewModel.toolMakers
                     items(makers){
+                        val me = it.id<Int.MAX_VALUE||it.userId==authViewModel.user.id
+                        var user by remember { mutableStateOf<AIPortUser?>(null) }
+                        if(!me){
+                            generalViewModel.user(it.userId){
+                                    code, message, data ->
+                                if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL&&data!=null){
+                                    user = data
+                                }
+                            }
+//                            generalViewModel.team(it.userId,it.templateId){
+//                                    code, message, data ->
+//                            }
+                        }
                         StudioListItem(
                             modifier = Modifier.clickable(
                                 enabled = it.id!=myStudioViewModel.toolMaker.id
@@ -281,6 +295,16 @@ fun ToolMakerListView(
                                 myStudioViewModel.toolMaker(it)
                             },
                             selected = myStudioViewModel.toolMaker.id == it.id,
+                            overlineContent = {
+                                if(me){
+                                    Text("Me")
+                                }else user?.let{
+                                    TooltipText(
+                                        it.name,
+                                        contentDescription = it.account
+                                    )
+                                }
+                            },
                             leadingContent = {
                                 if (it.id > 0) StudioIcon(
                                     icon = Res.drawable.cloud_done,
@@ -291,7 +315,24 @@ fun ToolMakerListView(
                                 )
                             },
                             headlineContent = {Text(it.name)},
-                            supportingContent = { it.tags?.let { Text(it) } },
+                            supportingContent = {
+                                Row {
+                                    if (me) it.tags?.let {
+                                        StudioIcon(
+                                            Res.drawable.sell,
+                                            "Tags",
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Text(it, modifier = Modifier.padding(start = 4.dp))
+                                    } else {
+                                        StudioIcon(
+                                            Res.drawable.groups,
+                                            "Team",
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+                                }
+                            },
                             trailingContent = {
                                 if (it.status == 0) StudioIcon(
                                     Res.drawable.mobiledata_off,
@@ -322,31 +363,33 @@ fun ToolMakerListView(
                                 onClick = {
                                     myStudioViewModel.queryMCPTools(it)
                                 })
-                            if(it.id>Int.MAX_VALUE) TooltipIconButton(
-                                Res.drawable.sell,
-                                contentDescription = "Edit tags",
-                                onClick = {
-                                    showEditServerTagsDialog = true
-                                })
-                            TooltipIconButton(
-                                Res.drawable.badge,
-                                contentDescription = "Edit name",
-                                onClick = {
-                                    showEditServerNameDialog = true
-                                })
-                            TooltipIconButton(
-                                Res.drawable.data_object,
-                                contentDescription = "Config MCP Server",
-                                onClick = {
+                            if(it.userId==authViewModel.user.id) {
+                                if (it.id > Int.MAX_VALUE) TooltipIconButton(
+                                    Res.drawable.sell,
+                                    contentDescription = "Edit tags",
+                                    onClick = {
+                                        showEditServerTagsDialog = true
+                                    })
+                                TooltipIconButton(
+                                    Res.drawable.badge,
+                                    contentDescription = "Edit name",
+                                    onClick = {
+                                        showEditServerNameDialog = true
+                                    })
+                                TooltipIconButton(
+                                    Res.drawable.data_object,
+                                    contentDescription = "Config MCP Server",
+                                    onClick = {
 //                                    onDialogRequest(MyStudioScreenDialog.ConfigMCP)
-                                    showEditServerConfigDialog = true
-                                })
-                            TooltipIconButton(
-                                Res.drawable.cloud_upload,
-                                contentDescription = "Publish to MCPdirect",
-                                onClick = {
-                                    myStudioViewModel.publishMCPTools(it)
-                                })
+                                        showEditServerConfigDialog = true
+                                    })
+                                TooltipIconButton(
+                                    Res.drawable.cloud_upload,
+                                    contentDescription = "Publish to MCPdirect",
+                                    onClick = {
+                                        myStudioViewModel.publishMCPTools(it)
+                                    })
+                            }
                         }
                     )
                     HorizontalDivider()
@@ -395,7 +438,8 @@ fun ToolMakerListView(
                     },
                     onConfirmRequest = { toolMaker,toolMakerName ->
                         if(toolMaker.id>Int.MAX_VALUE) {
-                            myStudioViewModel.modifyMCPServerName(toolMaker, toolMakerName)
+                            myStudioViewModel.modifyMCPServerName(
+                                toolAgent,toolMaker, toolMakerName)
                         }else myStudioViewModel.modifyMCPServerNameForStudio(
                             toolAgent, toolMaker as MCPServer,toolMakerName
                         )
@@ -578,8 +622,13 @@ fun ToolMakerByTemplateListView(
                         },
                         onConfirmRequest = {
                                 toolMaker,toolMakerName ->
-//                    viewModel.onServerNameChange(serverName)
-                            myStudioViewModel.modifyMCPServerName(toolMaker,toolMakerName)
+                            generalViewModel.toolAgent(selectedToolMaker.agentId) {
+                                    code, message, data ->
+                                if (code == 0&&data!=null) {
+                                    myStudioViewModel.modifyMCPServerName(
+                                        data,toolMaker,toolMakerName)
+                                }
+                            }
                         },
                     )
                 }else if(showEditServerTagsDialog){

@@ -161,6 +161,12 @@ class GeneralViewModel() : ViewModel() {
     fun team(id:Long): AIPortTeam?{
         return _teams[id]
     }
+//    fun team(memberId:Long,templateId:Long): AIPortTeam?{
+//
+//        val teamIds = _teamToolMakerTemplates.values.filter { it.toolMakerTemplateId==templateId }.map { it.teamId }.toList()
+//
+//        return _teams[id]
+//    }
     private val _teamMembers = mutableStateMapOf<AIPortTeamMember.Companion.Key, AIPortTeamMember>()
     val teamMembers by derivedStateOf {
         _teamMembers.values.toList()

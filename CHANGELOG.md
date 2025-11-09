@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-09
+### Changed
+- Updated GeneralViewModel with additional features
+- Enhanced MyStudioScreen and MyStudioViewModel with new UI elements
+- Improved StudioIcon with new icons
+- Updated MCP server name and tags editing dialogs with improved UX
+
 ## 2025-11-07
 ### Added
 - New ConfigMCPServerFromTemplateDialog for configuring servers from templates
