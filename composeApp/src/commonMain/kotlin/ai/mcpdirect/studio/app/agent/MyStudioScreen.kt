@@ -651,16 +651,19 @@ fun ToolMakerByTemplateListView(
                         onConfirmRequest = { toolMaker,config->
                             generalViewModel.toolAgent(toolMaker.agentId) {
                                     code, message, data ->
-                                if (code == 0) {
-                                    data?.let {
-                                        myStudioViewModel.connectToolMaker(
-                                            it.engineId,
-                                            toolMaker.id,
-                                            toolMaker.agentId
-                                        ){
-                                            code, message, mcpServer ->
-                                        }
-                                    }
+                                if (code == 0&&data!=null) {
+                                    myStudioViewModel.modifyMCPServerConfig(
+                                        data,config
+                                    )
+//                                    data?.let {
+//                                        myStudioViewModel.connectToolMaker(
+//                                            it.engineId,
+//                                            toolMaker.id,
+//                                            toolMaker.agentId
+//                                        ){
+//                                            code, message, mcpServer ->
+//                                        }
+//                                    }
                                 }
                             }
                         },

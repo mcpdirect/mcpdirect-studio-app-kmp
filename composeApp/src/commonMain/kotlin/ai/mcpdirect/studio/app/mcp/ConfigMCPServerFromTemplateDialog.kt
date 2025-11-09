@@ -63,6 +63,7 @@ fun ConfigMCPServerFromTemplatesDialog(
                 onClick = {
                     val temp = JSON.decodeFromString<MCPServerConfig>(template.config)
                     val config = AIPortMCPServerConfig()
+                    config.id = toolMaker.id
                     config.transport = temp.transport
                     config.url = temp.url
                     config.command = temp.command

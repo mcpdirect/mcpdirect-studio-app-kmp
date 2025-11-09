@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-09
 ### Changed
+- Updated MyStudioScreen with further UI improvements
+- Enhanced configuration dialog for MCP server from template with improved UX
+
+## 2025-11-09
+### Changed
 - Updated MyStudioScreen with additional UI improvements
 
 ## 2025-11-09
