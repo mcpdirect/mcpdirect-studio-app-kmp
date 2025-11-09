@@ -51,8 +51,8 @@ fun EditMCPServerTagsDialog(
     val serverTags = remember { mutableStateSetOf<String>() }
     fun onServerTagChange(tag: String){
 //        val text = tag.trim();
-        serverTagErrors = tag.isNotBlank()&&tag.length<33
-        if(serverTagErrors) {
+        serverTagErrors = tag.isBlank()&&tag.length<33
+        if(!serverTagErrors) {
             if(tag.contains(",")){
                 serverTag = ""
                 tag.split(",").forEach {
@@ -71,7 +71,7 @@ fun EditMCPServerTagsDialog(
     }
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = {Column {
+        title = { Column {
             Text("Edit MCP Server Tags")
             Text("of ${toolMaker.name}", style = MaterialTheme.typography.titleLarge)
         } },
@@ -85,6 +85,7 @@ fun EditMCPServerTagsDialog(
                     placeholder = {Text("Input server tag, end with \",\"")},
                     singleLine = true,
                     isError = serverTagErrors,
+                    supportingText = {Text("Tag must not be empty and length<33")},
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Send
                     ),
@@ -134,7 +135,7 @@ fun EditMCPServerTagsDialog(
         },
         confirmButton = {
             Button(
-                enabled = !serverTagErrors,
+                enabled = serverTags.isNotEmpty(),
                 modifier = Modifier.focusRequester(addFocusRequester),
                 onClick = {
                     onConfirmRequest(toolMaker,serverTags.joinToString())

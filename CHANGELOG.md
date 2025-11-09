@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-09
 ### Changed
+- Updated MyStudioScreen with UI improvements
+- Enhanced MyStudioViewModel with new functionality
+- Improved MCP server tags editing dialog with better UX
+
+## 2025-11-09
+### Changed
 - Updated GeneralViewModel with additional features
 - Enhanced MyStudioScreen and MyStudioViewModel with new UI elements
 - Improved StudioIcon with new icons

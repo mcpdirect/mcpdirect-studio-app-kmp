@@ -242,11 +242,15 @@ class MyStudioViewModel: ViewModel() {
             }
         }
     }
-    fun modifyMCPServerTags(toolMaker: AIPortToolMaker,toolMakerTags:String) {
+    fun modifyToolMakerTags(toolMaker: AIPortToolMaker, toolMakerTags:String) {
         viewModelScope.launch {
             getPlatform().modifyToolMaker(toolMaker.id, null, toolMakerTags, null) { (code, message, data) ->
                 if (code == 0 && data != null) {
-                    _toolMakers[data.id] = data
+                    val maker = _toolMakers[data.id]
+                    maker?.let {
+                        it.tags = data.tags
+                        _toolMakers[data.id] = data
+                    }
                 }
             }
         }

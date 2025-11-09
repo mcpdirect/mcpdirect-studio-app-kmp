@@ -453,7 +453,7 @@ fun ToolMakerListView(
                     },
                     onConfirmRequest = {
                             toolMaker,toolMakerTags ->
-                        myStudioViewModel.modifyMCPServerTags(toolMaker,toolMakerTags)
+                        myStudioViewModel.modifyToolMakerTags(toolMaker,toolMakerTags)
                     }
                 )
             }else if(showEditServerConfigDialog){
@@ -639,7 +639,7 @@ fun ToolMakerByTemplateListView(
                         },
                         onConfirmRequest = {
                                 toolMaker,toolMakerTags ->
-                            myStudioViewModel.modifyMCPServerTags(toolMaker,toolMakerTags)
+                            myStudioViewModel.modifyToolMakerTags(toolMaker,toolMakerTags)
                         }
                     )
                 } else if(showConfigServerFromTemplateDialog){
