@@ -37,7 +37,7 @@ fun MCPToolsScreen() {
     LaunchedEffect(null){
         generalViewModel.refreshToolAgents()
         generalViewModel.refreshTeams()
-        generalViewModel.topBarActions = {}
+//        generalViewModel.topBarActions = {}
     }
     when(dialog){
         MCPToolsScreenDialog.NONE -> {}
@@ -81,8 +81,8 @@ fun MCPToolsScreen() {
                         selected = currentTabIndex == index,
                         onClick = {
                             currentTabIndex = index
-                            generalViewModel.topBarActions = {}
-                                  },
+//                            generalViewModel.topBarActions = {}
+                        },
                         text = { Text(title) }
                     )
                 }

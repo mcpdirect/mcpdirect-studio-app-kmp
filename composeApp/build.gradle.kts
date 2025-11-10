@@ -90,7 +90,7 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("ai.mcpdirect:mcpdirect-studio-core:2.1.0-SNAPSHOT")
+            implementation("ai.mcpdirect:mcpdirect-studio-core:2.1.1-SNAPSHOT")
         }
         jsMain.dependencies {
 //            implementation(compose.material3)

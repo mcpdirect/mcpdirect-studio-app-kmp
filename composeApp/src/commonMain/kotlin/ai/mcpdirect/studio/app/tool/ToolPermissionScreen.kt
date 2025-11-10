@@ -34,18 +34,24 @@ fun ToolPermissionScreen() {
         viewModel.refresh()
         generalViewModel.refreshTeamToolMakers()
         generalViewModel.refreshTeamToolMakerTemplates()
-    }
-    generalViewModel.topBarActions =  {
-        IconButton(onClick = {
-            viewModel.resetAllPermissions()
-        }) {
-            Icon(painterResource(Res.drawable.reset_settings), contentDescription = "Reset To Default")
+        generalViewModel.topBarActions =  {
+            IconButton(onClick = {
+                viewModel.resetAllPermissions()
+            }) {
+                Icon(painterResource(Res.drawable.reset_settings), contentDescription = "Reset To Default")
+            }
+            Button(onClick = {
+                viewModel.savePermissions()
+                generalViewModel.previousScreen()
+            }){
+                Text("Save")
+            }
         }
-        Button(onClick = {
-            viewModel.savePermissions()
-            generalViewModel.previousScreen()
-        }){
-            Text("Save")
+    }
+
+    DisposableEffect(null){
+        onDispose {
+            generalViewModel.topBarActions = {}
         }
     }
     Row{

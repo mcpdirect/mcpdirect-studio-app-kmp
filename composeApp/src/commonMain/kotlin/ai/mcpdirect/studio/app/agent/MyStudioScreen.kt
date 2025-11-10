@@ -64,7 +64,7 @@ fun MyStudioScreen(){
                         selected = currentTabIndex == index,
                         onClick = {
                             currentTabIndex = index
-                            generalViewModel.topBarActions = {}
+//                            generalViewModel.topBarActions = {}
                         },
                         text = { Text(title) }
                     )
@@ -241,19 +241,26 @@ fun ToolMakerListView(
             Text("Refresh")
         }
     } else{
-        generalViewModel.topBarActions = {
-            if(myStudioViewModel.toolMaker.id>0L) {
-                Button(onClick = {
-                    onDialogRequest(MyStudioScreenDialog.CreateMCPTemplate)
-                }) {
-                    Text("Create MCP Template")
+        LaunchedEffect(null) {
+            generalViewModel.topBarActions = {
+                if (myStudioViewModel.toolMaker.id > 0L) {
+                    Button(onClick = {
+                        onDialogRequest(MyStudioScreenDialog.CreateMCPTemplate)
+                    }) {
+                        Text("Create MCP Template")
+                    }
+                    Spacer(Modifier.width(8.dp))
                 }
-                Spacer(Modifier.width(8.dp))
+                Button(
+                    onClick = { onDialogRequest(MyStudioScreenDialog.ConnectMCP) }
+                ) {
+                    Text("Connect MCP Server")
+                }
             }
-            Button(
-                onClick = {onDialogRequest(MyStudioScreenDialog.ConnectMCP)}
-            ){
-                Text("Connect MCP Server")
+        }
+        DisposableEffect(null){
+            onDispose {
+                generalViewModel.topBarActions = {}
             }
         }
         Row {
@@ -513,17 +520,23 @@ fun ToolMakerByTemplateListView(
     var showConfigServerFromTemplateDialog  by remember { mutableStateOf(false) }
     var selectedToolMaker by remember { mutableStateOf(AIPortToolMaker()) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
-    mcpTemplateListViewModel.toolMakerTemplate?.let {
-        generalViewModel.topBarActions = {
-            TextButton(
-                onClick = {onDialogRequest(MyStudioScreenDialog.ConnectMCPTemplate)}
-            ){
-                Text("Connect MCP Template")
-            }
+
+    DisposableEffect(null){
+        onDispose {
+            generalViewModel.topBarActions = {}
         }
     }
     mcpTemplateListViewModel.toolMakerTemplate?.let {
-            template ->
+        template ->
+        LaunchedEffect(null){
+            generalViewModel.topBarActions = {
+                Button(
+                    onClick = {onDialogRequest(MyStudioScreenDialog.ConnectMCPTemplate)}
+                ){
+                    Text("Connect MCP Template")
+                }
+            }
+        }
         Row {
             LazyColumn(Modifier.weight(1.0f)) {
                 items(generalViewModel.toolMakers) { maker ->

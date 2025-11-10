@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +49,7 @@ fun MCPTeamToolMakerScreen() {
             }
         }
         UIState.Success -> {
-            Column{
+            LaunchedEffect(null){
                 generalViewModel.topBarActions = {
                     TextButton(
                         onClick = {viewModel.saveTeamToolMakers(team){
@@ -61,6 +62,13 @@ fun MCPTeamToolMakerScreen() {
                         Text("Share")
                     }
                 }
+            }
+            DisposableEffect(null){
+                onDispose {
+                    generalViewModel.topBarActions = {}
+                }
+            }
+            Column{
                 SearchView(
                     query = viewModel.searchQuery,
                     onQueryChange = { viewModel.updateSearchQuery(it) },

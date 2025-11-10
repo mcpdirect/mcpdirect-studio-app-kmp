@@ -39,7 +39,7 @@ fun NavigationTopBar(
                     Row(verticalAlignment = Alignment.CenterVertically){
                         if(generalViewModel.previousScreen!=null)IconButton(
                             onClick = {
-                                generalViewModel.topBarActions = {}
+//                                generalViewModel.topBarActions = {}
                                 generalViewModel.currentScreen(generalViewModel.previousScreen!!)
                             }
                         ) {
@@ -71,7 +71,7 @@ fun NavigationTopBar(
                                     screen.icon,
                                     contentDescription = stringResource(screen.title),
                                     onClick = {
-                                        generalViewModel.topBarActions = {}
+//                                        generalViewModel.topBarActions = {}
                                         generalViewModel.currentScreen(screen)
                                     }
                                 )

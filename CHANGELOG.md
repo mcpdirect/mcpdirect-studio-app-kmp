@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-10
+### Changed
+- Updated build configuration in build.gradle.kts
+- Enhanced GeneralViewModel with additional features
+- Improved NavigationTopBar with better navigation
+- Updated MyStudioScreen with UI enhancements
+- Improved MCPAccessKeyScreen with new functionality
+- Enhanced MCPTeamScreen with improved UI
+- Updated MCPTeamToolMakerScreen with better UX
+- Enhanced MCPTeamToolMakerTemplateScreen with new features
+- Improved MCPToolsScreen with enhanced functionality
+- Updated ToolPermissionScreen with improved UX
+- Enhanced VirtualMakerScreen with new capabilities
+- Updated ConnectMCPScreen and ConnectMCPViewModel with improvements
+- Modified web index.html for improved web experience
+
 ## 2025-11-09
 ### Changed
 - Enhanced MyStudioScreen and MyStudioViewModel with UI improvements

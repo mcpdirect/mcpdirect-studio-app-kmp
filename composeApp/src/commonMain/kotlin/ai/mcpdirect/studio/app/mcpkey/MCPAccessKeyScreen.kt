@@ -76,11 +76,18 @@ fun MCPAccessKeyScreen() {
             Text("Generate your first MCP Key")
         }
     } else {
-        generalViewModel.topBarActions = {
-            TextButton(onClick = {
-                dialog = MCPKeyDialog.GenerateMCPKey
-            }){
-                Text("Generate MCP Key")
+        LaunchedEffect(null) {
+            generalViewModel.topBarActions = {
+                TextButton(onClick = {
+                    dialog = MCPKeyDialog.GenerateMCPKey
+                }) {
+                    Text("Generate MCP Key")
+                }
+            }
+        }
+        DisposableEffect(null){
+            onDispose {
+                generalViewModel.topBarActions = {}
             }
         }
         StudioCard(modifier = Modifier.fillMaxHeight()) {

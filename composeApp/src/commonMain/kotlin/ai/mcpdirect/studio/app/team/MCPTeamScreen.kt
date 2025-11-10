@@ -169,6 +169,11 @@ private fun TeamListView() {
             }
         }
     }
+    DisposableEffect(null){
+        onDispose {
+            generalViewModel.topBarActions = {}
+        }
+    }
     val viewModel = mcpTeamViewModel
     Column {
         SearchView(

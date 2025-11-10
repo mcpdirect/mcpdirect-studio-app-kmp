@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -65,9 +66,16 @@ fun VirtualMakerScreen() {
             Text("Create your first Virtual MCP Server")
         }
     }else {
-        generalViewModel.topBarActions = {
-            TextButton(onClick = { viewModel.showAddServerDialog = true }) {
-                Text("Create Virtual MCP Server")
+        LaunchedEffect(null) {
+            generalViewModel.topBarActions = {
+                TextButton(onClick = { viewModel.showAddServerDialog = true }) {
+                    Text("Create Virtual MCP Server")
+                }
+            }
+        }
+        DisposableEffect(null){
+            onDispose {
+                generalViewModel.topBarActions = {}
             }
         }
         MakerListView()

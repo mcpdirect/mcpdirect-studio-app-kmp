@@ -55,6 +55,10 @@ class GeneralViewModel() : ViewModel() {
         return _toolAgents[id]
     }
     fun toolAgent(id:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
+        if(id==0L){
+            onResponse(0,null,virtualToolAgent)
+            return
+        }
         val agent = _toolAgents[id]
         if(agent!=null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL,null,agent)
         else viewModelScope.launch {
@@ -233,13 +237,13 @@ class GeneralViewModel() : ViewModel() {
     }
 
     fun refreshToolAgents(force:Boolean=false){
-        _toolAgents[0] = virtualToolAgent
         getPlatform().queryToolAgents {
             if(it.successful()){
                 it.data?.let {
                     it.forEach {
                         _toolAgents[it.id]=it
                     }
+//                    _toolAgents[0] = virtualToolAgent
                 }
             }
         }

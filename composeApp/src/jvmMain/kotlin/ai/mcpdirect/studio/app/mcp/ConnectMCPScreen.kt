@@ -45,19 +45,26 @@ fun ConnectMCPScreen(){
             Text("Connect your first MCP Server for this Studio")
         }
     } else Row(Modifier.fillMaxSize()) {
-        generalViewModel.topBarActions = {
-            if(connectMCPViewModel.toolMaker.id>0L){
-                Button(
-                    onClick = { dialog = ConnectMCPScreenDialog.CreateMCPTemplate }
-                ) {
-                    Text("Create MCP Template")
+        LaunchedEffect(null) {
+            generalViewModel.topBarActions = {
+                if (connectMCPViewModel.toolMaker.id > 0L) {
+                    Button(
+                        onClick = { dialog = ConnectMCPScreenDialog.CreateMCPTemplate }
+                    ) {
+                        Text("Create MCP Template")
+                    }
+                    Spacer(Modifier.width(8.dp))
                 }
-                Spacer(Modifier.width(8.dp))
+                Button(
+                    onClick = { dialog = ConnectMCPScreenDialog.ConnectMCP }
+                ) {
+                    Text("Connect MCP Server")
+                }
             }
-            Button(
-                onClick = { dialog = ConnectMCPScreenDialog.ConnectMCP }
-            ) {
-                Text("Connect MCP Server")
+        }
+        DisposableEffect(null){
+            onDispose {
+                generalViewModel.topBarActions = {}
             }
         }
         LazyColumn(Modifier.wrapContentHeight().width(300.dp).padding(start = 8.dp, top = 16.dp, bottom = 16.dp)) {
