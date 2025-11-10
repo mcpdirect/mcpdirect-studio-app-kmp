@@ -243,38 +243,38 @@ fun ConnectMCPScreen(){
                     toolMaker,
                     onDismissRequest = { dialog = ConnectMCPScreenDialog.None },
                     onConfirmRequest = {
-                        connectMCPViewModel.modifyMCPServerConfigForStudio(
-                            toolMaker,it
-                        ){ code, message, mcpServer ->
-                            if(code==0) {
-                                val config = AIPortMCPServerConfig()
-                                config.id = toolMaker.id
-                                config.transport = it.transport
-                                config.url = it.url
-                                config.command = it.command
-                                config.args = JSON.encodeToJsonElement(it.args).toString()
-                                config.env = JSON.encodeToJsonElement(it.env).toString()
-                                connectMCPViewModel.modifyMCPServerConfig(
-                                    config
-                                )
-                            }else{
-                                generalViewModel.showSnackbar(
-                                    message?:"Config MCP Server ${toolMaker.name} Error",
-                                    actionLabel = "Error",
-                                    withDismissAction = true
-                                )
-                            }
-                        }
-//                        val config = AIPortMCPServerConfig()
-//                        config.id = toolMaker.id
-//                        config.transport = it.transport
-//                        config.url = it.url
-//                        config.command = it.command
-//                        config.args = JSON.encodeToJsonElement(it.args).toString()
-//                        config.env = JSON.encodeToJsonElement(it.env).toString()
-//                        connectMCPViewModel.modifyMCPServerConfig(
-//                            config
-//                        )
+//                        connectMCPViewModel.modifyMCPServerConfigForStudio(
+//                            toolMaker,it
+//                        ){ code, message, mcpServer ->
+//                            if(code==0) {
+//                                val config = AIPortMCPServerConfig()
+//                                config.id = toolMaker.id
+//                                config.transport = it.transport
+//                                config.url = it.url
+//                                config.command = it.command
+//                                config.args = JSON.encodeToJsonElement(it.args).toString()
+//                                config.env = JSON.encodeToJsonElement(it.env).toString()
+//                                connectMCPViewModel.modifyMCPServerConfig(
+//                                    config
+//                                )
+//                            }else{
+//                                generalViewModel.showSnackbar(
+//                                    message?:"Config MCP Server ${toolMaker.name} Error",
+//                                    actionLabel = "Error",
+//                                    withDismissAction = true
+//                                )
+//                            }
+//                        }
+                        val config = AIPortMCPServerConfig()
+                        config.id = toolMaker.id
+                        config.transport = it.transport
+                        config.url = it.url
+                        config.command = it.command
+                        config.args = JSON.encodeToJsonElement(it.args).toString()
+                        config.env = JSON.encodeToJsonElement(it.env).toString()
+                        connectMCPViewModel.modifyMCPServerConfig(
+                            config
+                        )
                     }
                 )
             }

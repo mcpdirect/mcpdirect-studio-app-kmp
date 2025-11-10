@@ -462,29 +462,40 @@ fun ToolMakerListView(
                         toolMaker,
                         onDismissRequest = { showEditServerConfigDialog=false },
                         onConfirmRequest = {
-                            myStudioViewModel.modifyMCPServerConfigForStudio(
-                                toolAgent,toolMaker,it
-                            ){ code, message, mcpServer ->
-                                if(code==0) {
-                                    val config = AIPortMCPServerConfig()
-                                    config.id = toolMaker.id
-                                    config.transport = it.transport
-                                    config.url = it.url
-                                    config.command = it.command
-                                    config.args = JSON.encodeToJsonElement(it.args).toString()
-                                    config.env = JSON.encodeToJsonElement(it.env).toString()
-                                    myStudioViewModel.modifyMCPServerConfig(
-                                        myStudioViewModel.toolAgent,
-                                        config
-                                    )
-                                }else{
-                                    generalViewModel.showSnackbar(
-                                        message?:"Config MCP Server ${toolMaker.name} Error",
-                                        actionLabel = "Error",
-                                        withDismissAction = true
-                                    )
-                                }
-                            }
+//                            myStudioViewModel.modifyMCPServerConfigForStudio(
+//                                toolAgent,toolMaker,it
+//                            ){ code, message, mcpServer ->
+//                                if(code==0) {
+//                                    val config = AIPortMCPServerConfig()
+//                                    config.id = toolMaker.id
+//                                    config.transport = it.transport
+//                                    config.url = it.url
+//                                    config.command = it.command
+//                                    config.args = JSON.encodeToJsonElement(it.args).toString()
+//                                    config.env = JSON.encodeToJsonElement(it.env).toString()
+//                                    myStudioViewModel.modifyMCPServerConfig(
+//                                        myStudioViewModel.toolAgent,
+//                                        config
+//                                    )
+//                                }else{
+//                                    generalViewModel.showSnackbar(
+//                                        message?:"Config MCP Server ${toolMaker.name} Error",
+//                                        actionLabel = "Error",
+//                                        withDismissAction = true
+//                                    )
+//                                }
+//                            }
+                            val config = AIPortMCPServerConfig()
+                            config.id = toolMaker.id
+                            config.transport = it.transport
+                            config.url = it.url
+                            config.command = it.command
+                            config.args = JSON.encodeToJsonElement(it.args).toString()
+                            config.env = JSON.encodeToJsonElement(it.env).toString()
+                            myStudioViewModel.modifyMCPServerConfig(
+                                myStudioViewModel.toolAgent,
+                                config
+                            )
                         }
                     )
                 }

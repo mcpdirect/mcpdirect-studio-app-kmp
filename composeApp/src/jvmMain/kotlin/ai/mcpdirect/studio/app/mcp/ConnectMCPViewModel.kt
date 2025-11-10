@@ -157,7 +157,11 @@ class ConnectMCPViewModel: ViewModel() {
                             if (toolMaker.id == it.id) {
                                 toolMaker = it
                             }
-                        }
+                        } else generalViewModel.showSnackbar(
+                            it.message?:"Config MCP Server ${toolMaker.name} Error",
+                            actionLabel = "Error",
+                            withDismissAction = true
+                        )
                     }
                 }
             }
