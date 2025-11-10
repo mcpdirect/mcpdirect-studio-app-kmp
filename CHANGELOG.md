@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-10
 ### Changed
+- Enhanced MyStudioScreen and MyStudioViewModel with further UI improvements
+- Updated ToolListView with better tool display functionality
+
+## 2025-11-10
+### Changed
 - Updated build configuration in build.gradle.kts
 - Enhanced GeneralViewModel with additional features
 - Improved NavigationTopBar with better navigation

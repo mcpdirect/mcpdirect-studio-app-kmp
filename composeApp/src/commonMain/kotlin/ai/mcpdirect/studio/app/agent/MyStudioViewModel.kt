@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-val myStudioViewModel = MyStudioViewModel()
+//val myStudioViewModel = MyStudioViewModel()
 class MyStudioViewModel: ViewModel() {
     var uiState by mutableStateOf<UIState>(UIState.Idle)
     var toolAgent by mutableStateOf(AIPortToolAgent("",-1))

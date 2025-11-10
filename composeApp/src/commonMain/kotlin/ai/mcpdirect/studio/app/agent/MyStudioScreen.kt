@@ -49,6 +49,7 @@ fun MyStudioScreen(){
         generalViewModel.refreshToolAgents()
         generalViewModel.refreshToolMakers()
     }
+    val myStudioViewModel = remember { MyStudioViewModel() }
     var dialog by remember { mutableStateOf(MyStudioScreenDialog.None) }
     var currentTabIndex by remember { mutableStateOf(0) }
 
@@ -72,17 +73,17 @@ fun MyStudioScreen(){
             }
             // Content based on selected tab
             when (currentTabIndex) {
-                0 -> ToolAgentListView()
+                0 -> ToolAgentListView(myStudioViewModel)
                 1 -> MCPTemplateListView()
             }
         }
 
         StudioCard(Modifier.fillMaxSize().padding(top = 8.dp, bottom = 8.dp, end = 8.dp)) {
             when (currentTabIndex) {
-                0 -> ToolMakerListView{
+                0 -> ToolMakerListView(myStudioViewModel){
                     dialog = it
                 }
-                1 -> ToolMakerByTemplateListView{
+                1 -> ToolMakerByTemplateListView(myStudioViewModel){
                     dialog = it
                 }
             }
@@ -168,7 +169,9 @@ fun MyStudioScreen(){
     }
 }
 @Composable
-fun ToolAgentListView(){
+fun ToolAgentListView(
+    myStudioViewModel: MyStudioViewModel
+){
     val uiState = myStudioViewModel.uiState
     val toolAgents = generalViewModel.toolAgents
     LazyColumn{
@@ -206,6 +209,7 @@ fun ToolAgentListView(){
 }
 @Composable
 fun ToolMakerListView(
+    myStudioViewModel: MyStudioViewModel,
     onDialogRequest: (dialog: MyStudioScreenDialog) -> Unit
 ){
     var showEditServerNameDialog by remember { mutableStateOf(false) }
@@ -513,6 +517,7 @@ fun ToolMakerListView(
 
 @Composable
 fun ToolMakerByTemplateListView(
+    myStudioViewModel: MyStudioViewModel,
     onDialogRequest: (dialog: MyStudioScreenDialog) -> Unit
 ){
     var showEditServerNameDialog by remember { mutableStateOf(false) }

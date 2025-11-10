@@ -1,6 +1,5 @@
 package ai.mcpdirect.studio.app.tool
 
-import ai.mcpdirect.studio.app.agent.myStudioViewModel
 import ai.mcpdirect.studio.app.compose.StudioIcon
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import androidx.compose.foundation.clickable
