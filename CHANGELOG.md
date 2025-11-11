@@ -3,7 +3,15 @@
 All notable changes to this project will be documented in this file.
 
 ## 2025-11-06
+### Added
+- Created developer-landing-page.html for developer documentation
+- Added JavaScript functionality for dark mode toggle
+- Added smooth scrolling navigation to the landing page
+- Added back-to-top button functionality
+
 ### Changed
+- Updated README.zh-CN.md to MCPdirect 2.x new features
+- Added unified-access-gateway-studio.png image to README
 - Added unified-access-gateway.png asset back to assets/image
 - Updated README.zh-CN.md with improved formatting and content
 - Added width attribute to unified-access-gateway.png image in README

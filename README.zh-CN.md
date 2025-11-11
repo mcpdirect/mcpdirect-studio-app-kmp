@@ -58,7 +58,7 @@
 5. AI Agent通过https://connect.mcpdirect.ai/your_MCPdirect_key/sse 或 https://connect.mcpdirect.ai/your_MCPdirect_key/mcp 访问MCP Server
 
 ---
-## MCPdirect 2.0 新功能
+## MCPdirect 2.x 新功能
 * Virtual MCP Server
 * MCP Team
 * 远程管理 MCP Server
@@ -71,7 +71,7 @@
 * MCPdirect Studio是一个MCP Server的集中器。可以同时连接多个MCP Server，并通过MCPdirect统一访问
 * 连接到 MCPdirect Studio 上的 MCP Server，都可以通过 https://connect.mcpdirect.ai/your_MCPdirect_key/sse 或 https://connect.mcpdirect.ai/your_MCPdirect_key/mcp 被AI Agent访问到
 * MCPdirect Studio允许安装在私有环境中(办公室/家)，连接私有的MCP Server
-
+  <img width="800" src="assets/image/unified-access-gateway-studio.png" alt="">
 ---
 
 ## MCPdirect Studio快速入门

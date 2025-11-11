@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCPdirect - 通用MCP访问网关</title>
+    <link rel="icon" href="composeApp/icons/icon.png" type="image/x-icon">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c757d;
+            --accent-color: #00c9a7;
+            --background-color: #ffffff;
+            --text-color: #212529;
+            --light-gray: #f8f9fa;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        header {
+            background-color: var(--light-gray);
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .language-switch {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .language-switch a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        h3 {
+            color: var(--accent-color);
+            font-size: 1.4rem;
+            margin: 1.2rem 0 0.8rem;
+        }
+
+        .hero {
+            text-align: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            border: none;
+            box-shadow: none;
+            padding: 3rem 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .problem-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--light-gray);
+            border-radius: 6px;
+        }
+
+        .problem-item h3 {
+            margin-top: 0;
+        }
+
+        .use-cases ul, .features ul, .how-to-use ol, .new-features ul {
+            padding-left: 1.5rem;
+        }
+
+        .use-cases li, .features li, .how-to-use li, .new-features li {
+            margin-bottom: 0.7rem;
+        }
+
+        .feature-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-group ul {
+            margin-top: 0.5rem;
+        }
+
+        .studio-logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quick-start-usage {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--light-gray);
+            border-radius: 6px;
+        }
+
+        .feature-icon-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .screenshot-category {
+            margin-bottom: 2rem;
+        }
+
+        .screenshot-category h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .screenshot-category img {
+            width: 100%;
+            max-width: 600px;
+            margin: 0.5rem 0;
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--light-gray);
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 1rem;
+            }
+            
+            .logo-container, .studio-logo-container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .quick-start-usage {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Dark mode styles */
+        .dark-mode {
+            --background-color: #121212;
+            --text-color: #e0e0e0;
+            --light-gray: #1e1e1e;
+            --border-color: #333;
+        }
+
+        .dark-mode header {
+            background-color: #1e1e1e;
+        }
+
+        .dark-mode section {
+            background-color: #1e1e1e;
+        }
+
+        .dark-mode .problem-item {
+            background-color: #2a2a2a;
+        }
+
+        .dark-mode .feature-item {
+            background-color: #2a2a2a;
+        }
+
+        .dark-mode footer {
+            background-color: #1e1e1e;
+        }
+
+        /* Back to top button */
+        #back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 1000;
+        }
+
+        #back-to-top:hover {
+            background-color: #3a5ae0;
+        }
+    </style>
+    <script>
+        // Dark mode toggle functionality
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            // Save preference to localStorage
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        // Check for saved dark mode preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (savedDarkMode) {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // Add dark mode toggle button
+            const header = document.querySelector('header');
+            const darkModeButton = document.createElement('button');
+            darkModeButton.textContent = '🌙';
+            darkModeButton.title = 'Toggle Dark Mode';
+            darkModeButton.style.position = 'absolute';
+            darkModeButton.style.top = '1rem';
+            darkModeButton.style.right = '5rem';
+            darkModeButton.style.background = 'none';
+            darkModeButton.style.border = 'none';
+            darkModeButton.style.fontSize = '1.5rem';
+            darkModeButton.style.cursor = 'pointer';
+            darkModeButton.onclick = toggleDarkMode;
+            header.appendChild(darkModeButton);
+
+            // Add smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Add back to top button
+            const backToTopButton = document.createElement('button');
+            backToTopButton.id = 'back-to-top';
+            backToTopButton.innerHTML = '↑';
+            backToTopButton.title = 'Back to Top';
+            document.body.appendChild(backToTopButton);
+
+            // Show/hide back to top button based on scroll position
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopButton.style.display = 'block';
+                } else {
+                    backToTopButton.style.display = 'none';
+                }
+            });
+
+            // Scroll to top when back to top button is clicked
+            backToTopButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="composeApp/icons/icon.png" alt="MCPdirect Logo" height="88">
+            <img src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_text_logo.png" alt="MCPdirect Text Logo" height="96">
+        </div>
+        <h1>MCPdirect：通用MCP访问网关</h1>
+        <div class="language-switch">
+            <a href="README.md">English</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <p>
+                <strong>用一个URL访问你所有的 MCP Server 和工具</strong><br>
+                <strong>统一管理，统一授权，统一访问你所有的MCP Server和工具</strong><br>
+                <strong>并且可以和你的团队分享你的MCP Server 和工具</strong>
+            </p>
+            <img width="800" src="assets/image/unified-access-gateway.png" alt="统一访问网关示意图">
+        </section>
+
+        <section class="problems">
+            <h2>MCPdirect解决了哪些问题</h2>
+            <div class="problem-item">
+                <h3>1. AI Agent无法通过Internet访问运行在私有空间(办公室/家)的MCP Server</h3>
+                <p>使用MCPdirect，AI Agent可以从任何地方安全的访问运行在私有空间的MCP Server</p>
+            </div>
+            <div class="problem-item">
+                <h3>2. AI Agent重复配置MCP Server</h3>
+                <p>在每一个AI Agent中都需要重复配置之前的众多MCP Server</p>
+                <p>使用MCPdirect只需要配置一次，之后在任何AI Agent中只需要用统一的URL就可以访问</p>
+            </div>
+            <div class="problem-item">
+                <h3>3. 在团队合作中如何分享MCP Server</h3>
+                <p>使用MCPdirect，任何团队成员都可以安全的分享自己MCP Server，任何团队成员都可以安全的使用分享的MCP Server</p>
+            </div>
+        </section>
+
+        <section class="use-cases">
+            <h2>MCPdirect适用场景</h2>
+            <ul>
+                <li>需要从互联网访问私有环境的MCP Server</li>
+                <li>需要简化在不同MCP Client上重复配置 MCP Server</li>
+                <li>需要自定义MCP Server上每个工具的访问权限</li>
+                <li>需要根据使用场景定义可访问的MCP工具</li>
+                <li>需要分享MCP工具给伙伴</li>
+                <li>需要在团队中共享MCP工具</li>
+            </ul>
+        </section>
+
+        <section class="features">
+            <h2>特点</h2>
+            <div class="feature-group">
+                <h3>任意部署，随处访问</h3>
+                <ul>
+                    <li>MCP Server 可以部署在任意网络环境： 家庭 / 办公室 / 移动设备 / 云端</li>
+                    <li>MCP Client 可以从任何地方访问： 家庭 / 办公室 / 移动设备 / 云端</li>
+                </ul>
+            </div>
+            <div class="feature-group">
+                <h3>灵活管理，按需定制</h3>
+                <ul>
+                    <li>统一管理所有 MCP Server 与工具状态</li>
+                    <li>每个工具可单独启用/禁用，便于测试与隔离</li>
+                    <li>虚拟 MCP Server。通过逻辑组合不同工具集，快速构建定制化服务</li>
+                    <li>团队协作。团队成员可以相互分享自己的MCP Server和工具</li>
+                    <li>保持现有 MCP Server/Client 不变，平滑升级</li>
+                </ul>
+            </div>
+            <div class="feature-group">
+                <h3>统一认证，精细授权</h3>
+                <ul>
+                    <li>为不同的用户场景创建不同的 Key</li>
+                    <li>不同的 Key 访问不同的 MCP Server 及工具组</li>
+                    <li>为每个 Key 授权 Tools 的访问权限</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="how-to-use">
+            <h2>如何使用MCPdirect</h2>
+            <ol>
+                <li>下载/运行MCPdirect Studio</li>
+                <li>在MCPdirect Studio中连接一些MCP Server</li>
+                <li>在MCPdirect Studio中创建MCPdirect Key</li>
+                <li>授权MCPdirect Key访问某些MCP Server</li>
+                <li>AI Agent通过https://connect.mcpdirect.ai/your_MCPdirect_key/sse 或 https://connect.mcpdirect.ai/your_MCPdirect_key/mcp 访问MCP Server</li>
+            </ol>
+        </section>
+
+        <section class="new-features">
+            <h2>MCPdirect 2.0 新功能</h2>
+            <ul>
+                <li>Virtual MCP Server</li>
+                <li>MCP Team</li>
+                <li>远程管理 MCP Server</li>
+            </ul>
+        </section>
+
+        <section class="studio-section">
+            <div class="studio-logo-container">
+                <img src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_text_logo.png" alt="MCPdirect Text Logo" height="64">
+                <img src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_studio_logo.png" alt="MCPdirect Studio Logo" height="64">
+            </div>
+            <h2>MCPdirect Studio是什么</h2>
+            <p>
+                MCPdirect Studio是一个MCP Server的集中器。可以同时连接多个MCP Server，并通过MCPdirect统一访问<br>
+                连接到 MCPdirect Studio 上的 MCP Server，都可以通过 https://connect.mcpdirect.ai/your_MCPdirect_key/sse 或 https://connect.mcpdirect.ai/your_MCPdirect_key/mcp 被AI Agent访问到<br>
+                MCPdirect Studio允许安装在私有环境中(办公室/家)，连接私有的MCP Server
+            </p>
+        </section>
+
+        <section class="quick-start">
+            <h2>MCPdirect Studio快速入门</h2>
+            
+            <div class="quick-start-preparation">
+                <h3>准备</h3>
+                <ul>
+                    <li>下载 <a href="https://github.com/mcpdirect/mcpdirect-studio-app-kmp/releases">MCPdirect Studio</a></li>
+                    <li>注册/登录</li>
+                </ul>
+            </div>
+
+            <div class="quick-start-usage">
+                <h3>使用</h3>
+                <div class="feature-item">
+                    <div class="feature-icon-text">
+                        <img src="composeApp/src/commonMain/composeResources/drawable/plug_connect.svg" alt="" style="height: 24px; vertical-align: middle;">
+                        <span style="vertical-align: middle; margin-left: 8px;">Connect MCP</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-text">
+                        <img src="composeApp/src/commonMain/composeResources/drawable/key.svg" alt="" style="height: 24px; vertical-align: middle;">
+                        <span style="vertical-align: middle; margin-left: 8px;">MCP Key</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-text">
+                        <img src="composeApp/src/commonMain/composeResources/drawable/graph_5.svg" alt="" style="height: 24px; vertical-align: middle;">
+                        <span style="vertical-align: middle; margin-left: 8px;">My Studios</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-text">
+                        <img src="composeApp/src/commonMain/composeResources/drawable/diversity_3.svg" alt="" style="height: 24px; vertical-align: middle;">
+                        <span style="vertical-align: middle; margin-left: 8px;">MCP Team</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-text">
+                        <img src="composeApp/src/commonMain/composeResources/drawable/design_services.svg" alt="" style="height: 24px; vertical-align: middle;">
+                        <span style="vertical-align: middle; margin-left: 8px;">Virtual MCP</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="screenshots">
+            <h2>功能截图</h2>
+            <div class="screenshot-category">
+                <h3>Connect MCP</h3>
+                <img src="assets/screenshot/connected_mcp.png" alt="Connect MCP Screenshot">
+                <img src="assets/screenshot/connect_mcp.png" alt="Connect MCP Screenshot">
+            </div>
+            <div class="screenshot-category">
+                <h3>MCP Keys</h3>
+                <img src="assets/screenshot/mcp_key.png" alt="MCP Keys Screenshot">
+                <img src="assets/screenshot/tool_permission.png" alt="Tool Permission Screenshot">
+            </div>
+            <div class="screenshot-category">
+                <h3>My Studio</h3>
+                <img src="assets/screenshot/my_studio.png" alt="My Studio Screenshot">
+            </div>
+            <div class="screenshot-category">
+                <h3>MCP Team</h3>
+                <img src="assets/screenshot/mcp_team.png" alt="MCP Team Screenshot">
+            </div>
+            <div class="screenshot-category">
+                <h3>Virtual MCP</h3>
+                <img src="assets/screenshot/virtual_mcp.png" alt="Virtual MCP Screenshot">
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 MCPdirect. All rights reserved.</p>
+    </footer>
+</body>
+</html>
