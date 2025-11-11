@@ -10,7 +10,9 @@ All notable changes to this project will be documented in this file.
 - Added back-to-top button functionality
 
 ### Changed
-- Updated README.zh-CN.md to MCPdirect 2.x new features
+- Translated and updated README.md with content from README.zh-CN.md
+- Updated README.md with new sections: 'What Problems MCPdirect Solve?', 'MCPdirect Usage Scenarios', and 'How to Use MCPdirect'
+- Updated README.md to MCPdirect 2.x new features
 - Added unified-access-gateway-studio.png image to README
 - Added unified-access-gateway.png asset back to assets/image
 - Updated README.zh-CN.md with improved formatting and content
