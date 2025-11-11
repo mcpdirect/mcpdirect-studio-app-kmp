@@ -1,11 +1,9 @@
 package ai.mcpdirect.studio.app.theme.purple
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 
 val primaryLight = Color(0xFF8600CA)
 val onPrimaryLight = Color(0xFFFFFFFF)

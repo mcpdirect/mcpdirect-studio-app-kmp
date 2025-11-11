@@ -22,8 +22,6 @@ import java.util.*
 class JVMPlatform : Platform, NotificationHandler{
     override val name: String = "MCPdirect Studio"
     override val type: Int = 1
-//    override val currentMilliseconds: Long
-//        get() = System.currentTimeMillis()
     override val toolAgentId:Long
         get() = MCPDirectStudio.studioToolAgentId()
     override val language: String

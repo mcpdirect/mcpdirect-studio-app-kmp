@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2025-11-06
+## 2025-11-10
+### Changed
+- Updated build configuration in build.gradle.kts
+- Enhanced NavigationTopBar with improved functionality
+- Updated theme colors and styling in purple theme
+- Enhanced platform-specific code for JVM and web platforms
+
+## 2025-11-10
 ### Added
 - Created developer-landing-page.html for developer documentation
 - Added JavaScript functionality for dark mode toggle

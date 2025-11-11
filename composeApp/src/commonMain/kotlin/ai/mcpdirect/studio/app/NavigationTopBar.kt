@@ -1,12 +1,11 @@
 package ai.mcpdirect.studio.app
 
-import ai.mcpdirect.studio.app.auth.AuthViewModel
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.auth.PasswordChangeState
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.model.account.AIPortUser
-import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import ai.mcpdirect.studio.app.setting.settingsViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -117,7 +116,7 @@ fun NavigationTopBar(
                             },
                             leadingIcon = { Icon(painterResource(Res.drawable.password), "Password") }
                         )
-
+                        if(getPlatform().type!=0)
                         DropdownMenuItem(
                             text = { Text("Setting") },
                             onClick = {
