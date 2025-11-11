@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-06
+### Changed
+- Added unified-access-gateway.png asset back to assets/image
+- Updated README.zh-CN.md with improved formatting and content
+- Added width attribute to unified-access-gateway.png image in README
+- Reordered and updated problem descriptions in README
+- Updated use case descriptions in README
+
 ## 2025-11-10
 ### Changed
 - Enhanced MyStudioScreen and MyStudioViewModel with further UI improvements

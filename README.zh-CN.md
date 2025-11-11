@@ -7,17 +7,18 @@
 * **统一管理，统一授权，统一访问你所有的MCP Server和工具**
 * **并且可以和你的团队分享你的MCP Server 和工具**
 
-<img src="assets/image/unified-access-gateway.png" alt="">
+<img width="800" src="assets/image/unified-access-gateway.png" alt="">
 
 ---
 ## MCPdirect解决了哪些问题
-### 1. AI Agent重复配置MCP Server
+
+### 1. AI Agent无法通过Internet访问运行在私有空间(办公室/家)的MCP Server
+使用MCPdirect，AI Agent可以从任何地方安全的访问运行在私有空间的MCP Server
+
+### 2. AI Agent重复配置MCP Server
 在每一个AI Agent中都需要重复配置之前的众多MCP Server
 
 使用MCPdirect只需要配置一次，之后在任何AI Agent中只需要用统一的URL就可以访问
-
-### 2. AI Agent无法通过Internet访问运行在私有空间(办公室/家)的MCP Server
-使用MCPdirect，AI Agent可以从任何地方安全的访问运行在私有空间的MCP Server
 
 ### 3. 在团队合作中如何分享MCP Server
 使用MCPdirect，任何团队成员都可以安全的分享自己MCP Server，任何团队成员都可以安全的使用分享的MCP Server
@@ -27,9 +28,9 @@
 1. 需要从互联网访问私有环境的MCP Server
 2. 需要简化在不同MCP Client上重复配置 MCP Server
 3. 需要自定义MCP Server上每个工具的访问权限
-4. 需要根据使用场景定义可访问的MCP Server及MCP工具
-5. 需要分享MCP工具给个人
-6. 需要在团队中共享MCP Server
+4. 需要根据使用场景定义可访问的MCP工具
+5. 需要分享MCP工具给伙伴
+6. 需要在团队中共享MCP工具
 
 ---
 ## 特点
