@@ -88,7 +88,7 @@ class ConnectMCPViewModel: ViewModel() {
 
     fun modifyMCPServerConfigForStudio(mcpServer: MCPServer,
                                        config:MCPServerConfig,
-                                       onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit){
+                                       onResponse: ((code: Int, message: String?, mcpServer: MCPServer?) -> Unit)?=null){
         viewModelScope.launch {
             uiState = UIState.Loading
             getPlatform().modifyMCPServerForStudio(
@@ -101,8 +101,12 @@ class ConnectMCPViewModel: ViewModel() {
                     if(toolMaker.id==it.id){
                         toolMaker = it
                     }
-                }
-                onResponse(it.code,it.message,it.data)
+                }else generalViewModel.showSnackbar(
+                    it.message?:"Config MCP Server ${toolMaker.name} Error",
+                    actionLabel = "Error",
+                    withDismissAction = true
+                )
+                if(onResponse!=null)onResponse(it.code,it.message,it.data)
             }
         }
     }
@@ -163,6 +167,80 @@ class ConnectMCPViewModel: ViewModel() {
                         )
                     }
                 }
+            }
+        }
+    }
+    fun modifyToolMakerStatus(maker: AIPortToolMaker,status: Int){
+        viewModelScope.launch {
+            uiState = UIState.Loading
+            if(toolMaker.id==maker.id){
+                tools.clear()
+            }
+            if(maker.id<Int.MAX_VALUE){
+                getPlatform().modifyMCPServerForStudio(
+                    MCPDirectStudio.studioId(),
+                    maker.id,
+                    null,
+                    status,
+                    null
+                ){
+                    if(it.code==0) it.data?.let {
+                        _toolMakers[it.id] = it
+                        if (toolMaker.id == it.id) {
+                            toolMaker = it
+                            if(status==1)getPlatform().queryMCPToolsFromStudio(
+                                MCPDirectStudio.studioId(),
+                                it.id
+                            ){
+                                if(it.code==0) it.data?.let {
+                                    if(toolMaker.id==maker.id){
+                                        tools.addAll(it)
+                                    }
+                                }
+                            }
+                        }
+                    } else generalViewModel.showSnackbar(
+                        it.message?:"Access MCP Server ${toolMaker.name} Error",
+                        actionLabel = "Error",
+                        withDismissAction = true
+                    )
+                }
+            }else getPlatform().modifyToolMaker(
+                maker.id,
+                null,
+                null,
+                status
+            ){
+                if(it.code==0) it.data?.let {
+                        maker ->
+                    getPlatform().connectToolMakerToStudio(
+                        studioId = MCPDirectStudio.studioId(),
+                        makerId = maker.id,
+                        agentId = maker.agentId
+                    ) {
+                        updateUIState(it.code)
+                        if(it.code==0) it.data?.let {
+                            _toolMakers[it.id] = it
+                            if (toolMaker.id == it.id) {
+                                toolMaker = it
+                                if(status==1)getPlatform().queryMCPToolsFromStudio(
+                                    MCPDirectStudio.studioId(),
+                                    it.id
+                                ){
+                                    if(it.code==0) it.data?.let {
+                                        if(toolMaker.id==maker.id){
+                                            tools.addAll(it)
+                                        }
+                                    }
+                                }
+                            }
+                        } else generalViewModel.showSnackbar(
+                            it.message?:"Access MCP Server ${toolMaker.name} Error",
+                            actionLabel = "Error",
+                            withDismissAction = true
+                        )
+                    }
+                } else updateUIState(it.code)
             }
         }
     }

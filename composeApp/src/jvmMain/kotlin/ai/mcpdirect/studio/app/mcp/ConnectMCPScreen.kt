@@ -32,6 +32,7 @@ enum class ConnectMCPScreenDialog {
     EditMCPServerName,
     EditMCPServerTags,
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConnectMCPScreen(){
     var dialog by remember { mutableStateOf(ConnectMCPScreenDialog.None) }
@@ -154,40 +155,91 @@ fun ConnectMCPScreen(){
                 val me = it.id<Int.MAX_VALUE||it.userId==authViewModel.user.id
                 Column(Modifier.weight(2.0f)) {
                     StudioActionBar(
-                        actions = {
-                            TooltipIconButton(
-                                Res.drawable.refresh,
-                                contentDescription = "Refresh MCP Server Tools",
-                                onClick = {
-                                    connectMCPViewModel.queryMCPTools(it)
-                                })
-                            if(me) {
-                                if (it.id > Int.MAX_VALUE) {
+                        navigationIcon = {
+                            Spacer(Modifier.width(8.dp))
+                            when(it.status){
+                                0->{
+                                    Text("Not start")
                                     TooltipIconButton(
-                                        Res.drawable.sell,
-                                        contentDescription = "Edit tags",
+                                        Res.drawable.play_circle,
+                                        "Start",
+                                        MaterialTheme.colorScheme.primary,
                                         onClick = {
-                                            dialog = ConnectMCPScreenDialog.EditMCPServerTags
+                                            connectMCPViewModel.modifyToolMakerStatus(it,1)
+                                        }
+                                    )
+                                }
+                                1->{
+                                    Text("Running", color = MaterialTheme.colorScheme.primary)
+                                    TooltipIconButton(
+                                        Res.drawable.stop_circle,
+                                        "Stop",
+                                        MaterialTheme.colorScheme.error,
+                                        onClick = {
+                                            connectMCPViewModel.modifyToolMakerStatus(it,0)
+                                        }
+                                    )
+                                    TooltipIconButton(
+                                        Res.drawable.restart_alt,
+                                        "Restart",
+                                        MaterialTheme.colorScheme.primary,
+                                        onClick = {
+                                            connectMCPViewModel.modifyToolMakerStatus(it,1)
+                                        }
+                                    )
+                                }
+                                else->{
+                                    Text("Error", color = MaterialTheme.colorScheme.error)
+                                    TooltipIconButton(
+                                        Res.drawable.play_circle,
+                                        "Start",
+                                        MaterialTheme.colorScheme.primary,
+                                        onClick = {
+                                            connectMCPViewModel.modifyToolMakerStatus(it,1)
+                                        }
+                                    )
+                                }
+                            }
+
+                        },
+                        actions = {
+                            Spacer(Modifier.weight(1.0f))
+                            if(it.status==1) {
+                                TooltipIconButton(
+                                    Res.drawable.refresh,
+                                    contentDescription = "Refresh MCP Server Tools",
+                                    onClick = {
+                                        connectMCPViewModel.queryMCPTools(it)
+                                    })
+
+                                if (it.status == 1) {
+                                    if (it.id > Int.MAX_VALUE) {
+                                        TooltipIconButton(
+                                            Res.drawable.sell,
+                                            contentDescription = "Edit tags",
+                                            onClick = {
+                                                dialog = ConnectMCPScreenDialog.EditMCPServerTags
+                                            })
+                                    }
+                                    TooltipIconButton(
+                                        Res.drawable.badge,
+                                        contentDescription = "Edit name",
+                                        onClick = {
+                                            dialog = ConnectMCPScreenDialog.EditMCPServerName
+                                        })
+                                    TooltipIconButton(
+                                        Res.drawable.data_object,
+                                        contentDescription = "Config MCP Server",
+                                        onClick = {
+                                            dialog = ConnectMCPScreenDialog.ConfigMCP
+                                        })
+                                    TooltipIconButton(
+                                        Res.drawable.cloud_upload,
+                                        contentDescription = "Publish to MCPdirect",
+                                        onClick = {
+                                            connectMCPViewModel.publishMCPTools(it)
                                         })
                                 }
-                                TooltipIconButton(
-                                    Res.drawable.badge,
-                                    contentDescription = "Edit name",
-                                    onClick = {
-                                        dialog = ConnectMCPScreenDialog.EditMCPServerName
-                                    })
-                                TooltipIconButton(
-                                    Res.drawable.data_object,
-                                    contentDescription = "Config MCP Server",
-                                    onClick = {
-                                        dialog = ConnectMCPScreenDialog.ConfigMCP
-                                    })
-                                TooltipIconButton(
-                                    Res.drawable.cloud_upload,
-                                    contentDescription = "Publish to MCPdirect",
-                                    onClick = {
-                                        connectMCPViewModel.publishMCPTools(it)
-                                    })
                             }
                         }
                     )
@@ -250,38 +302,21 @@ fun ConnectMCPScreen(){
                     toolMaker,
                     onDismissRequest = { dialog = ConnectMCPScreenDialog.None },
                     onConfirmRequest = {
-//                        connectMCPViewModel.modifyMCPServerConfigForStudio(
-//                            toolMaker,it
-//                        ){ code, message, mcpServer ->
-//                            if(code==0) {
-//                                val config = AIPortMCPServerConfig()
-//                                config.id = toolMaker.id
-//                                config.transport = it.transport
-//                                config.url = it.url
-//                                config.command = it.command
-//                                config.args = JSON.encodeToJsonElement(it.args).toString()
-//                                config.env = JSON.encodeToJsonElement(it.env).toString()
-//                                connectMCPViewModel.modifyMCPServerConfig(
-//                                    config
-//                                )
-//                            }else{
-//                                generalViewModel.showSnackbar(
-//                                    message?:"Config MCP Server ${toolMaker.name} Error",
-//                                    actionLabel = "Error",
-//                                    withDismissAction = true
-//                                )
-//                            }
-//                        }
-                        val config = AIPortMCPServerConfig()
-                        config.id = toolMaker.id
-                        config.transport = it.transport
-                        config.url = it.url
-                        config.command = it.command
-                        config.args = JSON.encodeToJsonElement(it.args).toString()
-                        config.env = JSON.encodeToJsonElement(it.env).toString()
-                        connectMCPViewModel.modifyMCPServerConfig(
-                            config
-                        )
+                        mcpServer,mcpServerConfig->
+                        if(mcpServer.id>Int.MAX_VALUE) {
+                            val config = AIPortMCPServerConfig()
+                            config.id = toolMaker.id
+                            config.transport = mcpServerConfig.transport
+                            config.url = mcpServerConfig.url
+                            config.command = mcpServerConfig.command
+                            config.args = JSON.encodeToJsonElement(mcpServerConfig.args).toString()
+                            config.env = JSON.encodeToJsonElement(mcpServerConfig.env).toString()
+                            connectMCPViewModel.modifyMCPServerConfig(
+                                config
+                            )
+                        }else{
+                            connectMCPViewModel.modifyMCPServerConfigForStudio(mcpServer,mcpServerConfig)
+                        }
                     }
                 )
             }

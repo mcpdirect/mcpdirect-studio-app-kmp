@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-12
+### Added
+- New restart-circle.svg icon for restart functionality
+
+### Changed
+- Added compose material3 dependency to build.gradle.kts
+- Enhanced Platform.kt with serverStatus parameter for modifyMCPServerForStudio function
+- Updated MyStudioScreen.kt and ConnectMCPScreen.kt with improved server configuration handling
+- Enhanced MyStudioViewModel.kt and ConnectMCPViewModel.kt with optional onResponse parameter
+- Updated ConfigMCPServerDialog.kt to pass both mcpServer and config to onConfirmRequest
+- Enhanced ConnectMCPScreen.kt with server status indicators and controls (start/stop/restart)
+- Added modifyToolMakerStatus functionality to ConnectMCPViewModel.kt for server status management
+
 ## 2025-11-10
 ### Changed
 - Updated build configuration in build.gradle.kts

@@ -182,12 +182,14 @@ interface Platform {
         }
     }
     fun modifyMCPServerForStudio(studioId:Long, mcpServerId:Long,
-                                 serverName:String?=null, serverConfig:MCPServerConfig?=null,
+                                 serverName:String?=null,serverStatus:Int?=null,
+                                 serverConfig:MCPServerConfig?=null,
                                  onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
         httpRequest("studio.console@$studioId/mcp_server/modify",
             mapOf(
                 "mcpServerId" to JsonPrimitive(mcpServerId),
                 "mcpServerName" to JsonPrimitive(serverName),
+                "mcpServerStatus" to JsonPrimitive(serverStatus),
                 "mcpServerConfig" to JSON.encodeToJsonElement(serverConfig)
             )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<MCPServer>>(it))

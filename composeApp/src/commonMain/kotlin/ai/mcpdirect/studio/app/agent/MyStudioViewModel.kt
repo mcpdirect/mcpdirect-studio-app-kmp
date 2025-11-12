@@ -68,7 +68,7 @@ class MyStudioViewModel: ViewModel() {
     fun modifyMCPServerConfigForStudio(toolAgent: AIPortToolAgent,
                                        mcpServer: MCPServer,
                                        config:MCPServerConfig,
-                                       onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit){
+                                       onResponse: ((code: Int, message: String?, mcpServer: MCPServer?) -> Unit)?=null){
         viewModelScope.launch {
             uiState = UIState.Loading
             getPlatform().modifyMCPServerForStudio(
@@ -81,8 +81,12 @@ class MyStudioViewModel: ViewModel() {
                     if(toolMaker.id==it.id){
                         toolMaker = it
                     }
-                }
-                onResponse(it.code,it.message,it.data)
+                }else generalViewModel.showSnackbar(
+                    it.message?:"Config MCP Server ${toolMaker.name} Error",
+                    actionLabel = "Error",
+                    withDismissAction = true
+                )
+                if(onResponse!=null)onResponse(it.code,it.message,it.data)
             }
         }
     }

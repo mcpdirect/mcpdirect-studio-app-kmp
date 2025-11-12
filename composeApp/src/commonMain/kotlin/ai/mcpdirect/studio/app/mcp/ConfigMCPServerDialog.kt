@@ -36,7 +36,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun ConfigMCPServerDialog(
     mcpServer: MCPServer,
-    onConfirmRequest: (MCPServerConfig) -> Unit,
+    onConfirmRequest: (MCPServer,MCPServerConfig) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     var newServerTransport by remember { mutableStateOf(mcpServer.transport)  }
@@ -183,7 +183,7 @@ fun ConfigMCPServerDialog(
                     config.command = newServerCommand
                     if(newServerArgs.isNotEmpty()) config.args = newServerArgs
                     if(newServerEnv.isNotEmpty()) config.env = newServerEnv.associate { it.first to it.second }
-                    onConfirmRequest(config)
+                    onConfirmRequest(mcpServer,config)
                     onDismissRequest()
                 }
             ) {
