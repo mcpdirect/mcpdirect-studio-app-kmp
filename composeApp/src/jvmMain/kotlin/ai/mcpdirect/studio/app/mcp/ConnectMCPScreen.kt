@@ -212,7 +212,7 @@ fun ConnectMCPScreen(){
                                         connectMCPViewModel.queryMCPTools(it)
                                     })
 
-                                if (it.status == 1) {
+                                if (me) {
                                     if (it.id > Int.MAX_VALUE) {
                                         TooltipIconButton(
                                             Res.drawable.sell,

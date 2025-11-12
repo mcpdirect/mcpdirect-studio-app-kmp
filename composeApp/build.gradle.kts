@@ -88,7 +88,7 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         jvmMain.dependencies {
-            implementation(compose.material3)
+//            implementation(compose.material3)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
             implementation("ai.mcpdirect:mcpdirect-studio-core:2.1.2-SNAPSHOT")

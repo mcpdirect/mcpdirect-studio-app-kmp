@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 - Updated ConfigMCPServerDialog.kt to pass both mcpServer and config to onConfirmRequest
 - Enhanced ConnectMCPScreen.kt with server status indicators and controls (start/stop/restart)
 - Added modifyToolMakerStatus functionality to ConnectMCPViewModel.kt for server status management
+- Enhanced MyStudioScreen.kt with server status indicators and controls (start/stop/restart)
+- Added modifyToolMakerStatus functionality to MyStudioViewModel.kt for server status management
+- Reverted material3 dependency comment in build.gradle.kts
+- Fixed conditional logic in ConnectMCPScreen.kt for proper UI element display
 
 ## 2025-11-10
 ### Changed

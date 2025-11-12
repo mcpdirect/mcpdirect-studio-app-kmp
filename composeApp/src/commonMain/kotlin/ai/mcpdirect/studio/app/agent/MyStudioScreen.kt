@@ -368,39 +368,92 @@ fun ToolMakerListView(
                 val me = it.id<Int.MAX_VALUE||it.userId==authViewModel.user.id
                 Column(Modifier.weight(2.0f)) {
                     StudioActionBar(
+                        navigationIcon = {
+                            Spacer(Modifier.width(8.dp))
+                            when(it.status){
+                                0->{
+                                    Text("Not start")
+                                    TooltipIconButton(
+                                        Res.drawable.play_circle,
+                                        "Start",
+                                        MaterialTheme.colorScheme.primary,
+                                        onClick = {
+                                            myStudioViewModel.modifyToolMakerStatus(
+                                                myStudioViewModel.toolAgent,it,1)
+                                        }
+                                    )
+                                }
+                                1->{
+                                    Text("Running", color = MaterialTheme.colorScheme.primary)
+                                    TooltipIconButton(
+                                        Res.drawable.stop_circle,
+                                        "Stop",
+                                        MaterialTheme.colorScheme.error,
+                                        onClick = {
+                                            myStudioViewModel.modifyToolMakerStatus(
+                                                myStudioViewModel.toolAgent,it,0)
+                                        }
+                                    )
+                                    TooltipIconButton(
+                                        Res.drawable.restart_alt,
+                                        "Restart",
+                                        MaterialTheme.colorScheme.primary,
+                                        onClick = {
+                                            myStudioViewModel.modifyToolMakerStatus(
+                                                myStudioViewModel.toolAgent,it,1)
+                                        }
+                                    )
+                                }
+                                else->{
+                                    Text("Error", color = MaterialTheme.colorScheme.error)
+                                    TooltipIconButton(
+                                        Res.drawable.play_circle,
+                                        "Start",
+                                        MaterialTheme.colorScheme.primary,
+                                        onClick = {
+                                            myStudioViewModel.modifyToolMakerStatus(
+                                                myStudioViewModel.toolAgent,it,1)
+                                        }
+                                    )
+                                }
+                            }
+
+                        },
                         actions = {
-                            TooltipIconButton(
-                                Res.drawable.refresh,
-                                contentDescription = "Refresh MCP Server Tools",
-                                onClick = {
-                                    myStudioViewModel.queryMCPTools(it)
-                                })
-                            if(me) {
-                                if (it.id > Int.MAX_VALUE) TooltipIconButton(
-                                    Res.drawable.sell,
-                                    contentDescription = "Edit tags",
-                                    onClick = {
-                                        showEditServerTagsDialog = true
-                                    })
+                            if(it.status==1) {
                                 TooltipIconButton(
-                                    Res.drawable.badge,
-                                    contentDescription = "Edit name",
+                                    Res.drawable.refresh,
+                                    contentDescription = "Refresh MCP Server Tools",
                                     onClick = {
-                                        showEditServerNameDialog = true
+                                        myStudioViewModel.queryMCPTools(it)
                                     })
-                                TooltipIconButton(
-                                    Res.drawable.data_object,
-                                    contentDescription = "Config MCP Server",
-                                    onClick = {
+                                if (me) {
+                                    if (it.id > Int.MAX_VALUE) TooltipIconButton(
+                                        Res.drawable.sell,
+                                        contentDescription = "Edit tags",
+                                        onClick = {
+                                            showEditServerTagsDialog = true
+                                        })
+                                    TooltipIconButton(
+                                        Res.drawable.badge,
+                                        contentDescription = "Edit name",
+                                        onClick = {
+                                            showEditServerNameDialog = true
+                                        })
+                                    TooltipIconButton(
+                                        Res.drawable.data_object,
+                                        contentDescription = "Config MCP Server",
+                                        onClick = {
 //                                    onDialogRequest(MyStudioScreenDialog.ConfigMCP)
-                                        showEditServerConfigDialog = true
-                                    })
-                                TooltipIconButton(
-                                    Res.drawable.cloud_upload,
-                                    contentDescription = "Publish to MCPdirect",
-                                    onClick = {
-                                        myStudioViewModel.publishMCPTools(it)
-                                    })
+                                            showEditServerConfigDialog = true
+                                        })
+                                    TooltipIconButton(
+                                        Res.drawable.cloud_upload,
+                                        contentDescription = "Publish to MCPdirect",
+                                        onClick = {
+                                            myStudioViewModel.publishMCPTools(it)
+                                        })
+                                }
                             }
                         }
                     )

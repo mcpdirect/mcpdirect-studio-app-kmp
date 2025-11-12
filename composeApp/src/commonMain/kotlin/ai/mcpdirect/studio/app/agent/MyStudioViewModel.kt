@@ -132,6 +132,81 @@ class MyStudioViewModel: ViewModel() {
             }
         }
     }
+    fun modifyToolMakerStatus(toolAgent: AIPortToolAgent,maker: AIPortToolMaker,status: Int){
+        val studioId = toolAgent.engineId;
+        viewModelScope.launch {
+            uiState = UIState.Loading
+            if(toolMaker.id==maker.id){
+                tools.clear()
+            }
+            if(maker.id<Int.MAX_VALUE){
+                getPlatform().modifyMCPServerForStudio(
+                    studioId,
+                    maker.id,
+                    null,
+                    status,
+                    null
+                ){
+                    if(it.code==0) it.data?.let {
+                        _toolMakers[it.id] = it
+                        if (toolMaker.id == it.id) {
+                            toolMaker = it
+                            if(status==1)getPlatform().queryMCPToolsFromStudio(
+                                studioId,
+                                it.id
+                            ){
+                                if(it.code==0) it.data?.let {
+                                    if(toolMaker.id==maker.id){
+                                        tools.addAll(it)
+                                    }
+                                }
+                            }
+                        }
+                    } else generalViewModel.showSnackbar(
+                        it.message?:"Access MCP Server ${toolMaker.name} Error",
+                        actionLabel = "Error",
+                        withDismissAction = true
+                    )
+                }
+            }else getPlatform().modifyToolMaker(
+                maker.id,
+                null,
+                null,
+                status
+            ){
+                if(it.code==0) it.data?.let {
+                        maker ->
+                    getPlatform().connectToolMakerToStudio(
+                        studioId = studioId,
+                        makerId = maker.id,
+                        agentId = maker.agentId
+                    ) {
+                        updateUIState(it.code)
+                        if(it.code==0) it.data?.let {
+                            _toolMakers[it.id] = it
+                            if (toolMaker.id == it.id) {
+                                toolMaker = it
+                                if(status==1)getPlatform().queryMCPToolsFromStudio(
+                                    studioId,
+                                    it.id
+                                ){
+                                    if(it.code==0) it.data?.let {
+                                        if(toolMaker.id==maker.id){
+                                            tools.addAll(it)
+                                        }
+                                    }
+                                }
+                            }
+                        } else generalViewModel.showSnackbar(
+                            it.message?:"Access MCP Server ${toolMaker.name} Error",
+                            actionLabel = "Error",
+                            withDismissAction = true
+                        )
+                    }
+                } else updateUIState(it.code)
+            }
+        }
+    }
     fun queryMCPTools(toolMaker: AIPortToolMaker){
         if(toolMaker.id!=0L){
             uiState = UIState.Loading
