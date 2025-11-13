@@ -17,7 +17,9 @@ open class AIPortToolMaker {
     var userId: Long = 0
     var teamId: Long = 0
     var templateId: Long =0
-
+    fun virtual():Boolean{
+        return type == TYPE_VIRTUAL
+    }
     companion object {
         const val TYPE_VIRTUAL = 0
         const val TYPE_MCP = 1000

@@ -74,6 +74,7 @@ class JVMPlatform : Platform, NotificationHandler{
         usl: String,
         parameters: Map<String, JsonElement>,
         onResponse: (resp: String) -> Unit) {
+
         CoroutineScope(Dispatchers.IO).launch {
             MCPDirectStudio.httpRequest(usl, Json.encodeToString(parameters)) {
                 println("httpRequest")

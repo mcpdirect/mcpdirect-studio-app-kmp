@@ -25,7 +25,6 @@ val JSON = Json{
     ignoreUnknownKeys = true
 }
 interface Platform {
-
     val name: String
     val type: Int
 //    val currentMilliseconds:Long
@@ -144,14 +143,16 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolAgent>>(it))
         }
     }
-    fun queryTools(userId:Long?=null,status:Int?=null,agentId:Long?=null,makerId:Long?=null,name:String?=null,
+    fun queryTools(userId:Long?=null,status:Int?=null,agentId:Long?=null,makerId:Long?=null,
+                   name:String?=null,lastUpdated:Long?=null,
                    onResponse: (resp: AIPortServiceResponse<List<AIPortTool>>) -> Unit) {
         hstpRequest("$aitoolsUSL/tool/query", mapOf(
             "userId" to JsonPrimitive(userId),
             "name" to JsonPrimitive(name),
             "agentId" to JsonPrimitive(agentId),
             "status" to JsonPrimitive(status),
-            "makerId" to JsonPrimitive(makerId)
+            "makerId" to JsonPrimitive(makerId),
+            "lastUpdated" to JsonPrimitive(lastUpdated)
         )){
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTool>>>(it))
         }

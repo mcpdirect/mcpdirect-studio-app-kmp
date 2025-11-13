@@ -5,9 +5,11 @@ All notable changes to this project will be documented in this file.
 ## 2025-11-12
 ### Added
 - New restart-circle.svg icon for restart functionality
+- New repository classes for data management (TeamRepository, ToolRepository, UserRepository)
+- New view models for tool management (ToolListViewModel, ToolMakerListViewModel)
+- ToolMakerListView composable for displaying tool makers
 
 ### Changed
-- Added compose material3 dependency to build.gradle.kts
 - Enhanced Platform.kt with serverStatus parameter for modifyMCPServerForStudio function
 - Updated MyStudioScreen.kt and ConnectMCPScreen.kt with improved server configuration handling
 - Enhanced MyStudioViewModel.kt and ConnectMCPViewModel.kt with optional onResponse parameter
@@ -18,6 +20,19 @@ All notable changes to this project will be documented in this file.
 - Added modifyToolMakerStatus functionality to MyStudioViewModel.kt for server status management
 - Reverted material3 dependency comment in build.gradle.kts
 - Fixed conditional logic in ConnectMCPScreen.kt for proper UI element display
+- Enhanced Platform.kt with queryTools function to include lastUpdated parameter
+- Enhanced GeneralViewModel.kt with loading functions
+- Updated MyStudioViewModel.kt with repository integration
+- Added virtual() function to AIPortToolMaker.kt
+- Updated TeamRepository.kt with team data management functions
+- Updated ToolRepository.kt with tool and tool maker data management functions
+- Updated UserRepository.kt with user data management functions
+- Enhanced MCPToolsScreen.kt with tool list and tool maker list view models
+- Updated MCPToolsViewModel.kt with simplified implementation
+- Enhanced ToolListView.kt with detailed tool information display
+- Updated ToolListViewModel.kt with proper tool loading and management
+- Updated ToolMakerListViewModel.kt with proper tool maker loading and management
+- Minor update to Platform.jvm.kt
 
 ## 2025-11-10
 ### Changed

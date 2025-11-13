@@ -7,17 +7,33 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
+import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 //val myStudioViewModel = MyStudioViewModel()
-class MyStudioViewModel: ViewModel() {
+class MyStudioViewModel(
+//    private val userRepository: UserRepository
+): ViewModel() {
+    // 将 Map.values 转为 StateFlow<List<AIPortUser>>
+//    val users: StateFlow<List<AIPortUser>> = userRepository.users
+//        .map { it.values.toList() }      // 转为 List
+//        .stateIn(
+//            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
+//            started = SharingStarted.WhileSubscribed(5000), // 按需启动
+//            initialValue = emptyList()
+//        )
     var uiState by mutableStateOf<UIState>(UIState.Idle)
     var toolAgent by mutableStateOf(AIPortToolAgent("",-1))
         private  set

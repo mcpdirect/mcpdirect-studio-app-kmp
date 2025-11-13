@@ -7,10 +7,7 @@ import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
-import ai.mcpdirect.studio.app.model.account.AIPortUser
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
 import ai.mcpdirect.studio.app.virtualmcp.VirtualToolMakerDetailView
 import ai.mcpdirect.studio.app.virtualmcp.VirtualToolMakerListView
 import androidx.compose.foundation.clickable
@@ -34,6 +31,8 @@ private var dialog by mutableStateOf(MCPToolsScreenDialog.NONE)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MCPToolsScreen() {
+    val toolListViewModel = remember { ToolListViewModel() }
+    val toolMakerListViewModel = remember { ToolMakerListViewModel() }
     LaunchedEffect(null){
         generalViewModel.refreshToolAgents()
         generalViewModel.refreshTeams()
@@ -41,34 +40,6 @@ fun MCPToolsScreen() {
     }
     when(dialog){
         MCPToolsScreenDialog.NONE -> {}
-//        MCPToolsScreenDialog.MCPServerTemplate -> {
-//            mcpToolsViewModel.toolMaker?.let {
-//                toolMaker ->
-//                CreateMCPTemplateDialog(
-//                    toolMaker,
-//                    onConfirmRequest = { name,type,agentId,config,inputs ->
-//                        dialog = MCPToolsScreenDialog.NONE
-//                        mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
-//                    },
-//                    onDismissRequest = {
-//                        dialog = MCPToolsScreenDialog.NONE
-//                    }
-//                )
-////                mcpToolsViewModel.mcpServerConfig?.let {
-////                    CreateMCPTemplateDialog(
-////                        toolMaker,
-////                        config = it,
-////                        onConfirmRequest = { name,type,agentId,config,inputs ->
-////                            dialog = MCPToolsScreenDialog.NONE
-////                            mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
-////                        },
-////                        onDismissRequest = {
-////                            dialog = MCPToolsScreenDialog.NONE
-////                        }
-////                    )
-////                }
-//            }
-//        }
     }
     Row(Modifier.fillMaxSize()){
         var currentTabIndex by remember { mutableStateOf(0) }
@@ -90,7 +61,11 @@ fun MCPToolsScreen() {
 
             // Content based on selected tab
             when (currentTabIndex) {
-                0 -> MCPServerList()
+//                0 -> MCPServerList(toolListViewModel)
+                0 -> ToolMakerListView(
+                    toolMakerListViewModel,
+                    toolListViewModel
+                )
                 1 -> VirtualToolMakerListView()
             }
 
@@ -99,7 +74,8 @@ fun MCPToolsScreen() {
 //        MCPServerList(Modifier.width(300.dp))
         StudioCard(Modifier.fillMaxSize().padding(8.dp).weight(2.0f)) {
             when (currentTabIndex) {
-                0 -> MCPServerItem()
+//                0 -> MCPServerItem(toolListViewModel)
+                0 -> ToolListView(toolListViewModel)
                 1 -> VirtualToolMakerDetailView()
             }
 //            MCPServerItem()
@@ -108,7 +84,10 @@ fun MCPToolsScreen() {
 }
 
 @Composable
-fun MCPServerList(modifier: Modifier = Modifier){
+fun MCPServerList(
+    toolListViewModel: ToolListViewModel,
+    modifier: Modifier = Modifier
+){
     LaunchedEffect(null){
         generalViewModel.refreshToolMakers()
     }
@@ -121,6 +100,7 @@ fun MCPServerList(modifier: Modifier = Modifier){
                 selected = viewModel.toolMaker?.id == it.id,
                 modifier = Modifier.clickable{
                     viewModel.toolMaker(it)
+                    toolListViewModel.toolMaker(it)
                 },
                 overlineContent = {
                     Row {
@@ -188,24 +168,11 @@ fun MCPServerList(modifier: Modifier = Modifier){
 }
 
 @Composable
-fun MCPServerItem(){
+fun MCPServerItem(
+    viewModel: ToolListViewModel
+){
     mcpToolsViewModel.toolMaker?.let {
-//        if(it.teamId==0L&&it.type != AIPortToolMaker.TYPE_VIRTUAL) {
-//            generalViewModel.topBarActions = {
-//                TextButton(onClick = {
-//                    dialog = MCPToolsScreenDialog.MCPServerTemplate
-//                    mcpToolsViewModel.getMCPServerConfig(it.id)
-//                }) {
-//                    Text("Create MCP Server Template")
-//                }
-//            }
-//        } else generalViewModel.topBarActions = {}
-
-        Column {
-            Row {
-
-            }
-        }
+        ToolListView(viewModel)
     }
 }
 
