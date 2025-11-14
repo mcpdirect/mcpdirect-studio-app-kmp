@@ -37,7 +37,7 @@ class ToolMakerListViewModel: ViewModel() {
     }
     fun refreshTeams(){
         viewModelScope.launch {
-            TeamRepository.loadTeams()
+            TeamRepository.loadTeams(true)
         }
     }
     fun team(teamId:Long,onResponse:(code:Int,message:String?,data: AIPortTeam?)->Unit){

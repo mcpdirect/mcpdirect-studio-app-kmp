@@ -40,6 +40,14 @@ class ToolListViewModel: ViewModel() {
             ToolRepository.loadTools(userId=maker.userId,makerId = maker.id)
         }
     }
+    fun refreshTools(){
+        tool = null
+        _toolMaker.value?.let {
+            viewModelScope.launch {
+                ToolRepository.loadTools(userId=it.userId,makerId = it.id,force = true)
+            }
+        }
+    }
     fun tool(tool: AIPortTool){
         viewModelScope.launch {
             ToolRepository.loadTool(toolId = tool.id) {

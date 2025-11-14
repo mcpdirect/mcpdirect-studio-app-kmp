@@ -15,8 +15,12 @@ plugins {
 val appVersion = "2.1.2"
 val generatedSrcDirPath = "generated/compose/srcGenerator"
 val mcpdirectGatewayEndpoint = System.getenv("AI_MCPDIRECT_GATEWAY_ENDPOINT")?:"http://localhost:8080/"
+println("AI_MCPDIRECT_GATEWAY_ENDPOINT=$mcpdirectGatewayEndpoint")
 val mcpdirectHSTPWebport = System.getenv("AI_MCPDIRECT_HSTP_WEBPORT")?:"http://localhost:8080/hstp/"
+println("AI_MCPDIRECT_HSTP_WEBPORT=$mcpdirectHSTPWebport")
 val mcpdirectHSTPServiceGateway = System.getenv("AI_MCPDIRECT_HSTP_SERVICE_GATEWAY")?:"ssl://localhost:53100"
+println("AI_MCPDIRECT_HSTP_SERVICE_GATEWAY=$mcpdirectHSTPServiceGateway")
+
 //tasks{
 //    register("generateAppInfo") {
 //        println("tasks.register(\"generateAppInfo\")")

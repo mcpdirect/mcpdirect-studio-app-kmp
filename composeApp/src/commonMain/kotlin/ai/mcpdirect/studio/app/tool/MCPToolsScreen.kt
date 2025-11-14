@@ -1,9 +1,11 @@
 package ai.mcpdirect.studio.app.tool
 
 import ai.mcpdirect.studio.app.auth.authViewModel
+import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.StudioIcon
 import ai.mcpdirect.studio.app.compose.StudioListItem
+import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
@@ -35,7 +37,7 @@ fun MCPToolsScreen() {
     val toolMakerListViewModel = remember { ToolMakerListViewModel() }
     LaunchedEffect(null){
         generalViewModel.refreshToolAgents()
-        generalViewModel.refreshTeams()
+//        generalViewModel.refreshTeams()
 //        generalViewModel.topBarActions = {}
     }
     when(dialog){
@@ -71,14 +73,26 @@ fun MCPToolsScreen() {
 
         }
 
-//        MCPServerList(Modifier.width(300.dp))
         StudioCard(Modifier.fillMaxSize().padding(8.dp).weight(2.0f)) {
             when (currentTabIndex) {
 //                0 -> MCPServerItem(toolListViewModel)
-                0 -> ToolListView(toolListViewModel)
+                0 -> ToolListView(
+                    toolListViewModel,
+                    {
+                        StudioActionBar(
+                            actions = {
+                                Spacer(Modifier.weight(1.0f))
+                                TooltipIconButton(
+                                    Res.drawable.refresh,
+                                    contentDescription = "Refresh Tools",
+                                    onClick = {toolListViewModel.refreshTools()}
+                                )
+                            }
+                        )
+                    }
+                )
                 1 -> VirtualToolMakerDetailView()
             }
-//            MCPServerItem()
         }
     }
 }
@@ -167,15 +181,14 @@ fun MCPServerList(
     }
 }
 
-@Composable
-fun MCPServerItem(
-    viewModel: ToolListViewModel
-){
-    mcpToolsViewModel.toolMaker?.let {
-        ToolListView(viewModel)
-    }
-}
-
+//@Composable
+//fun MCPServerItem(
+//    viewModel: ToolListViewModel
+//){
+//    mcpToolsViewModel.toolMaker?.let {
+//        ToolListView(viewModel)
+//    }
+//}
 //@Composable
 //fun MCPTemplateList(){
 //    val viewModel = mcpTemplateListViewModel

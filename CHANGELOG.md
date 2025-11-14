@@ -33,6 +33,14 @@ All notable changes to this project will be documented in this file.
 - Updated ToolListViewModel.kt with proper tool loading and management
 - Updated ToolMakerListViewModel.kt with proper tool maker loading and management
 - Minor update to Platform.jvm.kt
+- Added print statements for gateway endpoint configuration in build.gradle.kts
+- Enhanced Platform.kt queryTeams function to include lastUpdated parameter
+- Updated TeamRepository.kt with time-based caching using Kotlin's time library
+- Updated ToolRepository.kt with time-based caching using Kotlin's time library
+- Added refresh button to ToolListView with StudioActionBar and TooltipIconButton
+- Enhanced ToolListView.kt with conditional rendering when no tool maker is selected
+- Added refreshTools functionality to ToolListViewModel.kt
+- Updated TeamRepository loadTeams call in ToolMakerListViewModel.kt
 
 ## 2025-11-10
 ### Changed

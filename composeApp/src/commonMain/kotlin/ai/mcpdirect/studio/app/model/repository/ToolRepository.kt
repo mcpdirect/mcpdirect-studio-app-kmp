@@ -12,39 +12,41 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.collections.set
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 object ToolRepository {
     private val loadMutex = Mutex()
-    private val duration = 10000
-    private var _makerLastUpdated = 0L
+    private val _duration = 5.seconds
+    private var _makerLastQuery:TimeMark? = null
     private val _toolMakers = MutableStateFlow<Map<Long, AIPortToolMaker>>(emptyMap())
     val toolMakers: StateFlow<Map<Long, AIPortToolMaker>> = _toolMakers
 //    private val _virtualToolMakers = MutableStateFlow<Map<Long, AIPortToolMaker>>(emptyMap())
 //    val virtualToolMakers: StateFlow<Map<Long, AIPortToolMaker>> = _virtualToolMakers
-    private val _toolsLastUpdates = mutableMapOf<Long,Long>()
+    private val _toolLastQueries = mutableMapOf<Long, TimeMark>()
     private val _tools = MutableStateFlow<Map<Long,AIPortTool>>(emptyMap())
     val tools: StateFlow<Map<Long, AIPortTool>> = _tools
-    suspend fun loadTools(userId:Long=0,makerId: Long,lastQuery:Long=currentMilliseconds()) {
+    suspend fun loadTools(userId:Long=0, makerId: Long,force:Boolean=false) {
         loadMutex.withLock {
-            var lastUpdated = _toolsLastUpdates[makerId]?:0L
-            if(lastUpdated==0L|| lastQuery-lastUpdated>duration) {
+            val now = TimeSource.Monotonic.markNow()
+            val lastQuery = _toolLastQueries[makerId]
+            if(lastQuery==null|| (force&&lastQuery.elapsedNow()>_duration)) {
                 generalViewModel.loading()
                 getPlatform().queryTools(
                     userId = userId,
                     makerId = makerId,
-                    lastUpdated = lastUpdated
+                    lastUpdated = if(lastQuery==null) 0L else currentMilliseconds()
                 ) {
                     if (it.successful()) it.data?.let { tools ->
                         _tools.update { map ->
                             map.toMutableMap().apply {
                                 for (tool in tools) {
                                     put(tool.id, tool)
-                                    if (tool.lastUpdated > lastUpdated)
-                                        lastUpdated = tool.lastUpdated
                                 }
                             }
                         }
-                        _toolsLastUpdates[makerId] = lastUpdated
+                        _toolLastQueries[makerId] = now
                     }
                     generalViewModel.loading(it.code)
                 }
@@ -75,23 +77,23 @@ object ToolRepository {
             }
     }
 
-    suspend fun loadToolMakers(lastQuery:Long=currentMilliseconds()){
+    suspend fun loadToolMakers(force: Boolean=false){
         loadMutex.withLock {
-            if(_makerLastUpdated==0L|| lastQuery-_makerLastUpdated>duration) {
+            val now = TimeSource.Monotonic.markNow()
+            if(_makerLastQuery==null|| (force&& _makerLastQuery!!.elapsedNow()>_duration)) {
                 generalViewModel.loading()
                 getPlatform().queryToolMakers(
-                    lastUpdated = _makerLastUpdated,
+                    lastUpdated = if(_makerLastQuery==null) 0L else currentMilliseconds(),
                 ) {
                     if (it.successful()) it.data?.let { makers ->
                         _toolMakers.update { map ->
                             map.toMutableMap().apply {
                                 for (maker in makers) {
                                     put(maker.id, maker)
-                                    if (maker.lastUpdated > _makerLastUpdated)
-                                        _makerLastUpdated = maker.lastUpdated
                                 }
                             }
                         }
+                        _makerLastQuery = now
                     }
                     generalViewModel.loading(it.code)
                 }

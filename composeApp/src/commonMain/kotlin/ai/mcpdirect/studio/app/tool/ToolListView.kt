@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.tool
 
 import ai.mcpdirect.mcpdirectstudioapp.JSON
+import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioIcon
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.virtualmcp.VirtualToolMakerListView
@@ -41,72 +42,77 @@ fun ToolListView(
     actionBar: (@Composable (() -> Unit))?=null,
     leadingContent: (@Composable ((AIPortTool) -> Unit))?=null
 ){
-    val tools by viewModel.tools.collectAsState()
-    Column{
-        actionBar?.let {
-            it
-            HorizontalDivider()
-        }
-        Row {
-            LazyColumn(Modifier.weight(2.0f)) {
-                items(tools) {
-                    ListItem(
-                        modifier = Modifier.clickable {
-                            viewModel.tool(it)
-                        },
-                        leadingContent = if (leadingContent != null) {
-                            {leadingContent(it)}
-                        } else null,
-                        headlineContent = { Text(it.name) },
-                        trailingContent = {
-                            viewModel.tool?.let { tool ->
-                                if(tool.id==it.id) Icon(
-                                    painterResource(Res.drawable.keyboard_arrow_right),
-                                    contentDescription = "Details"
+    val toolMaker by viewModel.toolMaker.collectAsState()
+    if(toolMaker!=null) {
+        val tools by viewModel.tools.collectAsState()
+        Column {
+            actionBar?.let {
+                it()
+                HorizontalDivider()
+            }
+            Row {
+                LazyColumn(Modifier.weight(2.0f)) {
+                    items(tools) {
+                        ListItem(
+                            modifier = Modifier.clickable {
+                                viewModel.tool(it)
+                            },
+                            leadingContent = if (leadingContent != null) {
+                                { leadingContent(it) }
+                            } else null,
+                            headlineContent = { Text(it.name) },
+                            trailingContent = {
+                                viewModel.tool?.let { tool ->
+                                    if (tool.id == it.id) Icon(
+                                        painterResource(Res.drawable.keyboard_arrow_right),
+                                        contentDescription = "Details"
+                                    )
+                                }
+                            }
+                        )
+                    }
+                }
+                viewModel.tool?.let {
+                    val json = JSON.parseToJsonElement(it.metaData)
+                    val description = json.jsonObject["description"]?.jsonPrimitive?.content
+                    val prettyJson = Json { prettyPrint = true }
+                    val requestSchema = prettyJson.encodeToString(
+                        JSON.parseToJsonElement(json.jsonObject["requestSchema"]?.jsonPrimitive?.content ?: "{}")
+                    )
+                    var currentTabIndex by remember { mutableStateOf(0) }
+                    VerticalDivider()
+                    Column(Modifier.weight(3.0f)) {
+
+                        val tabs = listOf("Description", "Input Schema")
+                        SecondaryTabRow(selectedTabIndex = currentTabIndex) {
+                            tabs.forEachIndexed { index, title ->
+                                Tab(
+                                    selected = currentTabIndex == index,
+                                    onClick = {
+                                        currentTabIndex = index
+                                    },
+                                    text = { Text(title) }
                                 )
                             }
                         }
-                    )
-                }
-            }
-            viewModel.tool?.let{
-                val json = JSON.parseToJsonElement(it.metaData)
-                val description = json.jsonObject["description"]?.jsonPrimitive?.content
-                val prettyJson = Json { prettyPrint = true }
-                val requestSchema  = prettyJson.encodeToString(
-                    JSON.parseToJsonElement(json.jsonObject["requestSchema"]?.jsonPrimitive?.content?:"{}")
-                )
-                var currentTabIndex by remember { mutableStateOf(0) }
-                VerticalDivider()
-                Column(Modifier.weight(3.0f)) {
+                        val scrollState = rememberScrollState()
+                        // Content based on selected tab
+                        when (currentTabIndex) {
+                            0 -> Text(
+                                text = description ?: "",
+                                modifier = Modifier.padding(8.dp).fillMaxSize().verticalScroll(scrollState)
+                            )
 
-                    val tabs = listOf("Description", "Input Schema")
-                    SecondaryTabRow(selectedTabIndex = currentTabIndex) {
-                        tabs.forEachIndexed { index, title ->
-                            Tab(
-                                selected = currentTabIndex == index,
-                                onClick = {
-                                    currentTabIndex = index
-                                },
-                                text = { Text(title) }
+                            1 -> Text(
+                                text = requestSchema,
+                                modifier = Modifier.padding(8.dp).fillMaxSize().verticalScroll(scrollState)
                             )
                         }
                     }
-                    val scrollState = rememberScrollState()
-                    // Content based on selected tab
-                    when (currentTabIndex) {
-                        0 -> Text(
-                            text = description?:"",
-                            modifier = Modifier.padding(8.dp).fillMaxSize().verticalScroll(scrollState)
-                        )
-                        1 -> Text(
-                            text = requestSchema?:"",
-                            modifier = Modifier.padding(8.dp).fillMaxSize().verticalScroll(scrollState)
-                        )
-                    }
-
                 }
             }
         }
+    } else StudioBoard {
+        Text("Select a MCP Server to view")
     }
 }

@@ -257,9 +257,11 @@ interface Platform {
         }
     }
 
-    fun queryTeams(onResponse: (resp: AIPortServiceResponse<List<AIPortTeam>>) -> Unit) {
+    fun queryTeams(lastUpdated: Long?=null,onResponse: (resp: AIPortServiceResponse<List<AIPortTeam>>) -> Unit) {
         hstpRequest(
-            "$accountUsl/team/query", mapOf()
+            "$accountUsl/team/query", mapOf(
+                "lastUpdated" to JsonPrimitive(lastUpdated)
+            )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeam>>>(it))
         }
