@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-14
+### Added
+- New hubspot.svg icon resource
+
+### Changed
+- Bumped app version from 2.1.2 to 2.2.0 in build.gradle.kts
+- Updated mcpdirect-studio-core dependency from 2.1.2-SNAPSHOT to 2.2.0-SNAPSHOT
+
 ## 2025-11-12
 ### Added
 - New restart-circle.svg icon for restart functionality
