@@ -12,6 +12,7 @@ import ai.mcpdirect.studio.app.mcp.ConfigMCPServerFromTemplatesDialog
 import ai.mcpdirect.studio.app.mcp.ConnectMCPServerDialog
 import ai.mcpdirect.studio.app.mcp.EditMCPServerNameDialog
 import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
+import ai.mcpdirect.studio.app.mcp.openapi.ConnectOpenAPIServerDialog
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.account.AIPortUser
@@ -38,7 +39,7 @@ import org.jetbrains.compose.resources.painterResource
 enum class MyStudioScreenDialog {
     None,
     ConnectMCP,
-//    ConfigMCP,
+    ConnectOpenAPI,
     ConnectMCPTemplate,
     CreateMCPTemplate
 }
@@ -99,29 +100,6 @@ fun MyStudioScreen(){
                 myStudioViewModel.connectMCPServer(configs)
             }
         )
-//        MyStudioScreenDialog.ConfigMCP -> {
-//            when(val toolMaker = myStudioViewModel.toolMaker){
-//                is MCPServer -> ConfigMCPServerDialog(
-//                    toolMaker,
-//                    onDismissRequest = { dialog = MyStudioScreenDialog.None },
-//                    onConfirmRequest = { it ->
-//                        if(toolMaker.id<0) myStudioViewModel.configMCPServer(it)
-//                        else {
-//                            val config = AIPortMCPServerConfig()
-//                            config.transport = it.transport
-//                            config.url = it.url
-//                            config.command = it.command
-//                            config.args = JSON.encodeToJsonElement(it.args).toString()
-//                            config.env = JSON.encodeToJsonElement(it.env).toString()
-//                            myStudioViewModel.configMCPServer(
-//                                myStudioViewModel.toolAgent,
-//                                config
-//                            )
-//                        }
-//                    }
-//                )
-//            }
-//        }
         MyStudioScreenDialog.ConnectMCPTemplate -> {
             mcpTemplateListViewModel.toolMakerTemplate?.let {
                 template ->
@@ -164,6 +142,13 @@ fun MyStudioScreen(){
                 onDismissRequest = {
                     dialog = MyStudioScreenDialog.None
                 }
+            )
+        }
+        MyStudioScreenDialog.ConnectOpenAPI ->{
+            ConnectOpenAPIServerDialog(
+                toolAgent = myStudioViewModel.toolAgent,
+                onDismissRequest = {dialog=MyStudioScreenDialog.None},
+                onConfirmRequest = {}
             )
         }
     }
@@ -255,11 +240,34 @@ fun ToolMakerListView(
                     }
                     Spacer(Modifier.width(8.dp))
                 }
-                Button(
-                    onClick = { onDialogRequest(MyStudioScreenDialog.ConnectMCP) }
-                ) {
-                    Text("Connect MCP Server")
+                var showMenu by remember { mutableStateOf(false)}
+                TextButton(onClick = {
+                    showMenu = true
+                }) {
+                    Text("Connect MCP")
+                    Icon(
+                        painterResource(Res.drawable.keyboard_arrow_right),
+                        contentDescription = ""
+                    )
                 }
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = {showMenu=false}
+                ){
+                    DropdownMenuItem(
+                        { Text("MCP Server") },
+                        onClick = { onDialogRequest(MyStudioScreenDialog.ConnectMCP) }
+                    )
+                    DropdownMenuItem(
+                        { Text("OpenAPI Server") },
+                        onClick = { onDialogRequest(MyStudioScreenDialog.ConnectOpenAPI) }
+                    )
+                }
+            }
+        }
+        DisposableEffect(null){
+            onDispose {
+                generalViewModel.topBarActions = {}
             }
         }
         DisposableEffect(null){

@@ -18,12 +18,12 @@ import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerTemplateScreen
-import ai.mcpdirect.studio.app.template.MCPTemplateScreen
 import ai.mcpdirect.studio.app.theme.purple.AppTypography
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import ai.mcpdirect.studio.app.tool.MCPToolsScreen
 import ai.mcpdirect.studio.app.tool.ToolDetailScreen
 import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
+import ai.mcpdirect.studio.app.mcp.openapi.OpenAPIToolMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
 import androidx.compose.foundation.layout.Arrangement
@@ -133,6 +133,9 @@ fun App(){
                         Screen.MCPTools -> {
                             MCPToolsScreen()
                         }
+//                        Screen.OpenAPIMCP -> {
+//                            OpenAPIToolMakerScreen()
+//                        }
                     }
                 }
             } else Row(

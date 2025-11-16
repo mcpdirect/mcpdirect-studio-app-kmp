@@ -14,6 +14,7 @@ import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.dashboard.DashboardScreen
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.ConnectMCPScreen
+import ai.mcpdirect.studio.app.mcp.openapi.OpenAPIToolMakerScreen
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
 import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
@@ -97,7 +98,9 @@ fun App(){
                             ToolDetailScreen()
                         }
                         Screen.MCPTools -> MCPToolsScreen()
-
+//                        Screen.OpenAPIMCP -> {
+//                            OpenAPIToolMakerScreen()
+//                        }
                     }
                 }
             } else Row(

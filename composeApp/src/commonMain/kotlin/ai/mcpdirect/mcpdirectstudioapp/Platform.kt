@@ -3,6 +3,8 @@ package ai.mcpdirect.mcpdirectstudioapp
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
+import ai.mcpdirect.studio.app.model.OpenAPIServer
+import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.account.*
 import ai.mcpdirect.studio.app.model.aitool.*
 import kotlinx.serialization.json.Json
@@ -169,6 +171,26 @@ interface Platform {
         httpRequest("studio.console@$studioId/mcp_server/connect",
             mapOf("mcpServerConfigs" to JSON.encodeToJsonElement(configs))) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
+        }
+    }
+    fun parseOpenAPIFromStudio(studioId:Long, doc:String?,docUri:String?,
+                                 onResponse: (resp: AIPortServiceResponse<OpenAPIServerConfig>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/openapi/parse",
+            mapOf(
+                "doc" to JsonPrimitive(doc),
+                "docUri" to JsonPrimitive(docUri)
+            )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServerConfig>>(it))
+        }
+    }
+    fun connectOpenAPIFromStudio(studioId:Long, name:String,config:OpenAPIServerConfig,
+                               onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/openapi/parse",
+            mapOf(
+                "openAPIServerName" to JsonPrimitive(name),
+                "openAPIServerConfig" to Json.encodeToJsonElement(config)
+            )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
         }
     }
     fun connectToolMakerToStudio(studioId:Long, makerId:Long,agentId:Long,

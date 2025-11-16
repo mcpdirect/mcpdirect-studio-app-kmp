@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-16
+### Added
+- New openapi.svg icon resource
+- ConnectOpenAPIServerDialog composable for connecting OpenAPI servers
+- ConnectOpenAPIServerViewModel for OpenAPI server connection state management
+- OpenAPIToolMakerScreen composable for OpenAPI tool maker UI
+- OpenAPIToolMakerViewModel for OpenAPI tool maker state management
+- OpenAPIServer model class
+- OpenAPIServerConfig model class
+- OpenAPI MCP string resource in strings.xml
+- Platform interface functions for parsing and connecting OpenAPI from studio
+- ConnectOpenAPI dialog option in MyStudioScreen dropdown menu
+
+### Changed
+- Modified Screen.kt to add OpenAPI MCP screen option (commented out)
+- Updated MyStudioScreen.kt to include ConnectOpenAPI dialog functionality
+- Updated App.kt for both JVM and web platforms to include OpenAPIToolMakerScreen (commented out)
+- Updated MCPToolsScreen.kt to remove some deprecated components
+- Updated ToolMakerListView.kt to include necessary imports for dropdown menu
+- Added OpenAPI related functionality in Platform.kt
+
 ## 2025-11-14
 ### Added
 - New hubspot.svg icon resource
