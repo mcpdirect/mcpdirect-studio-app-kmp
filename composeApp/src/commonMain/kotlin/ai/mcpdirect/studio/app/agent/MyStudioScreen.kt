@@ -148,7 +148,9 @@ fun MyStudioScreen(){
             ConnectOpenAPIServerDialog(
                 toolAgent = myStudioViewModel.toolAgent,
                 onDismissRequest = {dialog=MyStudioScreenDialog.None},
-                onConfirmRequest = {}
+                onConfirmRequest = { name,config->
+                    dialog = MyStudioScreenDialog.None
+                }
             )
         }
     }

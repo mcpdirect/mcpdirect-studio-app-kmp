@@ -5,6 +5,8 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
+import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
+import ai.mcpdirect.studio.app.model.StudioToolMakers
 import ai.mcpdirect.studio.app.model.account.*
 import ai.mcpdirect.studio.app.model.aitool.*
 import kotlinx.serialization.json.Json
@@ -173,26 +175,6 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
         }
     }
-    fun parseOpenAPIFromStudio(studioId:Long, doc:String?,docUri:String?,
-                                 onResponse: (resp: AIPortServiceResponse<OpenAPIServerConfig>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/openapi/parse",
-            mapOf(
-                "doc" to JsonPrimitive(doc),
-                "docUri" to JsonPrimitive(docUri)
-            )) {
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServerConfig>>(it))
-        }
-    }
-    fun connectOpenAPIFromStudio(studioId:Long, name:String,config:OpenAPIServerConfig,
-                               onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/openapi/parse",
-            mapOf(
-                "openAPIServerName" to JsonPrimitive(name),
-                "openAPIServerConfig" to Json.encodeToJsonElement(config)
-            )) {
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
-        }
-    }
     fun connectToolMakerToStudio(studioId:Long, makerId:Long,agentId:Long,
                                  onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
         httpRequest("studio.console@$studioId/tool_maker/connect",
@@ -240,6 +222,67 @@ interface Platform {
         }
     }
 
+    fun parseOpenAPIDocFromStudio(studioId:Long, doc:String,
+                                  onResponse: (resp: AIPortServiceResponse<OpenAPIServerDoc>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/openapi/parse",
+            mapOf(
+                "doc" to JsonPrimitive(doc)
+            )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServerDoc>>(it))
+        }
+    }
+    fun connectOpenAPIServerToStudio(studioId:Long, name:String,config:OpenAPIServerConfig,
+                                     onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/openapi/parse",
+            mapOf(
+                "openAPIServerName" to JsonPrimitive(name),
+                "openAPIServerConfig" to Json.encodeToJsonElement(config)
+            )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
+        }
+    }
+    fun modifyOpenAPIServerForStudio(studioId:Long, serverId:Long,
+                                 serverName:String?=null,serverStatus:Int?=null,
+                                 serverConfig:OpenAPIServerConfig?=null,
+                                 onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/modify",
+            mapOf(
+                "openapiServerId" to JsonPrimitive(serverId),
+                "openapiServerName" to JsonPrimitive(serverName),
+                "openapiServerStatus" to JsonPrimitive(serverStatus),
+                "openapiServerConfig" to JSON.encodeToJsonElement(serverConfig)
+            )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
+        }
+    }
+    fun queryOpenAPIServersFromStudio(studioId:Long, onResponse: (resp: AIPortServiceResponse<List<OpenAPIServer>>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/openapi/query", mapOf()) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<OpenAPIServer>>>(it))
+        }
+    }
+    fun queryOpenAPIToolsFromStudio(studioId:Long, serverId:Long,
+                                onResponse: (resp: AIPortServiceResponse<List<AIPortTool>>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/openapi/tool/query", mapOf(
+            "openapiServerId" to JsonPrimitive(serverId)
+        )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTool>>>(it))
+        }
+    }
+    fun publishOpenAPIToolsForStudio(studioId:Long, serverId:Long,
+                                 onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/openapi/tool/publish", mapOf(
+            "openapiServerId" to JsonPrimitive(serverId)
+        )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
+        }
+    }
+
+    fun queryToolMakersFromStudio(studioId:Long,
+                                  onResponse: (resp: AIPortServiceResponse<StudioToolMakers>) -> Unit){
+        httpRequest("studio.console@$studioId/tool_maker/query", mapOf()) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<StudioToolMakers>>(it))
+        }
+    }
     fun queryAccessKeys(onResponse: (resp: AIPortServiceResponse<List<AIPortAccessKey>>) -> Unit) {
         hstpRequest("$accountUsl/access_key/query", mapOf()){
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortAccessKey>>>(it))

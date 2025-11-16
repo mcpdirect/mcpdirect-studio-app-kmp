@@ -5,6 +5,7 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServerConfig
+import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import androidx.compose.runtime.derivedStateOf
@@ -41,17 +42,4 @@ class MCPTemplateListViewModel: ViewModel() {
             }
         }
     }
-//    fun queryToolMakerTemplates(){
-//        viewModelScope.launch {
-//            getPlatform().queryToolMakerTemplates {
-//                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
-//                    it.data?.let {
-//                        it.forEach {
-//                            _toolMakerTemplates[it.id] = it
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
 }

@@ -14,14 +14,22 @@ All notable changes to this project will be documented in this file.
 - OpenAPI MCP string resource in strings.xml
 - Platform interface functions for parsing and connecting OpenAPI from studio
 - ConnectOpenAPI dialog option in MyStudioScreen dropdown menu
+- OpenAPIServerDoc model for OpenAPI server documentation
+- StudioToolMakers model for studio tool makers
+- StudioRepository for studio-related data management
 
 ### Changed
-- Modified Screen.kt to add OpenAPI MCP screen option (commented out)
-- Updated MyStudioScreen.kt to include ConnectOpenAPI dialog functionality
-- Updated App.kt for both JVM and web platforms to include OpenAPIToolMakerScreen (commented out)
-- Updated MCPToolsScreen.kt to remove some deprecated components
-- Updated ToolMakerListView.kt to include necessary imports for dropdown menu
-- Added OpenAPI related functionality in Platform.kt
+- Modified Platform.kt to update OpenAPI-related functions
+- Updated MyStudioScreen.kt to properly handle ConnectOpenAPIServerDialog onConfirmRequest
+- Enhanced MyStudioViewModel.kt with connectOpenAPIServer functionality
+- Updated ConnectOpenAPIServerDialog.kt with improved UI and functionality
+- Updated ConnectOpenAPIServerViewModel.kt to use OpenAPIServerDoc instead of OpenAPIServerConfig
+- Modified OpenAPIServer.kt to update securities property type
+- Updated OpenAPIServerConfig.kt with simplified structure
+- Enhanced OpenAPIServerDoc.kt with proper serialization support
+- Updated StudioToolMakers.kt with proper structure and serialization
+- Redesigned StudioRepository.kt for studio-specific data management
+- Updated MCPTemplateListViewModel.kt to include OpenAPIServerConfig import
 
 ## 2025-11-14
 ### Added

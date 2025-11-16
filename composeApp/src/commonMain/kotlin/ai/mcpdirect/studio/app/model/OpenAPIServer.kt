@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 class OpenAPIServer: AIPortToolMaker() {
     var url: String? = null
 
-    var securities: Map<String, OpenAPIServerConfig.Security>? = null
+    var securities: Map<String, String>? = null
 }

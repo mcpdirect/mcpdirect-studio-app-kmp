@@ -7,19 +7,14 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
-import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 //val myStudioViewModel = MyStudioViewModel()
@@ -352,6 +347,21 @@ class MyStudioViewModel(
                         it.tags = data.tags
                         _toolMakers[data.id] = data
                     }
+                }
+            }
+        }
+    }
+
+    fun connectOpenAPIServer(name:String, config: OpenAPIServerConfig){
+        viewModelScope.launch {
+            uiState = UIState.Loading
+            getPlatform().connectOpenAPIServerToStudio(toolAgent.engineId,name,config){
+                updateUIState(it.code)
+                if(it.code==0) it.data?.let {
+//                    it.forEach {
+////                        it.id = makerId(it.name)
+//                        _toolMakers[it.id] = it
+//                    }
                 }
             }
         }
