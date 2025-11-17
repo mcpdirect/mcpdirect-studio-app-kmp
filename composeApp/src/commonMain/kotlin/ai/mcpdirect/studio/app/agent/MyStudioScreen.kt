@@ -4,6 +4,7 @@ import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.agent.ToolProviderType.None
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.generalViewModel
@@ -18,6 +19,7 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.MCPTemplateListView
@@ -34,6 +36,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import kotlinx.serialization.json.encodeToJsonElement
 import mcpdirectstudioapp.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 enum class MyStudioScreenDialog {
@@ -46,13 +49,14 @@ enum class MyStudioScreenDialog {
 
 @Composable
 fun MyStudioScreen(){
-    LaunchedEffect(null){
-        generalViewModel.refreshToolAgents()
-        generalViewModel.refreshToolMakers()
-    }
+
     val myStudioViewModel = remember { MyStudioViewModel() }
     var dialog by remember { mutableStateOf(MyStudioScreenDialog.None) }
     var currentTabIndex by remember { mutableStateOf(0) }
+    LaunchedEffect(null){
+        myStudioViewModel.refreshToolAgents()
+        generalViewModel.refreshToolMakers()
+    }
 
     Row(Modifier.fillMaxSize()){
         Column(
@@ -94,10 +98,10 @@ fun MyStudioScreen(){
     when(dialog){
         MyStudioScreenDialog.None ->{}
         MyStudioScreenDialog.ConnectMCP -> ConnectMCPServerDialog(
-            title = myStudioViewModel.toolAgent.name,
+            title = myStudioViewModel.toolAgent.value.name,
             onDismissRequest = {dialog=MyStudioScreenDialog.None},
             onConfirmRequest = { configs ->
-                myStudioViewModel.connectMCPServer(configs)
+                myStudioViewModel.connectMCPServerToStudio(configs)
             }
         )
         MyStudioScreenDialog.ConnectMCPTemplate -> {
@@ -108,20 +112,20 @@ fun MyStudioScreen(){
                     onDismissRequest = {dialog=MyStudioScreenDialog.None},
                     onConfirmRequest = { name, config ->
                         myStudioViewModel.createToolMakerByTemplate(
-                            template.id,template.agentId,name,config
+                            template.agentId,template,name,config
                         ){ code, message, toolMaker ->
                             if(code==0)toolMaker?.let {
-                                generalViewModel.toolAgent(it.agentId){
+                                myStudioViewModel.toolAgent(it.agentId){
                                         code, message, data ->
                                     if(code==0){
                                         data?.let {
-                                            myStudioViewModel.connectToolMaker(
+                                            myStudioViewModel.connectToolMakerToStudio(
                                                 it.engineId,
                                                 toolMaker.id,
                                                 toolMaker.agentId
                                             ){ code, message, mcpServer ->
                                                 generalViewModel.refreshToolMakers()
-                                                myStudioViewModel.queryMCPTools(toolMaker)
+                                                myStudioViewModel.queryMCPToolsFromStudio(toolMaker)
                                             }
                                         }
                                     }
@@ -134,7 +138,7 @@ fun MyStudioScreen(){
         }
         MyStudioScreenDialog.CreateMCPTemplate -> {
             CreateMCPTemplateDialog(
-                myStudioViewModel.toolMaker,
+                myStudioViewModel.toolMaker.value,
                 onConfirmRequest = { name,type,agentId,config,inputs ->
                     dialog = MyStudioScreenDialog.None
                     mcpTemplateListViewModel.createToolMakerTemplate(name,type,agentId,config,inputs)
@@ -146,7 +150,7 @@ fun MyStudioScreen(){
         }
         MyStudioScreenDialog.ConnectOpenAPI ->{
             ConnectOpenAPIServerDialog(
-                toolAgent = myStudioViewModel.toolAgent,
+                toolAgent = myStudioViewModel.toolAgent.value,
                 onDismissRequest = {dialog=MyStudioScreenDialog.None},
                 onConfirmRequest = { name,config->
                     dialog = MyStudioScreenDialog.None
@@ -159,15 +163,19 @@ fun MyStudioScreen(){
 fun ToolAgentListView(
     myStudioViewModel: MyStudioViewModel
 ){
+    LaunchedEffect(myStudioViewModel) {
+        myStudioViewModel.refreshToolAgents()
+    }
     val uiState = myStudioViewModel.uiState
-    val toolAgents = generalViewModel.toolAgents
+    val toolAgents by myStudioViewModel.toolAgents.collectAsState()
+    val toolAgent by myStudioViewModel.toolAgent.collectAsState()
     LazyColumn{
         items(toolAgents){
             println("${it.id},${it.name}")
             if(it.id!=0L&&it.userId== authViewModel.user.id) StudioListItem(
-                selected = it.id==myStudioViewModel.toolAgent.id,
+                selected = it.id==toolAgent.id,
                 modifier = Modifier.clickable(
-                    enabled = uiState !is UIState.Loading && it.id!=myStudioViewModel.toolAgent.id
+                    enabled = uiState !is UIState.Loading && it.id!=toolAgent.id
                 ){
                     if(it.id== getPlatform().toolAgentId)
                         generalViewModel.currentScreen(
@@ -194,6 +202,11 @@ fun ToolAgentListView(
         }
     }
 }
+sealed class ToolProviderType(val title:String,val icon: DrawableResource){
+    object None: ToolProviderType("Select Tool Provider",Res.drawable.more)
+    object MCPServer: ToolProviderType("MCP Server",Res.drawable.plug_connect)
+    object OpenAPIServer: ToolProviderType("OpenAPI Server",Res.drawable.openapi)
+}
 @Composable
 fun ToolMakerListView(
     myStudioViewModel: MyStudioViewModel,
@@ -202,10 +215,11 @@ fun ToolMakerListView(
     var showEditServerNameDialog by remember { mutableStateOf(false) }
     var showEditServerTagsDialog by remember { mutableStateOf(false) }
     var showEditServerConfigDialog by remember { mutableStateOf(false) }
-    val toolAgents = generalViewModel.toolAgents
+    val toolAgents by myStudioViewModel.toolAgents.collectAsState()
     val uriHandler = LocalUriHandler.current
     val uiState = myStudioViewModel.uiState
-    val toolAgent = myStudioViewModel.toolAgent
+    val toolAgent by myStudioViewModel.toolAgent.collectAsState()
+    val toolMaker by myStudioViewModel.toolMaker.collectAsState()
     if(toolAgents.isEmpty()&&getPlatform().type == 0) Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -226,7 +240,7 @@ fun ToolMakerListView(
         Text("Access MCPdirect Studio of ${toolAgent.name} failed")
         Button(
             onClick = {
-                myStudioViewModel.queryMCPServers(toolAgent)
+                myStudioViewModel.queryToolMakersFromStudio(toolAgent)
             }
         ){
             Text("Refresh")
@@ -234,7 +248,7 @@ fun ToolMakerListView(
     } else{
         LaunchedEffect(null) {
             generalViewModel.topBarActions = {
-                if (myStudioViewModel.toolMaker.id > 0L) {
+                if (toolMaker.id > 0L) {
                     Button(onClick = {
                         onDialogRequest(MyStudioScreenDialog.CreateMCPTemplate)
                     }) {
@@ -272,109 +286,212 @@ fun ToolMakerListView(
                 generalViewModel.topBarActions = {}
             }
         }
-        DisposableEffect(null){
-            onDispose {
-                generalViewModel.topBarActions = {}
-            }
-        }
         Row {
+            var toolProviderType by remember { mutableStateOf<ToolProviderType>(None) }
             Column(Modifier.weight(1.0f)) {
+//                var title by remember { mutableStateOf(None.title) }
                 StudioActionBar(
-                    "",
+                    toolProviderType.title,
+                    navigationIcon = {
+                        if(toolProviderType == None){
+                            Icon(painterResource(None.icon),
+                                contentDescription = None.title,
+                                Modifier.padding(12.dp))
+                        }else {
+                            var showMenu by remember { mutableStateOf(false) }
+                            TooltipIconButton(
+                                None.icon,
+                                contentDescription = None.title,
+                                onClick = {
+                                    showMenu = true
+                                }
+                            )
+                            DropdownMenu(
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(ToolProviderType.MCPServer.title) },
+                                    leadingIcon = {
+                                        Icon(painterResource(ToolProviderType.MCPServer.icon),
+                                            ToolProviderType.MCPServer.title)
+                                    },
+                                    onClick = {
+                                        toolProviderType = ToolProviderType.MCPServer
+                                        showMenu = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(ToolProviderType.OpenAPIServer.title) },
+                                    leadingIcon = {
+                                        Icon(
+                                            painterResource(ToolProviderType.OpenAPIServer.icon),
+                                            ToolProviderType.OpenAPIServer.title,
+                                            Modifier.size(24.dp),
+                                        )
+                                    },
+                                    onClick = {
+                                        toolProviderType = ToolProviderType.OpenAPIServer
+                                        showMenu = false
+                                    }
+                                )
+                            }
+                        }
+                    },
                     actions = {
                         TooltipIconButton(
                             Res.drawable.refresh,
-                            contentDescription = "Refresh MCP Servers",
+                            contentDescription = "Refresh",
                             onClick = {
-                                myStudioViewModel.queryMCPServers(
-                                    myStudioViewModel.toolAgent
-                                )
-                            })
-                    }
-                )
-                HorizontalDivider()
-                LazyColumn {
-                    val makers = myStudioViewModel.toolMakers
-                    items(makers){
-                        val me = it.id<Int.MAX_VALUE||it.userId==authViewModel.user.id
-                        var user by remember { mutableStateOf<AIPortUser?>(null) }
-                        if(!me){
-                            generalViewModel.user(it.userId){
-                                    code, message, data ->
-                                if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL&&data!=null){
-                                    user = data
-                                }
-                            }
-//                            generalViewModel.team(it.userId,it.templateId){
-//                                    code, message, data ->
-//                            }
-                        }
-                        StudioListItem(
-                            modifier = Modifier.clickable(
-                                enabled = it.id!=myStudioViewModel.toolMaker.id
-                            ){
-                                myStudioViewModel.toolMaker(it)
-                            },
-                            selected = myStudioViewModel.toolMaker.id == it.id,
-                            overlineContent = {
-                                if(me){
-                                    Text("Me")
-                                }else user?.let{
-                                    TooltipText(
-                                        it.name,
-                                        contentDescription = it.account
-                                    )
-                                }
-                            },
-                            leadingContent = {
-                                if (it.id > 0) StudioIcon(
-                                    icon = Res.drawable.cloud_done,
-                                    contentDescription = "on MCPdirect"
-                                ) else StudioIcon(
-                                    Res.drawable.devices,
-                                    contentDescription = "On local device"
-                                )
-                            },
-                            headlineContent = {Text(it.name)},
-                            supportingContent = {
-                                Row {
-                                    if (me) it.tags?.let {
-                                        StudioIcon(
-                                            Res.drawable.sell,
-                                            "Tags",
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                        Text(it, modifier = Modifier.padding(start = 4.dp))
-                                    } else {
-                                        StudioIcon(
-                                            Res.drawable.groups,
-                                            "Team",
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                }
-                            },
-                            trailingContent = {
-                                if (it.status == 0) StudioIcon(
-                                    Res.drawable.mobiledata_off,
-                                    contentDescription = "Disconnect",
-                                    tint = MaterialTheme.colorScheme.error
-                                ) else if (it.status < 0) StudioIcon(
-                                    Res.drawable.error,
-                                    contentDescription = "Disconnect",
-                                    tint = MaterialTheme.colorScheme.error
+                                myStudioViewModel.queryToolMakersFromStudio(
+                                    toolAgent
                                 )
                             }
                         )
                     }
+                )
+                HorizontalDivider()
+                val makers by myStudioViewModel.mcpServers.collectAsState()
+                when(toolProviderType){
+                    None -> Column(
+//                        Modifier.padding(32.dp),
+//                        verticalArrangement = Arrangement.Center,
+//                        horizontalAlignment = Alignment.Start
+                    ) {
+//                        Row(verticalAlignment = Alignment.CenterVertically){
+//                            Icon(painterResource(Res.drawable.more), contentDescription = "")
+//                            Text("Select tool provider")
+//                        }
+//                        HorizontalDivider(Modifier.height(16.dp))
+                        ListItem(
+                            { Text(ToolProviderType.MCPServer.title) },
+                            Modifier.clickable(
+                                onClick = {toolProviderType = ToolProviderType.MCPServer}
+                            ),
+                            leadingContent = {
+                                Icon(painterResource(ToolProviderType.MCPServer.icon),
+                                    contentDescription = ToolProviderType.MCPServer.title)
+                            }
+                        )
+//                        Row(verticalAlignment = Alignment.CenterVertically){
+//                            Icon(painterResource(ToolProviderType.MCPServer.icon),
+//                                contentDescription = ToolProviderType.MCPServer.title,
+//                                Modifier.padding(12.dp))
+//                            TextButton(onClick = {
+//                                toolProviderType = ToolProviderType.MCPServer
+//                            }){
+//                                Text(ToolProviderType.MCPServer.title)
+//                            }
+//                        }
+//                        Spacer(Modifier.height(8.dp))
+                        ListItem(
+                            { Text(ToolProviderType.OpenAPIServer.title) },
+                            Modifier.clickable(
+                                onClick = {toolProviderType= ToolProviderType.OpenAPIServer}
+                            ),
+                            leadingContent = {
+                                Icon(painterResource(ToolProviderType.OpenAPIServer.icon),
+                                    contentDescription = ToolProviderType.OpenAPIServer.title,
+                                    modifier = Modifier.size(24.dp))
+                            }
+                        )
+//                        Row(verticalAlignment = Alignment.CenterVertically){
+//                            Icon(painterResource(ToolProviderType.OpenAPIServer.icon),
+//                                contentDescription = ToolProviderType.OpenAPIServer.title,
+//                                modifier = Modifier.padding(12.dp).size(24.dp),)
+//                            TextButton(onClick = {
+//                                toolProviderType= ToolProviderType.OpenAPIServer
+//                            }){
+//                                Text("OpenAPI Server")
+//                            }
+//                        }
+                    }
+                    ToolProviderType.MCPServer -> LazyColumn {
+
+                        items(makers){
+                            val me = it.id<Int.MAX_VALUE||it.userId==authViewModel.user.id
+                            var user by remember { mutableStateOf<AIPortUser?>(null) }
+                            if(!me){
+                                generalViewModel.user(it.userId){
+                                        code, message, data ->
+                                    if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL&&data!=null){
+                                        user = data
+                                    }
+                                }
+//                            generalViewModel.team(it.userId,it.templateId){
+//                                    code, message, data ->
+//                            }
+                            }
+                            StudioListItem(
+                                modifier = Modifier.clickable(
+                                    enabled = it.id!=toolMaker.id
+                                ){
+                                    myStudioViewModel.toolMaker(it)
+                                },
+                                selected = toolMaker.id == it.id,
+                                overlineContent = {
+                                    if(me){
+                                        Text("Me")
+                                    }else user?.let{
+                                        TooltipText(
+                                            it.name,
+                                            contentDescription = it.account
+                                        )
+                                    }
+                                },
+                                leadingContent = {
+                                    if (it.id > 0) StudioIcon(
+                                        icon = Res.drawable.cloud_done,
+                                        contentDescription = "on MCPdirect"
+                                    ) else StudioIcon(
+                                        Res.drawable.devices,
+                                        contentDescription = "On local device"
+                                    )
+                                },
+                                headlineContent = {Text(it.name)},
+                                supportingContent = {
+                                    Row {
+                                        if (me) it.tags?.let {
+                                            StudioIcon(
+                                                Res.drawable.sell,
+                                                "Tags",
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                            Text(it, modifier = Modifier.padding(start = 4.dp))
+                                        } else {
+                                            StudioIcon(
+                                                Res.drawable.groups,
+                                                "Team",
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                        }
+                                    }
+                                },
+                                trailingContent = {
+                                    if (it.status == 0) StudioIcon(
+                                        Res.drawable.mobiledata_off,
+                                        contentDescription = "Disconnect",
+                                        tint = MaterialTheme.colorScheme.error
+                                    ) else if (it.status < 0) StudioIcon(
+                                        Res.drawable.error,
+                                        contentDescription = "Disconnect",
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            )
+                        }
+                    }
+                    ToolProviderType.OpenAPIServer -> {
+
+                    }
                 }
             }
             VerticalDivider()
-            if(myStudioViewModel.toolMaker.id==0L){
+            if(toolMaker.id==0L){
                 StudioBoard(Modifier.weight(2.0f)) {
                     Text("Select a MCP server to view")
                 }
-            }else myStudioViewModel.toolMaker.let {
+            }else toolMaker.let {
                 val me = it.id<Int.MAX_VALUE||it.userId==authViewModel.user.id
                 Column(Modifier.weight(2.0f)) {
                     StudioActionBar(
@@ -389,7 +506,7 @@ fun ToolMakerListView(
                                         MaterialTheme.colorScheme.primary,
                                         onClick = {
                                             myStudioViewModel.modifyToolMakerStatus(
-                                                myStudioViewModel.toolAgent,it,1)
+                                                toolAgent,it,1)
                                         }
                                     )
                                 }
@@ -401,7 +518,7 @@ fun ToolMakerListView(
                                         MaterialTheme.colorScheme.error,
                                         onClick = {
                                             myStudioViewModel.modifyToolMakerStatus(
-                                                myStudioViewModel.toolAgent,it,0)
+                                                toolAgent,it,0)
                                         }
                                     )
                                     TooltipIconButton(
@@ -410,7 +527,7 @@ fun ToolMakerListView(
                                         MaterialTheme.colorScheme.primary,
                                         onClick = {
                                             myStudioViewModel.modifyToolMakerStatus(
-                                                myStudioViewModel.toolAgent,it,1)
+                                                toolAgent,it,1)
                                         }
                                     )
                                 }
@@ -422,7 +539,7 @@ fun ToolMakerListView(
                                         MaterialTheme.colorScheme.primary,
                                         onClick = {
                                             myStudioViewModel.modifyToolMakerStatus(
-                                                myStudioViewModel.toolAgent,it,1)
+                                                toolAgent,it,1)
                                         }
                                     )
                                 }
@@ -435,7 +552,7 @@ fun ToolMakerListView(
                                     Res.drawable.refresh,
                                     contentDescription = "Refresh MCP Server Tools",
                                     onClick = {
-                                        myStudioViewModel.queryMCPTools(it)
+                                        myStudioViewModel.queryMCPToolsFromStudio(it)
                                     })
                                 if (me) {
                                     if (it.id > Int.MAX_VALUE) TooltipIconButton(
@@ -507,7 +624,7 @@ fun ToolMakerListView(
             }
             if(showEditServerNameDialog){
                 EditMCPServerNameDialog(
-                    myStudioViewModel.toolMaker,
+                    toolMaker,
                     onDismissRequest = {
                         showEditServerNameDialog = false
                     },
@@ -522,7 +639,7 @@ fun ToolMakerListView(
                 )
             }else if(showEditServerTagsDialog){
                 EditMCPServerTagsDialog(
-                    myStudioViewModel.toolMaker,
+                    toolMaker,
                     onDismissRequest = {
                         showEditServerTagsDialog = false
                     },
@@ -531,9 +648,9 @@ fun ToolMakerListView(
                     }
                 )
             }else if(showEditServerConfigDialog){
-                when(val toolMaker = myStudioViewModel.toolMaker){
+                when(toolMaker){
                     is MCPServer -> ConfigMCPServerDialog(
-                        toolMaker,
+                        toolMaker as MCPServer,
                         onDismissRequest = { showEditServerConfigDialog=false },
                         onConfirmRequest = {
                             mcpServer,mcpServerCOnfig->
@@ -546,12 +663,13 @@ fun ToolMakerListView(
                                 config.args = JSON.encodeToJsonElement(mcpServerCOnfig.args).toString()
                                 config.env = JSON.encodeToJsonElement(mcpServerCOnfig.env).toString()
                                 myStudioViewModel.modifyMCPServerConfig(
-                                    myStudioViewModel.toolAgent,
+                                    toolAgent,
+                                    toolMaker,
                                     config
                                 )
                             }else{
                                 myStudioViewModel.modifyMCPServerConfigForStudio(
-                                    myStudioViewModel.toolAgent,
+                                    toolAgent,
                                     mcpServer,
                                     mcpServerCOnfig
                                 )
@@ -622,11 +740,11 @@ fun ToolMakerByTemplateListView(
                                 contentDescription = "Connect MCP Server"
                             ) {
                                 statusMessage = null
-                                generalViewModel.toolAgent(selectedToolMaker.agentId) {
+                                myStudioViewModel.toolAgent(selectedToolMaker.agentId) {
                                     code, message, data ->
                                     if (code == 0) {
                                         data?.let {
-                                            myStudioViewModel.connectToolMaker(
+                                            myStudioViewModel.connectToolMakerToStudio(
                                                 it.engineId,
                                                 selectedToolMaker.id,
                                                 it.id
@@ -643,7 +761,7 @@ fun ToolMakerByTemplateListView(
                                 Res.drawable.refresh,
                                 contentDescription = "Refresh MCP Server Tools",
                                 onClick = {
-                                    myStudioViewModel.queryMCPTools(it)
+                                    myStudioViewModel.queryMCPToolsFromStudio(it)
                                 })
                             TooltipIconButton(
                                 Res.drawable.sell,
@@ -709,7 +827,7 @@ fun ToolMakerByTemplateListView(
                         },
                         onConfirmRequest = {
                                 toolMaker,toolMakerName ->
-                            generalViewModel.toolAgent(selectedToolMaker.agentId) {
+                            myStudioViewModel.toolAgent(selectedToolMaker.agentId) {
                                     code, message, data ->
                                 if (code == 0&&data!=null) {
                                     if(toolMaker.id>Int.MAX_VALUE) {
@@ -737,11 +855,11 @@ fun ToolMakerByTemplateListView(
                         selectedToolMaker,
                         template,
                         onConfirmRequest = { toolMaker,config->
-                            generalViewModel.toolAgent(toolMaker.agentId) {
+                            myStudioViewModel.toolAgent(toolMaker.agentId) {
                                     code, message, data ->
                                 if (code == 0&&data!=null) {
                                     myStudioViewModel.modifyMCPServerConfig(
-                                        data,config
+                                        data,selectedToolMaker,config
                                     )
                                 }
                             }

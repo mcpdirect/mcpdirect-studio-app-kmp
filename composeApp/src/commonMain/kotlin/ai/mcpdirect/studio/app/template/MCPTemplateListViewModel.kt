@@ -6,8 +6,10 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -39,6 +41,13 @@ class MCPTemplateListViewModel: ViewModel() {
 //                    }
                     generalViewModel.refreshToolMakerTemplates()
                 }
+            }
+        }
+    }
+    fun toolAgent(toolAgentId:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
+        viewModelScope.launch {
+            StudioRepository.toolAgent(toolAgentId){ code, message, data ->
+                onResponse(code,message,data)
             }
         }
     }

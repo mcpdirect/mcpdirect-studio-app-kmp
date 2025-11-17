@@ -37,20 +37,20 @@ class ToolListViewModel: ViewModel() {
         tool = null
         viewModelScope.launch {
             _toolMaker.value = maker
-            ToolRepository.loadTools(userId=maker.userId,makerId = maker.id)
+            ToolRepository.loadTools(userId=maker.userId,toolMaker = maker)
         }
     }
     fun refreshTools(){
         tool = null
         _toolMaker.value?.let {
             viewModelScope.launch {
-                ToolRepository.loadTools(userId=it.userId,makerId = it.id,force = true)
+                ToolRepository.loadTools(userId=it.userId,toolMaker = it,force = true)
             }
         }
     }
     fun tool(tool: AIPortTool){
         viewModelScope.launch {
-            ToolRepository.loadTool(toolId = tool.id) {
+            ToolRepository.tool(toolId = tool.id) {
                 code, message, data ->
                 if(code==0) data?.let {
                     this@ToolListViewModel.tool = data

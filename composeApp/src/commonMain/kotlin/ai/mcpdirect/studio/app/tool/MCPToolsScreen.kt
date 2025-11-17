@@ -27,11 +27,11 @@ private var dialog by mutableStateOf(MCPToolsScreenDialog.NONE)
 fun MCPToolsScreen() {
     val toolListViewModel = remember { ToolListViewModel() }
     val toolMakerListViewModel = remember { ToolMakerListViewModel() }
-    LaunchedEffect(null){
-        generalViewModel.refreshToolAgents()
-//        generalViewModel.refreshTeams()
-//        generalViewModel.topBarActions = {}
-    }
+//    LaunchedEffect(null){
+//        generalViewModel.refreshToolAgents()
+////        generalViewModel.refreshTeams()
+////        generalViewModel.topBarActions = {}
+//    }
     when(dialog){
         MCPToolsScreenDialog.NONE -> {}
     }

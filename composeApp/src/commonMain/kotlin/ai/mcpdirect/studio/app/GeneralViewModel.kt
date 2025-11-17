@@ -20,8 +20,12 @@ class GeneralViewModel() : ViewModel() {
         loadingProcess = process
     }
 
-    fun loading(code: Int){
-        loadingProcess = if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL) 1.0f else -1.0f
+    fun loaded(title:String,code: Int,message:String?){
+        if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL) loadingProcess = 1.0f else {
+            loadingProcess = -1.0f
+            val error = if(message==null) "$title Error" else "$title\n$message"
+            showSnackbar(error,"Error")
+        }
     }
 
     var darkMode by mutableStateOf(false)
@@ -54,32 +58,32 @@ class GeneralViewModel() : ViewModel() {
         }
     }
 
-    val virtualToolAgent = AIPortToolAgent("Virtual MCP",1)
-    private val _toolAgents = mutableStateMapOf<Long, AIPortToolAgent>()
-    val toolAgents by derivedStateOf {
-        _toolAgents.values.toList()
-    }
-    fun toolAgent(id:Long): AIPortToolAgent?{
-        return _toolAgents[id]
-    }
-    fun toolAgent(id:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
-        if(id==0L){
-            onResponse(0,null,virtualToolAgent)
-            return
-        }
-        val agent = _toolAgents[id]
-        if(agent!=null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL,null,agent)
-        else viewModelScope.launch {
-            getPlatform().getToolAgent(id){
-                onResponse(it.code,it.message,it.data)
-                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
-                    it.data?.let {
-                        _toolAgents[it.id] = it
-                    }
-                }
-            }
-        }
-    }
+//    val virtualToolAgent = AIPortToolAgent("Virtual MCP",1)
+//    private val _toolAgents = mutableStateMapOf<Long, AIPortToolAgent>()
+//    val toolAgents by derivedStateOf {
+//        _toolAgents.values.toList()
+//    }
+//    fun toolAgent(id:Long): AIPortToolAgent?{
+//        return _toolAgents[id]
+//    }
+//    fun toolAgent(id:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
+//        if(id==0L){
+//            onResponse(0,null,virtualToolAgent)
+//            return
+//        }
+//        val agent = _toolAgents[id]
+//        if(agent!=null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL,null,agent)
+//        else viewModelScope.launch {
+//            getPlatform().getToolAgent(id){
+//                onResponse(it.code,it.message,it.data)
+//                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+//                    it.data?.let {
+//                        _toolAgents[it.id] = it
+//                    }
+//                }
+//            }
+//        }
+//    }
     private val _toolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
     val toolMakers by derivedStateOf {
         _toolMakers.values.toList()
@@ -217,7 +221,7 @@ class GeneralViewModel() : ViewModel() {
     }
 
     fun reset(){
-        _toolAgents.clear()
+//        _toolAgents.clear()
         _toolMakers.clear()
         _tools.clear()
         _toolPermissions.clear()
@@ -244,18 +248,18 @@ class GeneralViewModel() : ViewModel() {
         }
     }
 
-    fun refreshToolAgents(force:Boolean=false){
-        getPlatform().queryToolAgents {
-            if(it.successful()){
-                it.data?.let {
-                    it.forEach {
-                        _toolAgents[it.id]=it
-                    }
-//                    _toolAgents[0] = virtualToolAgent
-                }
-            }
-        }
-    }
+//    fun refreshToolAgents(force:Boolean=false){
+//        getPlatform().queryToolAgents {
+//            if(it.successful()){
+//                it.data?.let {
+//                    it.forEach {
+//                        _toolAgents[it.id]=it
+//                    }
+////                    _toolAgents[0] = virtualToolAgent
+//                }
+//            }
+//        }
+//    }
 //    private var toolMakersLastQueried = 0L
     fun refreshToolMakers(force:Boolean=false,
                           type:Int?=null,name:String?=null,toolAgentId:Long?=null, teamId:Long?=null,

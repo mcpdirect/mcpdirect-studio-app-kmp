@@ -40,7 +40,7 @@ object TeamRepository {
                         }
                         _teamLastQuery = now
                     }
-                    generalViewModel.loading(it.code)
+                    generalViewModel.loaded("Load Teams",it.code,it.message)
                 }
             }
         }

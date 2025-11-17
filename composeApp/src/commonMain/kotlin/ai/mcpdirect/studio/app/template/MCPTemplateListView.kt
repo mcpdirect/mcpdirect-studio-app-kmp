@@ -54,7 +54,7 @@ fun MCPTemplateListView(){
             var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
             var user by remember { mutableStateOf<AIPortUser?>(null)}
             LaunchedEffect(null){
-                generalViewModel.toolAgent(template.agentId){
+                viewModel.toolAgent(template.agentId){
                         code, message, data ->
                     toolAgent = data
                 }

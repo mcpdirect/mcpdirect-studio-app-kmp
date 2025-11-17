@@ -30,6 +30,15 @@ All notable changes to this project will be documented in this file.
 - Updated StudioToolMakers.kt with proper structure and serialization
 - Redesigned StudioRepository.kt for studio-specific data management
 - Updated MCPTemplateListViewModel.kt to include OpenAPIServerConfig import
+- Enhanced GeneralViewModel.kt with improved loading and error handling functions
+- Updated MyStudioViewModel.kt to use StudioRepository functions
+- Enhanced StudioRepository.kt with comprehensive studio management functions
+- Updated TeamRepository.kt with improved loading handling
+- Enhanced ToolRepository.kt with improved tool management functions
+- Updated MCPTemplateListView.kt to use ViewModel for toolAgent queries
+- Updated MCPTemplateListViewModel.kt with toolAgent query function
+- Updated MCPToolsScreen.kt to modify tool agent refresh behavior
+- Updated ToolListViewModel.kt to use improved tool loading methods
 
 ## 2025-11-14
 ### Added
