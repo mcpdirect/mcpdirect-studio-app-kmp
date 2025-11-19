@@ -297,22 +297,40 @@ object StudioRepository {
             }
         }
     }
-    suspend fun publishMCPToolsFromStudio(
+    suspend fun publishToolsFromStudio(
         toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker,
-        onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit
+        onResponse: (code: Int, message: String?, data: AIPortToolMaker?) -> Unit
     ){
         loadMutex.withLock {
             generalViewModel.loading()
-            getPlatform().publishMCPToolsForStudio(toolAgent.engineId,toolMaker.id){
+            if(toolMaker.mcp()) getPlatform().publishMCPToolsFromStudio(toolAgent.engineId,toolMaker.id){
                 if(it.code==0) it.data?.let { server ->
                     _mcpServers.update { map ->
                         map.toMutableMap().apply {
                             put(server.id, server)
+                            if(server.id!=toolMaker.id){
+                                remove(toolMaker.id)
+                            }
                         }
                     }
                 }
                 generalViewModel.loaded(
                     "Publish tools of MCP Server #${toolMaker.name} from Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it.code,it.message,it.data)
+            } else getPlatform().publishOpenAPIToolsFromStudio(toolAgent.engineId,toolMaker.id){
+                if(it.code==0) it.data?.let { server ->
+                    _openapiServers.update { map ->
+                        map.toMutableMap().apply {
+                            put(server.id, server)
+                            if(server.id!=toolMaker.id){
+                                remove(toolMaker.id)
+                            }
+                        }
+                    }
+                }
+                generalViewModel.loaded(
+                    "Publish tools of OpenAPI Server #${toolMaker.name} from Studio #${toolAgent.name}",it.code,it.message
                 )
                 onResponse(it.code,it.message,it.data)
             }

@@ -48,7 +48,7 @@ class ConnectMCPViewModel: ViewModel() {
     }
     fun updateToolMaker(maker: AIPortToolMaker){
         viewModelScope.launch {
-            if(maker.status==-1) _toolMakers.remove(maker.id)
+            if(maker.status==Int.MIN_VALUE) _toolMakers.remove(maker.id)
             else if(maker.id!=0L)_toolMakers[maker.id]=maker;
         }
     }
@@ -264,7 +264,7 @@ class ConnectMCPViewModel: ViewModel() {
 //            uiState = UIState.Loading
             updateUIState()
             tools.clear()
-            getPlatform().publishMCPToolsForStudio(MCPDirectStudio.studioId(),toolMaker.id){
+            getPlatform().publishMCPToolsFromStudio(MCPDirectStudio.studioId(),toolMaker.id){
                 updateUIState(it.code)
                 if(it.code==0){
                     it.data?.let {

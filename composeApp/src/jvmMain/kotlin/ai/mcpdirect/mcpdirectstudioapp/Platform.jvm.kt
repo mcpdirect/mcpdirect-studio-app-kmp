@@ -51,21 +51,23 @@ class JVMPlatform : Platform, NotificationHandler{
         server?.let {
             val mcpServer = MCPServer()
             mcpServer.id = it.id
-            mcpServer.created = it.created
             mcpServer.status =  it.status
-            mcpServer.lastUpdated =  it.lastUpdated
-            mcpServer.type =  it.type
-            mcpServer.name =  it.name
-            mcpServer.tags =  it.tags
-            mcpServer.agentId = it.agentId
-            mcpServer.userId =  it.userId
-            mcpServer.teamId =  it.teamId
-            mcpServer.transport = it.transport
-            mcpServer.url =  it.url
-            mcpServer.command = it.command
-            mcpServer.args =  it.args
-            mcpServer.env =  it.env
-            mcpServer.statusMessage = it.statusMessage()
+            if(it.status>Int.MIN_VALUE) {
+                mcpServer.created = it.created
+                mcpServer.lastUpdated = it.lastUpdated
+                mcpServer.type = it.type
+                mcpServer.name = it.name?:""
+                mcpServer.tags = it.tags
+                mcpServer.agentId = it.agentId
+                mcpServer.userId = it.userId
+                mcpServer.teamId = it.teamId
+                mcpServer.transport = it.transport
+                mcpServer.url = it.url
+                mcpServer.command = it.command
+                mcpServer.args = it.args
+                mcpServer.env = it.env
+                mcpServer.statusMessage = it.statusMessage()
+            }
             connectMCPViewModel.updateToolMaker(mcpServer)
         }
     }
@@ -74,11 +76,13 @@ class JVMPlatform : Platform, NotificationHandler{
         server?.let {
             val openapiServer = OpenAPIServer()
             openapiServer.id = it.id
-            openapiServer.name = it.name
             openapiServer.status = it.status
-            openapiServer.url = it.url
-            openapiServer.securities = it.securities
-            openapiServer.statusMessage = it.statusMessage
+            if(it.status>Int.MIN_VALUE) {
+                openapiServer.name = it.name?:""
+                openapiServer.url = it.url
+                openapiServer.securities = it.securities
+                openapiServer.statusMessage = it.statusMessage
+            }
         }
     }
 

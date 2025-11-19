@@ -431,7 +431,7 @@ class MyStudioViewModel(): ViewModel() {
                 StudioRepository.toolAgent(toolMaker.agentId) { code, message, data ->
                     if (code == 0) data?.let {
                         viewModelScope.launch {
-                            StudioRepository.publishMCPToolsFromStudio(it,toolMaker){
+                            StudioRepository.publishToolsFromStudio(it,toolMaker){
                                     code, message, data ->
                                 updateUIState(code)
                                 if(code==0){

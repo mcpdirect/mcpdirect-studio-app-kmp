@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-19
+### Changed
+- Renamed publishMCPToolsForStudio to publishMCPToolsFromStudio in Platform.kt
+- Renamed publishOpenAPIToolsForStudio to publishOpenAPIToolsFromStudio in Platform.kt
+- Updated MyStudioViewModel.kt to use publishToolsFromStudio function
+- Enhanced StudioRepository.kt with unified publishToolsFromStudio function for both MCP and OpenAPI servers
+- Improved notification handling in Platform.jvm.kt with status checks
+- Updated ConnectMCPViewModel.kt to use Int.MIN_VALUE for status comparison
+
 ## 2025-11-17
 ### Added
 - New menu.svg icon resource

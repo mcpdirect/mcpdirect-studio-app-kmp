@@ -213,8 +213,8 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTool>>>(it))
         }
     }
-    fun publishMCPToolsForStudio(studioId:Long, mcpServerId:Long,
-                                onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
+    fun publishMCPToolsFromStudio(studioId:Long, mcpServerId:Long,
+                                  onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
         httpRequest("studio.console@$studioId/mcp_server/tool/publish", mapOf(
             "mcpServerId" to JsonPrimitive(mcpServerId)
         )) {
@@ -268,8 +268,8 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTool>>>(it))
         }
     }
-    fun publishOpenAPIToolsForStudio(studioId:Long, serverId:Long,
-                                 onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
+    fun publishOpenAPIToolsFromStudio(studioId:Long, serverId:Long,
+                                      onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
         httpRequest("studio.console@$studioId/openapi_server/tool/publish", mapOf(
             "openapiServerId" to JsonPrimitive(serverId)
         )) {
