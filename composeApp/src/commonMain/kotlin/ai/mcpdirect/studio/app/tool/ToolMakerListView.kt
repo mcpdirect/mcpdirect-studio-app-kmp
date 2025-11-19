@@ -96,7 +96,7 @@ fun ToolMakerListView(
                             modifier = Modifier.size(20.dp).padding(end = 4.dp)
                         )
                         Text(
-                            if(it.type== AIPortToolMaker.TYPE_VIRTUAL)
+                            if(it.virtual())
                                 "Virtual MCP"
                             else it.agentName,
                             color = MaterialTheme.colorScheme.primary,

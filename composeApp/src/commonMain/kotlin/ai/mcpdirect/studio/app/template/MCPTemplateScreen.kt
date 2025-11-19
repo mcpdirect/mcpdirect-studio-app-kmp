@@ -43,19 +43,17 @@ fun MCPTemplateScreen() {
     Row(Modifier.fillMaxSize()){
         LazyColumn(Modifier.weight(1.0f)) {
             items(generalViewModel.toolMakers){
-                if(it.type> AIPortToolMaker.TYPE_VIRTUAL&&
+                if(it.notVirtual()&&
                     it.userId== authViewModel.user.id)ListItem(
                     modifier = Modifier.clickable{
                     },
                     headlineContent = { Text(
-                        it.name?:"",
+                        it.name,
                         style = MaterialTheme.typography.titleSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis) },
                     supportingContent = {
-                        it.agentName?.let{
-                            Text(it)
-                        }
+                        Text(it.agentName)
                     },
                     trailingContent = {
                         if(viewModel.toolMaker!=null&&viewModel.toolMaker!!.id==it.id)

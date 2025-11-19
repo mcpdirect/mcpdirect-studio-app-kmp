@@ -166,7 +166,7 @@ fun ToolMakerItem(
     onClick: () -> Unit
 ) {
     val viewModel = mcpTeamToolMakerViewModel
-    val isVirtualMCP = maker.type== AIPortToolMaker.TYPE_VIRTUAL
+    val isVirtualMCP = maker.virtual()
     val localToolAgentId = getPlatform().toolAgentId
 
     ListItem(

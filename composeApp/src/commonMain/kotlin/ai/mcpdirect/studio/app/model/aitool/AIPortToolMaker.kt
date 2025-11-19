@@ -20,8 +20,18 @@ open class AIPortToolMaker {
     fun virtual():Boolean{
         return type == TYPE_VIRTUAL
     }
+    fun notVirtual():Boolean{
+        return type > TYPE_VIRTUAL
+    }
+    fun mcp(): Boolean{
+        return type == TYPE_MCP
+    }
+    fun openapi():Boolean{
+        return type == TYPE_OPENAPI
+    }
     companion object {
         const val TYPE_VIRTUAL = 0
+        const val TYPE_OPENAPI = 1
         const val TYPE_MCP = 1000
     }
 }

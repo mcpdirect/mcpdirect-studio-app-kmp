@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-17
+### Added
+- New menu.svg icon resource
+- AIPortServiceResponse.OPENAPI_DOC_NOT_EXIST constant
+- OpenAPIServer.statusMessage property
+- AIPortToolMaker.openapi() and AIPortToolMaker.notVirtual() functions
+- AIPortToolMaker.TYPE_OPENAPI constant
+- onOpenAPIServerNotification function in Platform.jvm.kt
+- ToolMakerItem composable function
+
+### Changed
+- Updated default gateway endpoints in build.gradle.kts from port 8080 to 8088
+- Updated Platform.kt API endpoints for OpenAPI server operations
+- Improved virtual() function usage in GeneralViewModel.kt
+- Updated MyStudioScreen.kt with improved tool provider type selection
+- Enhanced MyStudioViewModel.kt with resetToolAgent and resetToolMaker functions
+- Updated StudioRepository.kt with improved name modification and status update functions
+- Enhanced ConnectOpenAPIServerDialog.kt with improved dropdown menu handling
+- Updated TeamToolMakerScreen.kt to use virtual() function
+- Updated MCPTemplateScreen.kt to use notVirtual() function
+- Updated ToolMakerListView.kt to use virtual() function
+- Updated VirtualMakerViewModel.kt to use virtual() function
+- Enhanced Platform.jvm.kt with notification handling for OpenAPI servers
+
 ## 2025-11-16
 ### Added
 - New openapi.svg icon resource

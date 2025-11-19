@@ -5,6 +5,7 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.connectMCPViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
+import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.handler.NotificationHandler
 import appnet.util.crypto.SHA256
@@ -49,25 +50,36 @@ class JVMPlatform : Platform, NotificationHandler{
     override fun onMCPServerNotification(server: ai.mcpdirect.studio.dao.entity.MCPServer?) {
         server?.let {
             val mcpServer = MCPServer()
-            mcpServer.id = server.id
-            mcpServer.created = server.created
-            mcpServer.status =  server.status
-            mcpServer.lastUpdated =  server.lastUpdated
-            mcpServer.type =  server.type
-            mcpServer.name =  server.name
-            mcpServer.tags =  server.tags
-            mcpServer.agentId = server.agentId
-            mcpServer.userId =  server.userId
-            mcpServer.teamId =  server.teamId
-            mcpServer.transport = server.transport
-            mcpServer.url =  server.url
-            mcpServer.command = server.command
-            mcpServer.args =  server.args
-            mcpServer.env =  server.env
-            mcpServer.statusMessage = server.statusMessage()
+            mcpServer.id = it.id
+            mcpServer.created = it.created
+            mcpServer.status =  it.status
+            mcpServer.lastUpdated =  it.lastUpdated
+            mcpServer.type =  it.type
+            mcpServer.name =  it.name
+            mcpServer.tags =  it.tags
+            mcpServer.agentId = it.agentId
+            mcpServer.userId =  it.userId
+            mcpServer.teamId =  it.teamId
+            mcpServer.transport = it.transport
+            mcpServer.url =  it.url
+            mcpServer.command = it.command
+            mcpServer.args =  it.args
+            mcpServer.env =  it.env
+            mcpServer.statusMessage = it.statusMessage()
             connectMCPViewModel.updateToolMaker(mcpServer)
         }
+    }
 
+    override fun onOpenAPIServerNotification(server: ai.mcpdirect.studio.dao.entity.OpenAPIServer?) {
+        server?.let {
+            val openapiServer = OpenAPIServer()
+            openapiServer.id = it.id
+            openapiServer.name = it.name
+            openapiServer.status = it.status
+            openapiServer.url = it.url
+            openapiServer.securities = it.securities
+            openapiServer.statusMessage = it.statusMessage
+        }
     }
 
     override fun httpRequest(

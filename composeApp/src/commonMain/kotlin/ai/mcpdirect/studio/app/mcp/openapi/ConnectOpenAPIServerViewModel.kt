@@ -58,7 +58,8 @@ class ConnectOpenAPIServerViewModel: ViewModel() {
                     it.servers?.let {
                         for (server in it) {
                             if(server.url!=null){
-                                url = server.url!!
+//                                url = server.url!!
+                                onUrlChange(server.url!!)
                                 break;
                             }
                         }

@@ -29,6 +29,8 @@ data class AIPortServiceResponse<T>(
         const val OTP_FAILED: Int = 1001006
 
         const val TEAM_NOT_EXIST: Int = 1002000
+
+        const val OPENAPI_DOC_NOT_EXIST: Int = 2001000
     }
     fun successful(): Boolean {
         return code == SERVICE_SUCCESSFUL

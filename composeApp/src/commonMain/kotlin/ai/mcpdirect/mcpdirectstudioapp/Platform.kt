@@ -224,7 +224,7 @@ interface Platform {
 
     fun parseOpenAPIDocFromStudio(studioId:Long, doc:String,
                                   onResponse: (resp: AIPortServiceResponse<OpenAPIServerDoc>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/openapi/parse",
+        httpRequest("studio.console@$studioId/openapi_server/doc/parse",
             mapOf(
                 "doc" to JsonPrimitive(doc)
             )) {
@@ -233,7 +233,7 @@ interface Platform {
     }
     fun connectOpenAPIServerToStudio(studioId:Long, name:String,config:OpenAPIServerConfig,
                                      onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/openapi/parse",
+        httpRequest("studio.console@$studioId/openapi_server/connect",
             mapOf(
                 "openAPIServerName" to JsonPrimitive(name),
                 "openAPIServerConfig" to Json.encodeToJsonElement(config)
@@ -245,7 +245,7 @@ interface Platform {
                                  serverName:String?=null,serverStatus:Int?=null,
                                  serverConfig:OpenAPIServerConfig?=null,
                                  onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/modify",
+        httpRequest("studio.console@$studioId/openapi_server/modify",
             mapOf(
                 "openapiServerId" to JsonPrimitive(serverId),
                 "openapiServerName" to JsonPrimitive(serverName),
@@ -256,13 +256,13 @@ interface Platform {
         }
     }
     fun queryOpenAPIServersFromStudio(studioId:Long, onResponse: (resp: AIPortServiceResponse<List<OpenAPIServer>>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/openapi/query", mapOf()) {
+        httpRequest("studio.console@$studioId/openapi_server/query", mapOf()) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<OpenAPIServer>>>(it))
         }
     }
     fun queryOpenAPIToolsFromStudio(studioId:Long, serverId:Long,
                                 onResponse: (resp: AIPortServiceResponse<List<AIPortTool>>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/openapi/tool/query", mapOf(
+        httpRequest("studio.console@$studioId/openapi_server/tool/query", mapOf(
             "openapiServerId" to JsonPrimitive(serverId)
         )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTool>>>(it))
@@ -270,7 +270,7 @@ interface Platform {
     }
     fun publishOpenAPIToolsForStudio(studioId:Long, serverId:Long,
                                  onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/openapi/tool/publish", mapOf(
+        httpRequest("studio.console@$studioId/openapi_server/tool/publish", mapOf(
             "openapiServerId" to JsonPrimitive(serverId)
         )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))

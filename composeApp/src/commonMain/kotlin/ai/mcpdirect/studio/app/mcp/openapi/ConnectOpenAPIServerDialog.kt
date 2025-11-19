@@ -88,15 +88,18 @@ fun ConnectOpenAPIServerDialog(
                                 servers.forEach { server ->
                                     server.url?.let { url ->
                                         DropdownMenuItem(
-                                            { ListItem(
-                                                headlineContent = {Text(url)},
-                                                supportingContent = {
-                                                    server.description?.let{
-                                                        Text(it)
-                                                    }
-                                                }
-                                            ) },
+                                            { Text(url)
+//                                                ListItem(
+//                                                headlineContent = {Text(url)},
+//                                                supportingContent = {
+//                                                    server.description?.let{
+//                                                        Text(it)
+//                                                    }
+//                                                }
+//                                            )
+                                            },
                                             onClick = {
+                                                showMenu = false
                                                 viewModel.onUrlChange(url)
                                             }
                                         )

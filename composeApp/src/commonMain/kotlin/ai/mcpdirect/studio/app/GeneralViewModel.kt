@@ -97,11 +97,11 @@ class GeneralViewModel() : ViewModel() {
     fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
         return _toolMakers.values.filter {
             if(agent.id==0L) {
-                if(!(it.type== AIPortToolMaker.TYPE_VIRTUAL&&it.userId == authViewModel.user.id)){
+                if(!(it.virtual()&&it.userId == authViewModel.user.id)){
                     println(it.type)
                     println(it.userId)
                 }
-                it.type== AIPortToolMaker.TYPE_VIRTUAL&&it.userId == authViewModel.user.id
+                it.virtual()&&it.userId == authViewModel.user.id
             }
             else it.agentId==agent.id
         }

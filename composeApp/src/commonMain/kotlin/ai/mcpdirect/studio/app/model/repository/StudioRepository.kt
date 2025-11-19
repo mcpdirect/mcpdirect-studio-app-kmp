@@ -26,8 +26,8 @@ object StudioRepository {
     private val _mcpServers = MutableStateFlow<Map<Long, MCPServer>>(emptyMap())
     val mcpServers: StateFlow<Map<Long, MCPServer>> = _mcpServers
 
-    private val _openapiServer = MutableStateFlow<Map<Long, OpenAPIServer>>(emptyMap())
-    val openapiServer: StateFlow<Map<Long, OpenAPIServer>> = _openapiServer
+    private val _openapiServers = MutableStateFlow<Map<Long, OpenAPIServer>>(emptyMap())
+    val openapiServers: StateFlow<Map<Long, OpenAPIServer>> = _openapiServers
     suspend fun queryToolMakersFromStudio(toolAgent: AIPortToolAgent,force: Boolean=false){
         val studioId = toolAgent.engineId
         loadMutex.withLock {
@@ -46,7 +46,7 @@ object StudioRepository {
                                 }
                             }
                         }
-                        _openapiServer.update { map ->
+                        _openapiServers.update { map ->
                             map.toMutableMap().apply {
                                 toolMakers.openapiServers?.let{ servers ->
                                     for (server in servers) {
@@ -168,26 +168,46 @@ object StudioRepository {
             }
         }
     }
-    suspend fun modifyMCPServerNameForStudio(
-        toolAgent: AIPortToolAgent, mcpServer: MCPServer, name:String,
-        onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit
+    suspend fun modifyToolMakerNameForStudio(
+        toolAgent: AIPortToolAgent, toolMaker: AIPortToolMaker, name:String,
+        onResponse: (code: Int, message: String?, maker: AIPortToolMaker?) -> Unit
     ){
         val studioId = toolAgent.engineId
-        val mcpServerId = mcpServer.id
+        val serverId = toolMaker.id
         loadMutex.withLock {
             generalViewModel.loading()
-            getPlatform().modifyMCPServerForStudio(
-                studioId, mcpServerId, serverName = name
+            if(toolMaker.mcp()) getPlatform().modifyMCPServerForStudio(
+                studioId, serverId, serverName = name
             ){
                 if(it.code==0) it.data?.let { server ->
                     _mcpServers.update { map ->
                         map.toMutableMap().apply {
                             put(server.id, server)
+                            if(server.id!=toolMaker.id){
+                                remove(toolMaker.id)
+                            }
                         }
                     }
                 }
                 generalViewModel.loaded(
-                    "Modify name of MCP Server #${mcpServer.name} in Studio #${toolAgent.name}",it.code,it.message
+                    "Modify name of MCP Server #${toolMaker.name} in Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it.code,it.message,it.data)
+            } else if(toolMaker.openapi()) getPlatform().modifyOpenAPIServerForStudio(
+                studioId, serverId, serverName = name
+            ){
+                if(it.code==0) it.data?.let { server ->
+                    _openapiServers.update { map ->
+                        map.toMutableMap().apply {
+                            put(server.id, server)
+                            if(server.id!=toolMaker.id){
+                                remove(toolMaker.id)
+                            }
+                        }
+                    }
+                }
+                generalViewModel.loaded(
+                    "Modify name of OpenAPI Server #${toolMaker.name} in Studio #${toolAgent.name}",it.code,it.message
                 )
                 onResponse(it.code,it.message,it.data)
             }
@@ -195,18 +215,16 @@ object StudioRepository {
     }
 
     suspend fun modifyToolMakerStatus(
-        toolAgent: AIPortToolAgent, toolMaker: AIPortToolMaker,status: Int){
+        toolAgent: AIPortToolAgent, toolMaker: AIPortToolMaker,status: Int,
+        onResponse: (code: Int, message: String?, maker: AIPortToolMaker?) -> Unit
+    ){
         val studioId = toolAgent.engineId
         val mcpServerId = toolMaker.id
         loadMutex.withLock {
             generalViewModel.loading()
             if(mcpServerId<Int.MAX_VALUE){
-                getPlatform().modifyMCPServerForStudio(
-                    studioId,
-                    mcpServerId,
-                    null,
-                    status,
-                    null
+                if(toolMaker.mcp()) getPlatform().modifyMCPServerForStudio(
+                    studioId, mcpServerId, serverStatus = status
                 ){
                     if(it.code==0) it.data?.let { server ->
                         _mcpServers.update { map ->
@@ -216,8 +234,23 @@ object StudioRepository {
                         }
                     }
                     generalViewModel.loaded(
-                        "Modify status of Tool Provider #${toolMaker.name} in Studio #${toolAgent.name}",it.code,it.message
+                        "Modify status of MCP Server #${toolMaker.name} in Studio #${toolAgent.name}",it.code,it.message
                     )
+                    onResponse(it.code,it.message,it.data)
+                } else if(toolMaker.openapi()) getPlatform().modifyOpenAPIServerForStudio(
+                    studioId, mcpServerId, serverStatus = status
+                ){
+                    if(it.code==0) it.data?.let { server ->
+                        _openapiServers.update { map ->
+                            map.toMutableMap().apply {
+                                put(server.id, server)
+                            }
+                        }
+                    }
+                    generalViewModel.loaded(
+                        "Modify status of OpenAPI Server#${toolMaker.name} in Studio #${toolAgent.name}",it.code,it.message
+                    )
+                    onResponse(it.code,it.message,it.data)
                 }
             }else getPlatform().modifyToolMaker(
                 mcpServerId,
@@ -310,12 +343,12 @@ object StudioRepository {
         }
     }
 
-    suspend fun connectOpenAPIServer(toolAgent: AIPortToolAgent,name:String, config: OpenAPIServerConfig){
+    suspend fun connectOpenAPIServerToStudio(toolAgent: AIPortToolAgent,name:String, config: OpenAPIServerConfig){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().connectOpenAPIServerToStudio(toolAgent.engineId,name,config){
                 if(it.code==0) it.data?.let { server ->
-                    _openapiServer.update { map ->
+                    _openapiServers.update { map ->
                         map.toMutableMap().apply {
                             put(server.id, server)
                         }
@@ -323,6 +356,21 @@ object StudioRepository {
                 }
                 generalViewModel.loaded(
                     "Connect OpenAPI Server #${name} to Studio #${toolAgent.name}",it.code,it.message
+                )
+            }
+        }
+    }
+
+    suspend fun queryOpenAPIToolsFromStudio(
+        toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker,
+        onResponse: (code: Int, message: String?, data: List<AIPortTool>?) -> Unit
+    ){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().queryOpenAPIToolsFromStudio(toolAgent.engineId,toolMaker.id){
+                onResponse(it.code,it.message,it.data)
+                generalViewModel.loaded(
+                    "Query tools of OpenAPI Server #${toolMaker.name} in Studio #${toolAgent.name}",it.code,it.message
                 )
             }
         }

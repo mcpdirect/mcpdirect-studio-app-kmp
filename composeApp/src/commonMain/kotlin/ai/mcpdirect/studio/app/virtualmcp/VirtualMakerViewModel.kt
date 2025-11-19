@@ -94,7 +94,7 @@ class VirtualMakerViewModel: ViewModel() {
                     (code, message, data) ->
                 if(code==0&&data!=null){
                     data.forEach {
-                        if(it.type== AIPortToolMaker.TYPE_VIRTUAL){
+                        if(it.virtual()){
                             _virtualMakers[it.id]=it
                         }else{
                             _makers[it.id]=it

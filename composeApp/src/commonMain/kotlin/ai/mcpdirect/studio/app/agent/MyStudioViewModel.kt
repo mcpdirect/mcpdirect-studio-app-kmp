@@ -2,9 +2,6 @@ package ai.mcpdirect.studio.app.agent
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
-import ai.mcpdirect.studio.app.auth.authViewModel
-import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
@@ -25,7 +22,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MyStudioViewModel(): ViewModel() {
@@ -47,6 +43,10 @@ class MyStudioViewModel(): ViewModel() {
             }
         }
     }
+    fun resetToolAgent(){
+        _toolAgent.value = AIPortToolAgent("",-1)
+        resetToolMaker()
+    }
     val toolAgents: StateFlow<List<AIPortToolAgent>> = StudioRepository.toolAgents
         .map { it.values.toList() }      // 转为 List
         .stateIn(
@@ -63,10 +63,16 @@ class MyStudioViewModel(): ViewModel() {
     private val _toolMaker = MutableStateFlow<AIPortToolMaker>(AIPortToolMaker())
     val toolMaker: StateFlow<AIPortToolMaker> = _toolMaker
     fun toolMaker(maker:AIPortToolMaker){
-        if(maker.id!=_toolMaker.value.id){
-            queryMCPToolsFromStudio(maker)
-        }
+//        when(maker.type){
+//            TYPE_MCP -> queryMCPToolsFromStudio(maker)
+//            TYPE_OPENAPI -> queryOpenAPIToolsFromStudio(maker)
+//        }
         _toolMaker.value = maker
+        queryMCPToolsFromStudio(maker)
+    }
+    fun resetToolMaker(){
+        _toolMaker.value = AIPortToolMaker();
+        tools.clear()
     }
 
     val mcpServers: StateFlow<List<MCPServer>> = combine(
@@ -81,7 +87,7 @@ class MyStudioViewModel(): ViewModel() {
     )
 
     val openapiServers: StateFlow<List<OpenAPIServer>> = combine(
-        StudioRepository.openapiServer,
+        StudioRepository.openapiServers,
         _toolAgent
     ) { servers, agent ->
         servers.values.filter { server -> server.agentId == agent.id }.toList()
@@ -90,7 +96,7 @@ class MyStudioViewModel(): ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    private val _openapiServer = MutableStateFlow<OpenAPIServer>(OpenAPIServer())
+//    private val _openapiServer = MutableStateFlow<OpenAPIServer>(OpenAPIServer())
 //    val openapiServer: StateFlow<OpenAPIServer> = _openapiServer
 //    private var _toolMakers = mutableStateMapOf<Long,AIPortToolMaker>()
 //    val toolMakers by derivedStateOf {
@@ -110,13 +116,7 @@ class MyStudioViewModel(): ViewModel() {
     private fun updateUIState(code:Int){
         uiState = if(code==0) UIState.Success else UIState.Error(code)
     }
-    fun reset(){
-        _toolAgent.value = AIPortToolAgent("",-1)
-//        toolMaker = AIPortToolMaker()
-        _toolMaker.value = MCPServer()
-        _openapiServer.value = OpenAPIServer()
-        tools.clear()
-    }
+
 //    fun connectMCPServer(configs:Map<String, MCPServerConfig>){
 //        viewModelScope.launch {
 //            uiState = UIState.Loading
@@ -203,11 +203,11 @@ class MyStudioViewModel(): ViewModel() {
 //        }
 //    }
     fun modifyMCPServerNameForStudio(toolAgent: AIPortToolAgent,
-                                     mcpServer: MCPServer,
+                                     toolMaker: AIPortToolMaker,
                                      name:String){
         viewModelScope.launch {
             uiState = UIState.Loading
-            StudioRepository.modifyMCPServerNameForStudio(toolAgent,mcpServer,name){
+            StudioRepository.modifyToolMakerNameForStudio(toolAgent,toolMaker,name){
                 code, message, data ->
                 updateUIState(code)
                 data?.let {
@@ -241,11 +241,11 @@ class MyStudioViewModel(): ViewModel() {
 //        }
 //    }
 
-    fun queryToolMakersFromStudio(toolAgent: AIPortToolAgent){
+    fun queryToolMakersFromStudio(toolAgent: AIPortToolAgent,force: Boolean=false){
         if(toolAgent.id>0) {
             uiState = UIState.Loading
             viewModelScope.launch {
-                StudioRepository.queryToolMakersFromStudio(toolAgent)
+                StudioRepository.queryToolMakersFromStudio(toolAgent,force)
             }
         }
     }
@@ -328,7 +328,14 @@ class MyStudioViewModel(): ViewModel() {
 
     fun modifyToolMakerStatus(toolAgent: AIPortToolAgent,maker: AIPortToolMaker,status: Int){
         viewModelScope.launch {
-            StudioRepository.modifyToolMakerStatus(toolAgent,maker,status)
+            StudioRepository.modifyToolMakerStatus(toolAgent,maker,status){
+                code, message, maker ->
+                maker?.let {
+                    if(_toolMaker.value.id==maker.id){
+                        _toolMaker.value = maker
+                    }
+                }
+            }
         }
     }
 
@@ -363,7 +370,16 @@ class MyStudioViewModel(): ViewModel() {
                 StudioRepository.toolAgent(toolMaker.agentId) { code, message, data ->
                     if(code==0) data?.let {
                         viewModelScope.launch {
-                            StudioRepository.queryMCPToolsFromStudio(
+                            if(toolMaker.mcp()) StudioRepository.queryMCPToolsFromStudio(
+                                it,toolMaker
+                            ){code, message, data ->
+                                updateUIState(code)
+                                if(code==0){
+                                    data?.let {
+                                        tools.addAll(it)
+                                    }
+                                }
+                            } else if(toolMaker.openapi()) StudioRepository.queryOpenAPIToolsFromStudio(
                                 it,toolMaker
                             ){code, message, data ->
                                 updateUIState(code)
@@ -560,16 +576,31 @@ class MyStudioViewModel(): ViewModel() {
         }
     }
 
-//    fun connectOpenAPIServer(name:String, config: OpenAPIServerConfig){
-//        viewModelScope.launch {
+    fun connectOpenAPIServerToStudio(name:String, config: OpenAPIServerConfig){
+        viewModelScope.launch {
+            StudioRepository.connectOpenAPIServerToStudio(_toolAgent.value,name,config)
+        }
+    }
+//    fun queryOpenAPIToolsFromStudio(toolMaker: AIPortToolMaker){
+//        if(toolMaker.id!=0L){
 //            uiState = UIState.Loading
-//            getPlatform().connectOpenAPIServerToStudio(toolAgent.engineId,name,config){
-//                updateUIState(it.code)
-//                if(it.code==0) it.data?.let {
-////                    it.forEach {
-//////                        it.id = makerId(it.name)
-////                        _toolMakers[it.id] = it
-////                    }
+//            tools.clear()
+//            viewModelScope.launch {
+//                StudioRepository.toolAgent(toolMaker.agentId) { code, message, data ->
+//                    if(code==0) data?.let {
+//                        viewModelScope.launch {
+//                            StudioRepository.queryOpenAPIToolsFromStudio(
+//                                it,toolMaker
+//                            ){code, message, data ->
+//                                updateUIState(code)
+//                                if(code==0){
+//                                    data?.let {
+//                                        tools.addAll(it)
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
 //                }
 //            }
 //        }
