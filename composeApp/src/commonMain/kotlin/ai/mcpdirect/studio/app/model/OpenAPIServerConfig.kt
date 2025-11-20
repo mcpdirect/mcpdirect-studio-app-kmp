@@ -4,8 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class OpenAPIServerConfig {
-    val id: Long = 0
-    val name: String = ""
+    var id: Long = 0
+    var name: String = ""
+    var toolPrefix:String =""
     var status: Int = 1
 
     var url: String? = null

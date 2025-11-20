@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - Enhanced StudioRepository.kt with unified publishToolsFromStudio function for both MCP and OpenAPI servers
 - Improved notification handling in Platform.jvm.kt with status checks
 - Updated ConnectMCPViewModel.kt to use Int.MIN_VALUE for status comparison
+- Reduced name length limit from 32 to 20 characters in ConnectOpenAPIServerDialog
+- Added optional toolPrefix field to OpenAPIServerConfig model
 
 ## 2025-11-17
 ### Added

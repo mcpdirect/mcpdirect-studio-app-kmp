@@ -52,7 +52,7 @@ fun ConnectOpenAPIServerDialog(
                     placeholder = {Text("eg. openapi_mcp")},
                     isError = viewModel.isNameError,
                     supportingText = {
-                        Text("Name must not be empty and length < 33")
+                        Text("Name must not be empty and length < 21")
                     },
                 )
                 Spacer(Modifier.height(8.dp))

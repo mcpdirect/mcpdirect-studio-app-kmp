@@ -19,6 +19,11 @@ class ConnectOpenAPIServerViewModel: ViewModel() {
     var name by mutableStateOf("")
         private set
     var isNameError by mutableStateOf(true)
+
+//    var toolPrefix by mutableStateOf("")
+//        private set
+//    var istoolPrefixError by mutableStateOf(true)
+
     var url by mutableStateOf("")
         private set
     var isUrlError by mutableStateOf(true)
@@ -31,11 +36,18 @@ class ConnectOpenAPIServerViewModel: ViewModel() {
 
     fun onNameChange(value:String){
         val v = value.trim()
-        isNameError = v.isEmpty()||v.length>32
+        isNameError = v.isEmpty()||v.length>20
         if(!isNameError){
             name = v.replace(" ","_");
         }
     }
+//    fun onToolPrefixChange(value:String){
+//        val v = value.trim()
+//        istoolPrefixError = v.isEmpty()||v.length>16
+//        if(!istoolPrefixError){
+//            toolPrefix = v.replace(" ","_");
+//        }
+//    }
     fun onUrlChange(value:String){
         val u = value.trim()
         isUrlError = !u.startsWith("http://")&&!u.startsWith("https://")
