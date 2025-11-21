@@ -20,9 +20,9 @@ fun StudioActionBar(
     navigationIcon: @Composable (() -> Unit) = {},
     actions: @Composable (RowScope.() -> Unit) = {},
 ){
-    Row(Modifier.fillMaxWidth()
+    Row(Modifier.fillMaxWidth(),
 //        .padding().padding(horizontal = 8.dp)
-        .background(color = MaterialTheme.colorScheme.surfaceContainer),
+//        .background(color = MaterialTheme.colorScheme.secondaryContainer),
         verticalAlignment = Alignment.CenterVertically) {
         navigationIcon()
         title?.let {

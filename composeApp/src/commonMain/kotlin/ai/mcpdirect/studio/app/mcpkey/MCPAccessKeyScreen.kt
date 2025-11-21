@@ -90,88 +90,85 @@ fun MCPAccessKeyScreen() {
                 generalViewModel.topBarActions = {}
             }
         }
-        StudioCard(modifier = Modifier.fillMaxHeight()) {
-            LazyColumn {
-                items(viewModel.accessKeys){
-                    ListItem(
-                        headlineContent = { Text(it.name) },
-                        trailingContent = {
-                            Row {
-                                TooltipIconButton(
-                                    Res.drawable.edit,
-                                    contentDescription = "Edit MCP Key name",
-                                    onClick = {
-                                        mcpKey = it
-                                        dialog = MCPKeyDialog.EditMCPKeyName
-                                    })
-                                TooltipIconButton(
-                                    Res.drawable.visibility,
-                                    contentDescription = "Display MCP Key",
-                                    onClick = {
-                                        mcpKey = it
-                                        dialog = MCPKeyDialog.DisplayMCPKey
-                                    })
-                                if (it.status == 0) IconButton(
-                                    onClick = { viewModel.setMCPKeyStatus(it,1) }) {
-                                    Icon(painter = painterResource(Res.drawable.block),
-                                        contentDescription = "Enable MCP Key",
-                                        tint = Color.Red)
-                                } else IconButton(
-                                    onClick = { viewModel.setMCPKeyStatus(it,0) }) {
-                                    Icon(painter = painterResource(Res.drawable.check),
-                                        contentDescription = "Disable MCP Key",
-                                        tint = Color(0xFF63A002))
-                                }
-                                TooltipIconButton(
-                                    Res.drawable.shield_toggle,
-                                    contentDescription = "Edit Tool Permissions",
-                                    onClick = {
-                                        toolPermissionViewModel.accessKey = it
-                                        generalViewModel.currentScreen(Screen.ToolPermission,
-                                            "Tool Permissions for Key #${it.name}",
-                                            Screen.MCPAccessKey)
-                                    })
+        LazyColumn(Modifier.fillMaxSize().padding(8.dp)) {
+            items(viewModel.accessKeys){
+                ListItem(
+                    headlineContent = { Text(it.name) },
+                    trailingContent = {
+                        Row {
+                            TooltipIconButton(
+                                Res.drawable.edit,
+                                contentDescription = "Edit MCP Key name",
+                                onClick = {
+                                    mcpKey = it
+                                    dialog = MCPKeyDialog.EditMCPKeyName
+                                })
+                            TooltipIconButton(
+                                Res.drawable.visibility,
+                                contentDescription = "Display MCP Key",
+                                onClick = {
+                                    mcpKey = it
+                                    dialog = MCPKeyDialog.DisplayMCPKey
+                                })
+                            if (it.status == 0) IconButton(
+                                onClick = { viewModel.setMCPKeyStatus(it,1) }) {
+                                Icon(painter = painterResource(Res.drawable.block),
+                                    contentDescription = "Enable MCP Key",
+                                    tint = Color.Red)
+                            } else IconButton(
+                                onClick = { viewModel.setMCPKeyStatus(it,0) }) {
+                                Icon(painter = painterResource(Res.drawable.check),
+                                    contentDescription = "Disable MCP Key",
+                                    tint = Color(0xFF63A002))
                             }
-                        },
-                        supportingContent = {
-                            val summaries = viewModel.toolPermissionMakerSummary.filter {
-                                    summary ->
-                                summary.accessKeyId==it.id
-                            }
-                            if(summaries.isNotEmpty()){
-                                FlowRow(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentHeight(align = Alignment.Top),
-                                    horizontalArrangement = Arrangement.Start
-                                ) {
-                                    summaries.forEach {
-                                        val maker = generalViewModel.toolMaker(it.makerId)
-                                        println("summary maker $maker")
-                                        if(maker!=null)
-                                            Box(
-                                                Modifier.border(
-                                                    width = 1.dp,
-                                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                                                    shape = RoundedCornerShape(8.dp)
-                                                ).padding(all = 4.dp)
-                                            ) {
-                                                Text(
-                                                    "${maker.name}(${it.count})",
-                                                    style = MaterialTheme.typography.bodySmall,
-                                                    color = MaterialTheme.colorScheme.primary,
-                                                )
-                                            }
-                                        Spacer(Modifier.width(4.dp))
-                                    }
+                            TooltipIconButton(
+                                Res.drawable.shield_toggle,
+                                contentDescription = "Edit Tool Permissions",
+                                onClick = {
+                                    toolPermissionViewModel.accessKey = it
+                                    generalViewModel.currentScreen(Screen.ToolPermission,
+                                        "Tool Permissions for Key #${it.name}",
+                                        Screen.MCPAccessKey)
+                                })
+                        }
+                    },
+                    supportingContent = {
+                        val summaries = viewModel.toolPermissionMakerSummary.filter {
+                                summary ->
+                            summary.accessKeyId==it.id
+                        }
+                        if(summaries.isNotEmpty()){
+                            FlowRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(align = Alignment.Top),
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                summaries.forEach {
+                                    val maker = generalViewModel.toolMaker(it.makerId)
+                                    println("summary maker $maker")
+                                    if(maker!=null)
+                                        Box(
+                                            Modifier.border(
+                                                width = 1.dp,
+                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                                shape = RoundedCornerShape(8.dp)
+                                            ).padding(all = 4.dp)
+                                        ) {
+                                            Text(
+                                                "${maker.name}(${it.count})",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.primary,
+                                            )
+                                        }
+                                    Spacer(Modifier.width(4.dp))
                                 }
                             }
                         }
-                    )
-                }
+                    }
+                )
             }
         }
-
     }
     when(dialog){
         MCPKeyDialog.None -> {}

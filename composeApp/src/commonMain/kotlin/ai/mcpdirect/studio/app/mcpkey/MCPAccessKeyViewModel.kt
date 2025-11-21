@@ -51,6 +51,7 @@ class MCPAccessKeyViewModel : ViewModel(){
             }
             getPlatform().queryToolPermissionMakerSummaries { ( code, message, data) ->
                 if(data!=null) {
+                    toolPermissionMakerSummary.clear()
                     toolPermissionMakerSummary.addAll(data)
                 }
             }

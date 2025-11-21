@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-20
 ### Changed
+- Updated theming system in Color.kt and Theme.kt with new color schemes
+- Modified NavigationTopBar.kt to change selected navigation item appearance using background color
+- Updated MCPAccessKeyScreen.kt to use OutlinedCard instead of StudioCard
+- Modified StudioCard.kt to use OutlinedCard as default implementation
+- Updated StudioActionBar.kt to remove background color styling
+- Enhanced StudioListItem.kt to improve selected item styling with colors
+- Updated MCPAccessKeyScreen.kt UI implementation using LazyColumn with custom list items
+- Modified MCPAccessKeyViewModel.kt to update access key status values (0 to -1 for disabled, 1 to 0 for enabled)
+
+## 2025-11-20
+### Changed
 - Updated ConnectMCPScreen.kt to use STATUS_WAITING constant for enabling/disabling UI elements
 - Enhanced MyStudioScreen.kt to use STATUS_WAITING constant when selecting active tool maker items
 - Added import for AIPortToolMaker.STATUS_WAITING constant in MyStudioScreen.kt

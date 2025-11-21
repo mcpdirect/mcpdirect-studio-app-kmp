@@ -41,9 +41,9 @@ fun StudioListItem(
         supportingContent = supportingContent,
         leadingContent = leadingContent,
         trailingContent = trailingContent,
-        colors = colors,
-//        colors = if(selected) selectedListItemColors else colors,
-        tonalElevation = if(selected) 8.dp else tonalElevation,
+//        colors = colors,
+        colors = if(selected) selectedListItemColors else colors,
+        tonalElevation = tonalElevation,
         shadowElevation = shadowElevation
     )
 }

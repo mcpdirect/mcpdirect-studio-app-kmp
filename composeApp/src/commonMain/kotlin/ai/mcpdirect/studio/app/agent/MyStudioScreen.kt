@@ -85,7 +85,7 @@ fun MyStudioScreen(){
             }
         }
 
-        StudioCard(Modifier.fillMaxSize().padding(top = 8.dp, bottom = 8.dp, end = 8.dp)) {
+        OutlinedCard(Modifier.fillMaxSize().padding(top = 8.dp, bottom = 8.dp, end = 8.dp)) {
             when (currentTabIndex) {
                 0 -> ToolMakerListView(myStudioViewModel){
                     dialog = it

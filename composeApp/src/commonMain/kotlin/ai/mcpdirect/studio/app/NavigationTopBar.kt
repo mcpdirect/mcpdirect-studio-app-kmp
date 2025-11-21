@@ -7,6 +7,7 @@ import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.setting.settingsViewModel
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.LinearProgressIndicator
@@ -48,23 +49,37 @@ fun NavigationTopBar(
                             )
                         } else screens.forEach { screen ->
                             if (screen == generalViewModel.currentScreen) {
-                                StudioListItem(
-                                    modifier = Modifier.width(140.dp),
-                                    selected = true,
-//                                    leadingContent = { },
-                                    headlineContent = {Row(
-                                        modifier =  Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center){
-                                        Icon(
+//                                StudioListItem(
+//                                    modifier = Modifier.wrapContentWidth().width(140.dp),
+//                                    selected = true,
+////                                    leadingContent = { },
+//                                    headlineContent = { Row(
+////                                        modifier =  Modifier.fillMaxWidth(),
+//                                        horizontalArrangement = Arrangement.Start){
+//                                        Icon(
+//                                            painterResource(screen.icon),
+//                                            contentDescription = stringResource(screen.title))
+//                                        Text(stringResource(screen.title))
+//                                        } },
+////                                    supportingContent = {Row(
+////                                        modifier =  Modifier.fillMaxWidth(),
+////                                        horizontalArrangement = Arrangement.Center){
+////                                        Text(stringResource(screen.title))
+////                                    }}
+//                                )
+                                Row(
+                                    Modifier.background(
+                                        MaterialTheme.colorScheme.secondaryContainer,
+                                        ButtonDefaults.shape
+                                    ).height(40.dp).padding(horizontal = 16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                    ){
+                                    Icon(
                                         painterResource(screen.icon),
                                         contentDescription = stringResource(screen.title))
-                                    }},
-                                    supportingContent = {Row(
-                                        modifier =  Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center){
-                                        Text(stringResource(screen.title))
-                                    }}
-                                )
+                                    Spacer(Modifier.size(4.dp))
+                                    Text(stringResource(screen.title))
+                                }
                             }else{
                                 TooltipIconButton(
                                     screen.icon,
