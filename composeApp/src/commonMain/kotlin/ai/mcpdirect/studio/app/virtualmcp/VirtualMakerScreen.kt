@@ -9,6 +9,7 @@ import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.border
@@ -280,7 +281,7 @@ private fun MakerItem(
             Text("Tags: ${maker.tags}")
         },
         trailingContent = {
-            if (maker.status == 0) Icon(painter = painterResource(Res.drawable.block),
+            if (maker.status == STATUS_OFF) Icon(painter = painterResource(Res.drawable.block),
                 contentDescription = "Click to enable",
                 tint = Color.Red)
             else Icon(painter = painterResource(Res.drawable.check),
@@ -342,7 +343,7 @@ private fun MakerDetailView(
                 viewModel.showEditServerNameDialog = true
             })
             Spacer(Modifier.border(1.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), shape = RectangleShape))
-            if (maker.status == 0) TooltipIconButton(
+            if (maker.status == STATUS_OFF) TooltipIconButton(
                 Res.drawable.play_circle,
                 contentDescription = "Enable",
                 tint = MaterialTheme.colorScheme.primary,
@@ -354,7 +355,7 @@ private fun MakerDetailView(
                 onClick = { viewModel.setServerStatus(maker.id,0) })
             TooltipIconButton(
                 Res.drawable.delete,
-                contentDescription = "Deprecate",
+                contentDescription = "Abandon",
                 onClick = { viewModel.setServerStatus(maker.id,-1) })
 
         }

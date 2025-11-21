@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-20
+### Changed
+- Updated Platform.kt to change studioId parameter from Long to String for all studio-related API functions
+- Enhanced MyStudioScreen.kt to use localToolAgent for identifying current device
+- Updated MyStudioScreen.kt to comment out automatic navigation to ConnectMCP screen
+- Modified MyStudioScreen.kt to only show template creation button for MCP tool makers (not virtual)
+- Improved MyStudioScreen.kt to only show refresh button for other tool agents than local
+- Added AIPortToolMaker status constants (STATUS_OFF, STATUS_ON, STATUS_ERROR, STATUS_WAITING, STATUS_ABANDONED)
+- Updated various screens (MCPTeamScreen.kt, MCPTeamToolMakerScreen.kt, VirtualMakerScreen.kt, etc.) to use status constants
+- Enhanced StudioRepository.kt with localToolAgent state flow and improved server management
+- Updated Platform.jvm.kt to handle onToolAgentNotification and onToolMakerNotification events
+- Modified ConnectMCPScreen.kt to properly display status indicators using constants
+- Updated ConnectMCPViewModel.kt to use STATUS_ABANDONED constant when removing tool makers
+- Changed AIPortToolAgent.engineId from Long to String
+
+### Fixed
+- Corrected status handling for tool makers in various UI components
+- Fixed notification handling for MCP and OpenAPI servers in Platform.jvm.kt
+- Improved status checking logic in ConnectMCPScreen.kt
+
 ## 2025-11-19
 ### Changed
 - Renamed publishMCPToolsForStudio to publishMCPToolsFromStudio in Platform.kt

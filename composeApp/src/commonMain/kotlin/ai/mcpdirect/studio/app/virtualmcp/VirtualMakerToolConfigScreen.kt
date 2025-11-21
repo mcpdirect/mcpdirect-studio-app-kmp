@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -154,7 +155,7 @@ private fun MakerItem(
             if(maker.tags!=null&&maker.tags!!.isNotBlank())Text("Tags: ${maker.tags!!}")
         },
         leadingContent = {
-            if (maker.status == 0) Icon(painter = painterResource(Res.drawable.block),
+            if (maker.status == STATUS_OFF) Icon(painter = painterResource(Res.drawable.block),
                 contentDescription = "Click to enable",
                 tint = Color.Red)
             else Icon(painter = painterResource(Res.drawable.check),

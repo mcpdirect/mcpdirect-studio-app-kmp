@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.EditMCPServerNameDialog
 import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.border
@@ -107,7 +108,7 @@ fun VirtualToolMakerListView() {
                         Text("Tags: ${maker.tags}")
                     },
                     trailingContent = {
-                        if (maker.status == 0) Icon(painter = painterResource(Res.drawable.block),
+                        if (maker.status == STATUS_OFF) Icon(painter = painterResource(Res.drawable.block),
                             contentDescription = "Click to enable",
                             tint = Color.Red)
                         else Icon(painter = painterResource(Res.drawable.check),
@@ -208,7 +209,7 @@ fun VirtualToolMakerDetailView() {
                         shape = RectangleShape
                     )
                 )
-                if (maker.status == 0) TooltipIconButton(
+                if (maker.status == STATUS_OFF) TooltipIconButton(
                     Res.drawable.play_circle,
                     contentDescription = "Enable",
                     tint = MaterialTheme.colorScheme.primary,

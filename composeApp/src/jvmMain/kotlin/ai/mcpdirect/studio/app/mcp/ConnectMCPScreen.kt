@@ -8,6 +8,10 @@ import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_ERROR
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_ON
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
 import androidx.compose.foundation.clickable
@@ -129,15 +133,15 @@ fun ConnectMCPScreen(){
                         }
                     },
                     trailingContent = {
-                        if (it.status == 0) StudioIcon(
+                        if (it.status == STATUS_OFF) StudioIcon(
                             Res.drawable.mobiledata_off,
                             contentDescription = "Disconnect",
                             tint = MaterialTheme.colorScheme.error
-                        ) else if(it.status==Int.MIN_VALUE){
+                        ) else if(it.status==STATUS_WAITING){
                             CircularProgressIndicator(
                                 Modifier.size(16.dp)
                             )
-                        } else if (it.status < 0) StudioIcon(
+                        } else if (it.status == STATUS_ERROR) StudioIcon(
                             Res.drawable.error,
                             contentDescription = "Disconnect",
                             tint = MaterialTheme.colorScheme.error
@@ -158,7 +162,7 @@ fun ConnectMCPScreen(){
                         navigationIcon = {
                             Spacer(Modifier.width(8.dp))
                             when(it.status){
-                                0->{
+                                STATUS_OFF->{
                                     Text("Not start")
                                     TooltipIconButton(
                                         Res.drawable.play_circle,
@@ -169,7 +173,7 @@ fun ConnectMCPScreen(){
                                         }
                                     )
                                 }
-                                1->{
+                                STATUS_ON->{
                                     Text("Running", color = MaterialTheme.colorScheme.primary)
                                     TooltipIconButton(
                                         Res.drawable.stop_circle,
@@ -204,7 +208,7 @@ fun ConnectMCPScreen(){
                         },
                         actions = {
                             Spacer(Modifier.weight(1.0f))
-                            if(it.status==1) {
+                            if(it.status==STATUS_ON) {
                                 TooltipIconButton(
                                     Res.drawable.refresh,
                                     contentDescription = "Refresh MCP Server Tools",
@@ -245,7 +249,7 @@ fun ConnectMCPScreen(){
                     )
                     HorizontalDivider()
                     when (it.status) {
-                        -1 -> {
+                        STATUS_ERROR -> {
                             if (it is MCPServer) {
                                 it.statusMessage?.let {
                                     StudioBoard {

@@ -56,7 +56,7 @@ class ConnectOpenAPIServerViewModel: ViewModel() {
     fun onSecurityChange(keyName:String,value:String){
         securities[keyName]=value
     }
-    fun parseYaml(studioId:Long,doc:String){
+    fun parseYaml(studioId:String,doc:String){
         viewModelScope.launch {
 //            var docUri:String? = null
 //            if(doc.startsWith("http://")||doc.startsWith("https://")){

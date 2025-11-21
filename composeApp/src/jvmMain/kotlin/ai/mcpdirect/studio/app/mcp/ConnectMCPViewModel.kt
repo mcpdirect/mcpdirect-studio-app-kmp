@@ -9,6 +9,7 @@ import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_ABANDONED
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -48,7 +49,7 @@ class ConnectMCPViewModel: ViewModel() {
     }
     fun updateToolMaker(maker: AIPortToolMaker){
         viewModelScope.launch {
-            if(maker.status==Int.MIN_VALUE) _toolMakers.remove(maker.id)
+            if(maker.status==STATUS_ABANDONED) _toolMakers.remove(maker.id)
             else if(maker.id!=0L)_toolMakers[maker.id]=maker;
         }
     }

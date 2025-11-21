@@ -33,5 +33,11 @@ open class AIPortToolMaker {
         const val TYPE_VIRTUAL = 0
         const val TYPE_OPENAPI = 1
         const val TYPE_MCP = 1000
+
+        const val STATUS_ABANDONED = -1
+        const val STATUS_OFF = 0
+        const val STATUS_ON = 1
+        const val STATUS_ERROR = 256
+        const val STATUS_WAITING = Int.MAX_VALUE
     }
 }

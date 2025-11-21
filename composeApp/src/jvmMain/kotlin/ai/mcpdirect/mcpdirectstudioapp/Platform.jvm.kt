@@ -7,6 +7,8 @@ import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.handler.NotificationHandler
 import appnet.util.crypto.SHA256
 import kotlinx.coroutines.CoroutineScope
@@ -47,44 +49,105 @@ class JVMPlatform : Platform, NotificationHandler{
         return System.getenv(key)
     }
 
-    override fun onMCPServerNotification(server: ai.mcpdirect.studio.dao.entity.MCPServer?) {
-        server?.let {
-            val mcpServer = MCPServer()
-            mcpServer.id = it.id
-            mcpServer.status =  it.status
-            if(it.status>Int.MIN_VALUE) {
-                mcpServer.created = it.created
-                mcpServer.lastUpdated = it.lastUpdated
-                mcpServer.type = it.type
-                mcpServer.name = it.name?:""
-                mcpServer.tags = it.tags
-                mcpServer.agentId = it.agentId
-                mcpServer.userId = it.userId
-                mcpServer.teamId = it.teamId
-                mcpServer.transport = it.transport
-                mcpServer.url = it.url
-                mcpServer.command = it.command
-                mcpServer.args = it.args
-                mcpServer.env = it.env
-                mcpServer.statusMessage = it.statusMessage()
-            }
-            connectMCPViewModel.updateToolMaker(mcpServer)
+    override fun onToolAgentNotification(agent: ai.mcpdirect.backend.dao.entity.aitool.AIPortToolAgent?) {
+        agent?.let {
+            val toolAgent = AIPortToolAgent()
+            toolAgent.id = it.id;
+            toolAgent.name = it.name;
+            toolAgent.status = it.status
+            toolAgent.userId = it.userId
+            toolAgent.engineId = it.engineId
+
+            StudioRepository.localToolAgent(toolAgent)
         }
     }
 
-    override fun onOpenAPIServerNotification(server: ai.mcpdirect.studio.dao.entity.OpenAPIServer?) {
+    override fun onToolMakerNotification(server: ai.mcpdirect.backend.dao.entity.aitool.AIPortToolMaker?) {
         server?.let {
-            val openapiServer = OpenAPIServer()
-            openapiServer.id = it.id
-            openapiServer.status = it.status
-            if(it.status>Int.MIN_VALUE) {
-                openapiServer.name = it.name?:""
-                openapiServer.url = it.url
-                openapiServer.securities = it.securities
-                openapiServer.statusMessage = it.statusMessage
+            when(it){
+                is ai.mcpdirect.studio.dao.entity.MCPServer->{
+                    val mcpServer = MCPServer()
+                    mcpServer.id = it.id
+                    mcpServer.status =  it.status
+                    if(it.status>Int.MIN_VALUE) {
+                        mcpServer.created = it.created
+                        mcpServer.lastUpdated = it.lastUpdated
+                        mcpServer.type = it.type
+                        mcpServer.name = it.name?:""
+                        mcpServer.tags = it.tags
+                        mcpServer.agentId = it.agentId
+                        mcpServer.userId = it.userId
+                        mcpServer.teamId = it.teamId
+                        mcpServer.transport = it.transport
+                        mcpServer.url = it.url
+                        mcpServer.command = it.command
+                        mcpServer.args = it.args
+                        mcpServer.env = it.env
+                        mcpServer.statusMessage = it.statusMessage()
+                    }
+                    StudioRepository.mcpServer(mcpServer)
+                }
+                is ai.mcpdirect.studio.dao.entity.OpenAPIServer ->{
+                    val openapiServer = OpenAPIServer()
+                    openapiServer.id = it.id
+                    openapiServer.status = it.status
+                    if(it.status>Int.MIN_VALUE) {
+                        openapiServer.created = it.created
+                        openapiServer.lastUpdated = it.lastUpdated
+                        openapiServer.type = it.type
+                        openapiServer.name = it.name?:""
+                        openapiServer.tags = it.tags
+                        openapiServer.agentId = it.agentId
+                        openapiServer.userId = it.userId
+                        openapiServer.teamId = it.teamId
+                        openapiServer.url = it.url
+                        openapiServer.securities = it.securities
+                        openapiServer.statusMessage = it.statusMessage()
+                        StudioRepository.openapiServer(openapiServer)
+                    }
+                }
             }
         }
     }
+
+//    override fun onMCPServerNotification(server: ai.mcpdirect.studio.dao.entity.MCPServer?) {
+//        server?.let {
+//            val mcpServer = MCPServer()
+//            mcpServer.id = it.id
+//            mcpServer.status =  it.status
+//            if(it.status>Int.MIN_VALUE) {
+//                mcpServer.created = it.created
+//                mcpServer.lastUpdated = it.lastUpdated
+//                mcpServer.type = it.type
+//                mcpServer.name = it.name?:""
+//                mcpServer.tags = it.tags
+//                mcpServer.agentId = it.agentId
+//                mcpServer.userId = it.userId
+//                mcpServer.teamId = it.teamId
+//                mcpServer.transport = it.transport
+//                mcpServer.url = it.url
+//                mcpServer.command = it.command
+//                mcpServer.args = it.args
+//                mcpServer.env = it.env
+//                mcpServer.statusMessage = it.statusMessage()
+//            }
+//            connectMCPViewModel.updateToolMaker(mcpServer)
+//        }
+//    }
+//
+//    override fun onOpenAPIServerNotification(server: ai.mcpdirect.studio.dao.entity.OpenAPIServer?) {
+//        server?.let {
+//            val openapiServer = OpenAPIServer()
+//            openapiServer.id = it.id
+//            openapiServer.status = it.status
+//            if(it.status>Int.MIN_VALUE) {
+//                openapiServer.name = it.name?:""
+//                openapiServer.url = it.url
+//                openapiServer.securities = it.securities
+//                openapiServer.statusMessage = it.statusMessage
+//            }
+//        }
+//    }
 
     override fun httpRequest(
         usl: String,

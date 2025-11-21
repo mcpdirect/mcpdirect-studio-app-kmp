@@ -169,6 +169,7 @@ fun ToolAgentListView(
         myStudioViewModel.refreshToolAgents()
     }
     val uiState = myStudioViewModel.uiState
+    val localToolAgent by myStudioViewModel.localToolAgent.collectAsState()
     val toolAgents by myStudioViewModel.toolAgents.collectAsState()
     val toolAgent by myStudioViewModel.toolAgent.collectAsState()
     LazyColumn{
@@ -179,18 +180,19 @@ fun ToolAgentListView(
                 modifier = Modifier.clickable(
                     enabled = uiState !is UIState.Loading && it.id!=toolAgent.id
                 ){
-                    if(it.id== getPlatform().toolAgentId)
-                        generalViewModel.currentScreen(
-                            Screen.ConnectMCP,
-                            it.name,
-                            Screen.MyStudio
-
-                        )
-                    else myStudioViewModel.toolAgent(it)
+//                    if(it.id== getPlatform().toolAgentId)
+//                        generalViewModel.currentScreen(
+//                            Screen.ConnectMCP,
+//                            it.name,
+//                            Screen.MyStudio
+//
+//                        )
+//                    else
+                    myStudioViewModel.toolAgent(it)
                 },
                 headlineContent = {Text(it.name)},
                 supportingContent = {
-                    if(it.id == getPlatform().toolAgentId)
+                    if(it.id == localToolAgent.id)
                         Tag("This device")
                 },
                 trailingContent = {
@@ -217,6 +219,7 @@ fun ToolMakerListView(
     var showEditServerNameDialog by remember { mutableStateOf(false) }
     var showEditServerTagsDialog by remember { mutableStateOf(false) }
     var showEditServerConfigDialog by remember { mutableStateOf(false) }
+    val localToolAgent by myStudioViewModel.localToolAgent.collectAsState()
     val toolAgents by myStudioViewModel.toolAgents.collectAsState()
     val uriHandler = LocalUriHandler.current
     val uiState = myStudioViewModel.uiState
@@ -250,7 +253,7 @@ fun ToolMakerListView(
     } else{
         LaunchedEffect(null) {
             generalViewModel.topBarActions = {
-                if (toolMaker.id > 0L) {
+                if (toolMaker.id > 0L && toolMaker.mcp()) {
                     Button(onClick = {
                         onDialogRequest(MyStudioScreenDialog.CreateMCPTemplate)
                     }) {
@@ -341,7 +344,7 @@ fun ToolMakerListView(
                         }
                     },
                     actions = {
-                        TooltipIconButton(
+                        if(toolAgent.id!=localToolAgent.id) TooltipIconButton(
                             Res.drawable.refresh,
                             contentDescription = "Refresh",
                             onClick = {
@@ -658,11 +661,15 @@ fun ToolMakerItem(
             }
         },
         trailingContent = {
-            if (toolMaker.status == 0) StudioIcon(
+            if (toolMaker.status == AIPortToolMaker.STATUS_OFF) StudioIcon(
                 Res.drawable.mobiledata_off,
                 contentDescription = "Disconnect",
                 tint = MaterialTheme.colorScheme.error
-            ) else if (toolMaker.status < 0) StudioIcon(
+            ) else if(toolMaker.status== AIPortToolMaker.STATUS_WAITING){
+                CircularProgressIndicator(
+                    Modifier.size(16.dp)
+                )
+            } else if (toolMaker.status == AIPortToolMaker.STATUS_ERROR) StudioIcon(
                 Res.drawable.error,
                 contentDescription = "Disconnect",
                 tint = MaterialTheme.colorScheme.error

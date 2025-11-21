@@ -26,9 +26,8 @@ import kotlinx.coroutines.launch
 
 class MyStudioViewModel(): ViewModel() {
     var uiState by mutableStateOf<UIState>(UIState.Idle)
-//    var toolAgent by mutableStateOf(AIPortToolAgent("",-1))
-//        private  set
-    private val _toolAgent = MutableStateFlow<AIPortToolAgent>(AIPortToolAgent("",-1))
+    val localToolAgent = StudioRepository.localToolAgent
+    private val _toolAgent = MutableStateFlow(AIPortToolAgent("",-1))
     val toolAgent: StateFlow<AIPortToolAgent> = _toolAgent
     fun toolAgent(agent:AIPortToolAgent){
         if(agent.id!=_toolAgent.value.id){
@@ -486,7 +485,7 @@ class MyStudioViewModel(): ViewModel() {
         }
     }
 
-    fun connectToolMakerToStudio(studioId: Long, makerId: Long,agentId:Long,
+    fun connectToolMakerToStudio(studioId: String, makerId: Long,agentId:Long,
                          onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit){
         getPlatform().connectToolMakerToStudio(studioId,makerId,agentId){
             onResponse(it.code,it.message,it.data)

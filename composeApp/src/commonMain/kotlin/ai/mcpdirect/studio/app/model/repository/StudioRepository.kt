@@ -19,23 +19,45 @@ object StudioRepository {
     private val loadMutex = Mutex()
     private val _duration = 5.seconds
     private val _virtualToolAgent = AIPortToolAgent("Virtual MCP",1)
+    private val _localToolAgent = MutableStateFlow<AIPortToolAgent>(AIPortToolAgent())
+    val localToolAgent: StateFlow<AIPortToolAgent> = _localToolAgent
+    fun localToolAgent(agent: AIPortToolAgent){
+        _localToolAgent.value = agent
+    }
     private var _toolAgentLastQuery:TimeMark? = null
     private val _toolAgents = MutableStateFlow<Map<Long, AIPortToolAgent>>(emptyMap())
     val toolAgents: StateFlow<Map<Long, AIPortToolAgent>> = _toolAgents
     private val _toolMakerLastQueries = mutableMapOf<Long, TimeMark>()
     private val _mcpServers = MutableStateFlow<Map<Long, MCPServer>>(emptyMap())
     val mcpServers: StateFlow<Map<Long, MCPServer>> = _mcpServers
+    fun mcpServer(server: MCPServer){
+        _mcpServers.update { map ->
+            map.toMutableMap().apply {
+                if(server.status== AIPortToolMaker.STATUS_ABANDONED) remove(server.id)
+                else put(server.id, server)
+            }
+        }
+    }
 
     private val _openapiServers = MutableStateFlow<Map<Long, OpenAPIServer>>(emptyMap())
     val openapiServers: StateFlow<Map<Long, OpenAPIServer>> = _openapiServers
+    fun openapiServer(server: OpenAPIServer){
+        _openapiServers.update { map ->
+            map.toMutableMap().apply {
+                if(server.status== AIPortToolMaker.STATUS_ABANDONED) remove(server.id)
+                else put(server.id, server)
+            }
+        }
+    }
+
     suspend fun queryToolMakersFromStudio(toolAgent: AIPortToolAgent,force: Boolean=false){
-        val studioId = toolAgent.engineId
+        val agentId = toolAgent.id
         loadMutex.withLock {
             val now = TimeSource.Monotonic.markNow()
-            val lastQuery = _toolMakerLastQueries[studioId]
+            val lastQuery = _toolMakerLastQueries[agentId]
             if(lastQuery==null|| (force&&lastQuery.elapsedNow()> _duration)) {
                 generalViewModel.loading()
-                getPlatform().queryToolMakersFromStudio(studioId) {
+                getPlatform().queryToolMakersFromStudio(toolAgent.engineId) {
                     if (it.successful()) it.data?.let { toolMakers ->
                         _mcpServers.update { map ->
                             map.toMutableMap().apply {
@@ -55,7 +77,7 @@ object StudioRepository {
                                 }
                             }
                         }
-                        _toolMakerLastQueries[studioId] = now
+                        _toolMakerLastQueries[agentId] = now
                     }
                     generalViewModel.loaded(
                         "Load MCP Servers From Studio #${toolAgent.name}",it.code,it.message

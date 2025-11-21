@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.isValidEmail
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -421,7 +422,7 @@ private fun TeamToolMakerList() {
                                 shape = RoundedCornerShape(8.dp)
                             )
                         ) {
-                            if (it.status == 0) Tag(
+                            if (it.status == AIPortToolMaker.STATUS_OFF) Tag(
                                 "inactive",
                                 color = MaterialTheme.colorScheme.error,
                             ) else Tag(

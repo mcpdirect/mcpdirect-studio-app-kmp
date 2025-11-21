@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 class AIPortToolAgent {
     var id: Long = 0
     var userId: Long = 0
-    var engineId: Long = 0
+    var engineId: String = ""
     var appId: Long = 0
     var created: Long = 0
     var deviceId: Long = 0

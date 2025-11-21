@@ -9,6 +9,8 @@ import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_ON
 import ai.mcpdirect.studio.app.theme.purple.selectedListItemColors
 import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.clickable
@@ -196,8 +198,8 @@ fun ToolMakerItem(
             if(!isVirtualMCP&&maker.agentStatus==0)
                 Tag("offline", color = MaterialTheme.colorScheme.error,)
             else when(maker.status){
-                0-> Tag("inactive", color = MaterialTheme.colorScheme.error)
-                1-> Tag("active",)
+                STATUS_OFF-> Tag("inactive", color = MaterialTheme.colorScheme.error)
+                STATUS_ON-> Tag("active",)
             }
         },
         colors = if(viewModel.toolMaker!=null&&viewModel.toolMaker!!.id==maker.id)
