@@ -89,7 +89,7 @@ fun ConnectMCPScreen(){
                 }
                 StudioListItem(
                     modifier = Modifier.clickable(
-                        enabled = it.id != connectMCPViewModel.toolMaker.id && it.status>-1
+                        enabled = it.id != connectMCPViewModel.toolMaker.id && it.status<STATUS_WAITING
                     ) {
                         connectMCPViewModel.toolMaker(it)
                     },

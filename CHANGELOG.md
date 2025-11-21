@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-20
 ### Changed
+- Updated ConnectMCPScreen.kt to use STATUS_WAITING constant for enabling/disabling UI elements
+- Enhanced MyStudioScreen.kt to use STATUS_WAITING constant when selecting active tool maker items
+- Added import for AIPortToolMaker.STATUS_WAITING constant in MyStudioScreen.kt
+
+## 2025-11-20
+### Changed
 - Updated Platform.kt to change studioId parameter from Long to String for all studio-related API functions
 - Enhanced MyStudioScreen.kt to use localToolAgent for identifying current device
 - Updated MyStudioScreen.kt to comment out automatic navigation to ConnectMCP screen

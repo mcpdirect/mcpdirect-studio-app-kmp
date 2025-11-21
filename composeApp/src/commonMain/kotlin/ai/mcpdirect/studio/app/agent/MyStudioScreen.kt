@@ -19,6 +19,7 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_MCP
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_OPENAPI
 import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
@@ -388,7 +389,7 @@ fun ToolMakerListView(
                             ToolMakerItem(
                                 myStudioViewModel,
                                 it,
-                                it.id==toolMaker.id
+                                it.id==toolMaker.id && it.status<STATUS_WAITING
                             )
                         }
                     }
@@ -398,7 +399,7 @@ fun ToolMakerListView(
                             ToolMakerItem(
                                 myStudioViewModel,
                                 it,
-                                it.id == toolMaker.id
+                                it.id == toolMaker.id && it.status<STATUS_WAITING
                             )
                         }
                     }
