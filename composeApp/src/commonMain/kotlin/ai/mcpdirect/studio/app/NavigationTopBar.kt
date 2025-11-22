@@ -288,6 +288,7 @@ fun NavigationTopBar(
         }
         Column(
             Modifier.fillMaxSize().padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
         ){
             generalViewModel.loadingProcess?.let {
                 LinearProgressIndicator({ it }, Modifier.fillMaxWidth())

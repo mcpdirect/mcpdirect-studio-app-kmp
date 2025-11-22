@@ -1,32 +1,148 @@
 package ai.mcpdirect.studio.app.dashboard
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
+import ai.mcpdirect.studio.app.compose.Wizard
+import ai.mcpdirect.studio.app.compose.WizardStep
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import mcpdirectstudioapp.composeapp.generated.resources.Res
-import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_logo_512
-import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_text_logo
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun DashboardScreen(){
-    Column(Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+    Column(
+        Modifier.width(1200.dp).fillMaxHeight().padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(
-            painter = painterResource(Res.drawable.mcpdirect_text_logo),
-            contentDescription = "MCPdirect",
-            modifier = Modifier.width(512.dp)
-        )
-        Image(
-            painter = painterResource(Res.drawable.mcpdirect_logo_512),
-            contentDescription = "MCPdirect",
-        )
+        Row(
+            Modifier.fillMaxWidth().height(300.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ){
+            OutlinedCard(Modifier.weight(1.0f).fillMaxHeight()) {
+                Text("My Studios", modifier = Modifier.padding(8.dp))
+                HorizontalDivider()
+            }
+            OutlinedCard(Modifier.weight(1.0f).fillMaxHeight()) {
+                Text("MCP Tools", modifier = Modifier.padding(8.dp))
+                HorizontalDivider()
+            }
+            OutlinedCard(Modifier.weight(1.0f).fillMaxHeight()) {
+                Text("MCPdirect Keys", modifier = Modifier.padding(8.dp))
+                HorizontalDivider()
+            }
+            OutlinedCard(Modifier.weight(1.0f).fillMaxHeight()) {
+                Text("My Teams", modifier = Modifier.padding(8.dp))
+                HorizontalDivider()
+            }
+        }
+        Row(
+            Modifier.fillMaxHeight().weight(1.0f)
+        ){
+            Column(Modifier.weight(1.0f)){
+                Text("Shortcuts", modifier = Modifier.padding(8.dp))
+                HorizontalDivider()
+                ListItem(
+                    headlineContent = {Text("Connect OpenAPI as MCP")}
+                )
+            }
+            val wizardSteps = remember {
+                listOf(
+                    WizardStep("Welcome") {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Welcome to the Setup Wizard",
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                            Text(
+                                text = "Let's get started with the setup process",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    },
+                    WizardStep("Account") {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text("Enter your account details:", style = MaterialTheme.typography.titleMedium)
+                            OutlinedTextField(
+                                value = "",
+                                onValueChange = {},
+                                label = { Text("Email") }
+                            )
+                            OutlinedTextField(
+                                value = "",
+                                onValueChange = {},
+                                label = { Text("Password") },
+                                visualTransformation = PasswordVisualTransformation()
+                            )
+                        }
+                    },
+                    WizardStep("Preferences") {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text("Choose your preferences:", style = MaterialTheme.typography.titleMedium)
+
+                            var notificationsEnabled by remember { mutableStateOf(true) }
+                            var themeDark by remember { mutableStateOf(false) }
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = notificationsEnabled,
+                                    onCheckedChange = { notificationsEnabled = it }
+                                )
+                                Text("Enable notifications")
+                            }
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = themeDark,
+                                    onCheckedChange = { themeDark = it }
+                                )
+                                Text("Use dark theme")
+                            }
+                        }
+                    },
+                    WizardStep("Complete") {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text(
+                                text = "Setup Complete!",
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                            Text(
+                                text = "Your configuration has been saved successfully."
+                            )
+                        }
+                    }
+                )
+            }
+            OutlinedCard(Modifier.weight(3.0f)) {
+                Wizard(wizardSteps)
+            }
+
+        }
+
     }
 }
