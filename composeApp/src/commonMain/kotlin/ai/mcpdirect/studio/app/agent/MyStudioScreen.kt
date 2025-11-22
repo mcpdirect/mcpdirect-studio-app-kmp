@@ -18,6 +18,7 @@ import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_MCP
@@ -50,16 +51,19 @@ enum class MyStudioScreenDialog {
 }
 
 @Composable
-fun MyStudioScreen(){
-
+fun MyStudioScreen(
+    toolAgent: AIPortToolAgent?,
+    toolMaker: AIPortToolMaker?
+){
     val myStudioViewModel = remember { MyStudioViewModel() }
     var dialog by remember { mutableStateOf(MyStudioScreenDialog.None) }
     var currentTabIndex by remember { mutableStateOf(0) }
-    LaunchedEffect(null){
+    LaunchedEffect(myStudioViewModel){
         myStudioViewModel.refreshToolAgents()
         generalViewModel.refreshToolMakers()
+        toolAgent?.let { myStudioViewModel.toolAgent(it) }
+        toolMaker?.let { myStudioViewModel.toolMaker(it) }
     }
-
     Row(Modifier.fillMaxSize()){
         Column(
             Modifier.width(300.dp)

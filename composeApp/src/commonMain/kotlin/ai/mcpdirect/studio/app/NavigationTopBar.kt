@@ -48,7 +48,7 @@ fun NavigationTopBar(
                                 contentDescription = ""
                             )
                         } else screens.forEach { screen ->
-                            if (screen == generalViewModel.currentScreen) {
+                            if (screen::class == generalViewModel.currentScreen::class) {
 //                                StudioListItem(
 //                                    modifier = Modifier.wrapContentWidth().width(140.dp),
 //                                    selected = true,

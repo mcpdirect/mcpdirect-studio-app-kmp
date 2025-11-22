@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 
 ## 2025-11-20
+### Added
+- Created AppViewModel.kt for application state management
+- Created DashboardViewModel.kt for dashboard-specific state management
+- Created MyStudiosCard.kt as a new dashboard card component
+- Created new App.kt with complete application structure and navigation
+
+### Changed
+- Renamed DesktopApp.kt to App.kt to reflect platform-agnostic application
+- Updated common App.kt to implement full application UI with navigation
+- Modified NavigationTopBar.kt to use new screen navigation system
+- Updated MyStudioScreen.kt to accept parameters for toolAgent and toolMaker
+- Enhanced DashboardScreen.kt with new card-based layout and screen navigation
+- Updated Screen.kt to support parameterized screens
+- Modified web and JVM App.kt files to use new application structure
+- Updated web index.html to remove external font loading
+- Modified web styles.css to remove font-related CSS rules
+- Updated web main.kt to implement font loading for Chinese characters
+
+## 2025-11-20
+### Added
+- Created new Wizard.kt composable component with WizardStep, WizardStepIndicator, and WizardNavigation components
+- Added Wizard implementation to DashboardScreen.kt with multiple setup steps
+
+### Changed
+- Updated main.kt to center the application window on launch
+- Enhanced NavigationTopBar.kt with horizontal center alignment for content
+- Redesigned DashboardScreen.kt with a new layout featuring cards for Studios, MCP Tools, Keys, and Teams
+- Modified DashboardScreen.kt to include shortcut list and wizard component
+
+## 2025-11-20
 ### Changed
 - Updated theming system in Color.kt and Theme.kt with new color schemes
 - Modified NavigationTopBar.kt to change selected navigation item appearance using background color

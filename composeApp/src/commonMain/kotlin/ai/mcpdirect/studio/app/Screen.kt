@@ -1,5 +1,7 @@
 package ai.mcpdirect.studio.app
 
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
@@ -17,8 +19,8 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
         Res.drawable.settings)
     object ToolPermission : Screen(Res.string.tool_permission,
         Res.drawable.shield_toggle)
-    object MyStudio : Screen(Res.string.connect_mcp,
-        Res.drawable.plug_connect)
+//    object MyStudio : Screen(Res.string.connect_mcp,
+//        Res.drawable.plug_connect)
     object MCPTeam : Screen(Res.string.mcp_team,
         Res.drawable.groups)
 
@@ -49,9 +51,10 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
 //    object OpenAPIMCP: Screen(
 //        Res.string.open_api_mcp,
 //        Res.drawable.openapi)
-//    data class OpenAPIMCP(
-//        override val title: StringResource,
-//        override val icon: DrawableResource,
-//        val studioId: Long
-//    ) : Screen(title, icon)
+    data class MyStudio(
+        val toolAgent: AIPortToolAgent?=null,
+        val toolMaker: AIPortToolMaker?=null
+    ) : Screen(Res.string.connect_mcp, Res.drawable.plug_connect){
+
+    }
 }
