@@ -53,11 +53,14 @@ class JVMPlatform : Platform, NotificationHandler{
         agent?.let {
             val toolAgent = AIPortToolAgent()
             toolAgent.id = it.id;
-            toolAgent.name = it.name;
+            toolAgent.name = it.name?:"";
             toolAgent.status = it.status
             toolAgent.userId = it.userId
             toolAgent.engineId = it.engineId
-
+            toolAgent.tags = it.tags?:""
+            toolAgent.created = it.created
+            toolAgent.device = it.device?:""
+            toolAgent.deviceId = it.deviceId
             StudioRepository.localToolAgent(toolAgent)
         }
     }

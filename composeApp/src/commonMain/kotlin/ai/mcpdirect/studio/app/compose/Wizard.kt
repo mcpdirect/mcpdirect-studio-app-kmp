@@ -8,23 +8,28 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.check
 import org.jetbrains.compose.resources.painterResource
 
+class WizardViewModel: ViewModel(){
+    var nextStep by mutableStateOf(0)
+}
 data class WizardStep(
     val title: String,
-    val content: @Composable () -> Unit
+    val onFinish: (() -> Unit)? = null,
+    val content: @Composable ColumnScope.(viewModel: WizardViewModel) -> Unit
 )
-
 @Composable
 fun Wizard(
     steps: List<WizardStep>,
+    onFinish: (() -> Unit),
     modifier: Modifier = Modifier
 ) {
+    val viewModel by remember { mutableStateOf(WizardViewModel()) }
     var currentStep by remember { mutableIntStateOf(0) }
     Row (modifier = modifier.fillMaxSize()){
         // Step indicator
@@ -35,19 +40,40 @@ fun Wizard(
         VerticalDivider()
         Column(Modifier.weight(2.0f).fillMaxSize().padding(8.dp)) {
             // Step content
-            steps[currentStep].content()
+            val step = steps[currentStep]
+            step.content.invoke(this@Column,viewModel)
             Spacer(Modifier.weight(1.0f))
             // Navigation buttons
-            WizardNavigation(
-                currentStep = currentStep,
-                totalSteps = steps.size,
-                onPrevious = { if (currentStep > 0) currentStep-- },
-                onNext = { if (currentStep < steps.size - 1) currentStep++ },
-                onFinish = {
-                    // Handle finish action
-                    println("Wizard completed!")
+//            WizardNavigation(
+//                currentStep = currentStep,
+//                totalSteps = steps.size,
+//                onPrevious = { if (currentStep > 0) currentStep-- },
+//                onNext = { if (currentStep < steps.size - 1) currentStep++ },
+//                onFinish = onFinish
+//            )
+            Row(
+                modifier = Modifier.fillMaxWidth().height(32.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Spacer(modifier = Modifier.weight(1.0f))
+                if (currentStep > 0) {
+                    TextButton(
+                        onClick = { if (currentStep > 0) currentStep-- },
+                    ) {
+                        Text("Previous")
+                    }
+
                 }
-            )
+                Spacer(modifier = Modifier.size(16.dp))
+                Button(
+                    enabled = viewModel.nextStep>currentStep,
+                    onClick = { if (currentStep < steps.size - 1) currentStep++ else onFinish() },
+                ) {
+                    Text(
+                        if (currentStep < steps.size - 1) "Next" else "Finish"
+                    )
+                }
+            }
         }
     }
 }
@@ -60,30 +86,8 @@ fun WizardStepIndicator(
     val scrollState = rememberScrollState()
     Column(
         modifier = modifier.verticalScroll(scrollState)
-//        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         steps.forEachIndexed { index, step ->
-//            val (color, label) = if (index < currentStep) {
-//                MaterialTheme.colorScheme.primary to "✓"
-//            } else if (index == currentStep) {
-//                MaterialTheme.colorScheme.primary to (index + 1).toString()
-//            } else {
-//                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f) to (index + 1).toString()
-//            }
-//            Surface(
-//                color = color,
-//                contentColor = if (index <= currentStep) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-//                shape = MaterialTheme.shapes.small,
-//                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-//            ) {
-//                Text(
-//                    text = step.title,
-//                    modifier = Modifier
-//                        .size(32.dp)
-//                        .wrapContentWidth(Alignment.CenterHorizontally)
-//                        .wrapContentHeight(Alignment.CenterVertically)
-//                )
-//            }
             val colors = if (index < currentStep) {
                 ListItemDefaults.colors().copy(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.4f),

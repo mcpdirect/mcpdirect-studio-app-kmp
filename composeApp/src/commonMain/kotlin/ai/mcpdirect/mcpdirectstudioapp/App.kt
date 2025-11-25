@@ -73,9 +73,9 @@ fun App(
                     screens = listOf(
                         Screen.Dashboard,
                         Screen.MyStudio(),
-                        Screen.MCPAccessKey,
+                        Screen.MCPAccessKey(),
                         Screen.MCPTools,
-                        Screen.MCPTeam,
+                        Screen.MCPTeam(),
 //                        Screen.ToolDevelopment -> {}
 //                        Screen.ToolsLogbook,
 //                        Screen.VirtualMCP,
@@ -87,8 +87,10 @@ fun App(
                         }
                         Screen.ToolDevelopment -> {}
                         Screen.ConnectMCP -> {}
-                        Screen.MCPAccessKey -> {
-                            MCPAccessKeyScreen()
+                        is Screen.MCPAccessKey -> {
+                            MCPAccessKeyScreen(
+                                screen.dialog
+                            )
                         }
                         Screen.ToolsLogbook -> {}
                         Screen.UserSetting -> {
@@ -99,10 +101,11 @@ fun App(
                         }
                         is Screen.MyStudio -> MyStudioScreen(
                             screen.toolAgent,
-                            screen.toolMaker
+                            screen.toolMaker,
+                            screen.dialog
                         )
-                        Screen.MCPTeam -> {
-                            MCPTeamScreen()
+                        is Screen.MCPTeam -> {
+                            MCPTeamScreen(screen.dialog)
                         }
                         Screen.MCPTeamToolMaker -> {
                             MCPTeamToolMakerScreen()

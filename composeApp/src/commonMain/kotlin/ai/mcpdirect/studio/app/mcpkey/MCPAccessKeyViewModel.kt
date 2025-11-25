@@ -22,7 +22,7 @@ class MCPAccessKeyViewModel : ViewModel(){
             else -> UIState.Error(code)
         }
     }
-
+    var mcpKey by mutableStateOf<AIPortAccessKey?>(null)
     var mcpKeyName by mutableStateOf("")
         private set
     var mcpKeyNameErrors by mutableStateOf<MCPKeyNameError>(MCPKeyNameError.None)
@@ -81,7 +81,7 @@ class MCPAccessKeyViewModel : ViewModel(){
                     _accessKeys[data.id]=data
                     toolPermissionViewModel.accessKey = data
                     generalViewModel.currentScreen(Screen.ToolPermission,
-                        previousScreen = Screen.MCPAccessKey)
+                        previousScreen = Screen.MCPAccessKey())
                 }
             }
         }

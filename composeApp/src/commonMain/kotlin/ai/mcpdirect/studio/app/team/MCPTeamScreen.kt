@@ -31,27 +31,31 @@ import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
-private var dialog by mutableStateOf<MCPTeamDialog>(MCPTeamDialog.None)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MCPTeamScreen() {
-    val viewModel = mcpTeamViewModel
-    LaunchedEffect(viewModel) {
-        viewModel.uiState = UIState.Loading
+fun MCPTeamScreen(
+    dialog: MCPTeamDialog
+) {
+//    val viewModel = mcpTeamViewModel
+
+    LaunchedEffect(mcpTeamViewModel) {
+        mcpTeamViewModel.dialog = dialog
+        mcpTeamViewModel.uiState = UIState.Loading
         generalViewModel.refreshTeams{
                 code, message ->
             if(code==0) {
                 generalViewModel.refreshToolMakers{
                         code, message ->
-                    viewModel.uiState = UIState.Success
+                    mcpTeamViewModel.uiState = UIState.Success
                 }
                 generalViewModel.refreshToolMakerTemplates()
             }
         }
     }
 
-    when(viewModel.uiState){
+    when(mcpTeamViewModel.uiState){
         is UIState.Error -> {}
         UIState.Idle -> {}
         UIState.Loading -> {
@@ -74,7 +78,7 @@ fun MCPTeamScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Button(onClick = {
-                        dialog = MCPTeamDialog.CreateTeam
+                        mcpTeamViewModel.dialog = MCPTeamDialog.CreateTeam
                     }){
                         Text("Create your first MCP Team")
                     }
@@ -82,13 +86,17 @@ fun MCPTeamScreen() {
             else TeamListView()
         }
     }
-    when(dialog){
+    when(mcpTeamViewModel.dialog){
         MCPTeamDialog.None -> {}
         MCPTeamDialog.CreateTeam -> {
-            CreateTeamDialog(null)
+            CreateTeamDialog(null){
+                mcpTeamViewModel.dialog = MCPTeamDialog.None
+            }
         }
         MCPTeamDialog.EditTeamName -> {
-            CreateTeamDialog(viewModel.mcpTeam)
+            CreateTeamDialog(mcpTeamViewModel.mcpTeam){
+                mcpTeamViewModel.dialog = MCPTeamDialog.None
+            }
         }
         MCPTeamDialog.InviteTeamMember -> InviteTeamDialog()
     }
@@ -96,7 +104,8 @@ fun MCPTeamScreen() {
 
 @Composable
 fun CreateTeamDialog(
-    team: AIPortTeam?
+    team: AIPortTeam?,
+    onDismissRequest: () -> Unit,
 ) {
     val viewModel = mcpTeamViewModel
 //    val team = viewModel.mcpTeam
@@ -105,7 +114,7 @@ fun CreateTeamDialog(
     val formScrollState = rememberScrollState()
 
     AlertDialog(
-        onDismissRequest = { dialog = MCPTeamDialog.None },
+        onDismissRequest = onDismissRequest,
         title = { Text(if(team==null) "Create MCP Team" else "Edit MCP Team name of ${team.name}") },
         text = {
             Column(Modifier.verticalScroll(formScrollState)) {
@@ -140,10 +149,10 @@ fun CreateTeamDialog(
                 onClick = {
                     if(team==null) viewModel.createMCPTeam {
                         code, message ->
-                        if(code==0)dialog = MCPTeamDialog.None
+                        if(code==0) onDismissRequest()
                     }else viewModel.modifyMCPTeam(viewModel.mcpTeamName,null){
                         code, message ->
-                        if(code==0)dialog = MCPTeamDialog.None
+                        if(code==0) onDismissRequest()
                     }
                 }
             ) {
@@ -153,7 +162,7 @@ fun CreateTeamDialog(
         dismissButton = {
             Button(
                 colors = ButtonDefaults.textButtonColors(),
-                onClick = { dialog = MCPTeamDialog.None }) {
+                onClick = onDismissRequest) {
                 Text("Cancel")
             }
         }
@@ -162,10 +171,12 @@ fun CreateTeamDialog(
 
 
 @Composable
-private fun TeamListView() {
+private fun TeamListView(
+//    viewModel: MCPTeamViewModel
+) {
     LaunchedEffect(null){
         generalViewModel.topBarActions = {
-            TextButton(onClick = { dialog = MCPTeamDialog.CreateTeam }) {
+            TextButton(onClick = { mcpTeamViewModel.dialog = MCPTeamDialog.CreateTeam }) {
                 Text("Create MCP Team")
             }
         }
@@ -216,7 +227,7 @@ private fun TeamListView() {
                                 TooltipIconButton(
                                     Res.drawable.person_add,
                                     contentDescription = "Invite Member",
-                                    onClick = { dialog = MCPTeamDialog.InviteTeamMember }
+                                    onClick = { viewModel.dialog = MCPTeamDialog.InviteTeamMember }
                                 )
                             }
                             when(currentTabIndex){
@@ -226,7 +237,7 @@ private fun TeamListView() {
                                     onClick = {
                                         generalViewModel.currentScreen(Screen.MCPTeamToolMaker,
                                             "Share MCP Server to Team ${it.name}",
-                                            Screen.MCPTeam)
+                                            Screen.MCPTeam())
                                     }
                                 )
                                 2 -> TooltipIconButton(
@@ -235,7 +246,7 @@ private fun TeamListView() {
                                     onClick = {
                                         generalViewModel.currentScreen(Screen.MCPTeamToolMakerTemplate,
                                             "Share MCP Template to Team ${it.name}",
-                                            Screen.MCPTeam)
+                                            Screen.MCPTeam())
                                     }
                                 )
                             }
@@ -378,7 +389,7 @@ fun InviteTeamDialog() {
                 enabled = value.isNotEmpty()&&isValid,
                 onClick = {viewModel.inviteMCPTeamMember(value){ code, message ->
                     when(code){
-                        0-> dialog = MCPTeamDialog.None
+                        0-> viewModel.dialog = MCPTeamDialog.None
                         AIPortServiceResponse.ACCOUNT_NOT_EXIST -> {userNotExist=true}
                     }
                 }}
@@ -387,7 +398,7 @@ fun InviteTeamDialog() {
             }
         },
         onDismissRequest = { value, isValid ->
-            dialog = MCPTeamDialog.None
+            viewModel.dialog = MCPTeamDialog.None
         }
     )
 }

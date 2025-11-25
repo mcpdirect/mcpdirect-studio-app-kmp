@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMakerTemplate
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,7 @@ sealed class MCPTeamNameError() {
 }
 val mcpTeamViewModel = MCPTeamViewModel()
 class MCPTeamViewModel : ViewModel(){
+    var dialog by mutableStateOf<MCPTeamDialog>(MCPTeamDialog.None)
     var searchQuery by mutableStateOf("")
         private set
     var uiState by mutableStateOf<UIState>(UIState.Idle)

@@ -56,12 +56,11 @@ class ConnectOpenAPIServerViewModel: ViewModel() {
     fun onSecurityChange(keyName:String,value:String){
         securities[keyName]=value
     }
-    fun parseYaml(studioId:String,doc:String){
+    fun parseYaml(
+        studioId:String,doc:String,
+        onResponse:((code:Int,message:String?,serverDoc: OpenAPIServerDoc?)->Unit)? = null
+    ){
         viewModelScope.launch {
-//            var docUri:String? = null
-//            if(doc.startsWith("http://")||doc.startsWith("https://")){
-//                docUri=doc
-//            }
             getPlatform().parseOpenAPIDocFromStudio(
                 studioId,doc,
             ){
@@ -83,6 +82,9 @@ class ConnectOpenAPIServerViewModel: ViewModel() {
                             }
                         }
                     }
+                }
+                onResponse?.let { resp ->
+                    resp(it.code,it.message,it.data)
                 }
             }
         }

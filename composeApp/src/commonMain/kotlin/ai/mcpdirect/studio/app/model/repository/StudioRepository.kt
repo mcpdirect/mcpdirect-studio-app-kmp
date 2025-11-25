@@ -23,6 +23,11 @@ object StudioRepository {
     val localToolAgent: StateFlow<AIPortToolAgent> = _localToolAgent
     fun localToolAgent(agent: AIPortToolAgent){
         _localToolAgent.value = agent
+        _toolAgents.update { map ->
+            map.toMutableMap().apply {
+                put(agent.id,agent)
+            }
+        }
     }
     private var _toolAgentLastQuery:TimeMark? = null
     private val _toolAgents = MutableStateFlow<Map<Long, AIPortToolAgent>>(emptyMap())
@@ -383,7 +388,9 @@ object StudioRepository {
         }
     }
 
-    suspend fun connectOpenAPIServerToStudio(toolAgent: AIPortToolAgent,name:String, config: OpenAPIServerConfig){
+    suspend fun connectOpenAPIServerToStudio(
+        toolAgent: AIPortToolAgent,name:String, config: OpenAPIServerConfig,
+        onResponse: ((code: Int, message: String?, toolMaker: AIPortToolMaker?) -> Unit)?=null){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().connectOpenAPIServerToStudio(toolAgent.engineId,name,config){
@@ -397,6 +404,9 @@ object StudioRepository {
                 generalViewModel.loaded(
                     "Connect OpenAPI Server #${name} to Studio #${toolAgent.name}",it.code,it.message
                 )
+                if(onResponse!=null){
+                    onResponse(it.code,it.message,it.data)
+                }
             }
         }
     }

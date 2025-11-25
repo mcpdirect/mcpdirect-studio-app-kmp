@@ -1,7 +1,10 @@
 package ai.mcpdirect.studio.app
 
+import ai.mcpdirect.studio.app.agent.MyStudioScreenDialog
+import ai.mcpdirect.studio.app.mcpkey.MCPKeyDialog
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.team.MCPTeamDialog
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
@@ -21,7 +24,12 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
         Res.drawable.shield_toggle)
 //    object MyStudio : Screen(Res.string.connect_mcp,
 //        Res.drawable.plug_connect)
-    object MCPTeam : Screen(Res.string.mcp_team,
+//    object MCPTeam : Screen(Res.string.mcp_team,
+//        Res.drawable.groups)
+
+    data class MCPTeam(
+        val dialog: MCPTeamDialog = MCPTeamDialog.None
+    ) : Screen(Res.string.mcp_team,
         Res.drawable.groups)
 
     object MCPTeamToolMaker : Screen(Res.string.share_mcp_server,
@@ -30,8 +38,11 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
     object MCPTeamToolMakerTemplate : Screen(Res.string.share_mcp_template,
         Res.drawable.share)
 
-    object MCPAccessKey : Screen(Res.string.mcp_keys,
-        Res.drawable.key)
+//    object MCPAccessKey : Screen(Res.string.mcp_keys,
+//        Res.drawable.key)
+    data class MCPAccessKey(
+        val dialog: MCPKeyDialog = MCPKeyDialog.None
+    ):Screen(Res.string.mcp_keys,Res.drawable.key)
 
     object VirtualMCP : Screen(
         Res.string.virtual_mcp,
@@ -53,8 +64,7 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
 //        Res.drawable.openapi)
     data class MyStudio(
         val toolAgent: AIPortToolAgent?=null,
-        val toolMaker: AIPortToolMaker?=null
-    ) : Screen(Res.string.connect_mcp, Res.drawable.plug_connect){
-
-    }
+        val toolMaker: AIPortToolMaker?=null,
+        val dialog: MyStudioScreenDialog = MyStudioScreenDialog.None
+    ) : Screen(Res.string.connect_mcp, Res.drawable.plug_connect)
 }

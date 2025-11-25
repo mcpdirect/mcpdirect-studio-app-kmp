@@ -2,17 +2,12 @@ package ai.mcpdirect.studio.app.agent
 
 import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.agent.ToolProviderType.None
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.mcp.ConfigMCPServerDialog
-import ai.mcpdirect.studio.app.mcp.ConfigMCPServerFromTemplatesDialog
-import ai.mcpdirect.studio.app.mcp.ConnectMCPServerDialog
-import ai.mcpdirect.studio.app.mcp.EditMCPServerNameDialog
-import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
+import ai.mcpdirect.studio.app.mcp.*
 import ai.mcpdirect.studio.app.mcp.openapi.ConnectOpenAPIServerDialog
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
@@ -21,8 +16,6 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_MCP
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_OPENAPI
 import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.MCPTemplateListView
@@ -53,10 +46,22 @@ enum class MyStudioScreenDialog {
 @Composable
 fun MyStudioScreen(
     toolAgent: AIPortToolAgent?,
-    toolMaker: AIPortToolMaker?
+    toolMaker: AIPortToolMaker?,
+    dialog: MyStudioScreenDialog = MyStudioScreenDialog.None
 ){
     val myStudioViewModel = remember { MyStudioViewModel() }
-    var dialog by remember { mutableStateOf(MyStudioScreenDialog.None) }
+    toolAgent?.let {
+        myStudioViewModel.toolAgent(it)
+    }
+    toolMaker?.let {
+        myStudioViewModel.toolMaker(it)
+    }
+    val toolProviderType = when(dialog){
+        MyStudioScreenDialog.ConnectOpenAPI -> ToolProviderType.OpenAPIServer
+        MyStudioScreenDialog.ConnectMCP -> ToolProviderType.MCPServer
+        else -> None
+    }
+    var dialog by remember { mutableStateOf(dialog) }
     var currentTabIndex by remember { mutableStateOf(0) }
     LaunchedEffect(myStudioViewModel){
         myStudioViewModel.refreshToolAgents()
@@ -91,7 +96,7 @@ fun MyStudioScreen(
 
         OutlinedCard(Modifier.fillMaxSize().padding(top = 8.dp, bottom = 8.dp, end = 8.dp)) {
             when (currentTabIndex) {
-                0 -> ToolMakerListView(myStudioViewModel){
+                0 -> ToolMakerListView(myStudioViewModel,toolProviderType){
                     dialog = it
                 }
                 1 -> ToolMakerByTemplateListView(myStudioViewModel){
@@ -219,6 +224,7 @@ sealed class ToolProviderType(val title:String,val icon: DrawableResource){
 @Composable
 fun ToolMakerListView(
     myStudioViewModel: MyStudioViewModel,
+    toolProviderType: ToolProviderType,
     onDialogRequest: (dialog: MyStudioScreenDialog) -> Unit
 ){
     var showEditServerNameDialog by remember { mutableStateOf(false) }
@@ -297,7 +303,7 @@ fun ToolMakerListView(
             }
         }
         Row {
-            var toolProviderType by remember { mutableStateOf<ToolProviderType>(None) }
+            var toolProviderType by remember { mutableStateOf<ToolProviderType>(toolProviderType) }
             Column(Modifier.weight(1.0f)) {
 //                var title by remember { mutableStateOf(None.title) }
                 StudioActionBar(

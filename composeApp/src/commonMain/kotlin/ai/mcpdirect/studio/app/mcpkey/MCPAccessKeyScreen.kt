@@ -7,7 +7,6 @@ import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
 import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
 import androidx.compose.foundation.border
@@ -44,13 +43,15 @@ sealed class MCPKeyNameError() {
     object Invalid : MCPKeyNameError()
     object Duplicate : MCPKeyNameError()
 }
-private var mcpKey by mutableStateOf<AIPortAccessKey?>(null)
-private var dialog by mutableStateOf<MCPKeyDialog>(MCPKeyDialog.None)
+//private var mcpKey by mutableStateOf<AIPortAccessKey?>(null)
+//private var dialog by mutableStateOf<MCPKeyDialog>(MCPKeyDialog.None)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MCPAccessKeyScreen() {
-
+fun MCPAccessKeyScreen(
+    dialog: MCPKeyDialog
+) {
     val viewModel = mcpAccessKeyViewModel
+    var dialog by remember { mutableStateOf(dialog) }
     LaunchedEffect(viewModel) {
         generalViewModel.refreshToolMakers()
         viewModel.refreshMCPAccessKeys()
@@ -100,14 +101,14 @@ fun MCPAccessKeyScreen() {
                                 Res.drawable.edit,
                                 contentDescription = "Edit MCP Key name",
                                 onClick = {
-                                    mcpKey = it
+                                    viewModel.mcpKey = it
                                     dialog = MCPKeyDialog.EditMCPKeyName
                                 })
                             TooltipIconButton(
                                 Res.drawable.visibility,
                                 contentDescription = "Display MCP Key",
                                 onClick = {
-                                    mcpKey = it
+                                    viewModel.mcpKey = it
                                     dialog = MCPKeyDialog.DisplayMCPKey
                                 })
                             if (it.status == 0) IconButton(
@@ -128,7 +129,7 @@ fun MCPAccessKeyScreen() {
                                     toolPermissionViewModel.accessKey = it
                                     generalViewModel.currentScreen(Screen.ToolPermission,
                                         "Tool Permissions for Key #${it.name}",
-                                        Screen.MCPAccessKey)
+                                        Screen.MCPAccessKey())
                                 })
                         }
                     },
@@ -172,13 +173,22 @@ fun MCPAccessKeyScreen() {
     }
     when(dialog){
         MCPKeyDialog.None -> {}
-        MCPKeyDialog.GenerateMCPKey -> {GenerateMCPKeyDialog()}
+        MCPKeyDialog.GenerateMCPKey -> {GenerateMCPKeyDialog(
+            viewModel
+        ){ dialog= MCPKeyDialog.None }}
         MCPKeyDialog.DisplayMCPKey -> {
-            if(mcpKey!=null) ShowMCPKeyDialog()
+            if(viewModel.mcpKey!=null) ShowMCPKeyDialog(
+                viewModel
+            ){
+                viewModel.mcpKey==null
+                dialog= MCPKeyDialog.None
+            }
         }
 
         MCPKeyDialog.EditMCPKeyName -> {
-            if(mcpKey!=null) EditMCPKeyNameDialog()
+            if(viewModel.mcpKey!=null) EditMCPKeyNameDialog(
+                viewModel
+            ){ dialog= MCPKeyDialog.None }
         }
     }
 }
@@ -197,14 +207,17 @@ fun MCPKeyNameErrors() {
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GenerateMCPKeyDialog() {
-    val viewModel = mcpAccessKeyViewModel
+fun GenerateMCPKeyDialog(
+    viewModel: MCPAccessKeyViewModel,
+    onDismissRequest: () -> Unit,
+) {
+//    val viewModel = mcpAccessKeyViewModel
     val nameFocusRequester = remember { FocusRequester() }
     val addFocusRequester = remember { FocusRequester() }
     val formScrollState = rememberScrollState()
 
     AlertDialog(
-        onDismissRequest = { dialog= MCPKeyDialog.None },
+        onDismissRequest = onDismissRequest,
         title = { Text("Generate MCP Key") },
         text = {
             Column(Modifier.verticalScroll(formScrollState)) {
@@ -237,7 +250,7 @@ fun GenerateMCPKeyDialog() {
                 enabled = viewModel.mcpKeyNameErrors== MCPKeyNameError.None,
                 modifier = Modifier.focusRequester(addFocusRequester),
                 onClick = {
-                    dialog= MCPKeyDialog.None
+                    onDismissRequest()
                     viewModel.generateMCPKey()
                 }
             ) {
@@ -246,7 +259,7 @@ fun GenerateMCPKeyDialog() {
         },
         dismissButton = {
             TextButton(
-                onClick = { dialog= MCPKeyDialog.None }) {
+                onClick = onDismissRequest) {
                 Text("Cancel")
             }
         }
@@ -255,19 +268,21 @@ fun GenerateMCPKeyDialog() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShowMCPKeyDialog() {
+fun ShowMCPKeyDialog(
+    viewModel: MCPAccessKeyViewModel,
+    onDismissRequest: () -> Unit,
+) {
 //    val viewModel = mcpAccessKeyViewModel
 //    val key = viewModel.getMCPAccessKeyFromLocal(mcpKey!!.id)
 //    mcpKey!!.secretKey = key?:""
     var key by remember { mutableStateOf<AIPortAccessKeyCredential?>(null) }
-    mcpAccessKeyViewModel.getMCPAccessKeyCredential(mcpKey!!.id){
+
+    viewModel.getMCPAccessKeyCredential(viewModel.mcpKey!!.id){
         key = it
     }
     AlertDialog(
-        onDismissRequest = {
-            mcpKey==null
-            dialog= MCPKeyDialog.None},
-        title = { Text("The MCP Key of ${mcpKey!!.name}") },
+        onDismissRequest = onDismissRequest,
+        title = { Text("The MCP Key of ${viewModel.mcpKey!!.name}") },
         text = {
             StudioCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -293,8 +308,7 @@ fun ShowMCPKeyDialog() {
                         val text ="""{"mcpServers":{"$keyName":{"url":"${AppInfo.MCPDIRECT_GATEWAY_ENDPOINT}$secretKey/sse"}}}""".trimIndent()
 
                         getPlatform().copyToClipboard(text)
-                        mcpKey = null
-                        dialog= MCPKeyDialog.DisplayMCPKey
+                        onDismissRequest()
                     }
                 }
             ) {
@@ -303,10 +317,7 @@ fun ShowMCPKeyDialog() {
         },
         dismissButton = {
             TextButton(
-                onClick = {
-                    mcpKey=null
-                    dialog= MCPKeyDialog.None
-                }) {
+                onClick = onDismissRequest) {
                 Text("Cancel")
             }
         }
@@ -316,14 +327,17 @@ fun ShowMCPKeyDialog() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditMCPKeyNameDialog() {
-    val viewModel = mcpAccessKeyViewModel
+fun EditMCPKeyNameDialog(
+    viewModel: MCPAccessKeyViewModel,
+    onDismissRequest: () -> Unit,
+) {
+//    val viewModel = mcpAccessKeyViewModel
     val nameFocusRequester = remember { FocusRequester() }
     val addFocusRequester = remember { FocusRequester() }
     val formScrollState = rememberScrollState()
 
     AlertDialog(
-        onDismissRequest = { dialog= MCPKeyDialog.EditMCPKeyName },
+        onDismissRequest = onDismissRequest,
         title = { Text("Change MCP Key Name") },
         text = {
             Column(Modifier.verticalScroll(formScrollState)) {
@@ -331,7 +345,7 @@ fun EditMCPKeyNameDialog() {
                     modifier = Modifier.fillMaxWidth().focusRequester(nameFocusRequester),
                     value = viewModel.mcpKeyName,
                     onValueChange = { viewModel.onMCPKeyNameChange(it) },
-                    label = { Text("MCP Key of ${mcpKey!!.name}") },
+                    label = { Text("MCP Key of ${viewModel.mcpKey!!.name}") },
                     singleLine = true,
                     isError = viewModel.mcpKeyNameErrors!= MCPKeyNameError.None,
                     keyboardOptions = KeyboardOptions(
@@ -356,7 +370,8 @@ fun EditMCPKeyNameDialog() {
                 enabled = viewModel.mcpKeyNameErrors== MCPKeyNameError.None,
                 modifier = Modifier.focusRequester(addFocusRequester),
                 onClick = {
-                    viewModel.setMCPKeyName(mcpKey!!)
+                    onDismissRequest()
+                    viewModel.setMCPKeyName(viewModel.mcpKey!!)
                 }
             ) {
                 Text("Save")
@@ -364,7 +379,7 @@ fun EditMCPKeyNameDialog() {
         },
         dismissButton = {
             TextButton(
-                onClick = { dialog= MCPKeyDialog.None}
+                onClick = onDismissRequest
             ) {
                 Text("Cancel")
             }

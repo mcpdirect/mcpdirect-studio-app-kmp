@@ -575,9 +575,11 @@ class MyStudioViewModel(): ViewModel() {
         }
     }
 
-    fun connectOpenAPIServerToStudio(name:String, config: OpenAPIServerConfig){
+    fun connectOpenAPIServerToStudio(
+        name:String, config: OpenAPIServerConfig,
+        onResponse: ((code: Int, message: String?, toolMaker: AIPortToolMaker?) -> Unit)?=null){
         viewModelScope.launch {
-            StudioRepository.connectOpenAPIServerToStudio(_toolAgent.value,name,config)
+            StudioRepository.connectOpenAPIServerToStudio(_toolAgent.value,name,config,onResponse)
         }
     }
 //    fun queryOpenAPIToolsFromStudio(toolMaker: AIPortToolMaker){
