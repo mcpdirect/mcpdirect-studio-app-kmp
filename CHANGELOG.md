@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## 2025-11-26
 ### Changed
-- Updated README.md and README.zh-CN.md to include OpenAPI server as MCP feature
-- Added OpenAPI server as MCP to the features list in documentation
+- Updated README.md and README.zh-CN.md to include MCP Server Template and OpenAPI Server as MCP features
+- Added MCP Server Template to the features list in documentation
+- Renamed OpenAPI server as MCP to OpenAPI Server as MCP in documentation
 
 ## 2025-11-26
 ### Changed

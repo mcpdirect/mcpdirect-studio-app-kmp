@@ -61,8 +61,9 @@
 ## MCPdirect 2.x 新功能
 * Virtual MCP Server
 * MCP Team
+* MCP Server Template
 * 远程管理 MCP Server
-* OpenAPI server as MCP
+* OpenAPI Server as MCP
 ---
 <img height="64" src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_text_logo.png" alt=""/>
 <img height="64" src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_studio_logo.png" alt=""/>

@@ -63,8 +63,9 @@ With MCPdirect, any team member can securely share their MCP Server, and any tea
 ## MCPdirect 2.x New Features
 * Virtual MCP Server
 * MCP Team
+* MCP Server Template
 * Remote MCP Server Management
-* OpenAPI server as MCP
+* OpenAPI Server as MCP
 
 ---
 <img height="64" src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_text_logo.png" alt=""/>
