@@ -2,24 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2025-11-20
-### Added
-- Created AppViewModel.kt for application state management
-- Created DashboardViewModel.kt for dashboard-specific state management
-- Created MyStudiosCard.kt as a new dashboard card component
-- Created new App.kt with complete application structure and navigation
-
+## 2025-11-25
 ### Changed
-- Renamed DesktopApp.kt to App.kt to reflect platform-agnostic application
-- Updated common App.kt to implement full application UI with navigation
-- Modified NavigationTopBar.kt to use new screen navigation system
-- Updated MyStudioScreen.kt to accept parameters for toolAgent and toolMaker
-- Enhanced DashboardScreen.kt with new card-based layout and screen navigation
-- Updated Screen.kt to support parameterized screens
-- Modified web and JVM App.kt files to use new application structure
-- Updated web index.html to remove external font loading
-- Modified web styles.css to remove font-related CSS rules
-- Updated web main.kt to implement font loading for Chinese characters
+- Added "java.sql" module to native distributions in build.gradle.kts
+- Updated native distributions to include both java.naming and java.sql modules
 
 ## 2025-11-20
 ### Added
