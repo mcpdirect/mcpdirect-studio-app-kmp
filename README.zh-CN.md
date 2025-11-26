@@ -62,7 +62,7 @@
 * Virtual MCP Server
 * MCP Team
 * 远程管理 MCP Server
-
+* OpenAPI server as MCP
 ---
 <img height="64" src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_text_logo.png" alt=""/>
 <img height="64" src="composeApp/src/commonMain/composeResources/drawable/mcpdirect_studio_logo.png" alt=""/>
