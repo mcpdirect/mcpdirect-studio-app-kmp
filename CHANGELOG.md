@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2025-11-26
+### Changed
+- Updated MyStudioScreen.kt to simplify tool agent selection logic by removing loading state check
+- Enhanced MyStudioViewModel.kt to update tool agent value before querying tool makers
+
 ## 2025-11-25
 ### Changed
 - Added "java.sql" module to native distributions in build.gradle.kts

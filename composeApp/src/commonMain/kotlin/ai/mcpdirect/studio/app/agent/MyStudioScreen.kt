@@ -188,7 +188,8 @@ fun ToolAgentListView(
             if(it.id!=0L&&it.userId== authViewModel.user.id) StudioListItem(
                 selected = it.id==toolAgent.id,
                 modifier = Modifier.clickable(
-                    enabled = uiState !is UIState.Loading && it.id!=toolAgent.id
+//                    enabled = uiState !is UIState.Loading && it.id!=toolAgent.id
+                    enabled = it.id!=toolAgent.id
                 ){
 //                    if(it.id== getPlatform().toolAgentId)
 //                        generalViewModel.currentScreen(

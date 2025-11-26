@@ -31,9 +31,9 @@ class MyStudioViewModel(): ViewModel() {
     val toolAgent: StateFlow<AIPortToolAgent> = _toolAgent
     fun toolAgent(agent:AIPortToolAgent){
         if(agent.id!=_toolAgent.value.id){
+            _toolAgent.value = agent
             queryToolMakersFromStudio(agent)
         }
-        _toolAgent.value = agent
     }
     fun toolAgent(toolAgentId:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
         viewModelScope.launch {
