@@ -4,6 +4,19 @@ All notable changes to this file.
 
 ## 2025-11-27
 ### Added
+- Enhanced TeamRepository.kt with team tool maker and template functions
+- Added toolMakers function to ToolRepository.kt for filtering by agent
+- Added refresh functions to ToolPermissionViewModel.kt for teams, tool makers and templates
+- Enhanced ToolPermissionViewModel.kt with team state flow and repository integration
+
+### Changed
+- Updated ToolPermissionScreen.kt to use repository-based tool maker filtering
+- Modified ToolPermissionScreen.kt to replace generalViewModel calls with view model calls
+- Updated ToolPermissionViewModel.kt to use proper state flows for tool agent and team
+- Enhanced ToolPermissionViewModel.kt with improved data binding and repository integration
+
+## 2025-11-27
+### Added
 - Modified Screen.kt to make ToolPermission a parameterized screen with AIPortAccessKey
 - Added accessKey parameter to ToolPermissionScreen.kt
 - Enhanced ToolPermissionViewModel.kt with proper state flows and repository integration

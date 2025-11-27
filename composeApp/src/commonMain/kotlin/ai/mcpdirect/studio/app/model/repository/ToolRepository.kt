@@ -7,6 +7,7 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
@@ -292,6 +293,18 @@ object ToolRepository {
                 generalViewModel.loaded("Load Tool Permissions of #${accessKey.name}",it.code,it.message)
                 onResponse(it.code,it.message,it.data)
             }
+        }
+    }
+    fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
+        return _toolMakers.value.values.filter {
+            if(agent.id==0L) {
+                if(!(it.virtual()&& UserRepository.me(it.userId))){
+                    println(it.type)
+                    println(it.userId)
+                }
+                it.virtual()&&UserRepository.me(it.userId)
+            }
+            else it.agentId==agent.id
         }
     }
 }

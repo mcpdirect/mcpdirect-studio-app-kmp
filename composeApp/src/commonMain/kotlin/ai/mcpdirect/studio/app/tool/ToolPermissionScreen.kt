@@ -1,10 +1,11 @@
 package ai.mcpdirect.studio.app.tool
 
-import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.TeamRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.theme.purple.selectedListItemColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.check_box
 import mcpdirectstudioapp.composeapp.generated.resources.info
@@ -38,8 +41,8 @@ fun ToolPermissionScreen(
     val virtualTools by viewModel.virtualTools.collectAsState()
     LaunchedEffect(viewModel){
         viewModel.refresh()
-        generalViewModel.refreshTeamToolMakers()
-        generalViewModel.refreshTeamToolMakerTemplates()
+        viewModel.refreshTeamToolMakers()
+        viewModel.refreshTeamToolMakerTemplates()
         generalViewModel.topBarActions =  {
             IconButton(onClick = {
                 viewModel.resetAllPermissions()
@@ -85,11 +88,8 @@ fun ToolPermissionScreen(
 
         StudioCard(Modifier.padding(8.dp).fillMaxSize()) {
             var toolMakers:List<AIPortToolMaker> = listOf()
-            if(currentTabIndex==0) viewModel.toolAgent?.let {
-                toolMakers = generalViewModel.toolMakers(it)
-            }else viewModel.team?.let {
-                toolMakers = generalViewModel.toolMakers(it)
-            }
+            if(currentTabIndex==0) toolMakers = ToolRepository.toolMakers(viewModel.toolAgent.value)
+            else toolMakers = TeamRepository.toolMakers(viewModel.team.value)
             Row {
                 LazyColumn(Modifier.width(250.dp)) {
                     items(toolMakers){
@@ -243,6 +243,7 @@ fun ToolPermissionScreen(
 private fun AgentList(
     viewModel: ToolPermissionViewModel
 ){
+    val toolAgent by viewModel.toolAgent.collectAsState()
     val toolAgents by viewModel.toolAgents.collectAsState()
     LazyColumn() {
         items(toolAgents){
@@ -261,11 +262,11 @@ private fun AgentList(
                         Text("${count}")
                     } },
                 trailingContent = {
-                    if(viewModel.toolAgent!=null&&viewModel.toolAgent!!.id==it.id)
+                    if(toolAgent.id==it.id)
                         Icon(painterResource(Res.drawable.keyboard_arrow_right),
                             contentDescription = "Current Tool Agent")
                 },
-                colors = if(viewModel.toolAgent==it) selectedListItemColors
+                colors = if(toolAgent.id==it.id) selectedListItemColors
                     else ListItemDefaults.colors()
             )
         }
@@ -276,10 +277,10 @@ private fun AgentList(
 private fun TeamList(
     viewModel: ToolPermissionViewModel
 ){
-    generalViewModel.refreshTeams()
-//    val viewModel = toolPermissionViewModel
+    viewModel.refreshTeams()
+    val teams by viewModel.teams.collectAsState()
     LazyColumn(Modifier.fillMaxHeight()) {
-        items(generalViewModel.teams){
+        items(teams){
             ListItem(
                 modifier = Modifier.clickable{
                     viewModel.selectTeam(it)

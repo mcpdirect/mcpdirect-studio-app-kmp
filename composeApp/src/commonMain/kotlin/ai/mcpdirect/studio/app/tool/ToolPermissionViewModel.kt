@@ -1,53 +1,43 @@
 package ai.mcpdirect.studio.app.tool
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.auth.authViewModel
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.model.OpenAPIServer
-//import ai.mcpdirect.studio.app.mcpkey.mcpAccessKeyViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
-import ai.mcpdirect.studio.app.model.aitool.AIPortTool
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
-import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
-import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
+import ai.mcpdirect.studio.app.model.aitool.*
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlin.collections.forEach
 
 //val toolPermissionViewModel = ToolPermissionViewModel()
 class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
 //    var accessKey by mutableStateOf<AIPortAccessKey?>(null)
 //    private val _accessKey = MutableStateFlow(AIPortAccessKey())
-    private val _virtualToolAgent = AIPortToolAgent("Virtual MCP",-1)
-    var toolAgent by mutableStateOf<AIPortToolAgent?>(null)
-        private set
+//    private val _virtualToolAgent = AIPortToolAgent("Virtual MCP",-1)
+//    var toolAgent by mutableStateOf<AIPortToolAgent?>(null)
+//        private set
 //    var toolMaker by mutableStateOf<AIPortToolMaker?>(null)
 //        private set
-
-    private val _toolMaker = MutableStateFlow<AIPortToolMaker>(AIPortToolMaker())
+    private val _toolAgent = MutableStateFlow(AIPortToolAgent())
+    val toolAgent: StateFlow<AIPortToolAgent> = _toolAgent
+    private val _toolMaker = MutableStateFlow(AIPortToolMaker())
     val toolMaker: StateFlow<AIPortToolMaker> = _toolMaker
 
-    var team by mutableStateOf<AIPortTeam?>(null)
-        private set
+    private val _team = MutableStateFlow(AIPortTeam())
+    val team : StateFlow<AIPortTeam> = _team
+    val teams: StateFlow<List<AIPortTeam>> = TeamRepository.teams
+        .map { it.values.toList() }      // 转为 List
+        .stateIn(
+            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
+            started = SharingStarted.WhileSubscribed(5000), // 按需启动
+            initialValue = emptyList()
+        )
 //    val toolAgents = mutableStateListOf<AIPortToolAgent>()
     val toolAgents: StateFlow<List<AIPortToolAgent>> = StudioRepository.toolAgents
         .map { it.values.toList() }      // 转为 List
@@ -59,6 +49,17 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
 //    val toolMakers = mutableStateListOf<AIPortToolMaker>()
 //    val tools = mutableStateListOf<AIPortTool>()
 
+//    val tools: StateFlow<List<AIPortToolMaker>> = combine(
+//        ToolRepository.toolMakers,
+//        _toolAgent
+//    ) { toolsMap, maker ->
+//        toolsMap.values.filter { tool -> tool.agentId == maker.id }.toList()
+//    }.stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(5000),
+//        initialValue = emptyList()
+//    )
+//
     // 2. 使用 combine 同时监听两个流
     val tools: StateFlow<List<AIPortTool>> = combine(
         ToolRepository.tools,
@@ -90,7 +91,7 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
     fun reset(){
 //        toolAgent = null
 //        toolMaker = null
-        team = null
+//        team = null
 //        toolAgents.clear()
         toolPermissions.clear()
         virtualToolPermissions.clear()
@@ -233,7 +234,7 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
         return countToolPermissions(toolMaker)
     }
     fun selectToolAgent(agent:AIPortToolAgent){
-        toolAgent = agent
+        _toolAgent.value = agent
 //        toolAgent?.let {
 //            tools.clear()
 //            viewModelScope.launch {
@@ -428,9 +429,9 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
         }
     }
 
-    fun selectTeam(team: AIPortTeam?){
-        this.team=team
-        this.team?.let {
+    fun selectTeam(team: AIPortTeam){
+        _team.value=team
+//        this.team?.let {
 //            tools.clear()
             generalViewModel.refreshTeamToolMakers()
             generalViewModel.refreshTeamToolMakerTemplates()
@@ -438,6 +439,22 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
 //            viewModelScope.launch {
 //                generalViewModel.refreshToolMakers()
 //            }
+//        }
+    }
+    fun refreshTeams() {
+        viewModelScope.launch {
+            TeamRepository.loadTeams(true)
+        }
+    }
+    fun refreshTeamToolMakers(){
+        viewModelScope.launch {
+            TeamRepository.loadTeamToolMakers(true)
+        }
+    }
+
+    fun refreshTeamToolMakerTemplates(){
+        viewModelScope.launch {
+            TeamRepository.loadTeamToolMakerTemplates(true)
         }
     }
 }
