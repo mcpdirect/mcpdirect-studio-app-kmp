@@ -4,12 +4,16 @@ All notable changes to this file.
 
 ## 2025-11-27
 ### Added
-- Enhanced ToolPermissionViewModel.kt with toolMakersFromAgent and toolMakersFromTeam state flows
-- Added team tool maker and template filtering to ToolPermissionViewModel.kt
+- Enhanced MyStudioViewModel.kt with toolMakers state flow and refreshToolMakers function
+- Added user function to UserRepository.kt with response callback
 
 ### Changed
-- Updated ToolPermissionScreen.kt to use state flow-based tool maker filtering
-- Enhanced StudioRepository.kt to initialize tool agents with virtual tool agent
+- Updated MyStudioScreen.kt to use view model's refreshToolMakers function
+- Modified MyStudioScreen.kt to use UserRepository for user lookups
+- Updated MCPTemplateListView.kt to use UserRepository for user lookups
+- Removed authViewModel import from MyStudioScreen.kt
+- Removed unused import from ConnectMCPTemplateDialog.kt
+- Improved user lookup logic in MyStudioScreen.kt with LaunchedEffect
 
 ## 2025-11-27
 ### Added

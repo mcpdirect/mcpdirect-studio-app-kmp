@@ -31,23 +31,24 @@ object UserRepository {
     fun me(userId: Long):Boolean{
         return userId>Int.MAX_VALUE&&userId==_me.value.id
     }
-    suspend fun getUser(userId:Long) {
+    suspend fun user(userId:Long,
+                     onResponse: (code: Int, message: String?, user: AIPortUser?) -> Unit) {
         val user = _users.value[userId];
         if(user==null)loadMutex.withLock {
             // 此块内代码会排队执行
             getPlatform().getUser(userId){
-                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL)
-                    it.data?.let {
+                if(it.successful()) it.data?.let {
                         user ->
-                        _users.update { map ->
-                            map.toMutableMap().apply {
-                                put(user.id, user)
-                            }
+                    _users.update { map ->
+                        map.toMutableMap().apply {
+                            put(user.id, user)
                         }
                     }
+                }
+                onResponse(it.code,it.message,it.data)
             }
         }else{
-
+            onResponse(0,null,user)
         }
     }
     suspend fun login(

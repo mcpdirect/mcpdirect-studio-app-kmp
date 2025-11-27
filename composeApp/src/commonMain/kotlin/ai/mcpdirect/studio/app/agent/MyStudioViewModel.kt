@@ -73,7 +73,18 @@ class MyStudioViewModel(): ViewModel() {
         _toolMaker.value = AIPortToolMaker();
         tools.clear()
     }
-
+    val toolMakers: StateFlow<List<AIPortToolMaker>> = ToolRepository.toolMakers
+        .map { it.values.toList() }      // 转为 List
+        .stateIn(
+            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
+            started = SharingStarted.WhileSubscribed(5000), // 按需启动
+            initialValue = emptyList()
+        )
+    fun refreshToolMakers(force:Boolean=false){
+        viewModelScope.launch {
+            ToolRepository.loadToolMakers(force)
+        }
+    }
     val mcpServers: StateFlow<List<MCPServer>> = combine(
         StudioRepository.mcpServers,
         _toolAgent

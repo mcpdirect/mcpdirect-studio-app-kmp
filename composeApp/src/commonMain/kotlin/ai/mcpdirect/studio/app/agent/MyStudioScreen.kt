@@ -4,7 +4,6 @@ import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.agent.ToolProviderType.None
-import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.*
@@ -66,7 +65,7 @@ fun MyStudioScreen(
     var currentTabIndex by remember { mutableStateOf(0) }
     LaunchedEffect(myStudioViewModel){
         myStudioViewModel.refreshToolAgents()
-        generalViewModel.refreshToolMakers()
+        myStudioViewModel.refreshToolMakers()
         toolAgent?.let { myStudioViewModel.toolAgent(it) }
         toolMaker?.let { myStudioViewModel.toolMaker(it) }
     }
@@ -136,7 +135,7 @@ fun MyStudioScreen(
                                                 toolMaker.id,
                                                 toolMaker.agentId
                                             ){ code, message, mcpServer ->
-                                                generalViewModel.refreshToolMakers()
+//                                                generalViewModel.refreshToolMakers()
                                                 myStudioViewModel.queryMCPToolsFromStudio(toolMaker)
                                             }
                                         }
@@ -621,8 +620,16 @@ fun ToolMakerItem(
     ){
     val me = toolMaker.id<Int.MAX_VALUE|| UserRepository.me(toolMaker.userId)
     var user by remember { mutableStateOf<AIPortUser?>(null) }
-    if(!me){
-        generalViewModel.user(toolMaker.userId){
+//    if(!me){
+//        generalViewModel.user(toolMaker.userId){
+//                code, message, data ->
+//            if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL&&data!=null){
+//                user = data
+//            }
+//        }
+//    }
+    LaunchedEffect(null){
+        UserRepository.user(toolMaker.userId){
                 code, message, data ->
             if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL&&data!=null){
                 user = data
@@ -701,6 +708,7 @@ fun ToolMakerByTemplateListView(
     var showConfigServerFromTemplateDialog  by remember { mutableStateOf(false) }
     var selectedToolMaker by remember { mutableStateOf(AIPortToolMaker()) }
     var statusMessage by remember { mutableStateOf<String?>(null) }
+    val toolMakers by myStudioViewModel.toolMakers.collectAsState()
 
     DisposableEffect(null){
         onDispose {
@@ -720,7 +728,7 @@ fun ToolMakerByTemplateListView(
         }
         Row {
             LazyColumn(Modifier.weight(1.0f)) {
-                items(generalViewModel.toolMakers) { maker ->
+                items(toolMakers) { maker ->
                     if (maker.templateId == template.id) {
                         StudioListItem(
                             modifier = Modifier.clickable(

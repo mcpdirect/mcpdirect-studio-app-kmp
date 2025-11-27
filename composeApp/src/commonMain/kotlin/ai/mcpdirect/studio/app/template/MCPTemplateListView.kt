@@ -59,10 +59,16 @@ fun MCPTemplateListView(){
                         code, message, data ->
                     toolAgent = data
                 }
-                generalViewModel.user(template.userId){
+                UserRepository.user(template.userId){
                         code, message, data ->
-                    user = data;
+                    if(code==0&&data!=null) {
+                        user = data;
+                    }
                 }
+//                generalViewModel.user(template.userId){
+//                        code, message, data ->
+//                    user = data;
+//                }
             }
             toolAgent?.let { agent ->
                 StudioListItem(
