@@ -38,7 +38,39 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
             started = SharingStarted.WhileSubscribed(5000), // 按需启动
             initialValue = emptyList()
         )
-//    val toolAgents = mutableStateListOf<AIPortToolAgent>()
+    private val _ttms: StateFlow<List<Long>> = combine(
+        TeamRepository.teamToolMakers,
+        _team
+    ) { toolsMap, maker ->
+        toolsMap.values.filter { tool -> tool.teamId == maker.id }.map{it.toolMakerId}.toList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+    private val _ttmts: StateFlow<List<Long>> = combine(
+        TeamRepository.teamToolMakerTemplates,
+        _team
+    ) { toolsMap, maker ->
+        toolsMap.values.filter { tool -> tool.teamId == maker.id }.map{it.toolMakerTemplateId}.toList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    val toolMakersFromTeam: StateFlow<List<AIPortToolMaker>> = combine(
+        ToolRepository.toolMakers,
+        _ttms,
+        _ttmts
+    ) { toolsMap, makers,templates ->
+        toolsMap.values.filter { tool -> tool.id in _ttms.value||tool.templateId in _ttmts.value }.toList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     val toolAgents: StateFlow<List<AIPortToolAgent>> = StudioRepository.toolAgents
         .map { it.values.toList() }      // 转为 List
         .stateIn(
@@ -46,20 +78,20 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
             started = SharingStarted.WhileSubscribed(5000), // 按需启动
             initialValue = emptyList()
         )
+    val toolMakersFromAgent: StateFlow<List<AIPortToolMaker>> = combine(
+        ToolRepository.toolMakers,
+        _toolAgent
+    ) { toolsMap, maker ->
+        toolsMap.values.filter { tool -> tool.agentId == maker.id }.toList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
 //    val toolMakers = mutableStateListOf<AIPortToolMaker>()
 //    val tools = mutableStateListOf<AIPortTool>()
 
-//    val tools: StateFlow<List<AIPortToolMaker>> = combine(
-//        ToolRepository.toolMakers,
-//        _toolAgent
-//    ) { toolsMap, maker ->
-//        toolsMap.values.filter { tool -> tool.agentId == maker.id }.toList()
-//    }.stateIn(
-//        scope = viewModelScope,
-//        started = SharingStarted.WhileSubscribed(5000),
-//        initialValue = emptyList()
-//    )
-//
     // 2. 使用 combine 同时监听两个流
     val tools: StateFlow<List<AIPortTool>> = combine(
         ToolRepository.tools,

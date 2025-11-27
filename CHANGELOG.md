@@ -3,7 +3,12 @@
 All notable changes to this file.
 
 ## 2025-11-27
+### Added
+- Enhanced ToolPermissionViewModel.kt with toolMakersFromAgent and toolMakersFromTeam state flows
+- Added team tool maker and template filtering to ToolPermissionViewModel.kt
+
 ### Changed
+- Updated ToolPermissionScreen.kt to use state flow-based tool maker filtering
 - Enhanced StudioRepository.kt to initialize tool agents with virtual tool agent
 
 ## 2025-11-27

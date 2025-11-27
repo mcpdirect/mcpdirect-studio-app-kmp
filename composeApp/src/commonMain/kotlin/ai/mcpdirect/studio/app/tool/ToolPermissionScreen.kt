@@ -18,8 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.check_box
 import mcpdirectstudioapp.composeapp.generated.resources.info
@@ -87,12 +85,14 @@ fun ToolPermissionScreen(
         }
 
         StudioCard(Modifier.padding(8.dp).fillMaxSize()) {
-            var toolMakers:List<AIPortToolMaker> = listOf()
-            if(currentTabIndex==0) toolMakers = ToolRepository.toolMakers(viewModel.toolAgent.value)
-            else toolMakers = TeamRepository.toolMakers(viewModel.team.value)
+            val toolMakersFromAgent by viewModel.toolMakersFromAgent.collectAsState()
+            val toolMakersFromTeam by viewModel.toolMakersFromTeam.collectAsState()
+//            var toolMakers:List<AIPortToolMaker> = listOf()
+//            if(currentTabIndex==0) toolMakers = ToolRepository.toolMakers(viewModel.toolAgent.value)
+//            else toolMakers = TeamRepository.toolMakers(viewModel.team.value)
             Row {
                 LazyColumn(Modifier.width(250.dp)) {
-                    items(toolMakers){
+                    items(if(currentTabIndex==0) toolMakersFromAgent else toolMakersFromTeam){
                         ListItem(
                             modifier = Modifier.clickable{
                                 viewModel.selectToolMaker(it)
