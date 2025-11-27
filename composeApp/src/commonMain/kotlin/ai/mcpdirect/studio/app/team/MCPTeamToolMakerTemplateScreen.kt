@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.theme.purple.selectedListItemColors
 import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.clickable
@@ -83,7 +84,7 @@ fun MCPTeamToolMakerTemplateScreen() {
                     Row(modifier = Modifier.fillMaxWidth()) {
                         LazyColumn(modifier = Modifier.weight(3.0f)) {
                             items(generalViewModel.toolMakerTemplates) {
-                                if(it.userId==authViewModel.user.id)
+                                if(UserRepository.me(it.userId))
                                     ToolMakerTemplateItem(it) {
                                         viewModel.toolMakerTemplate(it)
                                     }
@@ -129,7 +130,7 @@ fun ToolMakerTemplateItem(
     ListItem(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         overlineContent = {
-            if(template.userId == authViewModel.user.id) Text("Me")
+            if(UserRepository.me(template.userId)) Text("Me")
         },
         leadingContent = {
             Checkbox(

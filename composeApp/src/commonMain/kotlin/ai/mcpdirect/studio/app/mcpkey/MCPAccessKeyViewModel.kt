@@ -2,7 +2,6 @@ package ai.mcpdirect.studio.app.mcpkey
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
-import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
@@ -15,13 +14,13 @@ import kotlinx.coroutines.launch
 
 val mcpAccessKeyViewModel = MCPAccessKeyViewModel()
 class MCPAccessKeyViewModel : ViewModel(){
-    var uiState by mutableStateOf<UIState>(UIState.Idle)
-    private fun updateUIState(code:Int){
-        uiState = when(code) {
-            0 -> UIState.Success
-            else -> UIState.Error(code)
-        }
-    }
+//    var uiState by mutableStateOf<UIState>(UIState.Idle)
+//    private fun updateUIState(code:Int){
+//        uiState = when(code) {
+//            0 -> UIState.Success
+//            else -> UIState.Error(code)
+//        }
+//    }
     var mcpKey by mutableStateOf<AIPortAccessKey?>(null)
     var mcpKeyName by mutableStateOf("")
         private set
@@ -36,12 +35,12 @@ class MCPAccessKeyViewModel : ViewModel(){
         toolPermissionMakerSummary.clear()
     }
     fun refreshMCPAccessKeys() {
-        uiState = UIState.Loading
+//        uiState = UIState.Loading
         _accessKeys.clear()
         toolPermissionMakerSummary.clear()
         viewModelScope.launch {
             getPlatform().queryAccessKeys{ (code, message, data) ->
-                updateUIState(code)
+//                updateUIState(code)
                 if(message!=null) generalViewModel.showSnackbar(message)
                 if(code==0&&data!=null){
                     data.forEach {

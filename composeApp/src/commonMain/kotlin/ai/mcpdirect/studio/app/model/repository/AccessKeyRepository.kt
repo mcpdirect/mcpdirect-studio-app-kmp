@@ -22,6 +22,14 @@ object AccessKeyRepository {
     val _accessKeys = MutableStateFlow<Map<Long,AIPortAccessKey>>(emptyMap())
     val accessKeys: StateFlow<Map<Long, AIPortAccessKey>> = _accessKeys
     val toolPermissionMakerSummary = mutableStateListOf<AIPortToolPermissionMakerSummary>()
+    fun reset(){
+        _accessKeyLastQuery = null
+        _accessKeys.update { map ->
+            map.toMutableMap().apply {
+                clear()
+            }
+        }
+    }
     suspend fun loadAccessKeys(force:Boolean=false) {
         loadMutex.withLock {
             val now = TimeSource.Monotonic.markNow()

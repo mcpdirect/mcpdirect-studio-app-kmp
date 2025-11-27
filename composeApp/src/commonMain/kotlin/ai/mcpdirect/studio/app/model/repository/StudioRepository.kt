@@ -19,7 +19,7 @@ object StudioRepository {
     private val loadMutex = Mutex()
     private val _duration = 5.seconds
     private val _virtualToolAgent = AIPortToolAgent("Virtual MCP",1)
-    private val _localToolAgent = MutableStateFlow<AIPortToolAgent>(AIPortToolAgent())
+    private val _localToolAgent = MutableStateFlow(AIPortToolAgent())
     val localToolAgent: StateFlow<AIPortToolAgent> = _localToolAgent
     fun localToolAgent(agent: AIPortToolAgent){
         _localToolAgent.value = agent
@@ -51,6 +51,27 @@ object StudioRepository {
             map.toMutableMap().apply {
                 if(server.status== AIPortToolMaker.STATUS_ABANDONED) remove(server.id)
                 else put(server.id, server)
+            }
+        }
+    }
+
+    fun reset(){
+        _localToolAgent.value = AIPortToolAgent()
+        _toolAgentLastQuery = null
+        _toolAgents.update { map ->
+            map.toMutableMap().apply {
+                clear()
+            }
+        }
+        _toolMakerLastQueries.clear()
+        _mcpServers.update { map ->
+            map.toMutableMap().apply {
+                clear()
+            }
+        }
+        _openapiServers.update { map ->
+            map.toMutableMap().apply {
+                clear()
             }
         }
     }

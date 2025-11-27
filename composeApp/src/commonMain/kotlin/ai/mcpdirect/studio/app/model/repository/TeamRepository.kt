@@ -20,7 +20,14 @@ object TeamRepository {
     private var _teamLastQuery: TimeMark? = null
     private val _teams = MutableStateFlow<Map<Long, AIPortTeam>>(emptyMap())
     val teams: StateFlow<Map<Long, AIPortTeam>> = _teams
-
+    fun reset(){
+        _teamLastQuery = null
+        _teams.update { map ->
+            map.toMutableMap().apply {
+                clear()
+            }
+        }
+    }
     suspend fun loadTeams(force: Boolean=false){
         loadMutex.withLock {
             val now = TimeSource.Monotonic.markNow()

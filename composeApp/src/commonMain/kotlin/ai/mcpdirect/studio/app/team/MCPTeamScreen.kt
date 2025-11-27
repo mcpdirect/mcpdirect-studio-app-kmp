@@ -9,6 +9,7 @@ import ai.mcpdirect.studio.app.isValidEmail
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -222,7 +223,7 @@ private fun TeamListView(
                             IconButton(onClick = { viewModel.setMCPTeam(null)}) {
                                 Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
                             }
-                            if(it.ownerId==authViewModel.user.id) {
+                            if(UserRepository.me(it.ownerId)) {
                                 Spacer(Modifier.weight(1.0f))
                                 TooltipIconButton(
                                     Res.drawable.person_add,
@@ -291,7 +292,7 @@ private fun TeamItem(
     ListItem(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         overlineContent = {
-            if(team.ownerId== authViewModel.user.id) Text("Me")
+            if(UserRepository.me(team.ownerId)) Text("Me")
             else if(team.ownerName.lowercase() == "anonymous")Text(team.ownerName)
             else Text("${team.ownerName} (${team.ownerAccount})")
         },
@@ -321,12 +322,12 @@ private fun TeamItem(
 @Composable
 private fun TeamMemberList() {
     val viewModel = mcpTeamViewModel
-    val myId = authViewModel.user.id
+    val myId = UserRepository.me.value.id
     val team = viewModel.mcpTeam!!
-    val teamOwner = team.ownerId==authViewModel.user.id
+    val teamOwner = UserRepository.me(team.ownerId)
     LazyColumn {
         items(viewModel.mcpTeamMembers){
-            val me = it.memberId==myId
+            val me = UserRepository.me(it.memberId)
             ListItem(
                 headlineContent = {
                     Text(it.name)
@@ -406,7 +407,7 @@ fun InviteTeamDialog() {
 @Composable
 private fun TeamToolMakerList() {
     val viewModel = mcpTeamViewModel
-    val myId = authViewModel.user.id
+//    val myId = UserRepository.me.value.id
     val team = viewModel.mcpTeam!!
     val toolMakers = generalViewModel.toolMakers(team)
 
@@ -415,7 +416,7 @@ private fun TeamToolMakerList() {
 //            val teamToolMaker = viewModel.teamToolMaker(it.id)
             val teamToolMaker = generalViewModel.teamToolMaker(team.id,it.id)
             if(teamToolMaker!=null&&teamToolMaker.status>0) {
-                val me = it.userId==myId
+                val me = UserRepository.me(it.userId)
                 val member = viewModel.teamMember(it.userId)
                 ListItem(
                     headlineContent = {
@@ -454,7 +455,7 @@ private fun TeamToolMakerList() {
 @Composable
 private fun TeamToolMakerTemplateList() {
     val viewModel = mcpTeamViewModel
-    val myId = authViewModel.user.id
+//    val myId = authViewModel.user.id
     val team = viewModel.mcpTeam!!
 //    val teamToolMakerTemplates = mcpTeamViewModel.mcpTeamToolMakerTemplates
     val teamToolMakerTemplates = generalViewModel.teamToolMakerTemplates(team.id)
@@ -462,7 +463,7 @@ private fun TeamToolMakerTemplateList() {
         items(teamToolMakerTemplates){
             val toolMakerTemplate = generalViewModel.toolMakerTemplate(it.toolMakerTemplateId)
             if(toolMakerTemplate!=null&&toolMakerTemplate.status>0) {
-                val me = toolMakerTemplate.userId==myId
+                val me = UserRepository.me(toolMakerTemplate.userId)
                 val member = viewModel.teamMember(toolMakerTemplate.userId)
                 ListItem(
                     headlineContent = {

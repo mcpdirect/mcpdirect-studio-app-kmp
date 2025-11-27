@@ -16,6 +16,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.MCPTemplateListView
@@ -179,13 +180,14 @@ fun ToolAgentListView(
         myStudioViewModel.refreshToolAgents()
     }
     val uiState = myStudioViewModel.uiState
+//    val me = UserRepository.me.value
     val localToolAgent by myStudioViewModel.localToolAgent.collectAsState()
     val toolAgents by myStudioViewModel.toolAgents.collectAsState()
     val toolAgent by myStudioViewModel.toolAgent.collectAsState()
     LazyColumn{
         items(toolAgents){
             println("${it.id},${it.name}")
-            if(it.id!=0L&&it.userId== authViewModel.user.id) StudioListItem(
+            if(it.id!=0L&& UserRepository.me(it.userId)) StudioListItem(
                 selected = it.id==toolAgent.id,
                 modifier = Modifier.clickable(
 //                    enabled = uiState !is UIState.Loading && it.id!=toolAgent.id
@@ -422,7 +424,7 @@ fun ToolMakerListView(
                     Text("Select a tool provider to view")
                 }
             }else {
-                val me = toolMaker.id<Int.MAX_VALUE||toolMaker.userId==authViewModel.user.id
+                val me = toolMaker.id<Int.MAX_VALUE|| UserRepository.me(toolMaker.userId)
                 Column(Modifier.weight(2.0f)) {
                     StudioActionBar(
                         navigationIcon = {
@@ -617,7 +619,7 @@ fun ToolMakerItem(
     toolMaker: AIPortToolMaker,
     selected:Boolean
     ){
-    val me = toolMaker.id<Int.MAX_VALUE||toolMaker.userId==authViewModel.user.id
+    val me = toolMaker.id<Int.MAX_VALUE|| UserRepository.me(toolMaker.userId)
     var user by remember { mutableStateOf<AIPortUser?>(null) }
     if(!me){
         generalViewModel.user(toolMaker.userId){

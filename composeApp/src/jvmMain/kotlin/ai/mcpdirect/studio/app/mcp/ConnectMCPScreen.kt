@@ -12,6 +12,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_ERR
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_ON
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
 import androidx.compose.foundation.clickable
@@ -74,7 +75,7 @@ fun ConnectMCPScreen(){
         }
         LazyColumn(Modifier.wrapContentHeight().width(300.dp).padding(start = 8.dp, top = 16.dp, bottom = 16.dp)) {
             items(makers) {
-                val me = it.id<Int.MAX_VALUE||it.userId==authViewModel.user.id
+                val me = it.id<Int.MAX_VALUE|| UserRepository.me(it.userId)
                 var user by remember { mutableStateOf<AIPortUser?>(null) }
                 if(!me){
                     generalViewModel.user(it.userId){
@@ -156,7 +157,7 @@ fun ConnectMCPScreen(){
                     Text("Select a MCP server to view")
                 }
             } else connectMCPViewModel.toolMaker.let {
-                val me = it.id<Int.MAX_VALUE||it.userId==authViewModel.user.id
+                val me = it.id<Int.MAX_VALUE|| UserRepository.me(it.userId)
                 Column(Modifier.weight(2.0f)) {
                     StudioActionBar(
                         navigationIcon = {

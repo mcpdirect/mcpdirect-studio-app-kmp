@@ -11,6 +11,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
 import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import ai.mcpdirect.studio.app.model.repository.TeamRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.team.mcpTeamToolMakerViewModel
 import ai.mcpdirect.studio.app.team.mcpTeamViewModel
 import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
@@ -29,9 +34,9 @@ sealed class PasswordChangeState {
 }
 val authViewModel = AuthViewModel()
 class AuthViewModel() : ViewModel(){
-    var user by mutableStateOf(AIPortUser(id=-1))
-        private set
-    var account by mutableStateOf("")
+//    var user by mutableStateOf(AIPortUser(id=-1))
+//        private set
+//    var account by mutableStateOf("")
     var passwordChangeState by mutableStateOf<PasswordChangeState>(PasswordChangeState.Idle)
         private set
 
@@ -81,15 +86,22 @@ class AuthViewModel() : ViewModel(){
         isLoginEmailValid = email.isNotBlank()
         isLoginPasswordValid = password.isNotBlank()
         uiState = UIState.Loading
-        getPlatform().login(email,password){
-            if(it.successful()) {
-                it.data?.let {
-                    user = it
-                }
-                account = email
+        viewModelScope.launch {
+            UserRepository.login(email,password){
+                code, message, user ->
+                uiState = UIState.state(code)
             }
-            uiState = UIState.state(it.code)
         }
+
+//        getPlatform().login(email,password){
+//            if(it.successful()) {
+//                it.data?.let {
+//                    user = it
+//                }
+//                account = email
+//            }
+//            uiState = UIState.state(it.code)
+//        }
 
 //        if (!isLoginEmailValid || !isLoginPasswordValid) {
 //            uiState = UiState.Error("Email and password cannot be empty.")
@@ -336,7 +348,7 @@ class AuthViewModel() : ViewModel(){
         uiState = UIState.Idle // Reset UI state on navigation
     }
     fun logout(){
-        user = AIPortUser(id=-1)
+//        user = AIPortUser(id=-1)
         uiState = UIState.Idle
         currentScreen = AuthScreen.Login
         generalViewModel.reset()
@@ -345,6 +357,10 @@ class AuthViewModel() : ViewModel(){
         mcpTeamToolMakerViewModel.reset()
         toolPermissionViewModel.reset()
         virtualMakerViewModel.reset()
+        AccessKeyRepository.reset()
+        StudioRepository.reset()
+        TeamRepository.reset()
+        ToolRepository.reset()
         viewModelScope.launch {
             getPlatform().logout {
             }

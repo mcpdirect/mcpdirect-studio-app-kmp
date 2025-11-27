@@ -7,6 +7,7 @@ import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.*
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -58,32 +59,6 @@ class GeneralViewModel() : ViewModel() {
         }
     }
 
-//    val virtualToolAgent = AIPortToolAgent("Virtual MCP",1)
-//    private val _toolAgents = mutableStateMapOf<Long, AIPortToolAgent>()
-//    val toolAgents by derivedStateOf {
-//        _toolAgents.values.toList()
-//    }
-//    fun toolAgent(id:Long): AIPortToolAgent?{
-//        return _toolAgents[id]
-//    }
-//    fun toolAgent(id:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
-//        if(id==0L){
-//            onResponse(0,null,virtualToolAgent)
-//            return
-//        }
-//        val agent = _toolAgents[id]
-//        if(agent!=null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL,null,agent)
-//        else viewModelScope.launch {
-//            getPlatform().getToolAgent(id){
-//                onResponse(it.code,it.message,it.data)
-//                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
-//                    it.data?.let {
-//                        _toolAgents[it.id] = it
-//                    }
-//                }
-//            }
-//        }
-//    }
     private val _toolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
     val toolMakers by derivedStateOf {
         _toolMakers.values.toList()
@@ -95,13 +70,14 @@ class GeneralViewModel() : ViewModel() {
         return _toolMakers[id]
     }
     fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
+//        val me = UserRepository.me.value
         return _toolMakers.values.filter {
             if(agent.id==0L) {
-                if(!(it.virtual()&&it.userId == authViewModel.user.id)){
+                if(!(it.virtual()&& UserRepository.me(it.userId))){
                     println(it.type)
                     println(it.userId)
                 }
-                it.virtual()&&it.userId == authViewModel.user.id
+                it.virtual()&&UserRepository.me(it.userId)
             }
             else it.agentId==agent.id
         }

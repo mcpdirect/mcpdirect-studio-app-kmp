@@ -11,10 +11,13 @@ import ai.mcpdirect.studio.app.dashboard.shortcut.Shortcut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +26,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.close
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun DashboardScreen(){
@@ -33,50 +39,61 @@ fun DashboardScreen(){
         CreateMCPKeyShortcut(),
         CreateMCPTeamShortcut()
     )
-    Column(
-        Modifier.width(1200.dp).fillMaxHeight().padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(
-            Modifier.fillMaxWidth().height(200.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ){
-            MyStudiosCard(viewModel,Modifier.weight(1.0f).fillMaxHeight())
-            MCPDirectKeyCard(viewModel,Modifier.weight(1.0f).fillMaxHeight())
-//            OutlinedCard(Modifier.weight(1.0f).fillMaxHeight()) {
-//                Text("My Studios", modifier = Modifier.padding(16.dp))
-//                HorizontalDivider()
-//
-//            }
-            OutlinedCard(Modifier.weight(1.0f).fillMaxHeight()) {
-                Text("MCP Tools", modifier = Modifier.padding(16.dp))
-                HorizontalDivider()
-            }
-            MyTeamCard(viewModel,Modifier.weight(1.0f).fillMaxHeight())
-        }
-//        HorizontalDivider(Modifier.padding(vertical = 8.dp))
-        Row(
-            Modifier.fillMaxHeight().weight(1.0f)
-        ){
-            var shortcut by remember { mutableStateOf<Shortcut?>(null) }
-            Column(Modifier.weight(1.0f)){
-                Text(
-                    "Shortcuts",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(8.dp)
+    Row(
+        Modifier.width(1200.dp).fillMaxHeight().padding(8.dp)
+    ){
+        var shortcut by remember { mutableStateOf<Shortcut?>(null) }
+        Column(Modifier.weight(1.0f)){
+            Text(
+                "Quick start",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(8.dp)
+            )
+            HorizontalDivider()
+            shortcuts.forEach {
+                ListItem(
+                    modifier = Modifier.clickable(
+                        enabled = true,
+                        onClick = {shortcut=it}
+                    ),
+                    headlineContent = {Text(it.title)}
                 )
-                HorizontalDivider()
-                shortcuts.forEach {
-                    ListItem(
-                        modifier = Modifier.clickable(
-                            enabled = true,
-                            onClick = {shortcut=it}
-                        ),
-                        headlineContent = {Text(it.title)}
-                    )
+            }
+        }
+        if(shortcut!=null) OutlinedCard(
+            Modifier.weight(3.0f),
+        ){
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                IconButton(
+                    onClick = {shortcut=null}
+                ){
+                    Icon(painterResource(Res.drawable.close), contentDescription = "")
+                }
+                Text(shortcut!!.title, style = MaterialTheme.typography.titleLarge)
+            }
+            HorizontalDivider()
+            shortcut!!.wizard()
+        } else {
+            VerticalDivider()
+            Column(
+                Modifier.weight(3.0f).padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(
+                    Modifier.fillMaxWidth().height(200.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ){
+                    MyStudiosCard(viewModel,Modifier.weight(1.0f).fillMaxHeight())
+                    MCPDirectKeyCard(viewModel,Modifier.weight(1.0f).fillMaxHeight())
+                    MyTeamCard(viewModel,Modifier.weight(1.0f).fillMaxHeight())
+                }
+                OutlinedCard(Modifier.weight(1.0f)) {
+                    Text("MCP Tools", modifier = Modifier.padding(16.dp))
+                    HorizontalDivider()
                 }
             }
-            shortcut?.wizard(Modifier.weight(3.0f))
         }
     }
 }

@@ -4,6 +4,7 @@ import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,8 +44,7 @@ fun MCPTemplateScreen() {
     Row(Modifier.fillMaxSize()){
         LazyColumn(Modifier.weight(1.0f)) {
             items(generalViewModel.toolMakers){
-                if(it.notVirtual()&&
-                    it.userId== authViewModel.user.id)ListItem(
+                if(it.notVirtual()&& UserRepository.me(it.userId))ListItem(
                     modifier = Modifier.clickable{
                     },
                     headlineContent = { Text(

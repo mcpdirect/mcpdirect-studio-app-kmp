@@ -28,6 +28,21 @@ object ToolRepository {
     private val _toolLastQueries = mutableMapOf<Long, TimeMark>()
     private val _tools = MutableStateFlow<Map<Long,AIPortTool>>(emptyMap())
     val tools: StateFlow<Map<Long, AIPortTool>> = _tools
+
+    fun reset(){
+        _makerLastQuery = null
+        _toolMakers.update { map ->
+            map.toMutableMap().apply {
+                clear()
+            }
+        }
+        _toolLastQueries.clear()
+        _tools.update { map ->
+            map.toMutableMap().apply {
+                clear()
+            }
+        }
+    }
     suspend fun loadTools(userId:Long=0, toolMaker: AIPortToolMaker,force:Boolean=false) {
         val makerId = toolMaker.id
         loadMutex.withLock {
@@ -125,7 +140,7 @@ object ToolRepository {
             generalViewModel.loading()
             getPlatform().createToolMaker(
                 AIPortToolMaker.TYPE_MCP, mcpServerName,
-                templateId = template.id, userId = authViewModel.user.id, agentId = toolAgentId,
+                templateId = template.id, userId = UserRepository.me.value.id, agentId = toolAgentId,
                 mcpServerConfig = mcpServerConfig
             ){
                 if(it.successful()){

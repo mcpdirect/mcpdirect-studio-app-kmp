@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.compose.WizardStep
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,7 @@ import org.jetbrains.compose.resources.painterResource
 class ConnectOpenAPIShortcut : Shortcut {
     override val title = "Connect OpenAPI"
     @Composable
-    override fun wizard(modifier: Modifier) {
+    override fun wizard() {
         val myStudioViewModel by remember { mutableStateOf(MyStudioViewModel()) }
         LaunchedEffect(myStudioViewModel) {
             myStudioViewModel.refreshToolAgents()
@@ -48,7 +49,7 @@ class ConnectOpenAPIShortcut : Shortcut {
                         LazyColumn {
                             items(toolAgents) {
                                 println("${it.id},${it.name}")
-                                if (it.id != 0L && it.userId == authViewModel.user.id) ListItem(
+                                if (it.id != 0L && UserRepository.me(it.userId)) ListItem(
                                     modifier = Modifier.clickable(
                                         enabled = it.status == AIPortToolMaker.STATUS_ON
                                     ) {
@@ -207,10 +208,9 @@ class ConnectOpenAPIShortcut : Shortcut {
             )
         }
 //    Modifier.weight(3.0f)
-        OutlinedCard(modifier) {
-            Wizard(
-                wizardSteps,
-                onFinish = {
+        Wizard(
+            wizardSteps,
+            onFinish = {
 //                    val securities = mutableMapOf<String,String>()
 //                    viewModel.securities.forEach {
 //                        securities[it.key] = it.value
@@ -222,10 +222,9 @@ class ConnectOpenAPIShortcut : Shortcut {
 //                        config.docUri = yaml
 //                    }else config.doc = yaml
 //                    myStudioViewModel.connectOpenAPIServerToStudio(viewModel.name,config)
-                    generalViewModel.currentScreen(Screen.MyStudio(
-                        toolAgent,null, MyStudioScreenDialog.ConnectOpenAPI))
-                }
-            )
-        }
+                generalViewModel.currentScreen(Screen.MyStudio(
+                    toolAgent,null, MyStudioScreenDialog.ConnectOpenAPI))
+            }
+        )
     }
 }

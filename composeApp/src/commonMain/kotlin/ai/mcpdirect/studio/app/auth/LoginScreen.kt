@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun LoginScreen() {
-    var email by remember { mutableStateOf(authViewModel.account) }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current

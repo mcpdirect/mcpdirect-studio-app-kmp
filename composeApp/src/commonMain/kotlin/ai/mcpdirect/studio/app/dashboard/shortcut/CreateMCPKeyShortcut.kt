@@ -60,7 +60,7 @@ import org.jetbrains.compose.resources.painterResource
 class CreateMCPKeyShortcut : Shortcut {
     override val title = "Create MCPdirect Key"
     @Composable
-    override fun wizard(modifier: Modifier) {
+    override fun wizard() {
         val wizardSteps = remember {
             listOf(
                 WizardStep("Create MCPdirect Key") { wizardViewModel ->
@@ -78,14 +78,12 @@ class CreateMCPKeyShortcut : Shortcut {
             )
         }
 //    Modifier.weight(3.0f)
-        OutlinedCard(modifier) {
-            Wizard(
-                wizardSteps,
-                onFinish = {
-                    generalViewModel.currentScreen(Screen.MCPAccessKey(
-                        MCPKeyDialog.GenerateMCPKey))
-                }
-            )
-        }
+        Wizard(
+            wizardSteps,
+            onFinish = {
+                generalViewModel.currentScreen(Screen.MCPAccessKey(
+                    MCPKeyDialog.GenerateMCPKey))
+            }
+        )
     }
 }

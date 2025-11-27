@@ -61,7 +61,7 @@ import org.jetbrains.compose.resources.painterResource
 class CreateMCPTeamShortcut : Shortcut {
     override val title = "Create MCP Team"
     @Composable
-    override fun wizard(modifier: Modifier) {
+    override fun wizard() {
         val wizardSteps = remember {
             listOf(
                 WizardStep("Create MCP Team") { wizardViewModel ->
@@ -78,15 +78,12 @@ class CreateMCPTeamShortcut : Shortcut {
                 }
             )
         }
-//    Modifier.weight(3.0f)
-        OutlinedCard(modifier) {
-            Wizard(
-                wizardSteps,
-                onFinish = {
-                    generalViewModel.currentScreen(Screen.MCPTeam(
-                        MCPTeamDialog.CreateTeam))
-                }
-            )
-        }
+        Wizard(
+            wizardSteps,
+            onFinish = {
+                generalViewModel.currentScreen(Screen.MCPTeam(
+                    MCPTeamDialog.CreateTeam))
+            }
+        )
     }
 }

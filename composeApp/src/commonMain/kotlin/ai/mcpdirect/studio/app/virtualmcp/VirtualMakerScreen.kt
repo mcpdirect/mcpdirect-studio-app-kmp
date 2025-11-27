@@ -11,6 +11,7 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -220,7 +221,7 @@ fun AddServerDialog(viewModel: VirtualMakerViewModel) {
 @Composable
 private fun MakerListView() {
     val viewModel = virtualMakerViewModel
-    val myAccountId = authViewModel.user.id
+//    val myAccountId = authViewModel.user.id
     Column{
         SearchView(
             query = viewModel.searchQuery,
@@ -245,7 +246,7 @@ private fun MakerListView() {
                 }else {
                     LazyColumn(modifier = Modifier.weight(3.0f)) {
                         items(viewModel.virtualMakers.filter {
-                            it.userId==myAccountId
+                            UserRepository.me(it.userId)
                         }) { maker ->
                             MakerItem(maker) {
                                 viewModel.selectVirtualMaker(maker)

@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -52,7 +53,7 @@ fun ToolMakerListView(
     LazyColumn(modifier=modifier) {
         items(toolMakers){
 
-            val me = it.userId== authViewModel.user.id
+            val me = UserRepository.me(it.userId)
             var team by remember { mutableStateOf<AIPortTeam?>(null) }
             LaunchedEffect(it){
                 if(it.teamId!=0L) toolMakerListViewModel.team(it.teamId){

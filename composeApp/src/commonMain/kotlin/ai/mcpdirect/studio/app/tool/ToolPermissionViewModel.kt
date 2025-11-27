@@ -18,6 +18,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import kotlinx.coroutines.launch
@@ -141,7 +142,7 @@ class ToolPermissionViewModel : ViewModel(){
             permission ->
             if(permission.agentId==agent.id&&permission.status>0){
                 generalViewModel.toolMaker(permission.makerId)?.let {
-                    if(it.userId==authViewModel.user.id){
+                    if(UserRepository.me(it.userId)){
                         count++
                     }
                 }
@@ -150,7 +151,7 @@ class ToolPermissionViewModel : ViewModel(){
             permission ->
             if(permission.agentId==agent.id&&permission.status>0){
                 generalViewModel.toolMaker(permission.makerId)?.let {
-                    if(it.userId==authViewModel.user.id){
+                    if(UserRepository.me(it.userId)){
                         count++
                     }
                 }

@@ -12,6 +12,7 @@ import ai.mcpdirect.studio.app.mcp.openapi.ConnectOpenAPIServerViewModel
 import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,7 +60,7 @@ import org.jetbrains.compose.resources.painterResource
 class ConnectMCPShortcut : Shortcut {
     override val title = "Connect MCP"
     @Composable
-    override fun wizard(modifier: Modifier) {
+    override fun wizard() {
         val myStudioViewModel by remember { mutableStateOf(MyStudioViewModel()) }
         LaunchedEffect(myStudioViewModel) {
             myStudioViewModel.refreshToolAgents()
@@ -77,7 +78,7 @@ class ConnectMCPShortcut : Shortcut {
                         LazyColumn {
                             items(toolAgents) {
                                 println("${it.id},${it.name}")
-                                if (it.id != 0L && it.userId == authViewModel.user.id) ListItem(
+                                if (it.id != 0L && UserRepository.me(it.userId)) ListItem(
                                     modifier = Modifier.clickable(
                                         enabled = it.status == AIPortToolMaker.STATUS_ON
                                     ) {
@@ -129,14 +130,12 @@ class ConnectMCPShortcut : Shortcut {
             )
         }
 //    Modifier.weight(3.0f)
-        OutlinedCard(modifier) {
-            Wizard(
-                wizardSteps,
-                onFinish = {
-                    generalViewModel.currentScreen(Screen.MyStudio(
-                        toolAgent,null, MyStudioScreenDialog.ConnectMCP))
-                }
-            )
-        }
+        Wizard(
+            wizardSteps,
+            onFinish = {
+                generalViewModel.currentScreen(Screen.MyStudio(
+                    toolAgent,null, MyStudioScreenDialog.ConnectMCP))
+            }
+        )
     }
 }

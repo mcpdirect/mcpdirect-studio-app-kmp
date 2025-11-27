@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.mcp.EditMCPServerNameDialog
 import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,7 +69,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun VirtualToolMakerListView() {
     val viewModel = virtualMakerViewModel
-    val myAccountId = authViewModel.user.id
+//    val myAccountId = authViewModel.user.id
     LaunchedEffect(viewModel) {
         viewModel.queryToolMakers()
         generalViewModel.topBarActions = {
@@ -94,7 +95,7 @@ fun VirtualToolMakerListView() {
     }else {
         LazyColumn{
             items(viewModel.virtualMakers.filter {
-                it.userId==myAccountId
+                UserRepository.me(it.userId)
             }) { maker ->
                 StudioListItem(
                     modifier = Modifier.fillMaxWidth().clickable(onClick = {

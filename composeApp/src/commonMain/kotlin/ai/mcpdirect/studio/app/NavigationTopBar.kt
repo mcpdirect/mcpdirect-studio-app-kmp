@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.setting.settingsViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,7 @@ fun NavigationTopBar(
     screens:List<Screen>,
     content: @Composable (() -> Unit)
 ){
+    val me = UserRepository.me.value
     var showMenu by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
@@ -107,7 +109,7 @@ fun NavigationTopBar(
                 actions = {
                     generalViewModel.topBarActions()
                     Text(
-                        authViewModel.user.name,
+                        me.name,
                         Modifier.padding(start = 16.dp),
                         style = MaterialTheme.typography.labelLarge,
                         overflow = TextOverflow.Ellipsis)
@@ -120,10 +122,10 @@ fun NavigationTopBar(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false }
                     ) {
-                        Text(authViewModel.account,Modifier.padding(
+                        Text(me.account,Modifier.padding(
                             start = 16.dp, end = 16.dp, bottom = 16.dp))
                         HorizontalDivider()
-                        if(authViewModel.user.type!=AIPortUser.ANONYMOUS)DropdownMenuItem(
+                        if(me.type!=AIPortUser.ANONYMOUS)DropdownMenuItem(
                             text = { Text("Change Password") },
                             onClick = {
                                 showMenu = false

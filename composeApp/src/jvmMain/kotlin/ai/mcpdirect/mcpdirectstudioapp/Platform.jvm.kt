@@ -52,8 +52,8 @@ class JVMPlatform : Platform, NotificationHandler{
     override fun onToolAgentNotification(agent: ai.mcpdirect.backend.dao.entity.aitool.AIPortToolAgent?) {
         agent?.let {
             val toolAgent = AIPortToolAgent()
-            toolAgent.id = it.id;
-            toolAgent.name = it.name?:"";
+            toolAgent.id = it.id
+            toolAgent.name = it.name?:""
             toolAgent.status = it.status
             toolAgent.userId = it.userId
             toolAgent.engineId = it.engineId
@@ -208,12 +208,12 @@ class JVMPlatform : Platform, NotificationHandler{
         onResponse: (resp: AIPortServiceResponse<AIPortUser?>) -> Unit
     ) {
         CoroutineScope(Dispatchers.IO).launch {
+            MCPDirectStudio.setNotificationHandler(this@JVMPlatform)
             MCPDirectStudio.login(account,password){
                     code, message, data ->
                 var user:AIPortUser?=null
                 if(code==0) {
-                    user = AIPortUser(data.id, data.name, data.language, data.created, data.type)
-                        MCPDirectStudio.setNotificationHandler(this@JVMPlatform)
+                    user = AIPortUser(data.id, data.name, data.language, data.created, data.type,data.account)
                 }
                 onResponse(AIPortServiceResponse(code, message, user))
             }

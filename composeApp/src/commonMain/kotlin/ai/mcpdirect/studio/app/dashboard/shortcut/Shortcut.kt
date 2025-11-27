@@ -7,5 +7,5 @@ import androidx.compose.ui.Modifier
 interface Shortcut{
     val title:String
     @Composable
-    fun wizard(modifier: Modifier)
+    fun wizard()
 }

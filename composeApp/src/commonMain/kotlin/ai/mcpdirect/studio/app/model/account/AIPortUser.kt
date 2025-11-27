@@ -11,8 +11,8 @@ data class AIPortUser(
     var type: Int = 0,
     var account:String = ""
 ) {
-    constructor() : this(0, "", "", 0, 0)
+    constructor() : this(0, "", "", 0, 0, account = "")
     companion object{
-        val ANONYMOUS: Int = Int.MAX_VALUE
+        const val ANONYMOUS: Int = Int.MAX_VALUE
     }
 }

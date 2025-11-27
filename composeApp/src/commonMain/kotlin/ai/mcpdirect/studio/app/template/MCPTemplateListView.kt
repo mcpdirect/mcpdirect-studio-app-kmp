@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -50,7 +51,7 @@ fun MCPTemplateListView(){
     }
     LazyColumn {
         items(generalViewModel.toolMakerTemplates){ template ->
-            val me = template.userId== authViewModel.user.id
+            val me = UserRepository.me(template.userId)
             var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
             var user by remember { mutableStateOf<AIPortUser?>(null)}
             LaunchedEffect(null){

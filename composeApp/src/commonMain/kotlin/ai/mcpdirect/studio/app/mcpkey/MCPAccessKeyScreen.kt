@@ -57,16 +57,7 @@ fun MCPAccessKeyScreen(
         viewModel.refreshMCPAccessKeys()
     }
 
-    if(viewModel.uiState== UIState.Loading) Column(
-        Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(48.dp),
-            color = MaterialTheme.colorScheme.primary
-        )
-    } else if(viewModel.accessKeys.isEmpty()) Column(
+    if(viewModel.accessKeys.isEmpty()) Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
