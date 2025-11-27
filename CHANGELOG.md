@@ -3,6 +3,10 @@
 All notable changes to this file.
 
 ## 2025-11-27
+### Changed
+- Enhanced StudioRepository.kt to initialize tool agents with virtual tool agent
+
+## 2025-11-27
 ### Added
 - Enhanced TeamRepository.kt with team tool maker and template functions
 - Added toolMakers function to ToolRepository.kt for filtering by agent

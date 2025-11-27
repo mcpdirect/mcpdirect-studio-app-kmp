@@ -30,7 +30,9 @@ object StudioRepository {
         }
     }
     private var _toolAgentLastQuery:TimeMark? = null
-    private val _toolAgents = MutableStateFlow<Map<Long, AIPortToolAgent>>(emptyMap())
+    private val _toolAgents = MutableStateFlow<Map<Long, AIPortToolAgent>>(mapOf(
+        0L to _virtualToolAgent
+    ))
     val toolAgents: StateFlow<Map<Long, AIPortToolAgent>> = _toolAgents
     private val _toolMakerLastQueries = mutableMapOf<Long, TimeMark>()
     private val _mcpServers = MutableStateFlow<Map<Long, MCPServer>>(emptyMap())
