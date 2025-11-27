@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app
 
 import ai.mcpdirect.studio.app.agent.MyStudioScreenDialog
 import ai.mcpdirect.studio.app.mcpkey.MCPKeyDialog
+import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.team.MCPTeamDialog
@@ -20,8 +21,12 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
 //        Res.drawable.key)
     object UserSetting : Screen(Res.string.user_setting,
         Res.drawable.settings)
-    object ToolPermission : Screen(Res.string.tool_permission,
+//    object ToolPermission : Screen(Res.string.tool_permission,
+//        Res.drawable.shield_toggle)
+
+    data class ToolPermission(val accessKey: AIPortAccessKey) : Screen(Res.string.tool_permission,
         Res.drawable.shield_toggle)
+
 //    object MyStudio : Screen(Res.string.connect_mcp,
 //        Res.drawable.plug_connect)
 //    object MCPTeam : Screen(Res.string.mcp_team,

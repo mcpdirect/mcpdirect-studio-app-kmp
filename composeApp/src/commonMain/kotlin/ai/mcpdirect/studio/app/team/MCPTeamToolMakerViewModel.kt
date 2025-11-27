@@ -37,7 +37,7 @@ class MCPTeamToolMakerViewModel: ViewModel() {
             tools.clear()
             virtualTools.clear()
             viewModelScope.launch {
-                if(it.type==0) getPlatform().queryVirtualTools(it.id){
+                if(it.type==0) getPlatform().queryVirtualTools(makerId = it.id){
                         (code, message, data) ->
                     if(code==0&&data!=null){
                         if(data.isNotEmpty()) {

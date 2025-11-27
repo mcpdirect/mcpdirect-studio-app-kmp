@@ -3,6 +3,7 @@ package ai.mcpdirect.studio.app.tool
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.theme.purple.selectedListItemColors
 import androidx.compose.foundation.clickable
@@ -27,9 +28,14 @@ import kotlin.collections.listOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ToolPermissionScreen() {
+fun ToolPermissionScreen(
+    accessKey: AIPortAccessKey
+) {
     var showPermissionChangedDialog by remember { mutableStateOf(false) }
-    val viewModel = toolPermissionViewModel
+    val viewModel by remember { mutableStateOf(ToolPermissionViewModel(accessKey)) }
+    val toolMaker by viewModel.toolMaker.collectAsState()
+    val tools by viewModel.tools.collectAsState()
+    val virtualTools by viewModel.virtualTools.collectAsState()
     LaunchedEffect(viewModel){
         viewModel.refresh()
         generalViewModel.refreshTeamToolMakers()
@@ -71,8 +77,8 @@ fun ToolPermissionScreen() {
 
             // Content based on selected tab
             when (currentTabIndex) {
-                0 -> AgentList()
-                1 -> TeamList()
+                0 -> AgentList(viewModel)
+                1 -> TeamList(viewModel)
             }
 
         }
@@ -102,7 +108,7 @@ fun ToolPermissionScreen() {
                                     Text("${count}")
                                 } },
                             trailingContent = {
-                                if(viewModel.toolMaker!=null&&viewModel.toolMaker!!.id==it.id)
+                                if(toolMaker.id==it.id)
                                     Icon(painterResource(Res.drawable.keyboard_arrow_right),
                                         contentDescription = "Current Tool Maker")
                             },
@@ -141,9 +147,9 @@ fun ToolPermissionScreen() {
 
                     }
                     HorizontalDivider()
-                    viewModel.toolMaker?.let {
+                    toolMaker.let {
                         if(it.type==0) LazyColumn {
-                            viewModel.virtualTools.forEach {
+                            virtualTools.forEach {
                                 item {
                                     Row (verticalAlignment = Alignment.CenterVertically,){
                                         Checkbox(
@@ -159,11 +165,11 @@ fun ToolPermissionScreen() {
                                             overflow = TextOverflow.Ellipsis)
                                         Spacer(Modifier.weight(1.0f))
                                         IconButton(onClick = {
-                                            toolDetailViewModel.toolId = it.toolId
-                                            toolDetailViewModel.toolName = it.name
-                                            generalViewModel.currentScreen(Screen.ToolDetails,
-                                                "Tool Description of ${it.name}",
-                                                Screen.ToolPermission)
+//                                            toolDetailViewModel.toolId = it.toolId
+//                                            toolDetailViewModel.toolName = it.name
+//                                            generalViewModel.currentScreen(Screen.ToolDetails,
+//                                                "Tool Description of ${it.name}",
+//                                                Screen.ToolPermission(accessKey))
                                         }) {
                                             Icon(painterResource(Res.drawable.info), contentDescription = "Details")
                                         }
@@ -171,7 +177,7 @@ fun ToolPermissionScreen() {
                                 }
                             }
                         } else LazyColumn {
-                            viewModel.tools.forEach {
+                            tools.forEach {
                                 item {
                                     Row (verticalAlignment = Alignment.CenterVertically,){
                                         Checkbox(
@@ -187,10 +193,10 @@ fun ToolPermissionScreen() {
                                             overflow = TextOverflow.Ellipsis)
                                         Spacer(Modifier.weight(1.0f))
                                         IconButton(onClick = {
-                                            toolDetailViewModel.toolId = it.id
-                                            toolDetailViewModel.toolName = it.name
-                                            generalViewModel.currentScreen(Screen.ToolDetails,
-                                                previousScreen = Screen.ToolPermission)
+//                                            toolDetailViewModel.toolId = it.id
+//                                            toolDetailViewModel.toolName = it.name
+//                                            generalViewModel.currentScreen(Screen.ToolDetails,
+//                                                previousScreen = Screen.ToolPermission(accessKey))
                                         }) {
                                             Icon(painterResource(Res.drawable.info), contentDescription = "Details")
                                         }
@@ -234,10 +240,12 @@ fun ToolPermissionScreen() {
 }
 
 @Composable
-private fun AgentList(){
-    val viewModel = toolPermissionViewModel
+private fun AgentList(
+    viewModel: ToolPermissionViewModel
+){
+    val toolAgents by viewModel.toolAgents.collectAsState()
     LazyColumn() {
-        items(viewModel.toolAgents){
+        items(toolAgents){
             ListItem(
                 modifier = Modifier.clickable{
                     viewModel.selectToolAgent(it)
@@ -265,9 +273,11 @@ private fun AgentList(){
 }
 
 @Composable
-private fun TeamList(){
+private fun TeamList(
+    viewModel: ToolPermissionViewModel
+){
     generalViewModel.refreshTeams()
-    val viewModel = toolPermissionViewModel
+//    val viewModel = toolPermissionViewModel
     LazyColumn(Modifier.fillMaxHeight()) {
         items(generalViewModel.teams){
             ListItem(

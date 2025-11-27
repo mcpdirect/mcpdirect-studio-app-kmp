@@ -284,7 +284,7 @@ class VirtualMakerViewModel: ViewModel() {
     }
     fun queryVirtualMakerTools(){
         selectedVirtualMaker?.let {
-            getPlatform().queryVirtualTools(it.id){
+            getPlatform().queryVirtualTools(makerId=it.id){
                     (code, message, data) ->
                 if(code==0&&data!=null){
                     _selectedVirtualMakerTools.clear()

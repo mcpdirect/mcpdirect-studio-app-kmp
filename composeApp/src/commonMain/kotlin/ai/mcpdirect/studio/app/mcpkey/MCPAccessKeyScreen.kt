@@ -3,12 +3,11 @@ package ai.mcpdirect.studio.app.mcpkey
 import ai.mcpdirect.mcpdirectstudioapp.AppInfo
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
-import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
-import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
+//import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,14 +49,16 @@ sealed class MCPKeyNameError() {
 fun MCPAccessKeyScreen(
     dialog: MCPKeyDialog
 ) {
-    val viewModel = mcpAccessKeyViewModel
+//    val viewModel = mcpAccessKeyViewModel
+    val viewModel by remember { mutableStateOf(MCPAccessKeyViewModel()) }
+    val accessKeys by viewModel.accessKeys.collectAsState()
     var dialog by remember { mutableStateOf(dialog) }
     LaunchedEffect(viewModel) {
         generalViewModel.refreshToolMakers()
         viewModel.refreshMCPAccessKeys()
     }
 
-    if(viewModel.accessKeys.isEmpty()) Column(
+    if(accessKeys.isEmpty()) Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -83,10 +84,10 @@ fun MCPAccessKeyScreen(
             }
         }
         LazyColumn(Modifier.fillMaxSize().padding(8.dp)) {
-            items(viewModel.accessKeys){
+            items(accessKeys){
                 ListItem(
                     headlineContent = { Text(it.name) },
-                    trailingContent = {
+                    supportingContent = {
                         Row {
                             TooltipIconButton(
                                 Res.drawable.edit,
@@ -117,47 +118,47 @@ fun MCPAccessKeyScreen(
                                 Res.drawable.shield_toggle,
                                 contentDescription = "Edit Tool Permissions",
                                 onClick = {
-                                    toolPermissionViewModel.accessKey = it
-                                    generalViewModel.currentScreen(Screen.ToolPermission,
+//                                    toolPermissionViewModel.accessKey = it
+                                    generalViewModel.currentScreen(Screen.ToolPermission(it),
                                         "Tool Permissions for Key #${it.name}",
                                         Screen.MCPAccessKey())
                                 })
                         }
                     },
-                    supportingContent = {
-                        val summaries = viewModel.toolPermissionMakerSummary.filter {
-                                summary ->
-                            summary.accessKeyId==it.id
-                        }
-                        if(summaries.isNotEmpty()){
-                            FlowRow(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(align = Alignment.Top),
-                                horizontalArrangement = Arrangement.Start
-                            ) {
-                                summaries.forEach {
-                                    val maker = generalViewModel.toolMaker(it.makerId)
-                                    println("summary maker $maker")
-                                    if(maker!=null)
-                                        Box(
-                                            Modifier.border(
-                                                width = 1.dp,
-                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                                                shape = RoundedCornerShape(8.dp)
-                                            ).padding(all = 4.dp)
-                                        ) {
-                                            Text(
-                                                "${maker.name}(${it.count})",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.primary,
-                                            )
-                                        }
-                                    Spacer(Modifier.width(4.dp))
-                                }
-                            }
-                        }
-                    }
+//                    supportingContent = {
+//                        val summaries = viewModel.toolPermissionMakerSummary.filter {
+//                                summary ->
+//                            summary.accessKeyId==it.id
+//                        }
+//                        if(summaries.isNotEmpty()){
+//                            FlowRow(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .wrapContentHeight(align = Alignment.Top),
+//                                horizontalArrangement = Arrangement.Start
+//                            ) {
+//                                summaries.forEach {
+//                                    val maker = generalViewModel.toolMaker(it.makerId)
+//                                    println("summary maker $maker")
+//                                    if(maker!=null)
+//                                        Box(
+//                                            Modifier.border(
+//                                                width = 1.dp,
+//                                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+//                                                shape = RoundedCornerShape(8.dp)
+//                                            ).padding(all = 4.dp)
+//                                        ) {
+//                                            Text(
+//                                                "${maker.name}(${it.count})",
+//                                                style = MaterialTheme.typography.bodySmall,
+//                                                color = MaterialTheme.colorScheme.primary,
+//                                            )
+//                                        }
+//                                    Spacer(Modifier.width(4.dp))
+//                                }
+//                            }
+//                        }
+//                    }
                 )
             }
         }
@@ -185,8 +186,8 @@ fun MCPAccessKeyScreen(
 }
 
 @Composable
-fun MCPKeyNameErrors() {
-    when(mcpAccessKeyViewModel.mcpKeyNameErrors){
+fun MCPKeyNameErrors(error:MCPKeyNameError) {
+    when(error){
         MCPKeyNameError.None -> {Text("")}
         MCPKeyNameError.Invalid -> {
             Text("MCP Key Name cannot be empty and the max length is 32")
@@ -228,7 +229,7 @@ fun GenerateMCPKeyDialog(
                         }
                     ),
                     supportingText = {
-                        MCPKeyNameErrors()
+                        MCPKeyNameErrors(viewModel.mcpKeyNameErrors)
                     }
                 )
             }
@@ -268,7 +269,7 @@ fun ShowMCPKeyDialog(
 //    mcpKey!!.secretKey = key?:""
     var key by remember { mutableStateOf<AIPortAccessKeyCredential?>(null) }
 
-    viewModel.getMCPAccessKeyCredential(viewModel.mcpKey!!.id){
+    viewModel.getMCPAccessKeyCredential(viewModel.mcpKey!!){
         key = it
     }
     AlertDialog(
@@ -348,7 +349,7 @@ fun EditMCPKeyNameDialog(
                         }
                     ),
                     supportingText = {
-                        MCPKeyNameErrors()
+                        MCPKeyNameErrors(viewModel.mcpKeyNameErrors)
                     }
                 )
             }

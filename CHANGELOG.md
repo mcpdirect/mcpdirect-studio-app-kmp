@@ -1,6 +1,48 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this file.
+
+## 2025-11-27
+### Added
+- Modified Screen.kt to make ToolPermission a parameterized screen with AIPortAccessKey
+- Added accessKey parameter to ToolPermissionScreen.kt
+- Enhanced ToolPermissionViewModel.kt with proper state flows and repository integration
+- Added queryVirtualTools parameters in Platform.kt interface
+
+### Changed
+- Updated App.kt to pass accessKey parameter to ToolPermissionScreen
+- Modified AuthViewModel.kt to comment out unused imports and reset calls
+- Updated MCPAccessKeyScreen.kt to use local view model instance and updated UI
+- Enhanced AccessKeyRepository.kt with generate, modify, and get credential functions
+- Updated ToolRepository.kt to include tool permission and virtual tool functions
+- Modified MCPTeamToolMakerViewModel.kt to update queryVirtualTools call
+- Updated ToolPermissionScreen.kt to use view model state flows and parameterized functions
+- Enhanced ToolPermissionViewModel.kt with improved state management and repository integration
+- Updated VirtualMakerViewModel.kt to fix queryVirtualTools call
+
+## 2025-11-26
+### Added
+- Added close.svg icon resource
+- Created UserRepository.kt with me() function for user identity verification
+- Added reset() functions to repository classes for state management
+
+### Changed
+- Updated app version from 2.2.0 to 2.2.1 in build.gradle.kts
+- Updated mcpdirect-studio-core dependency to 2.2.1-SNAPSHOT
+- Replaced direct authViewModel.user checks with UserRepository.me() calls throughout the application
+- Updated NavigationTopBar.kt to use UserRepository.me for user display
+- Modified MyStudioScreen.kt to use UserRepository.me for tool agent filtering
+- Updated Team screens to use UserRepository.me for user identity checks
+- Updated VirtualMakerScreen.kt and VirtualToolMakerListView.kt to use UserRepository.me
+- Modified ConnectMCPScreen.kt to use UserRepository.me for user checks
+- Updated ToolPermissionViewModel.kt to use UserRepository.me
+- Removed unused code in GeneralViewModel.kt and AuthViewModel.kt
+- Updated Wizard components to remove unnecessary OutlinedCard wrapper
+- Modified Shortcut interface to remove modifier parameter from wizard function
+- Updated MCPAccessKeyScreen.kt to remove loading state display
+- Enhanced AIPortUser.kt with proper constructor and ANONYMOUS constant
+- Updated Platform.jvm.kt to pass account information in user object
+- Updated ToolRepository.kt to use UserRepository.me for createToolMaker function
 
 ## 2025-11-26
 ### Changed

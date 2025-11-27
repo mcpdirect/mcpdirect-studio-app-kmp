@@ -59,7 +59,7 @@ class MyStudioViewModel(): ViewModel() {
         }
     }
 
-    private val _toolMaker = MutableStateFlow<AIPortToolMaker>(AIPortToolMaker())
+    private val _toolMaker = MutableStateFlow(AIPortToolMaker())
     val toolMaker: StateFlow<AIPortToolMaker> = _toolMaker
     fun toolMaker(maker:AIPortToolMaker){
 //        when(maker.type){

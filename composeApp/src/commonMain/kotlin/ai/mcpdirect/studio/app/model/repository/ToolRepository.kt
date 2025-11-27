@@ -4,15 +4,20 @@ import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
+import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.collections.set
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
@@ -23,11 +28,25 @@ object ToolRepository {
     private var _makerLastQuery:TimeMark? = null
     private val _toolMakers = MutableStateFlow<Map<Long, AIPortToolMaker>>(emptyMap())
     val toolMakers: StateFlow<Map<Long, AIPortToolMaker>> = _toolMakers
-//    private val _virtualToolMakers = MutableStateFlow<Map<Long, AIPortToolMaker>>(emptyMap())
-//    val virtualToolMakers: StateFlow<Map<Long, AIPortToolMaker>> = _virtualToolMakers
     private val _toolLastQueries = mutableMapOf<Long, TimeMark>()
     private val _tools = MutableStateFlow<Map<Long,AIPortTool>>(emptyMap())
     val tools: StateFlow<Map<Long, AIPortTool>> = _tools
+
+//    private val _toolPermissionLastQueries = mutableMapOf<Long, TimeMark>()
+//    data class ToolPermissionKey(val accessKeyId:Long,val toolId:Long)
+//    private val _toolPermissions = MutableStateFlow<Map<ToolPermissionKey, AIPortToolPermission>>(emptyMap())
+//    val toolPermissions: StateFlow<Map<ToolPermissionKey, AIPortToolPermission>> = _toolPermissions
+//    fun toolPermission(accessKeyId: Long,toolId: Long): AIPortToolPermission?{
+//        return _toolPermissions.value[ToolPermissionKey(accessKeyId, toolId )]
+//    }
+
+    private val _virtualToolLastQueries = mutableMapOf<Long, TimeMark>()
+    private val _virtualTools = MutableStateFlow<Map<Long, AIPortVirtualTool>>(emptyMap())
+    val virtualTools: StateFlow<Map<Long, AIPortVirtualTool>> = _virtualTools
+
+//    private val _virtualToolPermissionLastQueries = mutableMapOf<Long, TimeMark>()
+//    private val _virtualToolPermissions = MutableStateFlow<Map<ToolPermissionKey, AIPortVirtualToolPermission>>(emptyMap())
+//    val virtualToolPermissions: StateFlow<Map<ToolPermissionKey, AIPortVirtualToolPermission>> = _virtualToolPermissions
 
     fun reset(){
         _makerLastQuery = null
@@ -219,6 +238,59 @@ object ToolRepository {
                 generalViewModel.loaded(
                     "Modify tool maker tags of #${toolMaker.name}",it.code,it.message
                 )
+            }
+        }
+    }
+
+    suspend fun loadToolPermissions(
+        accessKey: AIPortAccessKey,force: Boolean=false,
+        onResponse: (code: Int, message: String?, data: List<AIPortToolPermission>?) -> Unit
+    ) {
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().queryToolPermissions(accessKey.id){
+                generalViewModel.loaded("Load Tool Permissions of #${accessKey.name}",it.code,it.message)
+                onResponse(it.code,it.message,it.data)
+            }
+        }
+    }
+
+    suspend fun loadVirtualTools(userId:Long=0, toolMaker: AIPortToolMaker, force:Boolean=false) {
+        val makerId = toolMaker.id
+        loadMutex.withLock {
+            val now = TimeSource.Monotonic.markNow()
+            val lastQuery = _virtualToolLastQueries[makerId]
+            if(lastQuery==null|| (force&&lastQuery.elapsedNow()>_duration)) {
+                generalViewModel.loading()
+                getPlatform().queryVirtualTools(
+                    userId = userId,
+                    makerId = makerId,
+                    lastUpdated = if(lastQuery==null) 0L else currentMilliseconds()
+                ) {
+                    if (it.successful()) it.data?.let { tools ->
+                        _virtualTools.update { map ->
+                            map.toMutableMap().apply {
+                                for (tool in tools) {
+                                    put(tool.id, tool)
+                                }
+                            }
+                        }
+                        _virtualToolLastQueries[makerId] = now
+                    }
+                    generalViewModel.loaded("Load Virtual Tools of #${toolMaker.name}",it.code,it.message)
+                }
+            }
+        }
+    }
+    suspend fun loadVirtualToolPermissions(
+        accessKey: AIPortAccessKey,force: Boolean=false,
+        onResponse: (code: Int, message: String?, data: List<AIPortVirtualToolPermission>?) -> Unit
+    ) {
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().queryVirtualToolPermissions(accessKey.id){
+                generalViewModel.loaded("Load Tool Permissions of #${accessKey.name}",it.code,it.message)
+                onResponse(it.code,it.message,it.data)
             }
         }
     }

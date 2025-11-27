@@ -3,7 +3,7 @@ package ai.mcpdirect.studio.app.auth
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.mcpkey.mcpAccessKeyViewModel
+//import ai.mcpdirect.studio.app.mcpkey.mcpAccessKeyViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortOtp
 import androidx.compose.runtime.getValue
@@ -18,7 +18,7 @@ import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.team.mcpTeamToolMakerViewModel
 import ai.mcpdirect.studio.app.team.mcpTeamViewModel
-import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
+//import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
 import ai.mcpdirect.studio.app.virtualmcp.virtualMakerViewModel
 //import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import androidx.lifecycle.ViewModel
@@ -352,10 +352,10 @@ class AuthViewModel() : ViewModel(){
         uiState = UIState.Idle
         currentScreen = AuthScreen.Login
         generalViewModel.reset()
-        mcpAccessKeyViewModel.reset()
+//        mcpAccessKeyViewModel.reset()
         mcpTeamViewModel.reset()
         mcpTeamToolMakerViewModel.reset()
-        toolPermissionViewModel.reset()
+//        toolPermissionViewModel.reset()
         virtualMakerViewModel.reset()
         AccessKeyRepository.reset()
         StudioRepository.reset()

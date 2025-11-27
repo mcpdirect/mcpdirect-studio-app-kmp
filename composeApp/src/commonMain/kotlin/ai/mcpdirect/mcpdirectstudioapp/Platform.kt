@@ -161,9 +161,10 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTool>>>(it))
         }
     }
-    fun queryVirtualTools(makerId:Long,onResponse: (resp: AIPortServiceResponse<List<AIPortVirtualTool>>) -> Unit) {
+    fun queryVirtualTools(userId:Long=0,makerId:Long, lastUpdated: Long=0, onResponse: (resp: AIPortServiceResponse<List<AIPortVirtualTool>>) -> Unit) {
         hstpRequest("$aitoolsUSL/tool/virtual/query", mapOf(
-            "makerId" to JsonPrimitive(makerId)
+            "makerId" to JsonPrimitive(makerId),
+            "lastUpdated" to JsonPrimitive(lastUpdated)
         )){
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortVirtualTool>>>(it))
         }

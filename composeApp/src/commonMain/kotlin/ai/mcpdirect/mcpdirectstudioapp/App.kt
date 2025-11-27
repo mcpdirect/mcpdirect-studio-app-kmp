@@ -96,8 +96,8 @@ fun App(
                         Screen.UserSetting -> {
                             SettingsScreen()
                         }
-                        Screen.ToolPermission -> {
-                            ToolPermissionScreen()
+                        is Screen.ToolPermission -> {
+                            ToolPermissionScreen(screen.accessKey)
                         }
                         is Screen.MyStudio -> MyStudioScreen(
                             screen.toolAgent,
