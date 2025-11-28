@@ -213,4 +213,51 @@ object TeamRepository {
         val teamIds = _teamToolMakerTemplates.value.values.filter { it.toolMakerTemplateId==template.id }.map { it.teamId }.toList()
         return _teams.value.values.filter { it.id in teamIds }
     }
+
+    suspend fun modifyTeamToolMakerTemplates(
+        team: AIPortTeam,teamToolMakerTemplates: List<AIPortTeamToolMakerTemplate>,
+        onResponse:(code:Int, message:String?,data:List<AIPortTeamToolMakerTemplate>?)-> Unit
+    ){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().modifyTeamToolMakerTemplates(
+                team.id, teamToolMakerTemplates
+            ){
+                if(it.successful())it.data?.let { templates ->
+                    _teamToolMakerTemplates.update { map ->
+                        map.toMutableMap().apply {
+                            for (template in templates) {
+                                put(TeamKey(template.teamId,template.toolMakerTemplateId),template)
+                            }
+                        }
+                    }
+                }
+                generalViewModel.loaded("Modify Team Toolmaker Templates for #${team.name}",it.code,it.message)
+                onResponse(it.code,it.message,it.data)
+            }
+        }
+    }
+
+    suspend fun modifyTeamToolMakers(
+        team: AIPortTeam, teamToolMakers: List<AIPortTeamToolMaker>,
+        onResponse:(code:Int, message:String?,data:List<AIPortTeamToolMaker>?)-> Unit){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().modifyTeamToolMakers(
+                team, teamToolMakers
+            ){
+                if(it.successful())it.data?.let { makers ->
+                    _teamToolMakers.update { map ->
+                        map.toMutableMap().apply {
+                            for (maker in makers) {
+                                put(TeamKey(maker.teamId,maker.toolMakerId),maker)
+                            }
+                        }
+                    }
+                }
+                generalViewModel.loaded("Modify Team Toolmakers for #${team.name}",it.code,it.message)
+                onResponse(it.code,it.message,it.data)
+            }
+        }
+    }
 }

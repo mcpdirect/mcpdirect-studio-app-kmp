@@ -1,19 +1,10 @@
 package ai.mcpdirect.studio.app.template
 
-import ai.mcpdirect.mcpdirectstudioapp.JSON
-import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.model.AIPortServiceResponse
-import ai.mcpdirect.studio.app.model.MCPServerConfig
-import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel

@@ -496,11 +496,14 @@ class MyStudioViewModel(): ViewModel() {
         }
     }
 
-    fun connectToolMakerToStudio(studioId: String, makerId: Long,agentId:Long,
+    fun connectToolMakerToStudio(toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker,
                          onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit){
-        getPlatform().connectToolMakerToStudio(studioId,makerId,agentId){
-            onResponse(it.code,it.message,it.data)
+        viewModelScope.launch {
+            StudioRepository.connectToolMakerToStudio(toolAgent,toolMaker,onResponse)
         }
+//        getPlatform().connectToolMakerToStudio(studioId,makerId,agentId){
+//            onResponse(it.code,it.message,it.data)
+//        }
     }
 
     fun modifyMCPServerName(toolAgent: AIPortToolAgent,

@@ -135,9 +135,8 @@ fun MyStudioScreen(
                                     if(code==0){
                                         data?.let {
                                             myStudioViewModel.connectToolMakerToStudio(
-                                                it.engineId,
-                                                toolMaker.id,
-                                                toolMaker.agentId
+                                                it,
+                                                toolMaker,
                                             ){ code, message, mcpServer ->
 //                                                generalViewModel.refreshToolMakers()
                                                 myStudioViewModel.queryMCPToolsFromStudio(toolMaker)
@@ -767,9 +766,8 @@ fun ToolMakerByTemplateListView(
                                     if (code == 0) {
                                         data?.let {
                                             myStudioViewModel.connectToolMakerToStudio(
-                                                it.engineId,
-                                                selectedToolMaker.id,
-                                                it.id
+                                                it,
+                                                selectedToolMaker,
                                             ) { code, message, mcpServer ->
                                                 if(code!= AIPortServiceResponse.SERVICE_SUCCESSFUL){
                                                     statusMessage = message

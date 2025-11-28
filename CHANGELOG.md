@@ -4,19 +4,16 @@ All notable changes to this file.
 
 ## 2025-11-28
 ### Added
-- Enhanced TeamRepository.kt with teams function for template-based filtering
-- Added repository-based data management in template screens and view models
-- Enhanced ToolRepository.kt with additional functions for data management
+- Enhanced TeamRepository.kt with modifyTeamToolMakerTemplates and modifyTeamToolMakers functions
+- Enhanced StudioRepository.kt with connectToolMakerToStudio function
+- Added repository-based functions for team tool maker operations
 
 ### Changed
-- Updated GeneralViewModel.kt to remove local state management in favor of repository-based approach
-- Modified template screens to use view model state flows instead of generalViewModel
-- Updated MCPAccessKeyScreen.kt to use repository-based approach
-- Modified MyStudioScreen.kt to use repository-based data management
-- Updated ConnectMCPScreen.kt to use repository-based data management
-- Enhanced AuthViewModel.kt to streamline reset functionality
-- Updated template-related view models to use repository functions instead of direct API calls
-- Modified ConnectMCPScreen.kt to remove direct API calls in favor of repository functions
+- Updated MyStudioViewModel.kt to use repository-based connectToolMakerToStudio function
+- Modified MyStudioScreen.kt to pass objects instead of individual IDs to connectToolMakerToStudio
+- Updated MCPTeamToolMakerTemplateViewModel.kt to use repository-based team tool maker template functions
+- Updated MCPTeamToolMakerViewModel.kt to use repository-based team tool maker functions
+- Simplified MCPTemplateListViewModel.kt by removing direct API calls
 
 ## 2025-11-27
 ### Added

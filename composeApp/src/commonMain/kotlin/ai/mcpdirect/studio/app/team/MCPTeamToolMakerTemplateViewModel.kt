@@ -120,11 +120,16 @@ class MCPTeamToolMakerTemplateViewModel: ViewModel() {
     fun saveTeamToolMakerTemplates(team: AIPortTeam, onResponse:(code:Int, message:String?)-> Unit){
         if(teamToolMakerTemplatesChanged()) {
             viewModelScope.launch {
-                getPlatform().modifyTeamToolMakerTemplates(
-                    team.id, teamToolMakerTemplates.values.toList()
-                ){ (code, message, data) ->
+                TeamRepository.modifyTeamToolMakerTemplates(
+                    team, teamToolMakerTemplates.values.toList()
+                ){ code, message, data ->
                     onResponse(code,message)
                 }
+//                getPlatform().modifyTeamToolMakerTemplates(
+//                    team.id, teamToolMakerTemplates.values.toList()
+//                ){ (code, message, data) ->
+//                    onResponse(code,message)
+//                }
             }
         }
     }

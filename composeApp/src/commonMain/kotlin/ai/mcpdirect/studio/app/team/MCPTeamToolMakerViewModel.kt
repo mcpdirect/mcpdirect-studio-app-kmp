@@ -162,11 +162,16 @@ class MCPTeamToolMakerViewModel: ViewModel() {
     fun saveTeamToolMakers(team: AIPortTeam, onResponse:(code:Int, message:String?)-> Unit){
         if(teamToolMakersChanged()) {
             viewModelScope.launch {
-                getPlatform().modifyTeamToolMakers(
+                TeamRepository.modifyTeamToolMakers(
                     team, teamToolMakers.values.toList()
-                ){ (code, message, data) ->
+                ){ code, message, data ->
                     onResponse(code,message)
                 }
+//                getPlatform().modifyTeamToolMakers(
+//                    team, teamToolMakers.values.toList()
+//                ){ (code, message, data) ->
+//                    onResponse(code,message)
+//                }
             }
         }
     }
