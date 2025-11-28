@@ -351,7 +351,7 @@ class AuthViewModel() : ViewModel(){
 //        user = AIPortUser(id=-1)
         uiState = UIState.Idle
         currentScreen = AuthScreen.Login
-        generalViewModel.reset()
+//        generalViewModel.reset()
 //        mcpAccessKeyViewModel.reset()
 //        mcpTeamViewModel.reset()
 //        mcpTeamToolMakerViewModel.reset()

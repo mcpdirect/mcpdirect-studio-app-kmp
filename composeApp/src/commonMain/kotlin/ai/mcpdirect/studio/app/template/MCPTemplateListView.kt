@@ -5,9 +5,11 @@ import ai.mcpdirect.studio.app.compose.StudioIcon
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.compose.TooltipText
-import ai.mcpdirect.studio.app.generalViewModel
+//import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
+import ai.mcpdirect.studio.app.model.repository.TeamRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.FlowRow
@@ -25,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,16 +44,22 @@ import mcpdirectstudioapp.composeapp.generated.resources.person
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun MCPTemplateListView(){
-    val viewModel = mcpTemplateListViewModel
+fun MCPTemplateListView(
+    viewModel: MCPTemplateListViewModel
+){
+//    val viewModel = mcpTemplateListViewModel
+    val toolMakerTemplates by viewModel.toolMakerTemplates.collectAsState()
     LaunchedEffect(null){
 //        viewModel.queryToolMakerTemplates()
-        generalViewModel.refreshTeams()
-        generalViewModel.refreshTeamToolMakerTemplates()
-        generalViewModel.refreshToolMakerTemplates()
+//        generalViewModel.refreshTeams()
+//        generalViewModel.refreshTeamToolMakerTemplates()
+//        generalViewModel.refreshToolMakerTemplates()
+        TeamRepository.loadTeams()
+        TeamRepository.loadTeamToolMakerTemplates()
+        ToolRepository.loadToolMakerTemplates()
     }
     LazyColumn {
-        items(generalViewModel.toolMakerTemplates){ template ->
+        items(toolMakerTemplates){ template ->
             val me = UserRepository.me(template.userId)
             var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
             var user by remember { mutableStateOf<AIPortUser?>(null)}
@@ -112,7 +121,7 @@ fun MCPTemplateListView(){
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }else{
-                                val teams = generalViewModel.teams(template)
+                                val teams = TeamRepository.teams(template)
                                 if(teams.isNotEmpty()){
                                     StudioIcon(
                                         Res.drawable.groups,

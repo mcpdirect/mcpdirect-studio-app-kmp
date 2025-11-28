@@ -7,6 +7,7 @@ import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMakerTemplate
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -206,5 +207,10 @@ object TeamRepository {
                 onResponse(it.code,it.message,it.data)
             }
         }
+    }
+
+    fun teams(template: AIPortToolMakerTemplate):List<AIPortTeam>{
+        val teamIds = _teamToolMakerTemplates.value.values.filter { it.toolMakerTemplateId==template.id }.map { it.teamId }.toList()
+        return _teams.value.values.filter { it.id in teamIds }
     }
 }

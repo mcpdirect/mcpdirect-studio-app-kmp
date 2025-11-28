@@ -4,6 +4,7 @@ import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,10 +24,12 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun MCPTemplateScreen() {
     var showPermissionChangedDialog by remember { mutableStateOf(false) }
-    val viewModel = mcpTemplateViewModel
+//    val viewModel = mcpTemplateViewModel
+    val viewModel by remember { mutableStateOf(MCPTemplateViewModel()) }
+    val toolMakers by viewModel.toolMakers.collectAsState()
     LaunchedEffect(null){
-
-        generalViewModel.refreshToolMakers()
+//        generalViewModel.refreshToolMakers()
+        ToolRepository.loadToolMakers(true)
     }
 //    generalViewModel.topBarActions =  {
 //        IconButton(onClick = {
@@ -43,7 +46,7 @@ fun MCPTemplateScreen() {
 //    }
     Row(Modifier.fillMaxSize()){
         LazyColumn(Modifier.weight(1.0f)) {
-            items(generalViewModel.toolMakers){
+            items(toolMakers){
                 if(it.notVirtual()&& UserRepository.me(it.userId))ListItem(
                     modifier = Modifier.clickable{
                     },

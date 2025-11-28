@@ -56,238 +56,238 @@ class GeneralViewModel() : ViewModel() {
             snackbarHostState.showSnackbar(message,actionLabel,withDismissAction)
         }
     }
-
-    private val _toolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
-    val toolMakers by derivedStateOf {
-        _toolMakers.values.toList()
-    }
-    fun toolMakerExists(toolMakerId: Long):Boolean{
-        return _toolMakers.contains(toolMakerId)
-    }
-    fun toolMaker(id:Long): AIPortToolMaker?{
-        return _toolMakers[id]
-    }
-//    fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
-////        val me = UserRepository.me.value
-//        return _toolMakers.values.filter {
-//            if(agent.id==0L) {
-//                if(!(it.virtual()&& UserRepository.me(it.userId))){
-//                    println(it.type)
-//                    println(it.userId)
-//                }
-//                it.virtual()&&UserRepository.me(it.userId)
-//            }
-//            else it.agentId==agent.id
-//        }
+//
+//    private val _toolMakers = mutableStateMapOf<Long, AIPortToolMaker>()
+//    val toolMakers by derivedStateOf {
+//        _toolMakers.values.toList()
 //    }
-    fun toolMakers(team: AIPortTeam): List<AIPortToolMaker>{
-        val ttmts =_teamToolMakerTemplates.values.filter { it.teamId==team.id }.map { it.toolMakerTemplateId }.toList()
-        val ttms =_teamToolMakers.values.filter { it.teamId==team.id }.map { it.toolMakerId }.toList()
-
-        return _toolMakers.values.filter { it.id in ttms||it.templateId in ttmts}
-    }
-    private val _teamToolMakers = mutableStateMapOf<AIPortTeamToolMaker.Companion.Key, AIPortTeamToolMaker>()
-    val teamToolMakers by derivedStateOf {
-        _teamToolMakers.values.toList()
-    }
-
-    fun teamToolMaker(teamId: Long,makerId:Long): AIPortTeamToolMaker?{
-        return _teamToolMakers[AIPortTeamToolMaker.key(teamId,makerId)]
-    }
-
-    // team toolmaker template
-
-    private val _teamToolMakerTemplates = mutableStateMapOf<AIPortTeamToolMakerTemplate.Companion.Key, AIPortTeamToolMakerTemplate>()
-    val teamToolMakerTemplates by derivedStateOf {
-        _teamToolMakerTemplates.values.toList()
-    }
-    fun teamToolMakerTemplates(teamId: Long):List<AIPortTeamToolMakerTemplate>{
-        return _teamToolMakerTemplates.values.filter { it.teamId==teamId }.toList()
-    }
-
-    // toolmaker template
-    private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
-    val toolMakerTemplates by derivedStateOf {
-        _toolMakerTemplates.values.toList()
-    }
-    fun toolMakerTemplateExists(templateId: Long):Boolean{
-        return _toolMakerTemplates.contains(templateId)
-    }
-    fun toolMakerTemplate(id:Long): AIPortToolMakerTemplate?{
-        return _toolMakerTemplates[id]
-    }
-//    fun toolMakerTemplates(team: AIPortTeam): List<AIPortToolMakerTemplate>{
-//        return _teamToolMakerTemplates.values.filter {it.teamId==team.id}
+//    fun toolMakerExists(toolMakerId: Long):Boolean{
+//        return _toolMakers.contains(toolMakerId)
 //    }
-//    private val _teamToolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
+//    fun toolMaker(id:Long): AIPortToolMaker?{
+//        return _toolMakers[id]
+//    }
+////    fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
+//////        val me = UserRepository.me.value
+////        return _toolMakers.values.filter {
+////            if(agent.id==0L) {
+////                if(!(it.virtual()&& UserRepository.me(it.userId))){
+////                    println(it.type)
+////                    println(it.userId)
+////                }
+////                it.virtual()&&UserRepository.me(it.userId)
+////            }
+////            else it.agentId==agent.id
+////        }
+////    }
+//    fun toolMakers(team: AIPortTeam): List<AIPortToolMaker>{
+//        val ttmts =_teamToolMakerTemplates.values.filter { it.teamId==team.id }.map { it.toolMakerTemplateId }.toList()
+//        val ttms =_teamToolMakers.values.filter { it.teamId==team.id }.map { it.toolMakerId }.toList()
+//
+//        return _toolMakers.values.filter { it.id in ttms||it.templateId in ttmts}
+//    }
+//    private val _teamToolMakers = mutableStateMapOf<AIPortTeamToolMaker.Companion.Key, AIPortTeamToolMaker>()
+//    val teamToolMakers by derivedStateOf {
+//        _teamToolMakers.values.toList()
+//    }
+//
+//    fun teamToolMaker(teamId: Long,makerId:Long): AIPortTeamToolMaker?{
+//        return _teamToolMakers[AIPortTeamToolMaker.key(teamId,makerId)]
+//    }
+//
+//    // team toolmaker template
+//
+//    private val _teamToolMakerTemplates = mutableStateMapOf<AIPortTeamToolMakerTemplate.Companion.Key, AIPortTeamToolMakerTemplate>()
 //    val teamToolMakerTemplates by derivedStateOf {
 //        _teamToolMakerTemplates.values.toList()
 //    }
-
-
-    // tool
-    private val _tools = mutableStateMapOf<Long, AIPortTool>()
-    private val _virtualTools = mutableStateListOf<AIPortVirtualTool>()
-
-    private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
-    val toolPermissions by derivedStateOf {
-        _toolPermissions.values.toList()
-    }
-    private val _virtualToolPermissions = mutableStateMapOf<Long, AIPortVirtualToolPermission>()
-    val virtualToolPermissions by derivedStateOf {
-        _virtualToolPermissions.values.toList()
-    }
-
-    private val _teams = mutableStateMapOf<Long, AIPortTeam>()
-    val teams by derivedStateOf {
-        _teams.values.toList()
-    }
-    fun teams(template: AIPortToolMakerTemplate):List<AIPortTeam>{
-        val teamIds = _teamToolMakerTemplates.values.filter { it.toolMakerTemplateId==template.id }.map { it.teamId }.toList()
-        return _teams.values.filter { it.id in teamIds }
-    }
-    fun team(team: AIPortTeam){
-        _teams[team.id]=team
-    }
-    fun team(id:Long): AIPortTeam?{
-        return _teams[id]
-    }
-//    fun team(memberId:Long,templateId:Long): AIPortTeam?{
+//    fun teamToolMakerTemplates(teamId: Long):List<AIPortTeamToolMakerTemplate>{
+//        return _teamToolMakerTemplates.values.filter { it.teamId==teamId }.toList()
+//    }
 //
-//        val teamIds = _teamToolMakerTemplates.values.filter { it.toolMakerTemplateId==templateId }.map { it.teamId }.toList()
+//    // toolmaker template
+//    private val _toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
+//    val toolMakerTemplates by derivedStateOf {
+//        _toolMakerTemplates.values.toList()
+//    }
+//    fun toolMakerTemplateExists(templateId: Long):Boolean{
+//        return _toolMakerTemplates.contains(templateId)
+//    }
+//    fun toolMakerTemplate(id:Long): AIPortToolMakerTemplate?{
+//        return _toolMakerTemplates[id]
+//    }
+////    fun toolMakerTemplates(team: AIPortTeam): List<AIPortToolMakerTemplate>{
+////        return _teamToolMakerTemplates.values.filter {it.teamId==team.id}
+////    }
+////    private val _teamToolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
+////    val teamToolMakerTemplates by derivedStateOf {
+////        _teamToolMakerTemplates.values.toList()
+////    }
 //
+//
+//    // tool
+//    private val _tools = mutableStateMapOf<Long, AIPortTool>()
+//    private val _virtualTools = mutableStateListOf<AIPortVirtualTool>()
+//
+//    private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
+//    val toolPermissions by derivedStateOf {
+//        _toolPermissions.values.toList()
+//    }
+//    private val _virtualToolPermissions = mutableStateMapOf<Long, AIPortVirtualToolPermission>()
+//    val virtualToolPermissions by derivedStateOf {
+//        _virtualToolPermissions.values.toList()
+//    }
+//
+//    private val _teams = mutableStateMapOf<Long, AIPortTeam>()
+//    val teams by derivedStateOf {
+//        _teams.values.toList()
+//    }
+//    fun teams(template: AIPortToolMakerTemplate):List<AIPortTeam>{
+//        val teamIds = _teamToolMakerTemplates.values.filter { it.toolMakerTemplateId==template.id }.map { it.teamId }.toList()
+//        return _teams.values.filter { it.id in teamIds }
+//    }
+//    fun team(team: AIPortTeam){
+//        _teams[team.id]=team
+//    }
+//    fun team(id:Long): AIPortTeam?{
 //        return _teams[id]
 //    }
-    private val _teamMembers = mutableStateMapOf<AIPortTeamMember.Companion.Key, AIPortTeamMember>()
-    val teamMembers by derivedStateOf {
-        _teamMembers.values.toList()
-    }
-
-    fun teamMember(teamId:Long,memberId:Long,onResponse:((code:Int,message:String?,data: AIPortTeamMember?) -> Unit)){
-        val member = _teamMembers[AIPortTeamMember.key(teamId,memberId)]
-        if(member!=null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL,null,member)
-        else viewModelScope.launch {
-            getPlatform().getTeamMember(teamId,memberId){
-                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
-                    it.data?.let {
-                        _teamMembers[AIPortTeamMember.key(it.teamId,it.memberId)] = it
-                    }
-                }
-                onResponse(it.code,it.message,it.data)
-            }
-        }
-    }
-
-    private val _users = mutableStateMapOf<Long, AIPortUser>()
-    fun user(userId:Long,onResponse:((code:Int,message:String?,data: AIPortUser?) -> Unit)) {
-        val member = _users[userId]
-        if (member != null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL, null, member)
-        else viewModelScope.launch {
-            getPlatform().getUser(userId) {
-                if (it.code == AIPortServiceResponse.SERVICE_SUCCESSFUL) {
-                    it.data?.let {
-                        _users[it.id] = it
-                    }
-                }
-                onResponse(it.code, it.message, it.data)
-            }
-        }
-    }
-
-    fun reset(){
-//        _toolAgents.clear()
-        _toolMakers.clear()
-        _tools.clear()
-        _toolPermissions.clear()
-        _virtualTools.clear()
-        _virtualToolPermissions.clear()
-        _teamToolMakers.clear()
-//        _teamToolMakerTemplates.clear()
-        _teams.clear()
-        _teamMembers.clear()
-        currentScreen = Screen.Dashboard
-        previousScreen = null
-    }
-    fun refreshTeams(onResponse:((code:Int,message:String?) -> Unit)? = null){
-        _teams.clear()
-        viewModelScope.launch {
-            getPlatform().queryTeams{ (code,message,data)->
-                if(code==0&&data!=null){
-                    data.forEach {
-                        _teams[it.id]=it
-                    }
-                }
-                onResponse?.invoke(code, message)
-            }
-        }
-    }
-
-//    fun refreshToolAgents(force:Boolean=false){
-//        getPlatform().queryToolAgents {
+////    fun team(memberId:Long,templateId:Long): AIPortTeam?{
+////
+////        val teamIds = _teamToolMakerTemplates.values.filter { it.toolMakerTemplateId==templateId }.map { it.teamId }.toList()
+////
+////        return _teams[id]
+////    }
+//    private val _teamMembers = mutableStateMapOf<AIPortTeamMember.Companion.Key, AIPortTeamMember>()
+//    val teamMembers by derivedStateOf {
+//        _teamMembers.values.toList()
+//    }
+//
+//    fun teamMember(teamId:Long,memberId:Long,onResponse:((code:Int,message:String?,data: AIPortTeamMember?) -> Unit)){
+//        val member = _teamMembers[AIPortTeamMember.key(teamId,memberId)]
+//        if(member!=null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL,null,member)
+//        else viewModelScope.launch {
+//            getPlatform().getTeamMember(teamId,memberId){
+//                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
+//                    it.data?.let {
+//                        _teamMembers[AIPortTeamMember.key(it.teamId,it.memberId)] = it
+//                    }
+//                }
+//                onResponse(it.code,it.message,it.data)
+//            }
+//        }
+//    }
+//
+//    private val _users = mutableStateMapOf<Long, AIPortUser>()
+//    fun user(userId:Long,onResponse:((code:Int,message:String?,data: AIPortUser?) -> Unit)) {
+//        val member = _users[userId]
+//        if (member != null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL, null, member)
+//        else viewModelScope.launch {
+//            getPlatform().getUser(userId) {
+//                if (it.code == AIPortServiceResponse.SERVICE_SUCCESSFUL) {
+//                    it.data?.let {
+//                        _users[it.id] = it
+//                    }
+//                }
+//                onResponse(it.code, it.message, it.data)
+//            }
+//        }
+//    }
+//
+//    fun reset(){
+////        _toolAgents.clear()
+//        _toolMakers.clear()
+//        _tools.clear()
+//        _toolPermissions.clear()
+//        _virtualTools.clear()
+//        _virtualToolPermissions.clear()
+//        _teamToolMakers.clear()
+////        _teamToolMakerTemplates.clear()
+//        _teams.clear()
+//        _teamMembers.clear()
+//        currentScreen = Screen.Dashboard
+//        previousScreen = null
+//    }
+//    fun refreshTeams(onResponse:((code:Int,message:String?) -> Unit)? = null){
+//        _teams.clear()
+//        viewModelScope.launch {
+//            getPlatform().queryTeams{ (code,message,data)->
+//                if(code==0&&data!=null){
+//                    data.forEach {
+//                        _teams[it.id]=it
+//                    }
+//                }
+//                onResponse?.invoke(code, message)
+//            }
+//        }
+//    }
+//
+////    fun refreshToolAgents(force:Boolean=false){
+////        getPlatform().queryToolAgents {
+////            if(it.successful()){
+////                it.data?.let {
+////                    it.forEach {
+////                        _toolAgents[it.id]=it
+////                    }
+//////                    _toolAgents[0] = virtualToolAgent
+////                }
+////            }
+////        }
+////    }
+////    private var toolMakersLastQueried = 0L
+//    fun refreshToolMakers(force:Boolean=false,
+//                          type:Int?=null,name:String?=null,toolAgentId:Long?=null, teamId:Long?=null,
+//                          onResponse:((code:Int,message:String?) -> Unit)? = null){
+//        getPlatform().queryToolMakers(
+//            type = type,name=name,toolAgentId=toolAgentId,teamId = teamId,
+//            lastUpdated = -1,
+//        ){
 //            if(it.successful()){
 //                it.data?.let {
+////                    toolMakersLastQueried = getPlatform().currentMilliseconds
 //                    it.forEach {
-//                        _toolAgents[it.id]=it
+////                        if(it.teamId!=0L) _teamToolMakers[it.id]=it
+//                        _toolMakers[it.id]=it
 //                    }
-////                    _toolAgents[0] = virtualToolAgent
+//                }
+//            }
+//            onResponse?.invoke(it.code, it.message)
+//        }
+//    }
+//    fun refreshTeamToolMakers(){
+//        getPlatform().queryTeamToolMakers{
+//            if(it.successful()) it.data?.forEach {
+//                _teamToolMakers[AIPortTeamToolMaker.key(it.teamId,it.toolMakerId)] = it
+//            }
+//        }
+//    }
+//
+//    fun refreshToolMakerTemplates(){
+//        getPlatform().queryToolMakerTemplates(
+//            lastUpdated = -1,
+//        ){
+//            if(it.successful()){
+//                it.data?.let {
+////                    toolMakersLastQueried = getPlatform().currentMilliseconds
+//                    it.forEach {
+////                        if(it.teamId!=0L) _teamToolMakerTemplates[it.id]=it
+//                        _toolMakerTemplates[it.id]=it
+//                    }
 //                }
 //            }
 //        }
 //    }
-//    private var toolMakersLastQueried = 0L
-    fun refreshToolMakers(force:Boolean=false,
-                          type:Int?=null,name:String?=null,toolAgentId:Long?=null, teamId:Long?=null,
-                          onResponse:((code:Int,message:String?) -> Unit)? = null){
-        getPlatform().queryToolMakers(
-            type = type,name=name,toolAgentId=toolAgentId,teamId = teamId,
-            lastUpdated = -1,
-        ){
-            if(it.successful()){
-                it.data?.let {
-//                    toolMakersLastQueried = getPlatform().currentMilliseconds
-                    it.forEach {
-//                        if(it.teamId!=0L) _teamToolMakers[it.id]=it
-                        _toolMakers[it.id]=it
-                    }
-                }
-            }
-            onResponse?.invoke(it.code, it.message)
-        }
-    }
-    fun refreshTeamToolMakers(){
-        getPlatform().queryTeamToolMakers{
-            if(it.successful()) it.data?.forEach {
-                _teamToolMakers[AIPortTeamToolMaker.key(it.teamId,it.toolMakerId)] = it
-            }
-        }
-    }
-
-    fun refreshToolMakerTemplates(){
-        getPlatform().queryToolMakerTemplates(
-            lastUpdated = -1,
-        ){
-            if(it.successful()){
-                it.data?.let {
-//                    toolMakersLastQueried = getPlatform().currentMilliseconds
-                    it.forEach {
-//                        if(it.teamId!=0L) _teamToolMakerTemplates[it.id]=it
-                        _toolMakerTemplates[it.id]=it
-                    }
-                }
-            }
-        }
-    }
-    fun refreshTeamToolMakerTemplates(){
-        getPlatform().queryTeamToolMakerTemplates(
-            lastUpdated = -1,
-        ){
-            if(it.successful())it.data?.let {
-//                    toolMakersLastQueried = getPlatform().currentMilliseconds
-                it.forEach {
-//                        if(it.teamId!=0L) _teamToolMakerTemplates[it.id]=it
-                    _teamToolMakerTemplates[AIPortTeamToolMakerTemplate.key(it.teamId,it.toolMakerTemplateId)]=it
-                }
-            }
-        }
-    }
+//    fun refreshTeamToolMakerTemplates(){
+//        getPlatform().queryTeamToolMakerTemplates(
+//            lastUpdated = -1,
+//        ){
+//            if(it.successful())it.data?.let {
+////                    toolMakersLastQueried = getPlatform().currentMilliseconds
+//                it.forEach {
+////                        if(it.teamId!=0L) _teamToolMakerTemplates[it.id]=it
+//                    _teamToolMakerTemplates[AIPortTeamToolMakerTemplate.key(it.teamId,it.toolMakerTemplateId)]=it
+//                }
+//            }
+//        }
+//    }
 }

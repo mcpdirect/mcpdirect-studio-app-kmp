@@ -4,6 +4,7 @@ import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
@@ -13,9 +14,11 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.collections.set
@@ -329,5 +332,20 @@ object ToolRepository {
     }
     fun toolMakerTemplate(id:Long): AIPortToolMakerTemplate?{
         return _toolMakerTemplates.value[id]
+    }
+
+    suspend fun createToolMakerTemplate(name:String,type:Int,agentId:Long,config:String,inputs:String){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().createToolMakerTemplate(name,type,agentId,config,inputs){
+                if(it.successful()) it.data?.let{
+                    _toolMakerTemplates.update { map ->
+                        map.toMutableMap().apply {
+                            put(it.id,it)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

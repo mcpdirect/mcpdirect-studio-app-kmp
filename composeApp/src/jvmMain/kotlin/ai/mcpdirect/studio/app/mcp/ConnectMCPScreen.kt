@@ -78,10 +78,11 @@ fun ConnectMCPScreen(){
                 val me = it.id<Int.MAX_VALUE|| UserRepository.me(it.userId)
                 var user by remember { mutableStateOf<AIPortUser?>(null) }
                 if(!me){
-                    generalViewModel.user(it.userId){
-                            code, message, data ->
-                        if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL&&data!=null){
-                            user = data
+                    LaunchedEffect(null) {
+                        UserRepository.user(it.userId) { code, message, data ->
+                            if (code == AIPortServiceResponse.SERVICE_SUCCESSFUL && data != null) {
+                                user = data
+                            }
                         }
                     }
 //                            generalViewModel.team(it.userId,it.templateId){

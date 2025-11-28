@@ -54,7 +54,7 @@ fun MCPAccessKeyScreen(
     val accessKeys by viewModel.accessKeys.collectAsState()
     var dialog by remember { mutableStateOf(dialog) }
     LaunchedEffect(viewModel) {
-        generalViewModel.refreshToolMakers()
+//        generalViewModel.refreshToolMakers()
         viewModel.refreshMCPAccessKeys()
     }
 

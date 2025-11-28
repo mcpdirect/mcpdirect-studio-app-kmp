@@ -12,14 +12,17 @@ import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
+import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMakerTemplate
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.MCPTemplateListView
-import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
+import ai.mcpdirect.studio.app.template.MCPTemplateListViewModel
+//import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,6 +52,7 @@ fun MyStudioScreen(
     toolMaker: AIPortToolMaker?,
     dialog: MyStudioScreenDialog = MyStudioScreenDialog.None
 ){
+    val mcpTemplateListViewModel by remember { mutableStateOf(MCPTemplateListViewModel()) }
     val myStudioViewModel = remember { MyStudioViewModel() }
     toolAgent?.let {
         myStudioViewModel.toolAgent(it)
@@ -90,7 +94,7 @@ fun MyStudioScreen(
             // Content based on selected tab
             when (currentTabIndex) {
                 0 -> ToolAgentListView(myStudioViewModel)
-                1 -> MCPTemplateListView()
+                1 -> MCPTemplateListView(mcpTemplateListViewModel)
             }
         }
 
@@ -99,7 +103,7 @@ fun MyStudioScreen(
                 0 -> ToolMakerListView(myStudioViewModel,toolProviderType){
                     dialog = it
                 }
-                1 -> ToolMakerByTemplateListView(myStudioViewModel){
+                1 -> ToolMakerByTemplateListView(mcpTemplateListViewModel,myStudioViewModel){
                     dialog = it
                 }
             }
@@ -700,6 +704,7 @@ fun ToolMakerItem(
 }
 @Composable
 fun ToolMakerByTemplateListView(
+    mcpTemplateListViewModel: MCPTemplateListViewModel,
     myStudioViewModel: MyStudioViewModel,
     onDialogRequest: (dialog: MyStudioScreenDialog) -> Unit
 ){
