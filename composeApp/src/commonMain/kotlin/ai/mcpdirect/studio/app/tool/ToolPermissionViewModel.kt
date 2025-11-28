@@ -1,7 +1,7 @@
 package ai.mcpdirect.studio.app.tool
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.generalViewModel
+//import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.*
@@ -216,7 +216,7 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
         if(agent.id>0) toolPermissions.values.forEach {
             permission ->
             if(permission.agentId==agent.id&&permission.status>0){
-                generalViewModel.toolMaker(permission.makerId)?.let {
+                ToolRepository.toolMaker(permission.makerId)?.let {
                     if(UserRepository.me(it.userId)){
                         count++
                     }
@@ -225,7 +225,7 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
         } else virtualToolPermissions.values.forEach {
             permission ->
             if(permission.agentId==agent.id&&permission.status>0){
-                generalViewModel.toolMaker(permission.makerId)?.let {
+                ToolRepository.toolMaker(permission.makerId)?.let {
                     if(UserRepository.me(it.userId)){
                         count++
                     }
@@ -246,14 +246,14 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
     fun countToolPermissions(team: AIPortTeam):Int{
         var count = 0
         toolPermissions.values.forEach {
-            generalViewModel.toolMaker(it.makerId)?.let {
+            ToolRepository.toolMaker(it.makerId)?.let {
                 if(it.teamId==team.id){
                     count++
                 }
             }
         }
         virtualToolPermissions.values.forEach {
-            generalViewModel.toolMaker(it.makerId)?.let {
+            ToolRepository.toolMaker(it.makerId)?.let {
                 if(it.teamId==team.id){
                     count++
                 }
@@ -463,11 +463,16 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
 
     fun selectTeam(team: AIPortTeam){
         _team.value=team
+        viewModelScope.launch {
+            TeamRepository.loadTeamToolMakers()
+            TeamRepository.loadTeamToolMakerTemplates()
+            ToolRepository.loadToolMakers()
+        }
 //        this.team?.let {
 //            tools.clear()
-            generalViewModel.refreshTeamToolMakers()
-            generalViewModel.refreshTeamToolMakerTemplates()
-            generalViewModel.refreshToolMakers()
+//            generalViewModel.refreshTeamToolMakers()
+//            generalViewModel.refreshTeamToolMakerTemplates()
+//            generalViewModel.refreshToolMakers()
 //            viewModelScope.launch {
 //                generalViewModel.refreshToolMakers()
 //            }
@@ -480,13 +485,13 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
     }
     fun refreshTeamToolMakers(){
         viewModelScope.launch {
-            TeamRepository.loadTeamToolMakers(true)
+            TeamRepository.loadTeamToolMakers(force = true)
         }
     }
 
     fun refreshTeamToolMakerTemplates(){
         viewModelScope.launch {
-            TeamRepository.loadTeamToolMakerTemplates(true)
+            TeamRepository.loadTeamToolMakerTemplates(force = true)
         }
     }
 }

@@ -2,33 +2,31 @@ package ai.mcpdirect.studio.app.team
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
-import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
-import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMakerTemplate
-import ai.mcpdirect.studio.app.model.aitool.AIPortTool
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
-import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
+import ai.mcpdirect.studio.app.model.repository.TeamRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.collections.set
 
-val mcpTeamToolMakerTemplateViewModel = MCPTeamToolMakerTemplateViewModel()
+//val mcpTeamToolMakerTemplateViewModel = MCPTeamToolMakerTemplateViewModel()
 class MCPTeamToolMakerTemplateViewModel: ViewModel() {
     var searchQuery by mutableStateOf("")
         private set
-    var uiState by mutableStateOf<UIState>(UIState.Idle)
-    private fun updateUIState(code:Int){
-        uiState = if(code==0) UIState.Success else UIState.Error(code)
-    }
+//    var uiState by mutableStateOf<UIState>(UIState.Idle)
+//    private fun updateUIState(code:Int){
+//        uiState = if(code==0) UIState.Success else UIState.Error(code)
+//    }
     fun updateSearchQuery(query: String) {
         searchQuery = query
     }
@@ -37,7 +35,7 @@ class MCPTeamToolMakerTemplateViewModel: ViewModel() {
     fun toolMakerTemplate(template: AIPortToolMakerTemplate?){
         toolMakerTemplate = template
     }
-    private val toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
+//    private val toolMakerTemplates = mutableStateMapOf<Long, AIPortToolMakerTemplate>()
     private val _teamToolMakerTemplates = mutableStateMapOf<Long, AIPortTeamToolMakerTemplate>()
     val teamToolMakerTemplates = mutableStateMapOf<Long, AIPortTeamToolMakerTemplate>()
     fun reset(){
@@ -46,25 +44,40 @@ class MCPTeamToolMakerTemplateViewModel: ViewModel() {
         toolMakerTemplate = null
     }
 
+    val toolMakerTemplates: StateFlow<List<AIPortToolMakerTemplate>> = ToolRepository.toolMakerTemplates
+        .map { it.values.toList() }      // 转为 List
+        .stateIn(
+            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
+            started = SharingStarted.WhileSubscribed(5000), // 按需启动
+            initialValue = emptyList()
+        )
+
     fun refreshTeamToolMakerTemplates(team: AIPortTeam){
         viewModelScope.launch {
-            getPlatform().queryTeamToolMakerTemplates(team.id){ (code, message, data) ->
-                if(code==0){
-                    var loadToolMakers = false
-                    data?.forEach {
-                        _teamToolMakerTemplates[it.toolMakerTemplateId]=it
-                        teamToolMakerTemplates[it.toolMakerTemplateId] = it.copy()
-//                        if(generalViewModel.toolMaker(it.toolMakerTemplateId)==null){
-//                            loadToolMakers = true
-//                        }
-                    }
-//                    if(loadToolMakers) generalViewModel.refreshToolMakers {
-//                            code, message ->
-//                        updateUIState(code)
-//                    }
+            TeamRepository.loadTeamToolMakerTemplates(team){
+                code, message, data ->
+                if(code==0) data?.forEach {
+                    _teamToolMakerTemplates[it.toolMakerTemplateId]=it
+                    teamToolMakerTemplates[it.toolMakerTemplateId] = it.copy()
                 }
-                updateUIState(code)
             }
+//            getPlatform().queryTeamToolMakerTemplates(team.id){ (code, message, data) ->
+//                if(code==0){
+//                    var loadToolMakers = false
+//                    data?.forEach {
+//                        _teamToolMakerTemplates[it.toolMakerTemplateId]=it
+//                        teamToolMakerTemplates[it.toolMakerTemplateId] = it.copy()
+////                        if(generalViewModel.toolMaker(it.toolMakerTemplateId)==null){
+////                            loadToolMakers = true
+////                        }
+//                    }
+////                    if(loadToolMakers) generalViewModel.refreshToolMakers {
+////                            code, message ->
+////                        updateUIState(code)
+////                    }
+//                }
+//                updateUIState(code)
+//            }
         }
     }
     fun toolMakerTemplateSelected(template: AIPortToolMakerTemplate): Boolean{

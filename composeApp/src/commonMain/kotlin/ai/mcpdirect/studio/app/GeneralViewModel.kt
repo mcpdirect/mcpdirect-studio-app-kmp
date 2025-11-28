@@ -1,13 +1,11 @@
 package ai.mcpdirect.studio.app
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.*
-import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -69,19 +67,19 @@ class GeneralViewModel() : ViewModel() {
     fun toolMaker(id:Long): AIPortToolMaker?{
         return _toolMakers[id]
     }
-    fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
-//        val me = UserRepository.me.value
-        return _toolMakers.values.filter {
-            if(agent.id==0L) {
-                if(!(it.virtual()&& UserRepository.me(it.userId))){
-                    println(it.type)
-                    println(it.userId)
-                }
-                it.virtual()&&UserRepository.me(it.userId)
-            }
-            else it.agentId==agent.id
-        }
-    }
+//    fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
+////        val me = UserRepository.me.value
+//        return _toolMakers.values.filter {
+//            if(agent.id==0L) {
+//                if(!(it.virtual()&& UserRepository.me(it.userId))){
+//                    println(it.type)
+//                    println(it.userId)
+//                }
+//                it.virtual()&&UserRepository.me(it.userId)
+//            }
+//            else it.agentId==agent.id
+//        }
+//    }
     fun toolMakers(team: AIPortTeam): List<AIPortToolMaker>{
         val ttmts =_teamToolMakerTemplates.values.filter { it.teamId==team.id }.map { it.toolMakerTemplateId }.toList()
         val ttms =_teamToolMakers.values.filter { it.teamId==team.id }.map { it.toolMakerId }.toList()

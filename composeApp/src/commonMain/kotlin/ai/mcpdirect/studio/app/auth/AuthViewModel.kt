@@ -16,8 +16,8 @@ import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
-import ai.mcpdirect.studio.app.team.mcpTeamToolMakerViewModel
-import ai.mcpdirect.studio.app.team.mcpTeamViewModel
+//import ai.mcpdirect.studio.app.team.mcpTeamToolMakerViewModel
+//import ai.mcpdirect.studio.app.team.mcpTeamViewModel
 //import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
 import ai.mcpdirect.studio.app.virtualmcp.virtualMakerViewModel
 //import ai.mcpdirect.studio.app.setting.SettingsViewModel
@@ -353,8 +353,8 @@ class AuthViewModel() : ViewModel(){
         currentScreen = AuthScreen.Login
         generalViewModel.reset()
 //        mcpAccessKeyViewModel.reset()
-        mcpTeamViewModel.reset()
-        mcpTeamToolMakerViewModel.reset()
+//        mcpTeamViewModel.reset()
+//        mcpTeamToolMakerViewModel.reset()
 //        toolPermissionViewModel.reset()
         virtualMakerViewModel.reset()
         AccessKeyRepository.reset()

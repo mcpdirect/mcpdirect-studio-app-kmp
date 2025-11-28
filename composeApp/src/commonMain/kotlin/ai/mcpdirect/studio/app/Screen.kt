@@ -3,6 +3,7 @@ package ai.mcpdirect.studio.app
 import ai.mcpdirect.studio.app.agent.MyStudioScreenDialog
 import ai.mcpdirect.studio.app.mcpkey.MCPKeyDialog
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
+import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.team.MCPTeamDialog
@@ -37,10 +38,15 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
     ) : Screen(Res.string.mcp_team,
         Res.drawable.groups)
 
-    object MCPTeamToolMaker : Screen(Res.string.share_mcp_server,
-        Res.drawable.share)
+//    object MCPTeamToolMaker : Screen(Res.string.share_mcp_server,
+//        Res.drawable.share)
 
-    object MCPTeamToolMakerTemplate : Screen(Res.string.share_mcp_template,
+    data class MCPTeamToolMaker(val team: AIPortTeam) : Screen(Res.string.share_mcp_server,
+        Res.drawable.share)
+//    object MCPTeamToolMakerTemplate : Screen(Res.string.share_mcp_template,
+//        Res.drawable.share)
+
+    data class MCPTeamToolMakerTemplate(val team: AIPortTeam) : Screen(Res.string.share_mcp_template,
         Res.drawable.share)
 
 //    object MCPAccessKey : Screen(Res.string.mcp_keys,

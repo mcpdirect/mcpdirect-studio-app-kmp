@@ -2,12 +2,14 @@ package ai.mcpdirect.studio.app.team
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
-import ai.mcpdirect.studio.app.generalViewModel
+//import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
+import ai.mcpdirect.studio.app.model.repository.TeamRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -15,10 +17,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.collections.set
 
-val mcpTeamToolMakerViewModel = MCPTeamToolMakerViewModel()
+//val mcpTeamToolMakerViewModel = MCPTeamToolMakerViewModel()
 class MCPTeamToolMakerViewModel: ViewModel() {
     var searchQuery by mutableStateOf("")
         private set
@@ -56,6 +62,15 @@ class MCPTeamToolMakerViewModel: ViewModel() {
             }
         }
     }
+
+    val toolMakers: StateFlow<List<AIPortToolMaker>> = ToolRepository.toolMakers
+        .map { it.values.toList() }      // 转为 List
+        .stateIn(
+            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
+            started = SharingStarted.WhileSubscribed(5000), // 按需启动
+            initialValue = emptyList()
+        )
+
     private val _teamToolMakers = mutableStateMapOf<Long, AIPortTeamToolMaker>()
 
     val teamToolMakers = mutableStateMapOf<Long, AIPortTeamToolMaker>()
@@ -72,23 +87,39 @@ class MCPTeamToolMakerViewModel: ViewModel() {
 
     fun refreshTeamToolMakers(team: AIPortTeam){
         viewModelScope.launch {
-            getPlatform().queryTeamToolMakers(team.id){ (code, message, data) ->
+            TeamRepository.loadTeamToolMakers(team){
+                code, message, data ->
                 if(code==0){
                     var loadToolMakers = false
                     data?.forEach {
                         _teamToolMakers[it.toolMakerId]=it
                         teamToolMakers[it.toolMakerId] = it.copy()
-                        if(generalViewModel.toolMaker(it.toolMakerId)==null){
+                        if(ToolRepository.toolMaker(it.toolMakerId)==null){
                             loadToolMakers = true
                         }
                     }
-                    if(loadToolMakers) generalViewModel.refreshToolMakers {
-                            code, message ->
-                        updateUIState(code)
+                    if(loadToolMakers) launch {
+                        ToolRepository.loadToolMakers(force=true)
                     }
                 }
-                updateUIState(code)
             }
+//            getPlatform().queryTeamToolMakers(team.id){ (code, message, data) ->
+//                if(code==0){
+//                    var loadToolMakers = false
+//                    data?.forEach {
+//                        _teamToolMakers[it.toolMakerId]=it
+//                        teamToolMakers[it.toolMakerId] = it.copy()
+//                        if(generalViewModel.toolMaker(it.toolMakerId)==null){
+//                            loadToolMakers = true
+//                        }
+//                    }
+//                    if(loadToolMakers) generalViewModel.refreshToolMakers {
+//                            code, message ->
+//                        updateUIState(code)
+//                    }
+//                }
+//                updateUIState(code)
+//            }
         }
     }
     fun toolMakerSelected(toolMaker: AIPortToolMaker): Boolean{

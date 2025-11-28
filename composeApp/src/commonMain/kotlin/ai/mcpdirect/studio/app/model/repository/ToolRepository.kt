@@ -29,6 +29,11 @@ object ToolRepository {
     private var _makerLastQuery:TimeMark? = null
     private val _toolMakers = MutableStateFlow<Map<Long, AIPortToolMaker>>(emptyMap())
     val toolMakers: StateFlow<Map<Long, AIPortToolMaker>> = _toolMakers
+
+    private var _templateLastQuery:TimeMark? = null
+    private val _toolMakerTemplates = MutableStateFlow<Map<Long, AIPortToolMakerTemplate>>(emptyMap())
+    val toolMakerTemplates: StateFlow<Map<Long, AIPortToolMakerTemplate>> = _toolMakerTemplates
+
     private val _toolLastQueries = mutableMapOf<Long, TimeMark>()
     private val _tools = MutableStateFlow<Map<Long,AIPortTool>>(emptyMap())
     val tools: StateFlow<Map<Long, AIPortTool>> = _tools
@@ -151,6 +156,9 @@ object ToolRepository {
                 put(toolMaker.id, toolMaker)
             }
         }
+    }
+    fun toolMaker(toolMakerId: Long): AIPortToolMaker? {
+        return _toolMakers.value[toolMakerId]
     }
     suspend fun createMCPServerByTemplate(
         toolAgentId:Long,template: AIPortToolMakerTemplate,
@@ -295,16 +303,31 @@ object ToolRepository {
             }
         }
     }
-    fun toolMakers(agent: AIPortToolAgent): List<AIPortToolMaker>{
-        return _toolMakers.value.values.filter {
-            if(agent.id==0L) {
-                if(!(it.virtual()&& UserRepository.me(it.userId))){
-                    println(it.type)
-                    println(it.userId)
+
+    suspend fun loadToolMakerTemplates(force: Boolean=false){
+        loadMutex.withLock {
+            val now = TimeSource.Monotonic.markNow()
+            if(_templateLastQuery==null|| (force&& _templateLastQuery!!.elapsedNow()>_duration)) {
+                generalViewModel.loading()
+                getPlatform().queryToolMakerTemplates(
+                    lastUpdated = if(_templateLastQuery==null) 0L else currentMilliseconds()
+                ){
+                    if(it.successful())it.data?.let { templates ->
+                        _toolMakerTemplates.update { map ->
+                            map.toMutableMap().apply {
+                                templates.forEach {
+                                    put(it.id,it)
+                                }
+                            }
+                        }
+                        _templateLastQuery = now
+                    }
+                    generalViewModel.loaded("Load Tool Maker Templates ",it.code,it.message)
                 }
-                it.virtual()&&UserRepository.me(it.userId)
             }
-            else it.agentId==agent.id
         }
+    }
+    fun toolMakerTemplate(id:Long): AIPortToolMakerTemplate?{
+        return _toolMakerTemplates.value[id]
     }
 }

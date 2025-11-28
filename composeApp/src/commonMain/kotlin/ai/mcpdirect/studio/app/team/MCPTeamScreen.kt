@@ -1,14 +1,14 @@
 package ai.mcpdirect.studio.app.team
 
 import ai.mcpdirect.studio.app.Screen
-import ai.mcpdirect.studio.app.UIState
-import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.isValidEmail
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.TeamRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,76 +39,92 @@ import org.jetbrains.compose.resources.painterResource
 fun MCPTeamScreen(
     dialog: MCPTeamDialog
 ) {
-//    val viewModel = mcpTeamViewModel
-
+    val mcpTeamViewModel by remember { mutableStateOf(MCPTeamViewModel()) }
+    val teams by mcpTeamViewModel.teams.collectAsState()
     LaunchedEffect(mcpTeamViewModel) {
         mcpTeamViewModel.dialog = dialog
-        mcpTeamViewModel.uiState = UIState.Loading
-        generalViewModel.refreshTeams{
-                code, message ->
-            if(code==0) {
-                generalViewModel.refreshToolMakers{
-                        code, message ->
-                    mcpTeamViewModel.uiState = UIState.Success
-                }
-                generalViewModel.refreshToolMakerTemplates()
-            }
-        }
+//        mcpTeamViewModel.uiState = UIState.Loading
+        TeamRepository.loadTeams()
+        ToolRepository.loadToolMakers()
+        ToolRepository.loadToolMakerTemplates()
+//        generalViewModel.refreshTeams{
+//                code, message ->
+//            if(code==0) {
+//                generalViewModel.refreshToolMakers{
+//                        code, message ->
+//                    mcpTeamViewModel.uiState = UIState.Success
+//                }
+//                generalViewModel.refreshToolMakerTemplates()
+//            }
+//        }
     }
 
-    when(mcpTeamViewModel.uiState){
-        is UIState.Error -> {}
-        UIState.Idle -> {}
-        UIState.Loading -> {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(48.dp),
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+//    when(mcpTeamViewModel.uiState){
+//        is UIState.Error -> {}
+//        UIState.Idle -> {}
+//        UIState.Loading -> {
+//            Column(
+//                Modifier.fillMaxSize(),
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                CircularProgressIndicator(
+//                    modifier = Modifier.size(48.dp),
+//                    color = MaterialTheme.colorScheme.primary
+//                )
+//            }
+//        }
+//        UIState.Success -> {
+//            if(generalViewModel.teams.isEmpty())
+//                Column(
+//                    Modifier.fillMaxSize(),
+//                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    Button(onClick = {
+//                        mcpTeamViewModel.dialog = MCPTeamDialog.CreateTeam
+//                    }){
+//                        Text("Create your first MCP Team")
+//                    }
+//                }
+//            else TeamListView(mcpTeamViewModel)
+//        }
+//    }
+
+    if(teams.isEmpty()) Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = {
+            mcpTeamViewModel.dialog = MCPTeamDialog.CreateTeam
+        }){
+            Text("Create your first MCP Team")
         }
-        UIState.Success -> {
-            if(generalViewModel.teams.isEmpty())
-                Column(
-                    Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Button(onClick = {
-                        mcpTeamViewModel.dialog = MCPTeamDialog.CreateTeam
-                    }){
-                        Text("Create your first MCP Team")
-                    }
-                }
-            else TeamListView()
-        }
-    }
+    } else TeamListView(mcpTeamViewModel)
     when(mcpTeamViewModel.dialog){
         MCPTeamDialog.None -> {}
         MCPTeamDialog.CreateTeam -> {
-            CreateTeamDialog(null){
+            CreateTeamDialog(null,mcpTeamViewModel){
                 mcpTeamViewModel.dialog = MCPTeamDialog.None
             }
         }
         MCPTeamDialog.EditTeamName -> {
-            CreateTeamDialog(mcpTeamViewModel.mcpTeam){
+            CreateTeamDialog(mcpTeamViewModel.mcpTeam.value,mcpTeamViewModel){
                 mcpTeamViewModel.dialog = MCPTeamDialog.None
             }
         }
-        MCPTeamDialog.InviteTeamMember -> InviteTeamDialog()
+        MCPTeamDialog.InviteTeamMember -> InviteTeamDialog(mcpTeamViewModel)
     }
 }
 
 @Composable
 fun CreateTeamDialog(
     team: AIPortTeam?,
+    viewModel: MCPTeamViewModel,
     onDismissRequest: () -> Unit,
 ) {
-    val viewModel = mcpTeamViewModel
+//    val viewModel = mcpTeamViewModel
 //    val team = viewModel.mcpTeam
     val nameFocusRequester = remember { FocusRequester() }
     val addFocusRequester = remember { FocusRequester() }
@@ -149,10 +165,10 @@ fun CreateTeamDialog(
                 modifier = Modifier.focusRequester(addFocusRequester),
                 onClick = {
                     if(team==null) viewModel.createMCPTeam {
-                        code, message ->
+                        code, message,data ->
                         if(code==0) onDismissRequest()
                     }else viewModel.modifyMCPTeam(viewModel.mcpTeamName,null){
-                        code, message ->
+                        code, message,data ->
                         if(code==0) onDismissRequest()
                     }
                 }
@@ -173,8 +189,10 @@ fun CreateTeamDialog(
 
 @Composable
 private fun TeamListView(
-//    viewModel: MCPTeamViewModel
+    mcpTeamViewModel: MCPTeamViewModel
 ) {
+    val mcpTeam by mcpTeamViewModel.mcpTeam.collectAsState()
+    val teams by mcpTeamViewModel.teams.collectAsState()
     LaunchedEffect(null){
         generalViewModel.topBarActions = {
             TextButton(onClick = { mcpTeamViewModel.dialog = MCPTeamDialog.CreateTeam }) {
@@ -187,13 +205,13 @@ private fun TeamListView(
             generalViewModel.topBarActions = {}
         }
     }
-    val viewModel = mcpTeamViewModel
+//    val viewModel = mcpTeamViewModel
     Column {
-        SearchView(
-            query = viewModel.searchQuery,
-            onQueryChange = { viewModel.updateSearchQuery(it) },
-            placeholder = "Search MCP teams..."
-        )
+//        SearchView(
+//            query = viewModel.searchQuery,
+//            onQueryChange = { viewModel.updateSearchQuery(it) },
+//            placeholder = "Search MCP teams..."
+//        )
         StudioCard(
             modifier = Modifier
                 .padding(8.dp)
@@ -201,13 +219,13 @@ private fun TeamListView(
         ){
             Row(modifier = Modifier.fillMaxWidth()) {
                 LazyColumn(modifier = Modifier.weight(3.0f)) {
-                    items(generalViewModel.teams) {
-                        TeamItem(it) {
-                            viewModel.setMCPTeam(it)
+                    items(teams) {
+                        TeamItem(it,mcpTeamViewModel) {
+                            mcpTeamViewModel.setMCPTeam(it)
                         }
                     }
                 }
-                viewModel.mcpTeam?.let {
+                if(mcpTeam.id>Int.MAX_VALUE) mcpTeam.let {
                     VerticalDivider()
                     var currentTabIndex by remember { mutableStateOf(0) }
                     val tabs = listOf("Team Members", "Shared MCP Servers","Shared MCP Templates")
@@ -220,7 +238,7 @@ private fun TeamListView(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            IconButton(onClick = { viewModel.setMCPTeam(null)}) {
+                            IconButton(onClick = { mcpTeamViewModel.setMCPTeam(AIPortTeam())}) {
                                 Icon(painterResource(Res.drawable.arrow_back), contentDescription = "Back")
                             }
                             if(UserRepository.me(it.ownerId)) {
@@ -228,7 +246,7 @@ private fun TeamListView(
                                 TooltipIconButton(
                                     Res.drawable.person_add,
                                     contentDescription = "Invite Member",
-                                    onClick = { viewModel.dialog = MCPTeamDialog.InviteTeamMember }
+                                    onClick = { mcpTeamViewModel.dialog = MCPTeamDialog.InviteTeamMember }
                                 )
                             }
                             when(currentTabIndex){
@@ -236,7 +254,7 @@ private fun TeamListView(
                                     Res.drawable.share,
                                     contentDescription = "Share MCP Server",
                                     onClick = {
-                                        generalViewModel.currentScreen(Screen.MCPTeamToolMaker,
+                                        generalViewModel.currentScreen(Screen.MCPTeamToolMaker(mcpTeam),
                                             "Share MCP Server to Team ${it.name}",
                                             Screen.MCPTeam())
                                     }
@@ -245,7 +263,7 @@ private fun TeamListView(
                                     Res.drawable.share,
                                     contentDescription = "Share MCP Template",
                                     onClick = {
-                                        generalViewModel.currentScreen(Screen.MCPTeamToolMakerTemplate,
+                                        generalViewModel.currentScreen(Screen.MCPTeamToolMakerTemplate(mcpTeam),
                                             "Share MCP Template to Team ${it.name}",
                                             Screen.MCPTeam())
                                     }
@@ -266,9 +284,9 @@ private fun TeamListView(
 
                         // Content based on selected tab
                         when (currentTabIndex) {
-                            0 -> TeamMemberList()
-                            1 -> TeamToolMakerList()
-                            2 -> TeamToolMakerTemplateList()
+                            0 -> TeamMemberList(mcpTeamViewModel)
+                            1 -> TeamToolMakerList(mcpTeamViewModel)
+                            2 -> TeamToolMakerTemplateList(mcpTeamViewModel)
                         }
                     }
                 }
@@ -280,9 +298,11 @@ private fun TeamListView(
 @Composable
 private fun TeamItem(
     team: AIPortTeam,
+    viewModel: MCPTeamViewModel,
     onClick: () -> Unit
 ) {
-    val viewModel = mcpTeamViewModel
+//    val viewModel = mcpTeamViewModel
+    val currentTeam by viewModel.mcpTeam.collectAsState()
     val selectedColor = ListItemDefaults.colors(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         headlineColor = MaterialTheme.colorScheme.onSurface,
@@ -309,21 +329,23 @@ private fun TeamItem(
             }
         },
         trailingContent = {
-            if(viewModel.mcpTeam!=null&&viewModel.mcpTeam!!.id==team.id)
+            if(currentTeam.id==team.id)
                 Icon(painterResource(Res.drawable.keyboard_arrow_right),
                     contentDescription = "Current Tool Maker")
         },
-        colors = if(viewModel.mcpTeam!=null&&viewModel.mcpTeam!!.id==team.id)
+        colors = if(currentTeam.id==team.id)
             selectedColor
         else ListItemDefaults.colors()
     )
 }
 
 @Composable
-private fun TeamMemberList() {
-    val viewModel = mcpTeamViewModel
+private fun TeamMemberList(
+    viewModel: MCPTeamViewModel
+) {
+//    val viewModel = mcpTeamViewModel
     val myId = UserRepository.me.value.id
-    val team = viewModel.mcpTeam!!
+    val team by viewModel.mcpTeam.collectAsState()
     val teamOwner = UserRepository.me(team.ownerId)
     LazyColumn {
         items(viewModel.mcpTeamMembers){
@@ -360,7 +382,7 @@ private fun TeamMemberList() {
 
                     }else if(me&&it.expirationDate<0){
                         Button(
-                            onClick = {viewModel.acceptMCPTeamMember(team.id,myId)}
+                            onClick = {viewModel.acceptMCPTeamMember(team,myId)}
                         ){
                             Text("Accept")
                         }
@@ -373,11 +395,14 @@ private fun TeamMemberList() {
 }
 
 @Composable
-fun InviteTeamDialog() {
-    val viewModel = mcpTeamViewModel
+fun InviteTeamDialog(
+    viewModel: MCPTeamViewModel
+) {
+//    val viewModel = mcpTeamViewModel
+    val mcpTeam by viewModel.mcpTeam.collectAsState()
     var userNotExist by remember { mutableStateOf(false) }
     OutlinedTextFieldDialog(
-        title = {Text("Invite member for ${viewModel.mcpTeam!!.name}")},
+        title = {Text("Invite member for ${mcpTeam.name}")},
         label = {Text("Member account")},
         supportingText = { value, isValid ->
             if(userNotExist) Text("Member not exists", color = MaterialTheme.colorScheme.error)
@@ -388,7 +413,8 @@ fun InviteTeamDialog() {
         confirmButton = { value,isValid->
             Button(
                 enabled = value.isNotEmpty()&&isValid,
-                onClick = {viewModel.inviteMCPTeamMember(value){ code, message ->
+                onClick = {viewModel.inviteMCPTeamMember(value){
+                    code, message,data ->
                     when(code){
                         0-> viewModel.dialog = MCPTeamDialog.None
                         AIPortServiceResponse.ACCOUNT_NOT_EXIST -> {userNotExist=true}
@@ -405,22 +431,25 @@ fun InviteTeamDialog() {
 }
 
 @Composable
-private fun TeamToolMakerList() {
-    val viewModel = mcpTeamViewModel
+private fun TeamToolMakerList(
+    viewModel: MCPTeamViewModel
+) {
+//    val viewModel = mcpTeamViewModel
 //    val myId = UserRepository.me.value.id
-    val team = viewModel.mcpTeam!!
-    val toolMakers = generalViewModel.toolMakers(team)
+    val team by viewModel.mcpTeam.collectAsState()
+    val toolMakers by viewModel.toolMakersFromTeam.collectAsState()
 
     LazyColumn {
         items(toolMakers){
 //            val teamToolMaker = viewModel.teamToolMaker(it.id)
-            val teamToolMaker = generalViewModel.teamToolMaker(team.id,it.id)
+//            val teamToolMaker = generalViewModel.teamToolMaker(team.id,it.id)
+            val teamToolMaker = TeamRepository.teamToolMaker(team.id,it.id)
             if(teamToolMaker!=null&&teamToolMaker.status>0) {
                 val me = UserRepository.me(it.userId)
                 val member = viewModel.teamMember(it.userId)
                 ListItem(
                     headlineContent = {
-                        it.name?.let { Text(it) }
+                        Text(it.name)
                     },
                     overlineContent = {
                         if (me) Text("Me", color = MaterialTheme.colorScheme.primary)
@@ -453,15 +482,18 @@ private fun TeamToolMakerList() {
 }
 
 @Composable
-private fun TeamToolMakerTemplateList() {
-    val viewModel = mcpTeamViewModel
+private fun TeamToolMakerTemplateList(
+    viewModel: MCPTeamViewModel
+) {
 //    val myId = authViewModel.user.id
-    val team = viewModel.mcpTeam!!
+    val team by viewModel.mcpTeam.collectAsState()
 //    val teamToolMakerTemplates = mcpTeamViewModel.mcpTeamToolMakerTemplates
-    val teamToolMakerTemplates = generalViewModel.teamToolMakerTemplates(team.id)
+//    val teamToolMakerTemplates = generalViewModel.teamToolMakerTemplates(team.id)
+    val teamToolMakerTemplates by viewModel.teamToolMakerTemplates.collectAsState()
         LazyColumn {
         items(teamToolMakerTemplates){
-            val toolMakerTemplate = generalViewModel.toolMakerTemplate(it.toolMakerTemplateId)
+//            val toolMakerTemplate = generalViewModel.toolMakerTemplate(it.toolMakerTemplateId)
+            val toolMakerTemplate = ToolRepository.toolMakerTemplate(it.toolMakerTemplateId)
             if(toolMakerTemplate!=null&&toolMakerTemplate.status>0) {
                 val me = UserRepository.me(toolMakerTemplate.userId)
                 val member = viewModel.teamMember(toolMakerTemplate.userId)

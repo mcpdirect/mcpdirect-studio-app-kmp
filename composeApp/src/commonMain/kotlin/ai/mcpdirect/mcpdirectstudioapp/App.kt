@@ -107,11 +107,11 @@ fun App(
                         is Screen.MCPTeam -> {
                             MCPTeamScreen(screen.dialog)
                         }
-                        Screen.MCPTeamToolMaker -> {
-                            MCPTeamToolMakerScreen()
+                        is Screen.MCPTeamToolMaker -> {
+                            MCPTeamToolMakerScreen(screen.team)
                         }
-                        Screen.MCPTeamToolMakerTemplate -> {
-                            MCPTeamToolMakerTemplateScreen()
+                        is Screen.MCPTeamToolMakerTemplate -> {
+                            MCPTeamToolMakerTemplateScreen(screen.team)
                         }
                         Screen.VirtualMCP -> {
                             VirtualMakerScreen()
