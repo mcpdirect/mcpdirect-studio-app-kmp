@@ -2,6 +2,38 @@
 
 All notable changes to this file.
 
+## 2025-12-01
+### Added
+- New ConfirmDialog composable component for user confirmations
+- ToolMakerTemplate and ToolMakerTemplateConfig model classes for template functionality
+- Repository integration for team tool maker templates with modifyTeamToolMakerTemplates function
+- Repository integration for team tool makers with modifyTeamToolMakers function
+- ConnectMCPTemplateDialog for connecting MCP templates to studios
+- CreateMCPTemplateDialog for creating MCP server templates
+- MCPTemplateListViewModel for managing MCP templates
+- MCPTemplateScreen for displaying and managing MCP templates
+- ConfigMCPServerFromTemplateDialog for configuring MCP servers from templates
+- ConnectMCP and MyStudio screens updated with template functionality
+- StudioRepository updated with connectToolMakerToStudio function
+- ToolPermissionScreen updated with improved team UI and functionality
+
+### Changed
+- MyStudioViewModel updated to use repository-based connectToolMakerToStudio function
+- MyStudioScreen updated to pass objects instead of individual IDs to connectToolMakerToStudio
+- MCPTeamToolMakerScreen updated to use repository-based team tool maker template functions
+- MCPTeamToolMakerViewModel updated to use repository-based team tool maker functions
+- ConnectMCPScreen updated with improved UI when no tool maker is selected
+- ConnectMCPViewModel updated with improved connection handling
+- Platform.jvm.kt updated with server start/stop notification handling
+- AIPortMCPServerConfig updated with additional properties for template configuration
+- MCPServerConfig updated with additional properties for template usage
+- StudioRepository updated with simplified implementation by removing direct API calls
+- AIPortToolMaker and AIPortToolMakerTemplate updated with additional properties
+- AIPortToolMakerTemplateInstance updated with additional properties for template instances
+- ToolRepository updated with improved tool maker filtering and creation functions
+- ToolPermissionViewModel updated with repository integration and improved state management
+- MCPTemplateListViewModel updated with improved data loading and management
+
 ## 2025-11-28
 ### Added
 - Enhanced TeamRepository.kt with modifyTeamToolMakerTemplates and modifyTeamToolMakers functions
