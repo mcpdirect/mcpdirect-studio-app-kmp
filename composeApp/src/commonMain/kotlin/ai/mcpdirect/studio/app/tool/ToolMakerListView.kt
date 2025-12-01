@@ -54,13 +54,13 @@ fun ToolMakerListView(
         items(toolMakers){
 
             val me = UserRepository.me(it.userId)
-            var team by remember { mutableStateOf<AIPortTeam?>(null) }
-            LaunchedEffect(it){
-                if(it.teamId!=0L) toolMakerListViewModel.team(it.teamId){
-                    code, message, data ->
-                    team = data
-                }
-            }
+//            var team by remember { mutableStateOf<AIPortTeam?>(null) }
+//            LaunchedEffect(it){
+//                if(it.teamId!=0L) toolMakerListViewModel.team(it.teamId){
+//                    code, message, data ->
+//                    team = data
+//                }
+//            }
             StudioListItem(
                 selected = toolMaker?.id == it.id,
                 modifier = Modifier.clickable{
@@ -75,13 +75,13 @@ fun ToolMakerListView(
                             modifier = Modifier.size(18.dp).padding(end = 4.dp)
                         )
                         if(me) Text("Me")
-                        else team?.let {
-                            TooltipText(
-                                it.ownerName,
-                                contentDescription = it.ownerAccount,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+//                        else team?.let {
+//                            TooltipText(
+//                                it.ownerName,
+//                                contentDescription = it.ownerAccount,
+//                                overflow = TextOverflow.Ellipsis
+//                            )
+//                        }
                     }
                 },
                 headlineContent = { Text(
@@ -99,25 +99,27 @@ fun ToolMakerListView(
                         Text(
                             if(it.virtual())
                                 "Virtual MCP"
-                            else it.agentName,
+                            else "",
+//                            else it.agentName,
                             color = MaterialTheme.colorScheme.primary,
                             style=MaterialTheme.typography.bodySmall
                         )
 
-                    } else team?.let {
-                        Row{
-                            StudioIcon(
-                                Res.drawable.groups,
-                                "From Team",
-                                MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(20.dp).padding(end = 4.dp)
-                            )
-                            Text(
-                                it.name,
-                                color = MaterialTheme.colorScheme.secondary,
-                                style=MaterialTheme.typography.bodySmall)
-                        }
                     }
+//                    else team?.let {
+//                        Row{
+//                            StudioIcon(
+//                                Res.drawable.groups,
+//                                "From Team",
+//                                MaterialTheme.colorScheme.secondary,
+//                                modifier = Modifier.size(20.dp).padding(end = 4.dp)
+//                            )
+//                            Text(
+//                                it.name,
+//                                color = MaterialTheme.colorScheme.secondary,
+//                                style=MaterialTheme.typography.bodySmall)
+//                        }
+//                    }
 
                 },
                 trailingContent = {

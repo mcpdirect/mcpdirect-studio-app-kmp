@@ -2,7 +2,7 @@ package ai.mcpdirect.mcpdirectstudioapp
 
 import ai.mcpdirect.studio.MCPDirectStudio
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.mcp.connectMCPViewModel
+//import ai.mcpdirect.studio.app.mcp.connectMCPViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.OpenAPIServer
@@ -80,7 +80,7 @@ class JVMPlatform : Platform, NotificationHandler{
                         mcpServer.tags = it.tags
                         mcpServer.agentId = it.agentId
                         mcpServer.userId = it.userId
-                        mcpServer.teamId = it.teamId
+//                        mcpServer.teamId = it.teamId
                         mcpServer.transport = it.transport
                         mcpServer.url = it.url
                         mcpServer.command = it.command
@@ -102,7 +102,7 @@ class JVMPlatform : Platform, NotificationHandler{
                         openapiServer.tags = it.tags
                         openapiServer.agentId = it.agentId
                         openapiServer.userId = it.userId
-                        openapiServer.teamId = it.teamId
+//                        openapiServer.teamId = it.teamId
                         openapiServer.url = it.url
                         openapiServer.securities = it.securities
                         openapiServer.statusMessage = it.statusMessage()
@@ -234,7 +234,7 @@ class JVMPlatform : Platform, NotificationHandler{
     }
 
     override fun logout(onResponse: (resp: AIPortServiceResponse<Boolean?>) -> Unit) {
-        connectMCPViewModel.reset()
+//        connectMCPViewModel.reset()
         CoroutineScope(Dispatchers.IO).launch {
             MCPDirectStudio.logout {
                 code, message, data ->

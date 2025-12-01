@@ -198,16 +198,16 @@ fun ToolMakerItem(
             maker.name?.let { Text(it) }
         },
         supportingContent = {
-
             if(isVirtualMCP) Text("Virtual MCP Server")
             else if (maker.agentId == localToolAgentId)
                 Text("This device",color = MaterialTheme.colorScheme.primary)
-            else maker.agentName?.let { Text(it) }
+//            else maker.agentName?.let { Text(it) }
         },
         trailingContent = {
-            if(!isVirtualMCP&&maker.agentStatus==0)
-                Tag("offline", color = MaterialTheme.colorScheme.error,)
-            else when(maker.status){
+//            if(!isVirtualMCP&&maker.agentStatus==0)
+//                Tag("offline", color = MaterialTheme.colorScheme.error,)
+//            else
+            when(maker.status){
                 STATUS_OFF-> Tag("inactive", color = MaterialTheme.colorScheme.error)
                 STATUS_ON-> Tag("active",)
             }

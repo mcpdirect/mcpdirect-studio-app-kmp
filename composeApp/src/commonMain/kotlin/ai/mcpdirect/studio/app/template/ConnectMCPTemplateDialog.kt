@@ -1,9 +1,9 @@
 package ai.mcpdirect.studio.app.template
 
 import ai.mcpdirect.mcpdirectstudioapp.JSON
-import ai.mcpdirect.studio.app.model.MCPServerConfig
-import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,20 +12,30 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.serialization.json.encodeToJsonElement
 
 @Composable
 fun ConnectMCPTemplateDialog(
+    toolAgent: AIPortToolAgent,
     template: AIPortToolMakerTemplate,
-    onConfirmRequest: (name:String,config: AIPortMCPServerConfig) -> Unit,
+    onConfirmRequest: (name:String,inputs: String) -> Unit,
     onDismissRequest: () -> Unit,
 ){
-    val inputs = template.inputs.split(",").toList()
+    val inputs = remember { mutableStateListOf<String>() }
     val inputMap = remember { mutableStateMapOf<String, String>() }
     val inputErrorMap = remember { mutableStateMapOf<String, Boolean>() }
-    inputs.forEach {
-        inputErrorMap[it]=false
+    LaunchedEffect(null){
+        StudioRepository.getMakerTemplateFromStudio(
+            toolAgent,template
+        ){ code, message, data ->
+            if(code==0&&data!=null){
+                inputs.addAll(data.inputs.split(","))
+                inputs.forEach {
+                    inputErrorMap[it]=false
+                }
+            }
+        }
     }
+
     var isInputError by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("")}
     var isNameError by remember { mutableStateOf(false) }
@@ -75,15 +85,15 @@ fun ConnectMCPTemplateDialog(
             Button(
                 enabled = !isNameError&&!isInputError&&inputMap.isNotEmpty(),
                 onClick = {
-                    val temp = JSON.decodeFromString<MCPServerConfig>(template.config)
-                    val config = AIPortMCPServerConfig()
-                    config.transport = temp.transport
-                    config.url = temp.url
-                    config.command = temp.command
-                    config.args = JSON.encodeToJsonElement(temp.args).toString()
-                    config.env = JSON.encodeToJsonElement(temp.env).toString()
-                    config.inputs = JSON.encodeToString(inputMap.toMap())
-                    onConfirmRequest(name,config)
+//                    val temp = JSON.decodeFromString<MCPServerConfig>(template.config)
+//                    val config = AIPortMCPServerConfig()
+//                    config.transport = temp.transport
+//                    config.url = temp.url
+//                    config.command = temp.command
+//                    config.args = JSON.encodeToJsonElement(temp.args).toString()
+//                    config.env = JSON.encodeToJsonElement(temp.env).toString()
+//                    config.inputs = JSON.encodeToString(inputMap.toMap())
+                    onConfirmRequest(name,JSON.encodeToString(inputMap.toMap()))
                     onDismissRequest()
                 }
             ) {

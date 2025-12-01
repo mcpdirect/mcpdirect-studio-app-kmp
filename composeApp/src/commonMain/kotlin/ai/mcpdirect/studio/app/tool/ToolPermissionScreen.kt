@@ -293,12 +293,11 @@ private fun TeamList(
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis) },
-                supportingContent = {
-                    val count = viewModel.countToolPermissions(it)
-                    if(count>0) {
-                        Text("${count}")
-                    }
-                                    },
+//                supportingContent = {
+//                    val count = viewModel.countToolPermissions(it)
+//                    if(count>0) {
+//                        Text("${count}")
+//                    } },
 //                trailingContent = {
 //                    if(viewModel.team!=null&&viewModel.team!!.id==it.id)
 //                        Icon(painterResource(Res.drawable.keyboard_arrow_right),

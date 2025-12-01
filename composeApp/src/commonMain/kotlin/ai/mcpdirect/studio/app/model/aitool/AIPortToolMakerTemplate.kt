@@ -12,7 +12,7 @@ class AIPortToolMakerTemplate {
     var agentId: Long = 0
     var lastUpdated: Long = 0
     var userId: Long = 0
-    var config: String = "{}"
-    var inputs: String = ""
+//    var config: String = "{}"
+//    var inputs: String = ""
 //    var teamId:Long =0
 }

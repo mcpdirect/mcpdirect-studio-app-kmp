@@ -55,9 +55,9 @@ fun MCPTemplateScreen() {
                         style = MaterialTheme.typography.titleSmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis) },
-                    supportingContent = {
-                        Text(it.agentName)
-                    },
+//                    supportingContent = {
+//                        Text(it.agentName)
+//                    },
                     trailingContent = {
                         if(viewModel.toolMaker!=null&&viewModel.toolMaker!!.id==it.id)
                             Icon(painterResource(Res.drawable.keyboard_arrow_right),

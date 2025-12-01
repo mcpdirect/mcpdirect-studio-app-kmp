@@ -2,26 +2,14 @@ package ai.mcpdirect.studio.app.model.repository
 
 import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
-import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
-import ai.mcpdirect.studio.app.model.aitool.AIPortTool
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
-import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
-import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
-import androidx.lifecycle.viewModelScope
+import ai.mcpdirect.studio.app.model.aitool.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlin.collections.set
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
@@ -163,33 +151,33 @@ object ToolRepository {
     fun toolMaker(toolMakerId: Long): AIPortToolMaker? {
         return _toolMakers.value[toolMakerId]
     }
-    suspend fun createMCPServerByTemplate(
-        toolAgentId:Long,template: AIPortToolMakerTemplate,
-        mcpServerName:String, mcpServerConfig: AIPortMCPServerConfig,
-        onResponse:(code:Int, message:String?, data: AIPortToolMaker?) -> Unit) {
-        loadMutex.withLock {
-            generalViewModel.loading()
-            getPlatform().createToolMaker(
-                AIPortToolMaker.TYPE_MCP, mcpServerName,
-                templateId = template.id, userId = UserRepository.me.value.id, agentId = toolAgentId,
-                mcpServerConfig = mcpServerConfig
-            ){
-                if(it.successful()){
-                    it.data?.let { toolMaker ->
-                        _toolMakers.update { map ->
-                            map.toMutableMap().apply {
-                                put(toolMaker.id, toolMaker)
-                            }
-                        }
-                    }
-                }
-                generalViewModel.loaded(
-                    "Create MCP Server #${mcpServerName} by Template #${template.name}",it.code,it.message
-                )
-                onResponse(it.code,it.message,it.data)
-            }
-        }
-    }
+//    suspend fun createMCPServerByTemplate(
+//        toolAgentId:Long,template: AIPortToolMakerTemplate, mcpServerName:String,
+////        mcpServerConfig: AIPortMCPServerConfig,
+//        onResponse:(code:Int, message:String?, data: AIPortToolMaker?) -> Unit) {
+//        loadMutex.withLock {
+//            generalViewModel.loading()
+//            getPlatform().createToolMaker(
+//                AIPortToolMaker.TYPE_MCP, mcpServerName,
+//                templateId = template.id, userId = UserRepository.me.value.id, agentId = toolAgentId,
+//                mcpServerConfig = mcpServerConfig
+//            ){
+//                if(it.successful()){
+//                    it.data?.let { toolMaker ->
+//                        _toolMakers.update { map ->
+//                            map.toMutableMap().apply {
+//                                put(toolMaker.id, toolMaker)
+//                            }
+//                        }
+//                    }
+//                }
+//                generalViewModel.loaded(
+//                    "Create MCP Server #${mcpServerName} by Template #${template.name}",it.code,it.message
+//                )
+//                onResponse(it.code,it.message,it.data)
+//            }
+//        }
+//    }
 
     suspend fun modifyToolMakerName(
         toolMaker: AIPortToolMaker,
@@ -213,28 +201,28 @@ object ToolRepository {
         }
     }
 
-    suspend fun modifyMCPServerConfig(
-        toolMaker: AIPortToolMaker,
-        config:AIPortMCPServerConfig,
-        onResponse:(code:Int, message:String?, toolMaker: AIPortToolMaker?) -> Unit
-    ){
-        loadMutex.withLock {
-            generalViewModel.loading()
-            getPlatform().modifyMCPServerConfig(config){
-                if (it.successful()) it.data?.let{ toolMaker ->
-                    _toolMakers.update { map ->
-                        map.toMutableMap().apply {
-                            put(toolMaker.id, toolMaker)
-                        }
-                    }
-                }
-                generalViewModel.loaded(
-                    "Modify tool maker config of #${toolMaker.name}",it.code,it.message
-                )
-                onResponse(it.code,it.message,it.data)
-            }
-        }
-    }
+//    suspend fun modifyMCPServerConfig(
+//        toolMaker: AIPortToolMaker,
+//        config:AIPortMCPServerConfig,
+//        onResponse:(code:Int, message:String?, toolMaker: AIPortToolMaker?) -> Unit
+//    ){
+//        loadMutex.withLock {
+//            generalViewModel.loading()
+//            getPlatform().modifyMCPServerConfig(config){
+//                if (it.successful()) it.data?.let{ toolMaker ->
+//                    _toolMakers.update { map ->
+//                        map.toMutableMap().apply {
+//                            put(toolMaker.id, toolMaker)
+//                        }
+//                    }
+//                }
+//                generalViewModel.loaded(
+//                    "Modify tool maker config of #${toolMaker.name}",it.code,it.message
+//                )
+//                onResponse(it.code,it.message,it.data)
+//            }
+//        }
+//    }
 
     suspend fun modifyToolMakerTags(toolMaker: AIPortToolMaker, toolMakerTags:String) {
         loadMutex.withLock {
@@ -333,19 +321,26 @@ object ToolRepository {
     fun toolMakerTemplate(id:Long): AIPortToolMakerTemplate?{
         return _toolMakerTemplates.value[id]
     }
-
-    suspend fun createToolMakerTemplate(name:String,type:Int,agentId:Long,config:String,inputs:String){
-        loadMutex.withLock {
-            generalViewModel.loading()
-            getPlatform().createToolMakerTemplate(name,type,agentId,config,inputs){
-                if(it.successful()) it.data?.let{
-                    _toolMakerTemplates.update { map ->
-                        map.toMutableMap().apply {
-                            put(it.id,it)
-                        }
-                    }
-                }
+    fun toolMakerTemplate(template: AIPortToolMakerTemplate){
+        _toolMakerTemplates.update { map ->
+            map.toMutableMap().apply {
+                put(template.id,template)
             }
         }
     }
+
+//    suspend fun createToolMakerTemplate(name:String,type:Int,agentId:Long,config:String,inputs:String){
+//        loadMutex.withLock {
+//            generalViewModel.loading()
+//            getPlatform().createToolMakerTemplate(name,type,agentId,config,inputs){
+//                if(it.successful()) it.data?.let{
+//                    _toolMakerTemplates.update { map ->
+//                        map.toMutableMap().apply {
+//                            put(it.id,it)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

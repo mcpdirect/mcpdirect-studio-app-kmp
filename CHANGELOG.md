@@ -16,6 +16,8 @@ All notable changes to this file.
 - ConnectMCP and MyStudio screens updated with template functionality
 - StudioRepository updated with connectToolMakerToStudio function
 - ToolPermissionScreen updated with improved team UI and functionality
+- Platform interface functions for connecting tool maker templates to studio, getting maker template/config from studio, and creating tool maker templates for studio
+- Platform function for removing MCP and OpenAPI servers from studio
 
 ### Changed
 - MyStudioViewModel updated to use repository-based connectToolMakerToStudio function
@@ -33,6 +35,10 @@ All notable changes to this file.
 - ToolRepository updated with improved tool maker filtering and creation functions
 - ToolPermissionViewModel updated with repository integration and improved state management
 - MCPTemplateListViewModel updated with improved data loading and management
+- Platform interface updated with additional functions for template management
+- Commented out some unused functions in Platform.kt
+- Commented out ConnectMCPViewModel to allow for refactoring
+- Updated UI flows and repository integration across multiple screens
 
 ## 2025-11-28
 ### Added

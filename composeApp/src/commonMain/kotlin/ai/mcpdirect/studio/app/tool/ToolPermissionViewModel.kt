@@ -243,24 +243,24 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
         }
         return count
     }
-    fun countToolPermissions(team: AIPortTeam):Int{
-        var count = 0
-        toolPermissions.values.forEach {
-            ToolRepository.toolMaker(it.makerId)?.let {
-                if(it.teamId==team.id){
-                    count++
-                }
-            }
-        }
-        virtualToolPermissions.values.forEach {
-            ToolRepository.toolMaker(it.makerId)?.let {
-                if(it.teamId==team.id){
-                    count++
-                }
-            }
-        }
-        return count
-    }
+//    fun countToolPermissions(team: AIPortTeam):Int{
+//        var count = 0
+//        toolPermissions.values.forEach {
+//            ToolRepository.toolMaker(it.makerId)?.let {
+//                if(it.teamId==team.id){
+//                    count++
+//                }
+//            }
+//        }
+//        virtualToolPermissions.values.forEach {
+//            ToolRepository.toolMaker(it.makerId)?.let {
+//                if(it.teamId==team.id){
+//                    count++
+//                }
+//            }
+//        }
+//        return count
+//    }
     fun countToolPermissions():Int{
         val toolMaker = _toolMaker.value
         return countToolPermissions(toolMaker)

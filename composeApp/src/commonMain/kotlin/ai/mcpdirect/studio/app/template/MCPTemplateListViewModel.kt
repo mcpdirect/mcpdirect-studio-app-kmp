@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.template
 
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
@@ -30,9 +31,12 @@ class MCPTemplateListViewModel: ViewModel() {
     fun toolMakerTemplate(template: AIPortToolMakerTemplate?){
         toolMakerTemplate = template
     }
-    fun createToolMakerTemplate(name:String,type:Int,agentId:Long,config:String,inputs:String){
+    fun createToolMakerTemplate(toolAgent: AIPortToolAgent,name:String,type:Int,config:String,inputs:String){
         viewModelScope.launch {
-            ToolRepository.createToolMakerTemplate(name,type,agentId,config,inputs)
+            StudioRepository.createToolMakerTemplateForStudio(
+                toolAgent, name,type,config,inputs
+            )
+//            ToolRepository.createToolMakerTemplate(name,type,agentId,config,inputs)
 //            getPlatform().createToolMakerTemplate(name,type,agentId,config,inputs){
 //                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL){
 ////                    it.data?.let {

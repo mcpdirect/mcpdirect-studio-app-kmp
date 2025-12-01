@@ -33,29 +33,29 @@ class MCPToolsViewModel: ViewModel() {
 //    fun toolMakerTemplate(template: AIPortToolMakerTemplate?){
 //        toolMakerTemplate = template
 //    }
-    fun getMCPServerConfig(id:Long) {
-        viewModelScope.launch {
-            getPlatform().getMCPServerConfig(id) {
-                if (it.code == AIPortServiceResponse.SERVICE_SUCCESSFUL) {
-                    it.data?.let {
-                        if (it.id == id) {
-                            val config = MCPServerConfig()
-                            config.transport = it.transport
-                            config.url = it.url
-                            config.command = it.command
-                            it.args?.let{
-                                config.args = JSON.decodeFromString(it)
-                            }
-                            it.env?.let {
-                                config.env = JSON.decodeFromString(it)
-                            }
-                            mcpServerConfig = config
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    fun getMCPServerConfig(id:Long) {
+//        viewModelScope.launch {
+//            getPlatform().getMCPServerConfig(id) {
+//                if (it.code == AIPortServiceResponse.SERVICE_SUCCESSFUL) {
+//                    it.data?.let {
+//                        if (it.id == id) {
+//                            val config = MCPServerConfig()
+//                            config.transport = it.transport
+//                            config.url = it.url
+//                            config.command = it.command
+//                            it.args?.let{
+//                                config.args = JSON.decodeFromString(it)
+//                            }
+//                            it.env?.let {
+//                                config.env = JSON.decodeFromString(it)
+//                            }
+//                            mcpServerConfig = config
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 //    fun createToolMakerTemplate(name:String,type:Int,agentId:Long,config:String,inputs:String){
 //        viewModelScope.launch {
 //            getPlatform().createToolMakerTemplate(name,type,agentId,config,inputs){

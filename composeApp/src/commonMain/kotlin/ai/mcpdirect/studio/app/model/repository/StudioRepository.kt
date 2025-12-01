@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.model.*
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -36,6 +37,9 @@ object StudioRepository {
     val toolAgents: StateFlow<Map<Long, AIPortToolAgent>> = _toolAgents
     private val _toolMakerLastQueries = mutableMapOf<Long, TimeMark>()
     private val _mcpServers = MutableStateFlow<Map<Long, MCPServer>>(emptyMap())
+    fun mcpServer(id:Long): MCPServer?{
+        return _mcpServers.value[id];
+    }
     val mcpServers: StateFlow<Map<Long, MCPServer>> = _mcpServers
     fun mcpServer(server: MCPServer){
         _mcpServers.update { map ->
@@ -192,7 +196,25 @@ object StudioRepository {
             }
         }
     }
-
+    suspend fun removeMCPServerFromStudio(
+        toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker
+    ){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().removeMCPServerFromStudio(toolAgent.engineId,toolMaker.id){
+                if(it.successful()) it.data?.let { server ->
+                    _mcpServers.update { map ->
+                        map.toMutableMap().apply {
+                            remove(server.id)
+                        }
+                    }
+                }
+                generalViewModel.loaded(
+                    "Remove MCP Server #${toolMaker.name} from Studio #${toolAgent.name}",it.code,it.message
+                )
+            }
+        }
+    }
     suspend fun modifyMCPServerConfigForStudio(
         toolAgent: AIPortToolAgent, mcpServer: MCPServer, config:MCPServerConfig,
         onResponse: (code: Int, message: String?, mcpServer: MCPServer?) -> Unit
@@ -445,6 +467,104 @@ object StudioRepository {
                 generalViewModel.loaded(
                     "Query tools of OpenAPI Server #${toolMaker.name} in Studio #${toolAgent.name}",it.code,it.message
                 )
+            }
+        }
+    }
+    suspend fun removeOpenAPIServerFromStudio(
+        toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker
+    ){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().removeOpenAPIServerFromStudio(toolAgent.engineId,toolMaker.id){
+                if(it.successful()) it.data?.let { server ->
+                    _openapiServers.update { map ->
+                        map.toMutableMap().apply {
+                            remove(server.id)
+                        }
+                    }
+                }
+                generalViewModel.loaded(
+                    "Remove OpenAPI Server #${toolMaker.name} from Studio #${toolAgent.name}",it.code,it.message
+                )
+            }
+        }
+    }
+
+    suspend fun createToolMakerTemplateForStudio(toolAgent: AIPortToolAgent,name:String,type:Int,config:String,inputs:String){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().createToolMakerTemplateForStudio(toolAgent.engineId,name,type,config,inputs){
+                if(it.successful()) it.data?.let{
+                    ToolRepository.toolMakerTemplate(it)
+                }
+                generalViewModel.loaded(
+                    "Create ToolMaker Template #${name} from Studio #${toolAgent.name}",it.code,it.message
+                )
+            }
+        }
+    }
+
+    suspend fun connectToolMakerTemplateToStudio(toolAgent: AIPortToolAgent,userId:Long,templateId:Long,name:String,inputs:String){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().connectToolMakerTemplateToStudio(toolAgent.engineId,userId,templateId,name,inputs){
+                if(it.successful()) it.data?.let{
+                    if(it.mcp()&& it is MCPServer) _mcpServers.update { map ->
+                        map.toMutableMap().apply {
+                            put(it.id,it)
+                        }
+                    }else if(it.openapi()&& it is OpenAPIServer) _openapiServers.update { map ->
+                        map.toMutableMap().apply {
+                            put(it.id,it)
+                        }
+                    }
+                }
+                generalViewModel.loaded(
+                    "Connect ToolMaker Template #${name} To Studio #${toolAgent.name}",it.code,it.message
+                )
+            }
+        }
+    }
+
+    suspend fun getMakerTemplateFromStudio(
+        toolAgent: AIPortToolAgent,template: AIPortToolMakerTemplate,
+        onResponse: (code: Int, message: String?, data: ToolMakerTemplate?) -> Unit){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().getMakerTemplateFromStudio(toolAgent.engineId,template.id,){
+                generalViewModel.loaded(
+                    "Get ToolMaker Template #${template.name} From Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it.code,it.message,it.data)
+            }
+        }
+    }
+    suspend fun getMakerTemplateConfigFromStudio(
+        toolAgent: AIPortToolAgent, toolMaker: AIPortToolMaker,
+        onResponse: (code: Int, message: String?, data: ToolMakerTemplateConfig?) -> Unit){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().getMakerTemplateConfigFromStudio(toolAgent.engineId,toolMaker.id,){
+                generalViewModel.loaded(
+                    "Get ToolMaker Template Config #${toolMaker.name} From Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it.code,it.message,it.data)
+            }
+        }
+    }
+
+    suspend fun modifyToolMakerTemplateConfigFromStudio(
+        toolAgent: AIPortToolAgent, toolMaker: AIPortToolMaker,inputs: String,
+        onResponse: (code: Int, message: String?, data: AIPortToolMaker?) -> Unit){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().modifyToolMakerTemplateConfigFromStudio(
+                toolAgent.engineId,toolMaker.id,inputs
+            ){
+                generalViewModel.loaded(
+                    "Modify ToolMaker Template Config #${toolMaker.name} From Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it.code,it.message,it.data)
             }
         }
     }

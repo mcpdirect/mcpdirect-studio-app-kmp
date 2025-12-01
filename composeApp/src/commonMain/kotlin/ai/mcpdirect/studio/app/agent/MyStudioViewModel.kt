@@ -6,13 +6,13 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
-import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -482,17 +482,33 @@ class MyStudioViewModel(): ViewModel() {
 //        }
 //    }
 
+//    fun createToolMakerByTemplate(
+//        toolAgentId:Long,template: AIPortToolMakerTemplate, mcpServerName:String, mcpServerConfig: AIPortMCPServerConfig,
+//        onResponse:(code:Int, message:String?, toolMaker: AIPortToolMaker?) -> Unit) {
+//        uiState = UIState.Loading
+//        viewModelScope.launch {
+//            ToolRepository.createMCPServerByTemplate(
+//                toolAgentId,template,mcpServerName,mcpServerConfig
+//            ){ code, message, data ->
+//                onResponse(code,message,data)
+//                uiState = UIState.state(code,message)
+//            }
+//        }
+//    }
+
     fun createToolMakerByTemplate(
-        toolAgentId:Long,template: AIPortToolMakerTemplate, mcpServerName:String, mcpServerConfig: AIPortMCPServerConfig,
+        toolAgent: AIPortToolAgent,template: AIPortToolMakerTemplate, mcpServerName:String, inputs:String,
         onResponse:(code:Int, message:String?, toolMaker: AIPortToolMaker?) -> Unit) {
-        uiState = UIState.Loading
         viewModelScope.launch {
-            ToolRepository.createMCPServerByTemplate(
-                toolAgentId,template,mcpServerName,mcpServerConfig
-            ){ code, message, data ->
-                onResponse(code,message,data)
-                uiState = UIState.state(code,message)
-            }
+            StudioRepository.connectToolMakerTemplateToStudio(
+                toolAgent, UserRepository.me.value.id,template.id,mcpServerName,inputs
+            )
+//            ToolRepository.createMCPServerByTemplate(
+//                toolAgentId,template,mcpServerName,mcpServerConfig
+//            ){ code, message, data ->
+//                onResponse(code,message,data)
+//                uiState = UIState.state(code,message)
+//            }
         }
     }
 
@@ -533,21 +549,25 @@ class MyStudioViewModel(): ViewModel() {
 //            }
         }
     }
-    fun modifyMCPServerConfig(toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker,config:AIPortMCPServerConfig){
+    fun modifyMCPServerConfig(toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker,inputs: String){
         viewModelScope.launch {
-            uiState = UIState.Loading
-            ToolRepository.modifyMCPServerConfig(toolMaker,config){
-                code, message, data ->
-                updateUIState(code)
-                if(code==0)data?.let{
-                    viewModelScope.launch {
-                        StudioRepository.connectToolMakerToStudio(
-                            toolAgent,toolMaker
-                        ){ code, message, mcpServer ->
-                        }
-                    }
-                }
+//            uiState = UIState.Loading
+            StudioRepository.modifyToolMakerTemplateConfigFromStudio(
+                toolAgent,toolMaker,inputs
+            ){ code, message, mcpServer ->
             }
+//            ToolRepository.modifyMCPServerConfig(toolMaker,config){
+//                code, message, data ->
+//                updateUIState(code)
+//                if(code==0)data?.let{
+//                    viewModelScope.launch {
+//                        StudioRepository.connectToolMakerToStudio(
+//                            toolAgent,toolMaker
+//                        ){ code, message, mcpServer ->
+//                        }
+//                    }
+//                }
+//            }
 //            getPlatform().modifyMCPServerConfig(
 //                config
 //            ){
@@ -620,4 +640,15 @@ class MyStudioViewModel(): ViewModel() {
 //            }
 //        }
 //    }
+
+    fun removeMCPServer(toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker) {
+        viewModelScope.launch {
+            StudioRepository.removeMCPServerFromStudio(toolAgent,toolMaker)
+        }
+    }
+    fun removeOpenAPIServer(toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker) {
+        viewModelScope.launch {
+            StudioRepository.removeOpenAPIServerFromStudio(toolAgent,toolMaker)
+        }
+    }
 }

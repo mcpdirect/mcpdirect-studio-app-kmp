@@ -4,8 +4,11 @@ import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,14 +21,11 @@ import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 @Composable
 fun CreateMCPTemplateDialog(
     toolMaker: AIPortToolMaker,
-//    config: MCPServerConfig,
-//    agentId:Long,
-//    makerId:Long?=null,
-    onConfirmRequest: (name:String,type:Int,agentId:Long,config:String,inputs:String) -> Unit,
+    onConfirmRequest: (name:String,type:Int,config:String,inputs:String) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     val prettyJson = Json { prettyPrint = true }
-    var config by remember { mutableStateOf<MCPServerConfig?>(null)}
+    var config by remember { mutableStateOf<MCPServer?>(null)}
     var serverJson = mutableMapOf(
         "url" to JsonPrimitive(""),
         "command" to JsonPrimitive(""),
@@ -34,30 +34,47 @@ fun CreateMCPTemplateDialog(
     )
     var serverJsonString by remember { mutableStateOf(prettyJson.encodeToString(serverJson)) }
     LaunchedEffect(null){
-        getPlatform().getMCPServerConfig(toolMaker.id) {
-            if (it.code == AIPortServiceResponse.SERVICE_SUCCESSFUL) {
-                it.data?.let {
-                    if (it.id == toolMaker.id) {
-                        config = MCPServerConfig(it)
-                        config?.let {
-                            it.url?.let {
-                                serverJson["url"] = JsonPrimitive(it)
-                            }
-                            it.command?.let {
-                                serverJson["command"]  = JsonPrimitive(it)
-                            }
-                            it.args?.let {
-                                serverJson["args"] = JSON.encodeToJsonElement(it)
-                            }
-                            it.env?.let {
-                                serverJson["env"] = JSON.encodeToJsonElement(it)
-                            }
-                            serverJsonString = prettyJson.encodeToString(serverJson)
-                        }
-                    }
-                }
+        val mcpServer = StudioRepository.mcpServer(toolMaker.id)
+        mcpServer?.let {
+            it.url?.let {
+                serverJson["url"] = JsonPrimitive(it)
             }
+            it.command?.let {
+                serverJson["command"]  = JsonPrimitive(it)
+            }
+            it.args?.let {
+                serverJson["args"] = JSON.encodeToJsonElement(it)
+            }
+            it.env?.let {
+                serverJson["env"] = JSON.encodeToJsonElement(it)
+            }
+            serverJsonString = prettyJson.encodeToString(serverJson)
+            config = mcpServer
         }
+//        getPlatform().getMCPServerConfig(toolMaker.id) {
+//            if (it.code == AIPortServiceResponse.SERVICE_SUCCESSFUL) {
+//                it.data?.let {
+//                    if (it.id == toolMaker.id) {
+//                        config = MCPServerConfig(it)
+//                        config?.let {
+//                            it.url?.let {
+//                                serverJson["url"] = JsonPrimitive(it)
+//                            }
+//                            it.command?.let {
+//                                serverJson["command"]  = JsonPrimitive(it)
+//                            }
+//                            it.args?.let {
+//                                serverJson["args"] = JSON.encodeToJsonElement(it)
+//                            }
+//                            it.env?.let {
+//                                serverJson["env"] = JSON.encodeToJsonElement(it)
+//                            }
+//                            serverJsonString = prettyJson.encodeToString(serverJson)
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 //    val regex = Regex("""\$\{([^}]+)\}""")
     val regex = Regex("""\$\{([A-Za-z0-9_-]+)\}""")
@@ -166,7 +183,7 @@ fun CreateMCPTemplateDialog(
                     serverJson["transport"] = JsonPrimitive(config!!.transport)
                     val config = JSON.encodeToString(serverJson)
                     val inputs = templateInputs.joinToString(",")
-                    onConfirmRequest(templateName.trim(),toolMaker.type,toolMaker.agentId,
+                    onConfirmRequest(templateName.trim(),toolMaker.type,
                         config,inputs)
                     onDismissRequest()
                 }

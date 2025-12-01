@@ -12,10 +12,10 @@ open class AIPortToolMaker {
     var name: String = ""
     var tags: String? = ""
     var agentId: Long = 0
-    var agentStatus: Int = 0
-    var agentName: String = ""
+//    var agentStatus: Int = 0
+//    var agentName: String = ""
     var userId: Long = 0
-    var teamId: Long = 0
+//    var teamId: Long = 0
     var templateId: Long =0
     fun virtual():Boolean{
         return type == TYPE_VIRTUAL
