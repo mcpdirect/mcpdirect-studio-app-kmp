@@ -222,7 +222,7 @@ interface Platform {
     }
     fun getMakerTemplateConfigFromStudio(studioId:String,toolMakerId:Long,
                                    onResponse: (resp: AIPortServiceResponse<ToolMakerTemplateConfig>) -> Unit){
-        httpRequest("studio.console@$studioId/tool_maker_template/get",
+        httpRequest("studio.console@$studioId/tool_maker_template/config/get",
             mapOf(
                 "toolMakerId" to JsonPrimitive(toolMakerId),
             )

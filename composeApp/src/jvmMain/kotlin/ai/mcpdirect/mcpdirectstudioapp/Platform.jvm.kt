@@ -81,6 +81,7 @@ class JVMPlatform : Platform, NotificationHandler{
                         mcpServer.agentId = it.agentId
                         mcpServer.userId = it.userId
 //                        mcpServer.teamId = it.teamId
+                        mcpServer.templateId = it.templateId
                         mcpServer.transport = it.transport
                         mcpServer.url = it.url
                         mcpServer.command = it.command
@@ -102,6 +103,7 @@ class JVMPlatform : Platform, NotificationHandler{
                         openapiServer.tags = it.tags
                         openapiServer.agentId = it.agentId
                         openapiServer.userId = it.userId
+                        openapiServer.templateId = it.templateId
 //                        openapiServer.teamId = it.teamId
                         openapiServer.url = it.url
                         openapiServer.securities = it.securities

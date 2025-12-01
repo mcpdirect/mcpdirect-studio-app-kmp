@@ -422,7 +422,7 @@ fun ToolMakerListView(
                     ToolProviderType.MCPServer -> LazyColumn {
                         myStudioViewModel.resetToolMaker()
                         items(makers){
-                            ToolMakerItem(
+                            if(it.templateId==0L) ToolMakerItem(
                                 myStudioViewModel,
                                 it,
                                 it.id==toolMaker.id && it.status<STATUS_WAITING

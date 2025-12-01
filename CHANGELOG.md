@@ -39,6 +39,9 @@ All notable changes to this file.
 - Commented out some unused functions in Platform.kt
 - Commented out ConnectMCPViewModel to allow for refactoring
 - Updated UI flows and repository integration across multiple screens
+- Fixed API endpoint path for getting maker template config from studio
+- Added conditional display of ToolMakerItem based on templateId
+- Added templateId property to MCPServer and OpenAPIServer in Platform implementation
 
 ## 2025-11-28
 ### Added
