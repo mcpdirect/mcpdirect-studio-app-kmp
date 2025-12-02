@@ -7,7 +7,7 @@ import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKeyCredential
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
 import ai.mcpdirect.studio.app.tool.ToolDetailsView
@@ -348,7 +348,7 @@ fun ShowMCPKeyDialog(
     viewModel: MCPAccessKeyViewModel,
     onDismissRequest: () -> Unit,
 ) {
-    var key by remember { mutableStateOf<AIPortAccessKeyCredential?>(null) }
+    var key by remember { mutableStateOf<AIPortToolAccessKeyCredential?>(null) }
 
     viewModel.getMCPAccessKeyCredential(viewModel.mcpKey!!){
         key = it

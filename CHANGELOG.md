@@ -52,6 +52,13 @@ All notable changes to this file.
 - Updated MCPTeamToolMakerScreen with team tool maker improvements
 - ToolDetailsView composable component for displaying detailed tool information
 - ToolDetailsViewModel for managing tool detail state and operations
+- AIPortToolAccessKey and AIPortToolAccessKeyCredential model classes for tool access key functionality
+- Enhanced MCPAccessKeyScreen and MCPAccessKeyViewModel with access key management improvements
+- Updated ToolPermissionScreen and ToolPermissionViewModel with access key integration
+- Enhanced AccessKeyRepository with improved access key operations
+- Updated StudioRepository and ToolRepository with access key functionality
+- Enhanced DashboardViewModel with access key features
+- Updated AIPortServiceResponse with improved response handling
 
 ## 2025-11-28
 ### Added

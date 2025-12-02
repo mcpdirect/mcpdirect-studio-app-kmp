@@ -201,11 +201,13 @@ object StudioRepository {
     ){
         loadMutex.withLock {
             generalViewModel.loading()
-            getPlatform().removeMCPServerFromStudio(toolAgent.engineId,toolMaker.id){
-                if(it.successful()) it.data?.let { server ->
+            getPlatform().removeToolMakerFromStudio(
+                toolAgent.engineId,toolMaker.id,toolMaker.type
+            ){
+                if(it.successful()||it.code== AIPortServiceResponse.TOOL_MAKER_NOT_EXISTS){
                     _mcpServers.update { map ->
                         map.toMutableMap().apply {
-                            remove(server.id)
+                            remove(toolMaker.id)
                         }
                     }
                 }
@@ -475,11 +477,13 @@ object StudioRepository {
     ){
         loadMutex.withLock {
             generalViewModel.loading()
-            getPlatform().removeOpenAPIServerFromStudio(toolAgent.engineId,toolMaker.id){
-                if(it.successful()) it.data?.let { server ->
+            getPlatform().removeToolMakerFromStudio(
+                toolAgent.engineId,toolMaker.id,toolMaker.type
+            ){
+                if(it.successful()||it.code== AIPortServiceResponse.TOOL_MAKER_NOT_EXISTS) {
                     _openapiServers.update { map ->
                         map.toMutableMap().apply {
-                            remove(server.id)
+                            remove(toolMaker.id)
                         }
                     }
                 }

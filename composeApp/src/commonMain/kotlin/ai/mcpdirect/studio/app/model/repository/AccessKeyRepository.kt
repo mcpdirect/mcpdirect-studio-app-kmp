@@ -2,8 +2,8 @@ package ai.mcpdirect.studio.app.model.repository
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKeyCredential
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -17,8 +17,8 @@ object AccessKeyRepository {
     private val loadMutex = Mutex()
     private val _duration = 5.seconds
     private var _accessKeyLastQuery:TimeMark? = null
-    private val _accessKeys = MutableStateFlow<Map<Long,AIPortAccessKey>>(emptyMap())
-    val accessKeys: StateFlow<Map<Long, AIPortAccessKey>> = _accessKeys
+    private val _accessKeys = MutableStateFlow<Map<Long,AIPortToolAccessKey>>(emptyMap())
+    val accessKeys: StateFlow<Map<Long, AIPortToolAccessKey>> = _accessKeys
 //    val toolPermissionMakerSummary = mutableStateListOf<AIPortToolPermissionMakerSummary>()
     fun reset(){
         _accessKeyLastQuery = null
@@ -33,7 +33,7 @@ object AccessKeyRepository {
             val now = TimeSource.Monotonic.markNow()
             if (_accessKeyLastQuery == null || (force && _accessKeyLastQuery!!.elapsedNow() > _duration)) {
                 generalViewModel.loading()
-                getPlatform().queryAccessKeys {
+                getPlatform().queryToolAccessKeys {
                     if(it.successful()){
                         it.data?.let { accessKeys ->
                             _accessKeys.update { map ->
@@ -56,7 +56,7 @@ object AccessKeyRepository {
     suspend fun generateAccessKey(keyName:String) {
         loadMutex.withLock {
             generalViewModel.loading()
-            getPlatform().generateAccessKey(keyName){
+            getPlatform().generateToolAccessKey(keyName){
                 if(it.successful()){
                     it.data?.let { accessKey ->
                         _accessKeys.update { map ->
@@ -73,10 +73,10 @@ object AccessKeyRepository {
         }
     }
 
-    suspend fun modifyAccessKey(key: AIPortAccessKey, status:Int?=null, name:String?=null) {
+    suspend fun modifyAccessKey(key: AIPortToolAccessKey, status:Int?=null, name:String?=null) {
         loadMutex.withLock {
             generalViewModel.loading()
-            getPlatform().modifyAccessKey(key.id,status,name){
+            getPlatform().modifyToolAccessKey(key.id,status,name){
                 if(it.successful()){
                     it.data?.let { accessKey ->
                         _accessKeys.update { map ->
@@ -92,11 +92,11 @@ object AccessKeyRepository {
             }
         }
     }
-    suspend fun getAccessKeyCredential(key: AIPortAccessKey,
-                                          onResponse: (resp: AIPortAccessKeyCredential?) -> Unit){
+    suspend fun getAccessKeyCredential(key: AIPortToolAccessKey,
+                                          onResponse: (resp: AIPortToolAccessKeyCredential?) -> Unit){
         loadMutex.withLock {
             generalViewModel.loading()
-            getPlatform().getAccessKeyCredential(key.id){
+            getPlatform().getToolAccessKeyCredential(key.id){
                 onResponse(it.data)
                 generalViewModel.loaded(
                     "Get MCPdirect Access Key Credential\"${key.name}\"",it.code,it.message

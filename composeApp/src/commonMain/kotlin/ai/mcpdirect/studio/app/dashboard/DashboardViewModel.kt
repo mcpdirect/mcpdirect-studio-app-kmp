@@ -1,8 +1,8 @@
 package ai.mcpdirect.studio.app.dashboard
 
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
@@ -30,7 +30,7 @@ class DashboardViewModel: ViewModel() {
             StudioRepository.loadToolAgents(force)
         }
     }
-    val accessKeys: StateFlow<List<AIPortAccessKey>> = AccessKeyRepository.accessKeys
+    val accessKeys: StateFlow<List<AIPortToolAccessKey>> = AccessKeyRepository.accessKeys
         .map { it.values.toList() }      // 转为 List
         .stateIn(
             scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)

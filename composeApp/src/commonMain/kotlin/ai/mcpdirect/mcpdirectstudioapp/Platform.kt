@@ -178,14 +178,14 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
         }
     }
-    fun removeMCPServerFromStudio(studioId:String, mcpServerId:Long,
-                                onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
-        httpRequest("studio.console@$studioId/mcp_server/remove", mapOf(
-            "mcpServerId" to JsonPrimitive(mcpServerId)
-        )) {
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<MCPServer>>(it))
-        }
-    }
+//    fun removeMCPServerFromStudio(studioId:String, mcpServerId:Long,
+//                                onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
+//        httpRequest("studio.console@$studioId/mcp_server/remove", mapOf(
+//            "mcpServerId" to JsonPrimitive(mcpServerId)
+//        )) {
+//            onResponse(JSON.decodeFromString<AIPortServiceResponse<MCPServer>>(it))
+//        }
+//    }
     fun connectToolMakerToStudio(studioId:String, makerId:Long,agentId:Long,
                                  onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
         httpRequest("studio.console@$studioId/tool_maker/connect",
@@ -296,14 +296,14 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
         }
     }
-    fun removeOpenAPIServerFromStudio(studioId:String, serverId:Long,
-                                    onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
-        httpRequest("studio.console@$studioId/openapi_server/remove", mapOf(
-            "openapiServerId" to JsonPrimitive(serverId)
-        )) {
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
-        }
-    }
+//    fun removeOpenAPIServerFromStudio(studioId:String, serverId:Long,
+//                                    onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
+//        httpRequest("studio.console@$studioId/openapi_server/remove", mapOf(
+//            "openapiServerId" to JsonPrimitive(serverId)
+//        )) {
+//            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
+//        }
+//    }
     fun modifyOpenAPIServerForStudio(studioId:String, serverId:Long,
                                  serverName:String?=null,serverStatus:Int?=null,
                                  serverConfig:OpenAPIServerConfig?=null,
@@ -337,6 +337,18 @@ interface Platform {
             "openapiServerId" to JsonPrimitive(serverId)
         )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
+        }
+    }
+
+    fun removeToolMakerFromStudio(
+        studioId:String, serverId:Long,serverType:Int,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit)
+    {
+        httpRequest("studio.console@$studioId/tool_maker/remove", mapOf(
+            "toolMakerId" to JsonPrimitive(serverId),
+            "toolMakerType" to JsonPrimitive(serverType),
+        )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolMaker>>(it))
         }
     }
 
@@ -374,16 +386,16 @@ interface Platform {
         }
     }
 
-    fun queryAccessKeys(onResponse: (resp: AIPortServiceResponse<List<AIPortAccessKey>>) -> Unit) {
-        hstpRequest("$accountUsl/access_key/query", mapOf()){
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortAccessKey>>>(it))
+    fun queryToolAccessKeys(onResponse: (resp: AIPortServiceResponse<List<AIPortToolAccessKey>>) -> Unit) {
+        hstpRequest("$aitoolsUSL/tool_access_key/query", mapOf()){
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortToolAccessKey>>>(it))
         }
     }
-    fun getAccessKeyCredential(keyId:Long,onResponse: (resp: AIPortServiceResponse<AIPortAccessKeyCredential>) -> Unit) {
-        hstpRequest("$accountUsl/access_key/credential/get", mapOf(
+    fun getToolAccessKeyCredential(keyId:Long, onResponse: (resp: AIPortServiceResponse<AIPortToolAccessKeyCredential>) -> Unit) {
+        hstpRequest("$aitoolsUSL/tool_access_key/credential/get", mapOf(
             "keyId" to JsonPrimitive(keyId)
         )){
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortAccessKeyCredential>>(it))
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolAccessKeyCredential>>(it))
         }
 
     }
@@ -392,24 +404,24 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortToolPermissionMakerSummary>>>(it))
         }
     }
-    fun generateAccessKey(mcpKeyName:String,onResponse: (resp: AIPortServiceResponse<AIPortAccessKey>) -> Unit) {
-        hstpRequest("$accountUsl/access_key/create", mapOf(
+    fun generateToolAccessKey(mcpKeyName:String, onResponse: (resp: AIPortServiceResponse<AIPortToolAccessKey>) -> Unit) {
+        hstpRequest("$aitoolsUSL/tool_access_key/create", mapOf(
             "name" to JsonPrimitive(mcpKeyName)
         )){
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortAccessKey>>(it))
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolAccessKey>>(it))
         }
     }
 
-    fun modifyAccessKey(mcpKeyId:Long,mcpKeyStatus:Int?=null,mcpKeyName:String?=null,
-                        onResponse: (resp: AIPortServiceResponse<AIPortAccessKey>) -> Unit) {
+    fun modifyToolAccessKey(mcpKeyId:Long, mcpKeyStatus:Int?=null, mcpKeyName:String?=null,
+                            onResponse: (resp: AIPortServiceResponse<AIPortToolAccessKey>) -> Unit) {
         hstpRequest(
-            "$accountUsl/access_key/modify", mapOf(
+            "$aitoolsUSL/tool_access_key/modify", mapOf(
                 "id" to JsonPrimitive(mcpKeyId),
                 "name" to JsonPrimitive(mcpKeyName),
                 "status" to JsonPrimitive(mcpKeyStatus),
             )
         ) {
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortAccessKey>>(it))
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolAccessKey>>(it))
         }
     }
 

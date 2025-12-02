@@ -2,7 +2,7 @@ package ai.mcpdirect.studio.app.tool
 
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
@@ -30,7 +30,7 @@ import kotlin.collections.listOf
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolPermissionScreen(
-    accessKey: AIPortAccessKey
+    accessKey: AIPortToolAccessKey
 ) {
     var showPermissionChangedDialog by remember { mutableStateOf(false) }
     val viewModel by remember { mutableStateOf(ToolPermissionViewModel(accessKey)) }

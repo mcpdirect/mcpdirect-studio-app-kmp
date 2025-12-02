@@ -30,6 +30,9 @@ data class AIPortServiceResponse<T>(
 
         const val TEAM_NOT_EXIST: Int = 1002000
 
+        const val TOOL_MAKER_NOT_EXISTS: Int = 1003000
+        const val TOOL_MAKER_OCCUPIED: Int = 1003001
+
         const val OPENAPI_DOC_NOT_EXIST: Int = 2001000
     }
     fun successful(): Boolean {

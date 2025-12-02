@@ -1,8 +1,8 @@
 package ai.mcpdirect.studio.app.mcpkey
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKeyCredential
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermissionMakerSummary
 import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
@@ -31,14 +31,14 @@ class MCPAccessKeyViewModel : ViewModel(){
 //            else -> UIState.Error(code)
 //        }
 //    }
-    var mcpKey by mutableStateOf<AIPortAccessKey?>(null)
+    var mcpKey by mutableStateOf<AIPortToolAccessKey?>(null)
         private set
     private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
     val toolPermissions by derivedStateOf {
         _toolPermissions.values.toList()
     }
 //    val virtualToolPermissions = mutableStateMapOf<Long, AIPortVirtualToolPermission>()
-    fun mcpKey(accessKey:AIPortAccessKey){
+    fun mcpKey(accessKey:AIPortToolAccessKey){
         mcpKey = accessKey
         if(accessKey.id>Int.MAX_VALUE) {
             _toolPermissions.clear()
@@ -70,7 +70,7 @@ class MCPAccessKeyViewModel : ViewModel(){
 //    val accessKeys by derivedStateOf {
 //        _accessKeys.values.toList()
 //    }
-    val accessKeys: StateFlow<List<AIPortAccessKey>> = AccessKeyRepository.accessKeys
+    val accessKeys: StateFlow<List<AIPortToolAccessKey>> = AccessKeyRepository.accessKeys
         .map { it.values.toList() }      // 转为 List
         .stateIn(
             scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
@@ -135,8 +135,8 @@ class MCPAccessKeyViewModel : ViewModel(){
         }
     }
 
-    fun getMCPAccessKeyCredential(key: AIPortAccessKey,
-                                  onResponse: (resp: AIPortAccessKeyCredential?) -> Unit){
+    fun getMCPAccessKeyCredential(key: AIPortToolAccessKey,
+                                  onResponse: (resp: AIPortToolAccessKeyCredential?) -> Unit){
         viewModelScope.launch {
 //            getPlatform().getAccessKeyCredential(id){
 //                onResponse(it.data)
@@ -146,7 +146,7 @@ class MCPAccessKeyViewModel : ViewModel(){
 
     }
 
-    fun setMCPKeyStatus(key: AIPortAccessKey, status:Int) {
+    fun setMCPKeyStatus(key: AIPortToolAccessKey, status:Int) {
         viewModelScope.launch {
             AccessKeyRepository.modifyAccessKey(key,status)
 //            getPlatform().modifyAccessKey(key.id,status){
@@ -159,7 +159,7 @@ class MCPAccessKeyViewModel : ViewModel(){
 //            }
         }
     }
-    fun setMCPKeyName(key: AIPortAccessKey) {
+    fun setMCPKeyName(key: AIPortToolAccessKey) {
         viewModelScope.launch {
             AccessKeyRepository.modifyAccessKey(key,name=mcpKeyName)
 //            try {

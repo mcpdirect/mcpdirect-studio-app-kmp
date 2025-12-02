@@ -2,7 +2,7 @@ package ai.mcpdirect.studio.app.tool
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 //import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.*
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 //val toolPermissionViewModel = ToolPermissionViewModel()
-class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
+class ToolPermissionViewModel(val accessKey: AIPortToolAccessKey) : ViewModel(){
 //    var accessKey by mutableStateOf<AIPortAccessKey?>(null)
 //    private val _accessKey = MutableStateFlow(AIPortAccessKey())
 //    private val _virtualToolAgent = AIPortToolAgent("Virtual MCP",-1)

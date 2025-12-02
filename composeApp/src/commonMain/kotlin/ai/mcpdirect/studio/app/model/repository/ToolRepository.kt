@@ -4,7 +4,6 @@ import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
-import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.aitool.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -247,7 +246,7 @@ object ToolRepository {
     }
 
     suspend fun loadToolPermissions(
-        accessKey: AIPortAccessKey,force: Boolean=false,
+        accessKey: AIPortToolAccessKey,force: Boolean=false,
         onResponse: (AIPortServiceResponse<List<AIPortToolPermission>>) -> Unit
     ) {
         loadMutex.withLock {
@@ -287,7 +286,7 @@ object ToolRepository {
         }
     }
     suspend fun loadVirtualToolPermissions(
-        accessKey: AIPortAccessKey,force: Boolean=false,
+        accessKey: AIPortToolAccessKey,force: Boolean=false,
         onResponse: (AIPortServiceResponse<List<AIPortVirtualToolPermission>>) -> Unit
     ) {
         loadMutex.withLock {
