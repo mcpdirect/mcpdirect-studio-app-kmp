@@ -568,4 +568,19 @@ object StudioRepository {
             }
         }
     }
+    suspend fun getToolFromStudio(
+        toolAgent: AIPortToolAgent, toolMaker: AIPortToolMaker, tool: AIPortTool,
+        onResponse: (AIPortServiceResponse<AIPortTool>) -> Unit){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().getToolFromStudio(
+                toolAgent.engineId,toolMaker.id,toolMaker.type, tool.name
+            ){
+                generalViewModel.loaded(
+                    "Get Tool #${tool.name} From Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it)
+            }
+        }
+    }
 }

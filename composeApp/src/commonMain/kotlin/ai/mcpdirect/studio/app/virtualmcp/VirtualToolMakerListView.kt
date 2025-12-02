@@ -11,7 +11,7 @@ import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.model.repository.UserRepository
-import ai.mcpdirect.studio.app.tool.toolDetailViewModel
+import ai.mcpdirect.studio.app.tool.ToolDetailsView
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -150,6 +150,7 @@ fun VirtualToolMakerListView() {
 fun VirtualToolMakerDetailView() {
     var showEditServerNameDialog by remember { mutableStateOf(false) }
     var showEditServerTagsDialog by remember { mutableStateOf(false) }
+    var tool by remember { mutableStateOf<AIPortVirtualTool?>(null) }
     val viewModel = virtualMakerViewModel
     viewModel.selectedVirtualMaker?.let {
         maker ->
@@ -227,9 +228,15 @@ fun VirtualToolMakerDetailView() {
 
             }
             HorizontalDivider()
-            LazyColumn {
-                items(viewModel.selectedVirtualMakerTools) { tool ->
-                    VirtualToolItem(tool)
+            tool?.let {
+                ToolDetailsView(it.id){
+                    tool = null
+                }
+            }?:LazyColumn {
+                items(viewModel.selectedVirtualMakerTools) {
+                    VirtualToolItem(it){
+                        tool = it
+                    }
                 }
             }
         }
@@ -262,7 +269,10 @@ fun VirtualToolMakerDetailView() {
 
 
 @Composable
-private fun VirtualToolItem(tool: AIPortVirtualTool) {
+private fun VirtualToolItem(
+    tool: AIPortVirtualTool,
+    onClick:()->Unit,
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -288,12 +298,13 @@ private fun VirtualToolItem(tool: AIPortVirtualTool) {
         TooltipIconButton(
             Res.drawable.info,
             contentDescription = "Tool details",
-            onClick = {
-                toolDetailViewModel.toolId = tool.toolId
-                toolDetailViewModel.toolName = tool.name
-                generalViewModel.currentScreen(Screen.ToolDetails,
-                    "Tool Details of ${tool.name}",Screen.MCPTools)
-            }
+//            onClick = {
+//                toolDetailViewModel.toolId = tool.toolId
+//                toolDetailViewModel.toolName = tool.name
+//                generalViewModel.currentScreen(Screen.ToolDetails,
+//                    "Tool Details of ${tool.name}",Screen.MCPTools)
+//            }
+            onClick = onClick
         )
     }
 }

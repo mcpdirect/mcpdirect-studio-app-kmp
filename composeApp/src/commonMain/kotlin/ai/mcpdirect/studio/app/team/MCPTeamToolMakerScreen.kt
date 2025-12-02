@@ -7,12 +7,14 @@ import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
+import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_ON
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.theme.purple.selectedListItemColors
-import ai.mcpdirect.studio.app.tool.toolDetailViewModel
+import ai.mcpdirect.studio.app.tool.ToolDetailsView
+//import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,29 +42,9 @@ import org.jetbrains.compose.resources.painterResource
 fun MCPTeamToolMakerScreen(
     team: AIPortTeam
 ) {
-//    val viewModel = mcpTeamToolMakerViewModel
     val viewModel by remember { mutableStateOf(MCPTeamToolMakerViewModel()) }
     val toolMakers by viewModel.toolMakers.collectAsState()
-//    val team = mcpTeamViewModel.mcpTeam!!
-//    when(viewModel.uiState){
-//        is UIState.Error -> {}
-//        UIState.Idle -> {}
-//        UIState.Loading -> {
-//            Column(
-//                Modifier.fillMaxSize(),
-//                verticalArrangement = Arrangement.Center,
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                CircularProgressIndicator(
-//                    modifier = Modifier.size(48.dp),
-//                    color = MaterialTheme.colorScheme.primary
-//                )
-//            }
-//        }
-//        UIState.Success -> {
-//
-//        }
-//    }
+    var tool by remember { mutableStateOf<AIPortTool?>(null) }
     LaunchedEffect(null){
         generalViewModel.topBarActions = {
             TextButton(
@@ -117,7 +100,14 @@ fun MCPTeamToolMakerScreen(
                             }
                         }
                         HorizontalDivider()
-                        if(it.type==0) LazyColumn {
+                        tool?.let{
+                            ToolDetailsView(
+                                it.id,
+                                Modifier.weight(5.0f)
+                            ){
+                                tool = null
+                            }
+                        }?:if(it.type==0) LazyColumn {
                             viewModel.virtualTools.forEach {
                                 item {
                                     Row (verticalAlignment = Alignment.CenterVertically,){
@@ -127,11 +117,12 @@ fun MCPTeamToolMakerScreen(
                                             overflow = TextOverflow.Ellipsis)
                                         Spacer(Modifier.weight(1.0f))
                                         IconButton(onClick = {
-                                            toolDetailViewModel.toolId = it.toolId
-                                            toolDetailViewModel.toolName = it.name
-                                            generalViewModel.currentScreen(Screen.ToolDetails,
-                                                "Tool Details of ${it.name}",
-                                                Screen.MCPTeamToolMaker(team))
+                                            tool = it
+//                                            toolDetailViewModel.toolId = it.toolId
+//                                            toolDetailViewModel.toolName = it.name
+//                                            generalViewModel.currentScreen(Screen.ToolDetails,
+//                                                "Tool Details of ${it.name}",
+//                                                Screen.MCPTeamToolMaker(team))
                                         }) {
                                             Icon(painterResource(Res.drawable.info), contentDescription = "Details")
                                         }
@@ -147,12 +138,12 @@ fun MCPTeamToolMakerScreen(
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis)
                                         Spacer(Modifier.weight(1.0f))
-                                        IconButton(onClick = {
-                                            toolDetailViewModel.toolId = it.id
-                                            toolDetailViewModel.toolName = it.name
-                                            generalViewModel.currentScreen(Screen.ToolDetails,
-                                                "Tool Details of ${it.name}",
-                                                Screen.MCPTeamToolMaker(team))                                                    }) {
+                                        IconButton(onClick = { tool = it}){
+//                                            toolDetailViewModel.toolId = it.id
+//                                            toolDetailViewModel.toolName = it.name
+//                                            generalViewModel.currentScreen(Screen.ToolDetails,
+//                                                "Tool Details of ${it.name}",
+//                                                Screen.MCPTeamToolMaker(team))                                                    }) {
                                             Icon(painterResource(Res.drawable.info), contentDescription = "Details")
                                         }
                                     }

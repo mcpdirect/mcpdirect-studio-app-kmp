@@ -363,6 +363,17 @@ interface Platform {
         }
     }
 
+    fun getToolFromStudio(studioId:String,toolMakerId: Long,toolMakerType:Int,toolName: String,
+                          onResponse: (resp: AIPortServiceResponse<AIPortTool>) -> Unit){
+        httpRequest("studio.console@$studioId/tool/get", mapOf(
+            "toolMakerId" to JsonPrimitive(toolMakerId),
+            "toolMakerType" to JsonPrimitive(toolMakerType),
+            "toolName" to JsonPrimitive(toolName),
+        )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortTool>>(it))
+        }
+    }
+
     fun queryAccessKeys(onResponse: (resp: AIPortServiceResponse<List<AIPortAccessKey>>) -> Unit) {
         hstpRequest("$accountUsl/access_key/query", mapOf()){
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortAccessKey>>>(it))

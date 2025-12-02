@@ -61,9 +61,9 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
     object VirtualMCPToolConfig : Screen(
         Res.string.virtual_mcp,
         Res.drawable.design_services)
-    object ToolDetails: Screen(
-        Res.string.tool_details,
-        Res.drawable.info)
+//    object ToolDetails: Screen(
+//        Res.string.tool_details,
+//        Res.drawable.info)
     object Dashboard: Screen(
         Res.string.dashboard,
         Res.drawable.dashboard)

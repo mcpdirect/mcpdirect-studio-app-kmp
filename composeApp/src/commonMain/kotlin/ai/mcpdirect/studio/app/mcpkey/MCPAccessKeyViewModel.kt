@@ -3,10 +3,14 @@ package ai.mcpdirect.studio.app.mcpkey
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermissionMakerSummary
 import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -16,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.collections.set
 
 //val mcpAccessKeyViewModel = MCPAccessKeyViewModel()
 class MCPAccessKeyViewModel : ViewModel(){
@@ -27,6 +32,37 @@ class MCPAccessKeyViewModel : ViewModel(){
 //        }
 //    }
     var mcpKey by mutableStateOf<AIPortAccessKey?>(null)
+        private set
+    private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
+    val toolPermissions by derivedStateOf {
+        _toolPermissions.values.toList()
+    }
+//    val virtualToolPermissions = mutableStateMapOf<Long, AIPortVirtualToolPermission>()
+    fun mcpKey(accessKey:AIPortAccessKey){
+        mcpKey = accessKey
+        if(accessKey.id>Int.MAX_VALUE) {
+            _toolPermissions.clear()
+            viewModelScope.launch {
+                ToolRepository.loadToolPermissions(accessKey) {
+                    if (it.successful()) it.data?.let {
+
+                        it.forEach {
+                            _toolPermissions[it.toolId] = it
+                        }
+                    }
+                }
+            }
+            viewModelScope.launch {
+                ToolRepository.loadVirtualToolPermissions(accessKey) {
+                    if (it.successful()) it.data?.let {
+                        it.forEach {
+                            _toolPermissions[it.originalToolId] = it
+                        }
+                    }
+                }
+            }
+        }
+    }
     var mcpKeyName by mutableStateOf("")
         private set
     var mcpKeyNameErrors by mutableStateOf<MCPKeyNameError>(MCPKeyNameError.None)

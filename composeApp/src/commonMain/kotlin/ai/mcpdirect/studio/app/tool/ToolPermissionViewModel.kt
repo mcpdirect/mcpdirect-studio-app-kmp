@@ -314,11 +314,10 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
         if(accessKey.id>Int.MAX_VALUE){
             viewModelScope.launch {
                 ToolRepository.loadToolPermissions(accessKey){
-                    code, message, data ->
-                    if(code==0&&data!=null){
+                    if(it.successful())it.data?.let{
                         _toolPermissions.clear()
                         toolPermissions.clear()
-                        data.forEach {
+                        it.forEach {
                             _toolPermissions[it.toolId]=it
                             toolPermissions[it.toolId]= it.copy()
                         }
@@ -338,11 +337,10 @@ class ToolPermissionViewModel(val accessKey: AIPortAccessKey) : ViewModel(){
             }
             viewModelScope.launch {
                 ToolRepository.loadVirtualToolPermissions(accessKey){
-                    code, message, data ->
-                    if(code==0&&data!=null){
+                    if(it.successful()) it.data?.let{
                         _virtualToolPermissions.clear()
                         virtualToolPermissions.clear()
-                        data.forEach {
+                        it.forEach {
                             _virtualToolPermissions[it.originalToolId]=it
                             virtualToolPermissions[it.originalToolId] = it.copy()
                         }

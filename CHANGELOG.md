@@ -42,6 +42,16 @@ All notable changes to this file.
 - Fixed API endpoint path for getting maker template config from studio
 - Added conditional display of ToolMakerItem based on templateId
 - Added templateId property to MCPServer and OpenAPIServer in Platform implementation
+- Updated App.kt with improved navigation handling
+- Updated Screen.kt with navigation parameter updates
+- Updated MCPAccessKeyScreen and MCPAccessKeyViewModel with UI and functionality improvements
+- Updated StudioRepository with improved data management functions
+- Updated ToolRepository with enhanced tool operations
+- Updated ToolListViewModel, ToolDetailScreen, ToolDetailViewModel, ToolPermissionViewModel with improved functionality
+- Updated VirtualMakerScreen, VirtualMakerToolConfigScreen, VirtualToolMakerListView with virtual tool enhancements
+- Updated MCPTeamToolMakerScreen with team tool maker improvements
+- ToolDetailsView composable component for displaying detailed tool information
+- ToolDetailsViewModel for managing tool detail state and operations
 
 ## 2025-11-28
 ### Added

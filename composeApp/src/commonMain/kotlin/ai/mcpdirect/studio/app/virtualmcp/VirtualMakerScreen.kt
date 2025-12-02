@@ -8,11 +8,12 @@ import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.model.repository.UserRepository
-import ai.mcpdirect.studio.app.tool.toolDetailViewModel
+import ai.mcpdirect.studio.app.tool.ToolDetailsView
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -27,7 +28,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -297,6 +301,7 @@ private fun MakerDetailView(
     viewModel: VirtualMakerViewModel,
 ) {
     val maker = viewModel.selectedVirtualMaker!!
+    var tool by remember { mutableStateOf<AIPortTool?>(null) }
     Column{
         Row(
             modifier = Modifier
@@ -361,9 +366,15 @@ private fun MakerDetailView(
 
         }
         HorizontalDivider()
-        LazyColumn {
-            items(viewModel.selectedVirtualMakerTools) { tool ->
-                ToolItem(tool)
+        tool?.let {
+            ToolDetailsView(it.id){
+                tool = null
+            }
+        }?: LazyColumn {
+            items(viewModel.selectedVirtualMakerTools) {
+                ToolItem(it){
+                    tool = it
+                }
             }
         }
     }
@@ -520,7 +531,10 @@ fun EditServerTagsDialog(viewModel: VirtualMakerViewModel) {
 
 
 @Composable
-private fun ToolItem(tool: AIPortVirtualTool) {
+private fun ToolItem(
+    tool: AIPortVirtualTool,
+    onClick: () -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -546,12 +560,13 @@ private fun ToolItem(tool: AIPortVirtualTool) {
         TooltipIconButton(
             Res.drawable.info,
             contentDescription = "Tool details",
-            onClick = {
-                toolDetailViewModel.toolId = tool.toolId
-                toolDetailViewModel.toolName = tool.name
-                generalViewModel.currentScreen(Screen.ToolDetails,
-                    "Tool Details of ${tool.name}",Screen.VirtualMCP)
-            }
+//            onClick = {
+//                toolDetailViewModel.toolId = tool.toolId
+//                toolDetailViewModel.toolName = tool.name
+//                generalViewModel.currentScreen(Screen.ToolDetails,
+//                    "Tool Details of ${tool.name}",Screen.VirtualMCP)
+//            }
+            onClick = onClick
         )
     }
 }

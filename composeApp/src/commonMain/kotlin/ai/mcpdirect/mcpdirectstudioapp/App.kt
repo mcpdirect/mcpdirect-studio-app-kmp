@@ -20,7 +20,7 @@ import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerTemplateScreen
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import ai.mcpdirect.studio.app.tool.MCPToolsScreen
-import ai.mcpdirect.studio.app.tool.ToolDetailScreen
+//import ai.mcpdirect.studio.app.tool.ToolDetailScreen
 import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
@@ -119,9 +119,9 @@ fun App(
                         Screen.VirtualMCPToolConfig -> {
                             VirtualMakerToolConfigScreen()
                         }
-                        Screen.ToolDetails -> {
-                            ToolDetailScreen()
-                        }
+//                        Screen.ToolDetails -> {
+//                            ToolDetailScreen()
+//                        }
                         Screen.MCPTools -> {
                             MCPToolsScreen()
                         }

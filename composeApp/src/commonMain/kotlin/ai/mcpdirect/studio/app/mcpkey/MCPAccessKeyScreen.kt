@@ -3,17 +3,19 @@ package ai.mcpdirect.studio.app.mcpkey
 import ai.mcpdirect.mcpdirectstudioapp.AppInfo
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKeyCredential
-//import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
-import androidx.compose.foundation.border
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
+import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
+import ai.mcpdirect.studio.app.tool.ToolDetailsView
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -54,7 +56,6 @@ fun MCPAccessKeyScreen(
     val accessKeys by viewModel.accessKeys.collectAsState()
     var dialog by remember { mutableStateOf(dialog) }
     LaunchedEffect(viewModel) {
-//        generalViewModel.refreshToolMakers()
         viewModel.refreshMCPAccessKeys()
     }
 
@@ -83,48 +84,55 @@ fun MCPAccessKeyScreen(
                 generalViewModel.topBarActions = {}
             }
         }
-        LazyColumn(Modifier.fillMaxSize().padding(8.dp)) {
-            items(accessKeys){
-                ListItem(
-                    headlineContent = { Text(it.name) },
-                    supportingContent = {
-                        Row {
-                            TooltipIconButton(
-                                Res.drawable.edit,
-                                contentDescription = "Edit MCP Key name",
-                                onClick = {
-                                    viewModel.mcpKey = it
-                                    dialog = MCPKeyDialog.EditMCPKeyName
-                                })
-                            TooltipIconButton(
-                                Res.drawable.visibility,
-                                contentDescription = "Display MCP Key",
-                                onClick = {
-                                    viewModel.mcpKey = it
-                                    dialog = MCPKeyDialog.DisplayMCPKey
-                                })
-                            if (it.status == 0) IconButton(
-                                onClick = { viewModel.setMCPKeyStatus(it,1) }) {
-                                Icon(painter = painterResource(Res.drawable.block),
-                                    contentDescription = "Enable MCP Key",
-                                    tint = Color.Red)
-                            } else IconButton(
-                                onClick = { viewModel.setMCPKeyStatus(it,0) }) {
-                                Icon(painter = painterResource(Res.drawable.check),
-                                    contentDescription = "Disable MCP Key",
-                                    tint = Color(0xFF63A002))
-                            }
-                            TooltipIconButton(
-                                Res.drawable.shield_toggle,
-                                contentDescription = "Edit Tool Permissions",
-                                onClick = {
-//                                    toolPermissionViewModel.accessKey = it
-                                    generalViewModel.currentScreen(Screen.ToolPermission(it),
-                                        "Tool Permissions for Key #${it.name}",
-                                        Screen.MCPAccessKey())
-                                })
-                        }
-                    },
+        Row(Modifier.fillMaxSize().padding(8.dp)){
+            LazyColumn(Modifier.weight(1.0f).padding(vertical = 8.dp)) {
+                items(accessKeys){
+                    ListItem(
+                        modifier = Modifier.clickable(
+                            onClick = {viewModel.mcpKey(it)}
+                        ),
+                        headlineContent = { Text(it.name) },
+                        trailingContent = {
+                            if (it.status == 0) Icon(painter = painterResource(Res.drawable.block),
+                                contentDescription = "",
+                                tint = Color.Red)
+//                            Row {
+//                                TooltipIconButton(
+//                                    Res.drawable.edit,
+//                                    contentDescription = "Edit MCP Key name",
+//                                    onClick = {
+//                                        viewModel.mcpKey = it
+//                                        dialog = MCPKeyDialog.EditMCPKeyName
+//                                    })
+//                                TooltipIconButton(
+//                                    Res.drawable.visibility,
+//                                    contentDescription = "Display MCP Key",
+//                                    onClick = {
+//                                        viewModel.mcpKey = it
+//                                        dialog = MCPKeyDialog.DisplayMCPKey
+//                                    })
+//                                if (it.status == 0) IconButton(
+//                                    onClick = { viewModel.setMCPKeyStatus(it,1) }) {
+//                                    Icon(painter = painterResource(Res.drawable.block),
+//                                        contentDescription = "Enable MCP Key",
+//                                        tint = Color.Red)
+//                                } else IconButton(
+//                                    onClick = { viewModel.setMCPKeyStatus(it,0) }) {
+//                                    Icon(painter = painterResource(Res.drawable.check),
+//                                        contentDescription = "Disable MCP Key",
+//                                        tint = Color(0xFF63A002))
+//                                }
+//                                TooltipIconButton(
+//                                    Res.drawable.shield_toggle,
+//                                    contentDescription = "Edit Tool Permissions",
+//                                    onClick = {
+////                                    toolPermissionViewModel.accessKey = it
+//                                        generalViewModel.currentScreen(Screen.ToolPermission(it),
+//                                            "Tool Permissions for Key #${it.name}",
+//                                            Screen.MCPAccessKey())
+//                                    })
+//                            }
+                        },
 //                    supportingContent = {
 //                        val summaries = viewModel.toolPermissionMakerSummary.filter {
 //                                summary ->
@@ -159,8 +167,84 @@ fun MCPAccessKeyScreen(
 //                            }
 //                        }
 //                    }
-                )
+                    )
+                }
             }
+            OutlinedCard(Modifier.fillMaxHeight().weight(2.0f)) {
+                var toolPermission by remember { mutableStateOf<AIPortToolPermission?>(null) }
+                toolPermission?.let {
+                    if(it is AIPortVirtualToolPermission){
+                        ToolDetailsView(it.originalToolId, Modifier.fillMaxSize()){
+                            toolPermission=null
+                        }
+                    }else{
+                        ToolDetailsView(it.toolId, Modifier.fillMaxSize()){
+                            toolPermission=null
+                        }
+                    }
+                }?: viewModel.mcpKey?.let{
+                    Row(Modifier.fillMaxWidth()) {
+                        Spacer(Modifier.weight(1.0f))
+                        TooltipIconButton(
+                            Res.drawable.edit,
+                            contentDescription = "Edit MCP Key name",
+                            onClick = {
+//                                viewModel.mcpKey = it
+                                dialog = MCPKeyDialog.EditMCPKeyName
+                            })
+                        TooltipIconButton(
+                            Res.drawable.visibility,
+                            contentDescription = "Display MCP Key",
+                            onClick = {
+//                                viewModel.mcpKey = it
+                                dialog = MCPKeyDialog.DisplayMCPKey
+                            })
+                        if (it.status == 0) IconButton(
+                            onClick = { viewModel.setMCPKeyStatus(it,1) }) {
+                            Icon(painter = painterResource(Res.drawable.block),
+                                contentDescription = "Enable MCP Key",
+                                tint = Color.Red)
+                        } else IconButton(
+                            onClick = { viewModel.setMCPKeyStatus(it,0) }) {
+                            Icon(painter = painterResource(Res.drawable.check),
+                                contentDescription = "Disable MCP Key",
+                                tint = Color(0xFF63A002))
+                        }
+                        TooltipIconButton(
+                            Res.drawable.shield_toggle,
+                            contentDescription = "Edit Tool Permissions",
+                            onClick = {
+//                                    toolPermissionViewModel.accessKey = it
+                                generalViewModel.currentScreen(Screen.ToolPermission(it),
+                                    "Tool Permissions for Key #${it.name}",
+                                    Screen.MCPAccessKey())
+                            })
+                    }
+                    HorizontalDivider()
+                    LazyColumn {
+                        items(viewModel.toolPermissions){
+                            ListItem(
+                                modifier = Modifier.clickable(
+                                    onClick = {toolPermission=it}
+                                ),
+                                headlineContent = { Text(it.name) },
+                                supportingContent = {
+                                    if(it is AIPortVirtualToolPermission){
+                                        Text("Virtual MCP")
+                                    }
+                                },
+                                trailingContent = {
+                                    Icon(painter = painterResource(Res.drawable.info),
+                                        contentDescription = "Tool Details")
+                                }
+                            )
+                        }
+                    }
+                }?:StudioBoard(Modifier.weight(2.0f)) {
+                    Text("Select a MCPdirect Key to view")
+                }
+            }
+
         }
     }
     when(dialog){
@@ -172,7 +256,7 @@ fun MCPAccessKeyScreen(
             if(viewModel.mcpKey!=null) ShowMCPKeyDialog(
                 viewModel
             ){
-                viewModel.mcpKey==null
+//                viewModel.mcpKey==null
                 dialog= MCPKeyDialog.None
             }
         }
@@ -264,9 +348,6 @@ fun ShowMCPKeyDialog(
     viewModel: MCPAccessKeyViewModel,
     onDismissRequest: () -> Unit,
 ) {
-//    val viewModel = mcpAccessKeyViewModel
-//    val key = viewModel.getMCPAccessKeyFromLocal(mcpKey!!.id)
-//    mcpKey!!.secretKey = key?:""
     var key by remember { mutableStateOf<AIPortAccessKeyCredential?>(null) }
 
     viewModel.getMCPAccessKeyCredential(viewModel.mcpKey!!){
@@ -291,10 +372,6 @@ fun ShowMCPKeyDialog(
                 enabled = key!=null,
                 onClick = {
                     key?.let {
-//                        var host: String? = getPlatform().getenv("AI_MCPDIRECT_GATEWAY_HOST")
-//                        if (host == null) {
-//                            host = "https://connect.mcpdirect.ai/"
-//                        }
                         val keyName = it.name.trim().lowercase().replace(" ","_")
                         val secretKey = it.secretKey.substring(4)
                         val text ="""{"mcpServers":{"$keyName":{"url":"${AppInfo.MCPDIRECT_GATEWAY_ENDPOINT}$secretKey/sse"}}}""".trimIndent()

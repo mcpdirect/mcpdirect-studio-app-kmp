@@ -19,3 +19,4 @@ captures
 node_modules/
 /sh/
 /composeApp/icons/icons.iconset/
+*.mcp-stdio-server.log*

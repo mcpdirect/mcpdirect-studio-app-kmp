@@ -9,7 +9,8 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
-import ai.mcpdirect.studio.app.tool.toolDetailViewModel
+import ai.mcpdirect.studio.app.tool.ToolDetailsView
+//import ai.mcpdirect.studio.app.tool.toolDetailViewModel
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -170,7 +175,7 @@ private fun MakerDetailView(
     viewModel: VirtualMakerViewModel,
 ) {
     val maker = viewModel.selectedMaker!!
-
+    var tool by remember { mutableStateOf<AIPortTool?>(null) }
     Column{
         Row(
             modifier = Modifier
@@ -204,16 +209,25 @@ private fun MakerDetailView(
                 }
             }
         }
-        LazyColumn {
-            items(    viewModel.selectedMakerTools) { tool ->
-                ToolItem(tool, viewModel)
+        tool?.let {
+            ToolDetailsView(it.id){
+               tool = null
+            }
+        }?:LazyColumn {
+            items(    viewModel.selectedMakerTools) {
+                ToolItem(it, viewModel){
+                    tool = it
+                }
             }
         }
     }
 }
 
 @Composable
-private fun ToolItem(tool: AIPortTool, viewModel: VirtualMakerViewModel) {
+private fun ToolItem(
+    tool: AIPortTool, viewModel: VirtualMakerViewModel,
+    onClick: () -> Unit
+) {
     Box(modifier = Modifier.background(Color.White.copy(alpha = 0.5f))) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -250,12 +264,15 @@ private fun ToolItem(tool: AIPortTool, viewModel: VirtualMakerViewModel) {
 //                Text("Tags: ${tool.tags}", style = MaterialTheme.typography.bodySmall)
             }
 
-            IconButton(onClick = {
-                toolDetailViewModel.toolId = tool.id
-                toolDetailViewModel.toolName = tool.name
-                generalViewModel.currentScreen(Screen.ToolDetails,
-                    "",Screen.VirtualMCPToolConfig)
-            }) {
+//            IconButton(onClick = {
+//                toolDetailViewModel.toolId = tool.id
+//                toolDetailViewModel.toolName = tool.name
+//                generalViewModel.currentScreen(Screen.ToolDetails,
+//                    "",Screen.VirtualMCPToolConfig)
+//            }) {
+//                Icon(painterResource(Res.drawable.info), contentDescription = "Details")
+//            }
+            IconButton(onClick = onClick) {
                 Icon(painterResource(Res.drawable.info), contentDescription = "Details")
             }
         }

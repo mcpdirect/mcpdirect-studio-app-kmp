@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.agent
 
 //import ai.mcpdirect.studio.app.template.mcpTemplateListViewModel
+import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.agent.ToolProviderType.None
@@ -13,25 +14,35 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.ToolMakerTemplateConfig
 import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.MCPTemplateListView
 import ai.mcpdirect.studio.app.template.MCPTemplateListViewModel
+import ai.mcpdirect.studio.app.tool.ToolDetails
+import ai.mcpdirect.studio.app.tool.ToolDetailsView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -251,9 +262,6 @@ fun ToolMakerListView(
     toolProviderType: ToolProviderType,
     onDialogRequest: (dialog: MyStudioScreenDialog) -> Unit
 ){
-//    var showEditServerNameDialog by remember { mutableStateOf(false) }
-//    var showEditServerTagsDialog by remember { mutableStateOf(false) }
-//    var showEditServerConfigDialog by remember { mutableStateOf(false) }
     var dialog by remember { mutableStateOf<ToolMakerListViewDialog>(ToolMakerListViewDialog.None) }
 
     val localToolAgent by myStudioViewModel.localToolAgent.collectAsState()
@@ -262,6 +270,7 @@ fun ToolMakerListView(
     val uiState = myStudioViewModel.uiState
     val toolAgent by myStudioViewModel.toolAgent.collectAsState()
     val toolMaker by myStudioViewModel.toolMaker.collectAsState()
+    var tool by remember { mutableStateOf<AIPortTool?>(null) }
     if(toolAgents.isEmpty()&&getPlatform().type == 0) Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -448,7 +457,11 @@ fun ToolMakerListView(
                 }
             }else {
                 val me = toolMaker.id<Int.MAX_VALUE|| UserRepository.me(toolMaker.userId)
-                Column(Modifier.weight(2.0f)) {
+                tool?.let{
+                    StudioToolDetailsView(toolAgent,toolMaker,it,Modifier.weight(2.0f)){
+                        tool = null
+                    }
+                }?:Column(Modifier.weight(2.0f)) {
                     StudioActionBar(
                         navigationIcon = {
                             Spacer(Modifier.width(16.dp))
@@ -566,7 +579,7 @@ fun ToolMakerListView(
                             items(myStudioViewModel.tools){
                                 ListItem(
                                     modifier = Modifier.clickable{
-
+                                        tool = it
                                     },
                                     leadingContent = {
                                         if(it.lastUpdated==-1L)StudioIcon(
@@ -683,7 +696,7 @@ fun ToolMakerItem(
     val me = toolMaker.id<Int.MAX_VALUE|| UserRepository.me(toolMaker.userId)
     var user by remember { mutableStateOf<AIPortUser?>(null) }
     LaunchedEffect(null){
-        UserRepository.user(toolMaker.userId){
+        if(!me&&toolMaker.userId>Int.MAX_VALUE)UserRepository.user(toolMaker.userId){
                 code, message, data ->
             if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL&&data!=null){
                 user = data
@@ -767,6 +780,7 @@ fun ToolMakerByTemplateListView(
         var statusMessage by remember { mutableStateOf<String?>(null) }
         val toolMakers by myStudioViewModel.toolMakers.collectAsState()
         var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
+        var tool by remember { mutableStateOf<AIPortTool?>(null) }
         DisposableEffect(null){
             onDispose {
                 generalViewModel.topBarActions = {}
@@ -794,6 +808,7 @@ fun ToolMakerByTemplateListView(
                         StudioListItem(
                             modifier = Modifier.clickable(
                                 onClick = {
+                                    statusMessage = null
                                     selectedToolMaker = maker
                                     myStudioViewModel.toolMaker(maker)
                                 }
@@ -809,7 +824,13 @@ fun ToolMakerByTemplateListView(
                 StudioBoard(Modifier.weight(2.0f)) {
                     Text("Select a MCP server to view")
                 }
-            }else selectedToolMaker.let {
+            } else tool?.let{
+                StudioToolDetailsView(
+                    toolAgent!!,selectedToolMaker,it,Modifier.weight(2.0f)
+                ){
+                    tool = null
+                }
+            }?: selectedToolMaker.let {
                 Column(Modifier.weight(2.0f)) {
                     StudioActionBar(
                         actions = {
@@ -817,22 +838,6 @@ fun ToolMakerByTemplateListView(
                                 Res.drawable.plug_connect,
                                 contentDescription = "Connect MCP Server"
                             ) {
-                                statusMessage = null
-//                                myStudioViewModel.toolAgent(selectedToolMaker.agentId) {
-//                                    code, message, data ->
-//                                    if (code == 0) {
-//                                        data?.let {
-//                                            myStudioViewModel.connectToolMakerToStudio(
-//                                                it,
-//                                                selectedToolMaker,
-//                                            ) { code, message, mcpServer ->
-//                                                if(code!= AIPortServiceResponse.SERVICE_SUCCESSFUL){
-//                                                    statusMessage = message
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                }
                                 myStudioViewModel.connectToolMakerToStudio(
                                     toolAgent!!,
                                     selectedToolMaker,
@@ -883,7 +888,7 @@ fun ToolMakerByTemplateListView(
                         items(myStudioViewModel.tools){
                             ListItem(
                                 modifier = Modifier.clickable{
-
+                                    tool = it
                                 },
                                 leadingContent = {
                                     if(it.lastUpdated==-1L)StudioIcon(
@@ -910,19 +915,7 @@ fun ToolMakerByTemplateListView(
                         onDismissRequest = {
                             showEditServerNameDialog = false
                         },
-                        onConfirmRequest = {
-                                toolMaker,toolMakerName ->
-//                            myStudioViewModel.toolAgent(selectedToolMaker.agentId) {
-//                                    code, message, data ->
-//                                if (code == 0&&data!=null) {
-//                                    if(toolMaker.id>Int.MAX_VALUE) {
-//                                        myStudioViewModel.modifyMCPServerName(
-//                                            data,toolMaker, toolMakerName)
-//                                    }else myStudioViewModel.modifyMCPServerNameForStudio(
-//                                        data, toolMaker,toolMakerName
-//                                    )
-//                                }
-//                            }
+                        onConfirmRequest = { toolMaker,toolMakerName ->
                             if(toolMaker.id>Int.MAX_VALUE) {
                                 myStudioViewModel.modifyMCPServerName(
                                     toolAgent!!,toolMaker, toolMakerName)
@@ -946,16 +939,8 @@ fun ToolMakerByTemplateListView(
                         toolAgent!!,
                         selectedToolMaker,
                         onConfirmRequest = { toolMaker,inputs->
-//                                myStudioViewModel.toolAgent(toolMaker.agentId) {
-//                                        code, message, data ->
-//                                    if (code == 0&&data!=null) {
-//                                        myStudioViewModel.modifyMCPServerConfig(
-//                                            data,selectedToolMaker,inputs
-//                                        )
-//                                    }
-//                                }
                             myStudioViewModel.modifyMCPServerConfig(
-                                toolAgent!!,selectedToolMaker,inputs
+                                toolAgent!!,toolMaker,inputs
                             )
                         },
                         onDismissRequest = {
@@ -965,5 +950,46 @@ fun ToolMakerByTemplateListView(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun StudioToolDetailsView(
+    toolAgent: AIPortToolAgent,
+    toolMaker: AIPortToolMaker,
+    tool: AIPortTool,
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit
+) {
+//    val viewModel by remember { mutableStateOf(ToolDetailsViewModel(toolId)) }
+//    var tool by remember { mutableStateOf(AIPortTool()) }
+    var toolDetails by remember { mutableStateOf(ToolDetails("","{}")) }
+    val scrollState = rememberScrollState()
+    LaunchedEffect(null){
+        StudioRepository.getToolFromStudio(toolAgent,toolMaker,tool){
+            if(it.successful()) it.data?.let{
+//                tool = it
+                val json = JSON.parseToJsonElement(it.metaData)
+                val description = json.jsonObject["description"]?.jsonPrimitive?.content
+                val inputSchema = json.jsonObject["requestSchema"]?.jsonPrimitive?.content
+                toolDetails = ToolDetails(description?:"",inputSchema?:"{}")
+            }
+        }
+    }
+    Column(modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                onClick = onBackClick,
+            ){
+                Icon(painterResource(Res.drawable.arrow_back), contentDescription = null)
+            }
+            Text(tool.name, style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.weight(1f))
+        }
+        HorizontalDivider()
+        Text(
+            text = toolDetails.description,
+            modifier = Modifier.padding(8.dp).verticalScroll(scrollState)
+        )
     }
 }

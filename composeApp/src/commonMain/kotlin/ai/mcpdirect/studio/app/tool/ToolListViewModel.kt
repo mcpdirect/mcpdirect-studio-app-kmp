@@ -51,9 +51,8 @@ class ToolListViewModel: ViewModel() {
     fun tool(tool: AIPortTool){
         viewModelScope.launch {
             ToolRepository.tool(toolId = tool.id) {
-                code, message, data ->
-                if(code==0) data?.let {
-                    this@ToolListViewModel.tool = data
+                if(it.successful()) it.data?.let {
+                    this@ToolListViewModel.tool = it
                 }
             }
         }

@@ -3,6 +3,7 @@ package ai.mcpdirect.studio.app.model.repository
 import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortAccessKey
 import ai.mcpdirect.studio.app.model.aitool.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,7 +87,7 @@ object ToolRepository {
             }
         }
     }
-    suspend fun tool(toolId:Long, onResponse:(code:Int,message:String?,data: AIPortTool?)->Unit) {
+    suspend fun tool(toolId:Long, onResponse:(AIPortServiceResponse<AIPortTool>)->Unit) {
         val tool = _tools.value[toolId]
         loadMutex.withLock {
             if(tool==null||tool.metaData.isEmpty()){
@@ -100,11 +101,14 @@ object ToolRepository {
                         }
                     }
                     generalViewModel.loaded("Load Tool",it.code,it.message)
-                    onResponse(it.code,it.message,it.data)
+                    onResponse(it)
 
                 }
             }else{
-                onResponse(0,null,tool)
+                onResponse( AIPortServiceResponse<AIPortTool>().apply {
+                    code = 0
+                    data = tool
+                })
             }
         }
     }
@@ -244,13 +248,13 @@ object ToolRepository {
 
     suspend fun loadToolPermissions(
         accessKey: AIPortAccessKey,force: Boolean=false,
-        onResponse: (code: Int, message: String?, data: List<AIPortToolPermission>?) -> Unit
+        onResponse: (AIPortServiceResponse<List<AIPortToolPermission>>) -> Unit
     ) {
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().queryToolPermissions(accessKey.id){
                 generalViewModel.loaded("Load Tool Permissions of #${accessKey.name}",it.code,it.message)
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }
@@ -284,13 +288,13 @@ object ToolRepository {
     }
     suspend fun loadVirtualToolPermissions(
         accessKey: AIPortAccessKey,force: Boolean=false,
-        onResponse: (code: Int, message: String?, data: List<AIPortVirtualToolPermission>?) -> Unit
+        onResponse: (AIPortServiceResponse<List<AIPortVirtualToolPermission>>) -> Unit
     ) {
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().queryVirtualToolPermissions(accessKey.id){
                 generalViewModel.loaded("Load Tool Permissions of #${accessKey.name}",it.code,it.message)
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }
