@@ -65,8 +65,7 @@ fun MCPTemplateListView(
             var user by remember { mutableStateOf<AIPortUser?>(null)}
             LaunchedEffect(null){
                 viewModel.toolAgent(template.agentId){
-                        code, message, data ->
-                    toolAgent = data
+                    toolAgent = it.data
                 }
                 UserRepository.user(template.userId){
                         code, message, data ->

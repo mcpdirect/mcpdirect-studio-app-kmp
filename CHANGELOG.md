@@ -59,6 +59,12 @@ All notable changes to this file.
 - Updated StudioRepository and ToolRepository with access key functionality
 - Enhanced DashboardViewModel with access key features
 - Updated AIPortServiceResponse with improved response handling
+- New ConfigMCPTemplateDialog for configuring MCP templates
+- Enhanced ConnectMCPTemplateDialog with additional functionality
+- Updated MCPTemplateListView and MCPTemplateListViewModel with template management improvements
+- Enhanced Studio and Tool repositories with template configuration functions
+- Updated Platform interface with template configuration methods
+- Enhanced MyStudioScreen and MyStudioViewModel with template configuration features
 
 ## 2025-11-28
 ### Added

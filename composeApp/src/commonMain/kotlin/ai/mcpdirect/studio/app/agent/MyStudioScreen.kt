@@ -21,6 +21,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAI
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
+import ai.mcpdirect.studio.app.template.ConfigMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.ConnectMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.CreateMCPTemplateDialog
 import ai.mcpdirect.studio.app.template.MCPTemplateListView
@@ -134,9 +135,8 @@ fun MyStudioScreen(
                 var toolAgent by remember { mutableStateOf<AIPortToolAgent?>(null) }
                 LaunchedEffect(null){
                     StudioRepository.toolAgent(template.agentId){
-                        code, message, data ->
-                        if(code==0&&data!=null){
-                            toolAgent = data
+                        if(it.successful()) it.data?.let{
+                            toolAgent = it
                         }
                     }
                 }
@@ -151,9 +151,8 @@ fun MyStudioScreen(
                             ){ code, message, toolMaker ->
                                 if(code==0)toolMaker?.let {
                                     myStudioViewModel.toolAgent(it.agentId){
-                                            code, message, data ->
-                                        if(code==0){
-                                            data?.let {
+                                        if(it.successful()){
+                                            it.data?.let {
                                                 myStudioViewModel.connectToolMakerToStudio(
                                                     it,
                                                     toolMaker,
@@ -390,7 +389,7 @@ fun ToolMakerListView(
                         }
                     },
                     actions = {
-                        if(toolAgent.id!=localToolAgent.id) TooltipIconButton(
+                        TooltipIconButton(
                             Res.drawable.refresh,
                             contentDescription = "Refresh",
                             onClick = {
@@ -776,6 +775,7 @@ fun ToolMakerByTemplateListView(
         var showEditServerNameDialog by remember { mutableStateOf(false) }
         var showEditServerTagsDialog by remember { mutableStateOf(false) }
         var showConfigServerFromTemplateDialog  by remember { mutableStateOf(false) }
+        var showConfigServerTemplateDialog  by remember { mutableStateOf(false) }
         var selectedToolMaker by remember { mutableStateOf(AIPortToolMaker()) }
         var statusMessage by remember { mutableStateOf<String?>(null) }
         val toolMakers by myStudioViewModel.toolMakers.collectAsState()
@@ -788,11 +788,11 @@ fun ToolMakerByTemplateListView(
         }
         LaunchedEffect(null){
             StudioRepository.toolAgent(template.agentId){
-                code, message, data ->
-                if(code==0&&data!=null){
-                    toolAgent = data
+                if(it.successful()) it.data?.let{
+                    toolAgent = it
                 }
             }
+            ToolRepository.loadToolMakers(true)
             generalViewModel.topBarActions = {
                 Button(
                     onClick = {onDialogRequest(MyStudioScreenDialog.ConnectMCPTemplate)}
@@ -802,20 +802,32 @@ fun ToolMakerByTemplateListView(
             }
         }
         Row {
-            LazyColumn(Modifier.weight(1.0f)) {
-                items(toolMakers) { maker ->
-                    if (maker.templateId == template.id) {
-                        StudioListItem(
-                            modifier = Modifier.clickable(
-                                onClick = {
-                                    statusMessage = null
-                                    selectedToolMaker = maker
-                                    myStudioViewModel.toolMaker(maker)
-                                }
-                            ),
-                            selected = maker.id == selectedToolMaker.id,
-                            headlineContent = { Text(maker.name) }
-                        )
+            Column(Modifier.weight(1.0f)) {
+                StudioActionBar {
+                    TooltipIconButton(
+                        Res.drawable.data_object,
+                        contentDescription = "Config MCP Server Template",
+                        onClick = {
+                            showConfigServerTemplateDialog = true
+                        })
+                }
+                HorizontalDivider()
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(toolMakers) { maker ->
+                        println("${maker.id}:${maker.name}")
+                        if (maker.templateId == template.id) {
+                            StudioListItem(
+                                modifier = Modifier.clickable(
+                                    onClick = {
+                                        statusMessage = null
+                                        selectedToolMaker = maker
+                                        myStudioViewModel.toolMaker(maker)
+                                    }
+                                ),
+                                selected = maker.id == selectedToolMaker.id,
+                                headlineContent = { Text(maker.name) }
+                            )
+                        }
                     }
                 }
             }
@@ -833,6 +845,57 @@ fun ToolMakerByTemplateListView(
             }?: selectedToolMaker.let {
                 Column(Modifier.weight(2.0f)) {
                     StudioActionBar(
+                        navigationIcon = {
+                            Spacer(Modifier.width(16.dp))
+                            when(selectedToolMaker.status){
+                                0->{
+                                    Text("Not start")
+                                    TooltipIconButton(
+                                        Res.drawable.play_circle,
+                                        "Start",
+                                        MaterialTheme.colorScheme.primary,
+                                        onClick = {
+                                            myStudioViewModel.modifyToolMakerStatus(
+                                                toolAgent!!,selectedToolMaker,1)
+                                        }
+                                    )
+                                }
+                                1->{
+                                    Text("Running", color = MaterialTheme.colorScheme.primary)
+                                    TooltipIconButton(
+                                        Res.drawable.stop_circle,
+                                        "Stop",
+                                        MaterialTheme.colorScheme.error,
+                                        onClick = {
+                                            myStudioViewModel.modifyToolMakerStatus(
+                                                toolAgent!!,selectedToolMaker,0)
+                                        }
+                                    )
+                                    TooltipIconButton(
+                                        Res.drawable.restart_alt,
+                                        "Restart",
+                                        MaterialTheme.colorScheme.primary,
+                                        onClick = {
+                                            myStudioViewModel.modifyToolMakerStatus(
+                                                toolAgent!!,selectedToolMaker,1)
+                                        }
+                                    )
+                                }
+                                else->{
+                                    Text("Error", color = MaterialTheme.colorScheme.error)
+                                    TooltipIconButton(
+                                        Res.drawable.play_circle,
+                                        "Start",
+                                        MaterialTheme.colorScheme.primary,
+                                        onClick = {
+                                            myStudioViewModel.modifyToolMakerStatus(
+                                                toolAgent!!,selectedToolMaker,1)
+                                        }
+                                    )
+                                }
+                            }
+
+                        },
                         actions = {
                             TooltipIconButton(
                                 Res.drawable.plug_connect,
@@ -949,6 +1012,20 @@ fun ToolMakerByTemplateListView(
                     )
                 }
             }
+        }
+        if(showConfigServerTemplateDialog){
+            ConfigMCPTemplateDialog(
+                toolAgent!!,
+                template,
+                onConfirmRequest = { type,config,inputs->
+                    myStudioViewModel.modifyMCPTemplate(
+                        toolAgent!!,template,type,config,inputs
+                    )
+                },
+                onDismissRequest = {
+                    showConfigServerTemplateDialog = false
+                }
+            )
         }
     }
 }

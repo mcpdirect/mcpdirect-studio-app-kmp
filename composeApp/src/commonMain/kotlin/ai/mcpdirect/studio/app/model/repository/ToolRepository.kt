@@ -18,6 +18,7 @@ object ToolRepository {
     private val loadMutex = Mutex()
     private val _duration = 5.seconds
     private var _makerLastQuery:TimeMark? = null
+    private var _makerLastUpdate:Long = 0L
     private val _toolMakers = MutableStateFlow<Map<Long, AIPortToolMaker>>(emptyMap())
     val toolMakers: StateFlow<Map<Long, AIPortToolMaker>> = _toolMakers
 
@@ -118,13 +119,16 @@ object ToolRepository {
             if(_makerLastQuery==null|| (force&& _makerLastQuery!!.elapsedNow()>_duration)) {
                 generalViewModel.loading()
                 getPlatform().queryToolMakers(
-                    lastUpdated = if(_makerLastQuery==null) 0L else currentMilliseconds(),
+                    lastUpdated = _makerLastUpdate,
                 ) {
                     if (it.successful()) it.data?.let { makers ->
                         _toolMakers.update { map ->
                             map.toMutableMap().apply {
                                 for (maker in makers) {
                                     put(maker.id, maker)
+                                    if(maker.lastUpdated>_makerLastUpdate){
+                                        _makerLastUpdate = maker.lastUpdated
+                                    }
                                 }
                             }
                         }

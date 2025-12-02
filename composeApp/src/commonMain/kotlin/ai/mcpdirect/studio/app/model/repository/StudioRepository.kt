@@ -121,14 +121,21 @@ object StudioRepository {
     fun toolAgent(id:Long): AIPortToolAgent?{
         return _toolAgents.value[id]
     }
-    suspend fun toolAgent(id:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
+    suspend fun toolAgent(id:Long,onResponse:(AIPortServiceResponse<AIPortToolAgent>) -> Unit){
         if(id==0L){
-            onResponse(0,null,_virtualToolAgent)
+            val resp = AIPortServiceResponse<AIPortToolAgent>()
+            resp.code = 0
+            resp.data = _virtualToolAgent
+            onResponse(resp)
             return
         }
         val agent = _toolAgents.value[id]
-        if(agent!=null) onResponse(AIPortServiceResponse.SERVICE_SUCCESSFUL,null,agent)
-        else loadMutex.withLock {
+        if(agent!=null) {
+            val resp = AIPortServiceResponse<AIPortToolAgent>()
+            resp.code = 0
+            resp.data = agent
+            onResponse(resp)
+        } else loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().getToolAgent(id){
                 if(it.successful()){
@@ -143,7 +150,7 @@ object StudioRepository {
                 generalViewModel.loaded(
                     "Load Studio",it.code,it.message
                 )
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }
@@ -508,6 +515,29 @@ object StudioRepository {
         }
     }
 
+    suspend fun modifyToolMakerTemplateForStudio(
+        toolAgent: AIPortToolAgent,template: AIPortToolMakerTemplate,
+        name: String?,type: Int,config:String,inputs:String){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().modifyToolMakerTemplateForStudio(
+                toolAgent.engineId,template.id,name,type,config,inputs
+            ){
+                if(it.successful()) it.data?.let{
+                    val newName = name?.trim()
+                    template.type = type
+                    if(!newName.isNullOrEmpty()){
+                        template.name = newName
+                    }
+                    ToolRepository.toolMakerTemplate(template)
+                }
+                generalViewModel.loaded(
+                    "Modify ToolMaker Template #${template.name} from Studio #${toolAgent.name}",it.code,it.message
+                )
+            }
+        }
+    }
+
     suspend fun connectToolMakerTemplateToStudio(toolAgent: AIPortToolAgent,userId:Long,templateId:Long,name:String,inputs:String){
         loadMutex.withLock {
             generalViewModel.loading()
@@ -532,14 +562,14 @@ object StudioRepository {
 
     suspend fun getMakerTemplateFromStudio(
         toolAgent: AIPortToolAgent,template: AIPortToolMakerTemplate,
-        onResponse: (code: Int, message: String?, data: ToolMakerTemplate?) -> Unit){
+        onResponse: (AIPortServiceResponse<ToolMakerTemplate>) -> Unit){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().getMakerTemplateFromStudio(toolAgent.engineId,template.id,){
                 generalViewModel.loaded(
                     "Get ToolMaker Template #${template.name} From Studio #${toolAgent.name}",it.code,it.message
                 )
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }

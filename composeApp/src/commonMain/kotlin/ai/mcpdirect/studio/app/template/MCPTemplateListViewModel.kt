@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.template
 
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
@@ -47,10 +48,10 @@ class MCPTemplateListViewModel: ViewModel() {
 //            }
         }
     }
-    fun toolAgent(toolAgentId:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
+    fun toolAgent(toolAgentId:Long,onResponse:(AIPortServiceResponse<AIPortToolAgent>) -> Unit){
         viewModelScope.launch {
-            StudioRepository.toolAgent(toolAgentId){ code, message, data ->
-                onResponse(code,message,data)
+            StudioRepository.toolAgent(toolAgentId){
+                onResponse(it)
             }
         }
     }

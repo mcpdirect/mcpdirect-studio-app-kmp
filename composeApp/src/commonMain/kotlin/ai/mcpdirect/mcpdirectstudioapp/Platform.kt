@@ -364,7 +364,7 @@ interface Platform {
         onResponse: (resp: AIPortServiceResponse<AIPortToolMakerTemplate>) -> Unit
     ) {
         httpRequest(
-            "studio.console@$studioId/tool_maker/template/create", mapOf(
+            "studio.console@$studioId/tool_maker_template/create", mapOf(
                 "name" to JsonPrimitive(name),
                 "type" to JsonPrimitive(type),
                 "config" to JsonPrimitive(config),
@@ -372,6 +372,23 @@ interface Platform {
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortToolMakerTemplate>>(it))
+        }
+    }
+
+    fun modifyToolMakerTemplateForStudio(
+        studioId:String,templateId:Long,name: String?,type:Int,config:String,inputs:String,
+        onResponse: (resp: AIPortServiceResponse<ToolMakerTemplate>) -> Unit
+    ) {
+        httpRequest(
+            "studio.console@$studioId/tool_maker_template/modify", mapOf(
+                "templateId" to JsonPrimitive(templateId),
+                "name" to JsonPrimitive(name),
+                "type" to JsonPrimitive(type),
+                "config" to JsonPrimitive(config),
+                "inputs" to JsonPrimitive(inputs),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<ToolMakerTemplate>>(it))
         }
     }
 

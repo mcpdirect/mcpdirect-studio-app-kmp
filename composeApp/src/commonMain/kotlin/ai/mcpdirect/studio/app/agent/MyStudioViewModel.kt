@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.agent
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
@@ -35,10 +36,10 @@ class MyStudioViewModel(): ViewModel() {
             queryToolMakersFromStudio(agent)
         }
     }
-    fun toolAgent(toolAgentId:Long,onResponse:((code:Int,message:String?,data:AIPortToolAgent?) -> Unit)){
+    fun toolAgent(toolAgentId:Long,onResponse:((AIPortServiceResponse<AIPortToolAgent>) -> Unit)){
         viewModelScope.launch {
-            StudioRepository.toolAgent(toolAgentId){ code, message, data ->
-                onResponse(code,message,data)
+            StudioRepository.toolAgent(toolAgentId){
+                onResponse(it)
             }
         }
     }
@@ -377,8 +378,8 @@ class MyStudioViewModel(): ViewModel() {
             uiState = UIState.Loading
             tools.clear()
             viewModelScope.launch {
-                StudioRepository.toolAgent(toolMaker.agentId) { code, message, data ->
-                    if(code==0) data?.let {
+                StudioRepository.toolAgent(toolMaker.agentId) {
+                    if(it.successful()) it.data?.let {
                         viewModelScope.launch {
                             if(toolMaker.mcp()) StudioRepository.queryMCPToolsFromStudio(
                                 it,toolMaker
@@ -438,8 +439,8 @@ class MyStudioViewModel(): ViewModel() {
             uiState = UIState.Loading
             tools.clear()
             viewModelScope.launch {
-                StudioRepository.toolAgent(toolMaker.agentId) { code, message, data ->
-                    if (code == 0) data?.let {
+                StudioRepository.toolAgent(toolMaker.agentId) {
+                    if (it.successful()) it.data?.let {
                         viewModelScope.launch {
                             StudioRepository.publishToolsFromStudio(it,toolMaker){
                                     code, message, data ->
@@ -649,6 +650,17 @@ class MyStudioViewModel(): ViewModel() {
     fun removeOpenAPIServer(toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker) {
         viewModelScope.launch {
             StudioRepository.removeOpenAPIServerFromStudio(toolAgent,toolMaker)
+        }
+    }
+
+    fun modifyMCPTemplate(
+        toolAgent: AIPortToolAgent,template: AIPortToolMakerTemplate,
+        type:Int,config:String,inputs: String) {
+        viewModelScope.launch {
+//            uiState = UIState.Loading
+            StudioRepository.modifyToolMakerTemplateForStudio(
+                toolAgent, template, null,type,config,inputs
+            )
         }
     }
 }

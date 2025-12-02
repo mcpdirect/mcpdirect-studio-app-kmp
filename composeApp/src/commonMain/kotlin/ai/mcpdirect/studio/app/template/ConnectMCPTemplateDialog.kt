@@ -26,9 +26,9 @@ fun ConnectMCPTemplateDialog(
     LaunchedEffect(null){
         StudioRepository.getMakerTemplateFromStudio(
             toolAgent,template
-        ){ code, message, data ->
-            if(code==0&&data!=null){
-                inputs.addAll(data.inputs.split(","))
+        ){
+            if(it.successful()) it.data?.let{
+                inputs.addAll(it.inputs.split(","))
                 inputs.forEach {
                     inputErrorMap[it]=false
                 }
