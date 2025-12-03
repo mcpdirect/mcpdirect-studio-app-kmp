@@ -7,6 +7,7 @@ import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKeyCredential
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
@@ -51,6 +52,7 @@ sealed class MCPKeyNameError() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MCPAccessKeyScreen(
+    accessKey: AIPortToolAccessKey?,
     dialog: MCPKeyDialog
 ) {
 //    val viewModel = mcpAccessKeyViewModel
@@ -89,6 +91,11 @@ fun MCPAccessKeyScreen(
         Row(Modifier.fillMaxSize().padding(8.dp)){
             LazyColumn(Modifier.weight(1.0f).padding(vertical = 8.dp)) {
                 items(accessKeys){
+                    accessKey?.let { key ->
+                        if(key.id==it.id){
+                            viewModel.mcpKey(it)
+                        }
+                    }
                     ListItem(
                         modifier = Modifier.clickable(
                             onClick = {viewModel.mcpKey(it)}
@@ -219,7 +226,7 @@ fun MCPAccessKeyScreen(
 //                                    toolPermissionViewModel.accessKey = it
                                 generalViewModel.currentScreen(Screen.ToolPermission(it),
                                     "Tool Permissions for Key #${it.name}",
-                                    Screen.MCPAccessKey())
+                                    Screen.MCPAccessKey(it))
                             })
                     }
                     HorizontalDivider()

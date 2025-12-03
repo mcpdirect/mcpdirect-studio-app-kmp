@@ -67,6 +67,10 @@ All notable changes to this file.
 - Enhanced MyStudioScreen and MyStudioViewModel with template configuration features
 - Updated MCPAccessKeyScreen with UI improvements
 - Enhanced ToolRepository with additional tool operations
+- New ToolPermissionView composable component for tool permissions
+- Updated App.kt and Screen.kt with navigation improvements
+- Enhanced CreateMCPKeyShortcut with additional functionality
+- Updated MCPAccessKeyScreen with further improvements
 
 ## 2025-11-28
 ### Added

@@ -82,7 +82,7 @@ class CreateMCPKeyShortcut : Shortcut {
             wizardSteps,
             onFinish = {
                 generalViewModel.currentScreen(Screen.MCPAccessKey(
-                    MCPKeyDialog.GenerateMCPKey))
+                    dialog = MCPKeyDialog.GenerateMCPKey))
             }
         )
     }

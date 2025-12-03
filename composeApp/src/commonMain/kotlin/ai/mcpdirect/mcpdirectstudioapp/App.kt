@@ -89,6 +89,7 @@ fun App(
                         Screen.ConnectMCP -> {}
                         is Screen.MCPAccessKey -> {
                             MCPAccessKeyScreen(
+                                screen.accessKey,
                                 screen.dialog
                             )
                         }

@@ -52,6 +52,7 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
 //    object MCPAccessKey : Screen(Res.string.mcp_keys,
 //        Res.drawable.key)
     data class MCPAccessKey(
+        val accessKey: AIPortToolAccessKey?=null,
         val dialog: MCPKeyDialog = MCPKeyDialog.None
     ):Screen(Res.string.mcp_keys,Res.drawable.key)
 
