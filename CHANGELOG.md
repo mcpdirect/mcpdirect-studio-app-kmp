@@ -71,6 +71,7 @@ All notable changes to this file.
 - Updated App.kt and Screen.kt with navigation improvements
 - Enhanced CreateMCPKeyShortcut with additional functionality
 - Updated MCPAccessKeyScreen with further improvements
+- Updated MCPAccessKeyScreen with additional UI enhancements
 
 ## 2025-11-28
 ### Added

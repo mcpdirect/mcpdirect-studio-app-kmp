@@ -5,6 +5,7 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioCard
+import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
@@ -96,7 +97,8 @@ fun MCPAccessKeyScreen(
                             viewModel.mcpKey(it)
                         }
                     }
-                    ListItem(
+                    StudioListItem(
+                        selected = viewModel.mcpKey?.id==it.id,
                         modifier = Modifier.clickable(
                             onClick = {viewModel.mcpKey(it)}
                         ),
