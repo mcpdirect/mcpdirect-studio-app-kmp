@@ -8,8 +8,10 @@ import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKeyCredential
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.tool.ToolDetailsView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -223,14 +225,19 @@ fun MCPAccessKeyScreen(
                     HorizontalDivider()
                     LazyColumn {
                         items(viewModel.toolPermissions){
+                            var toolMaker by remember { mutableStateOf<AIPortToolMaker?>(null) }
+
                             ListItem(
                                 modifier = Modifier.clickable(
                                     onClick = {toolPermission=it}
                                 ),
                                 headlineContent = { Text(it.name) },
                                 supportingContent = {
-                                    if(it is AIPortVirtualToolPermission){
-                                        Text("Virtual MCP")
+//                                    if(it is AIPortVirtualToolPermission){
+//                                        Text("Virtual MCP")
+//                                    }
+                                    ToolRepository.toolMaker(it.makerId)?.let{
+                                        Text(it.name)
                                     }
                                 },
                                 trailingContent = {

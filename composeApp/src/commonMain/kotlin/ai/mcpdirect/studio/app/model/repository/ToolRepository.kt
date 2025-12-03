@@ -23,10 +23,12 @@ object ToolRepository {
     val toolMakers: StateFlow<Map<Long, AIPortToolMaker>> = _toolMakers
 
     private var _templateLastQuery:TimeMark? = null
+    private var _templateLastUpdate:Long = 0L
     private val _toolMakerTemplates = MutableStateFlow<Map<Long, AIPortToolMakerTemplate>>(emptyMap())
     val toolMakerTemplates: StateFlow<Map<Long, AIPortToolMakerTemplate>> = _toolMakerTemplates
 
     private val _toolLastQueries = mutableMapOf<Long, TimeMark>()
+    private val _toolLastUpdated = mutableMapOf<Long, Long>()
     private val _tools = MutableStateFlow<Map<Long,AIPortTool>>(emptyMap())
     val tools: StateFlow<Map<Long, AIPortTool>> = _tools
 
@@ -65,22 +67,27 @@ object ToolRepository {
         loadMutex.withLock {
             val now = TimeSource.Monotonic.markNow()
             val lastQuery = _toolLastQueries[makerId]
-            if(lastQuery==null|| (force&&lastQuery.elapsedNow()>_duration)) {
+            var lastUpdated = _toolLastUpdated[makerId]?:0L
+            if(force||lastQuery==null||lastQuery.elapsedNow()>_duration) {
                 generalViewModel.loading()
                 getPlatform().queryTools(
                     userId = userId,
                     makerId = makerId,
-                    lastUpdated = if(lastQuery==null) 0L else currentMilliseconds()
+                    lastUpdated = lastUpdated
                 ) {
                     if (it.successful()) it.data?.let { tools ->
                         _tools.update { map ->
                             map.toMutableMap().apply {
                                 for (tool in tools) {
                                     put(tool.id, tool)
+                                    if(tool.lastUpdated>lastUpdated){
+                                        lastUpdated = tool.lastUpdated
+                                    }
                                 }
                             }
                         }
                         _toolLastQueries[makerId] = now
+                        _toolLastUpdated[makerId] = lastUpdated
                     }
                     generalViewModel.loaded("Load Tools of #${toolMaker.name}",it.code,it.message)
                 }
@@ -116,16 +123,17 @@ object ToolRepository {
     suspend fun loadToolMakers(force: Boolean=false){
         loadMutex.withLock {
             val now = TimeSource.Monotonic.markNow()
-            if(_makerLastQuery==null|| (force&& _makerLastQuery!!.elapsedNow()>_duration)) {
+            if(force||_makerLastQuery==null||_makerLastQuery!!.elapsedNow()>_duration) {
                 generalViewModel.loading()
                 getPlatform().queryToolMakers(
-                    lastUpdated = _makerLastUpdate,
+                    lastUpdated = if(_toolMakers.value.isEmpty()) 0L else _makerLastUpdate,
                 ) {
                     if (it.successful()) it.data?.let { makers ->
                         _toolMakers.update { map ->
                             map.toMutableMap().apply {
                                 for (maker in makers) {
-                                    put(maker.id, maker)
+                                    if(maker.status<0) remove(maker.id)
+                                    else put(maker.id, maker)
                                     if(maker.lastUpdated>_makerLastUpdate){
                                         _makerLastUpdate = maker.lastUpdated
                                     }
@@ -305,16 +313,19 @@ object ToolRepository {
     suspend fun loadToolMakerTemplates(force: Boolean=false){
         loadMutex.withLock {
             val now = TimeSource.Monotonic.markNow()
-            if(_templateLastQuery==null|| (force&& _templateLastQuery!!.elapsedNow()>_duration)) {
+            if(force||_templateLastQuery==null|| _templateLastQuery!!.elapsedNow()>_duration) {
                 generalViewModel.loading()
                 getPlatform().queryToolMakerTemplates(
-                    lastUpdated = if(_templateLastQuery==null) 0L else currentMilliseconds()
+                    lastUpdated = _templateLastUpdate
                 ){
                     if(it.successful())it.data?.let { templates ->
                         _toolMakerTemplates.update { map ->
                             map.toMutableMap().apply {
                                 templates.forEach {
                                     put(it.id,it)
+                                    if(it.lastUpdated>_templateLastUpdate){
+                                        _templateLastUpdate = it.lastUpdated
+                                    }
                                 }
                             }
                         }

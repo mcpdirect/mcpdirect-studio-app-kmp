@@ -65,6 +65,8 @@ All notable changes to this file.
 - Enhanced Studio and Tool repositories with template configuration functions
 - Updated Platform interface with template configuration methods
 - Enhanced MyStudioScreen and MyStudioViewModel with template configuration features
+- Updated MCPAccessKeyScreen with UI improvements
+- Enhanced ToolRepository with additional tool operations
 
 ## 2025-11-28
 ### Added
