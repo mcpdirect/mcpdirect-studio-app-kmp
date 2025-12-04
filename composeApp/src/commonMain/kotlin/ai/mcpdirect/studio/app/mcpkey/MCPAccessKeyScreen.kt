@@ -13,6 +13,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKeyCredential
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
+import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.tool.ToolDetailsView
 import androidx.compose.foundation.clickable
@@ -365,9 +366,10 @@ fun ShowMCPKeyDialog(
     onDismissRequest: () -> Unit,
 ) {
     var key by remember { mutableStateOf<AIPortToolAccessKeyCredential?>(null) }
-
-    viewModel.getMCPAccessKeyCredential(viewModel.mcpKey!!){
-        key = it
+    LaunchedEffect(null) {
+        AccessKeyRepository.getAccessKeyCredential(viewModel.mcpKey!!){
+            key = it
+        }
     }
     AlertDialog(
         onDismissRequest = onDismissRequest,

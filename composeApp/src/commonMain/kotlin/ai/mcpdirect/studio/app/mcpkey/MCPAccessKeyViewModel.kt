@@ -35,7 +35,7 @@ class MCPAccessKeyViewModel : ViewModel(){
         private set
     private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
     val toolPermissions by derivedStateOf {
-        _toolPermissions.values.toList()
+        _toolPermissions.values.filter { it.status>0 }.toList()
     }
 //    val virtualToolPermissions = mutableStateMapOf<Long, AIPortVirtualToolPermission>()
     fun mcpKey(accessKey:AIPortToolAccessKey){

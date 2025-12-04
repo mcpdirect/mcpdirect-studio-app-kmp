@@ -97,10 +97,10 @@ object AccessKeyRepository {
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().getToolAccessKeyCredential(key.id){
-                onResponse(it.data)
                 generalViewModel.loaded(
                     "Get MCPdirect Access Key Credential\"${key.name}\"",it.code,it.message
                 )
+                onResponse(it.data)
             }
         }
 
