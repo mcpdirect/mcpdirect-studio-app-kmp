@@ -50,7 +50,7 @@ fun ToolDetailsView(
         }
     }
     Column(modifier) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.padding(8.dp),verticalAlignment = Alignment.CenterVertically) {
             IconButton(
                 onClick = onBackClick,
             ){

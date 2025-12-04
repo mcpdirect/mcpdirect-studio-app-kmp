@@ -73,6 +73,7 @@ All notable changes to this file.
 - Updated MCPAccessKeyScreen with further improvements
 - Updated MCPAccessKeyScreen with additional UI enhancements
 - Updated ToolMakerListView and ToolPermissionScreen with UI improvements
+- Updated ToolDetailsView and VirtualToolMakerListView with UI improvements
 
 ## 2025-11-28
 ### Added

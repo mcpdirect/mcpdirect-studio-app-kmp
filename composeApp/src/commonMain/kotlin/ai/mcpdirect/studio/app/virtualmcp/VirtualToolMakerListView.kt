@@ -8,8 +8,11 @@ import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.EditMCPServerNameDialog
 import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
+import ai.mcpdirect.studio.app.model.aitool.AIPortTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.tool.ToolDetailsView
 import androidx.compose.foundation.border
@@ -29,10 +32,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -154,7 +159,11 @@ fun VirtualToolMakerDetailView() {
     val viewModel = virtualMakerViewModel
     viewModel.selectedVirtualMaker?.let {
         maker ->
-        Column {
+        tool?.let {
+            ToolDetailsView(it.toolId){
+                tool = null
+            }
+        }?:Column{
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -228,18 +237,34 @@ fun VirtualToolMakerDetailView() {
 
             }
             HorizontalDivider()
-            tool?.let {
-                ToolDetailsView(it.id){
-                    tool = null
-                }
-            }?:LazyColumn {
+            LazyColumn {
                 items(viewModel.selectedVirtualMakerTools) {
-                    VirtualToolItem(it){
-                        tool = it
+                    var maker by remember { mutableStateOf<AIPortToolMaker?>(null) }
+                    LaunchedEffect(null){
+                        ToolRepository.tool(it.toolId){
+                            if(it.successful()) it.data?.let {
+                                maker = ToolRepository.toolMaker(it.makerId)
+                            }
+                        }
                     }
+                    ListItem(
+                        modifier = Modifier.clickable {
+                            tool = it
+                        },
+                        headlineContent = {Text(it.name) },
+                        supportingContent = {
+                            maker?.let {
+                                Text(it.name)
+                            }
+                        }
+                    )
+//                    VirtualToolItem(it){
+//                        tool = it
+//                    }
                 }
             }
         }
+
         if(showEditServerNameDialog){
             EditMCPServerNameDialog(
                 maker,
