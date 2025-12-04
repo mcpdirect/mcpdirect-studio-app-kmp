@@ -72,6 +72,7 @@ All notable changes to this file.
 - Enhanced CreateMCPKeyShortcut with additional functionality
 - Updated MCPAccessKeyScreen with further improvements
 - Updated MCPAccessKeyScreen with additional UI enhancements
+- Updated ToolMakerListView and ToolPermissionScreen with UI improvements
 
 ## 2025-11-28
 ### Added

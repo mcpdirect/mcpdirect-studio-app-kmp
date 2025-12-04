@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -54,6 +55,7 @@ fun ToolMakerListView(
         items(toolMakers){
 
             val me = UserRepository.me(it.userId)
+            val toolAgent = StudioRepository.toolAgent(it.agentId)
 //            var team by remember { mutableStateOf<AIPortTeam?>(null) }
 //            LaunchedEffect(it){
 //                if(it.teamId!=0L) toolMakerListViewModel.team(it.teamId){
@@ -99,7 +101,7 @@ fun ToolMakerListView(
                         Text(
                             if(it.virtual())
                                 "Virtual MCP"
-                            else "",
+                            else toolAgent?.name ?:"",
 //                            else it.agentName,
                             color = MaterialTheme.colorScheme.primary,
                             style=MaterialTheme.typography.bodySmall
@@ -125,7 +127,7 @@ fun ToolMakerListView(
                 trailingContent = {
                     if(toolMaker!=null&&toolMaker!!.id==it.id)
                         Icon(painterResource(Res.drawable.keyboard_arrow_right),
-                            contentDescription = "Current Tool Maker")
+                            contentDescription = null)
                 }
 //                ,
 //                colors = ListItemDefaults.colors(

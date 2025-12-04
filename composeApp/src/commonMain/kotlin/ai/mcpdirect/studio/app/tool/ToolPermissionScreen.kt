@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.theme.purple.selectedListItemColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -93,6 +94,7 @@ fun ToolPermissionScreen(
             Row {
                 LazyColumn(Modifier.width(250.dp)) {
                     items(if(currentTabIndex==0) toolMakersFromAgent else toolMakersFromTeam){
+                        if(currentTabIndex!=0 || UserRepository.me(it.userId))
                         ListItem(
                             modifier = Modifier.clickable{
                                 viewModel.selectToolMaker(it)
