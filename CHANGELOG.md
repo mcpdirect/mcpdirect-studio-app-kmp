@@ -76,6 +76,7 @@ All notable changes to this file.
 - Updated ToolDetailsView and VirtualToolMakerListView with UI improvements
 - Updated MyStudioScreen with UI improvements
 - Updated MCPAccessKeyScreen, MCPAccessKeyViewModel, and AccessKeyRepository with improvements
+- Further updated MCPAccessKeyScreen and MCPAccessKeyViewModel with additional improvements
 
 ## 2025-11-28
 ### Added

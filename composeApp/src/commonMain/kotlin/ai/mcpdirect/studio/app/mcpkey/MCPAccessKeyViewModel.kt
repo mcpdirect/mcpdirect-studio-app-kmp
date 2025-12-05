@@ -77,15 +77,15 @@ class MCPAccessKeyViewModel : ViewModel(){
             started = SharingStarted.WhileSubscribed(5000), // 按需启动
             initialValue = emptyList()
         )
-    val toolPermissionMakerSummary = mutableStateListOf<AIPortToolPermissionMakerSummary>()
-    fun reset(){
-//        _accessKeys.clear()
-        toolPermissionMakerSummary.clear()
-    }
+//    val toolPermissionMakerSummary = mutableStateListOf<AIPortToolPermissionMakerSummary>()
+//    fun reset(){
+////        _accessKeys.clear()
+//        toolPermissionMakerSummary.clear()
+//    }
     fun refreshMCPAccessKeys() {
 //        uiState = UIState.Loading
 //        _accessKeys.clear()
-        toolPermissionMakerSummary.clear()
+//        toolPermissionMakerSummary.clear()
         viewModelScope.launch {
             AccessKeyRepository.loadAccessKeys()
 //            getPlatform().queryAccessKeys{ (code, message, data) ->
@@ -97,12 +97,12 @@ class MCPAccessKeyViewModel : ViewModel(){
 //                    }
 //                }
 //            }
-            getPlatform().queryToolPermissionMakerSummaries { ( code, message, data) ->
-                if(data!=null) {
-                    toolPermissionMakerSummary.clear()
-                    toolPermissionMakerSummary.addAll(data)
-                }
-            }
+//            getPlatform().queryToolPermissionMakerSummaries { ( code, message, data) ->
+//                if(data!=null) {
+//                    toolPermissionMakerSummary.clear()
+//                    toolPermissionMakerSummary.addAll(data)
+//                }
+//            }
         }
     }
     fun onMCPKeyNameChange(name: String) {
