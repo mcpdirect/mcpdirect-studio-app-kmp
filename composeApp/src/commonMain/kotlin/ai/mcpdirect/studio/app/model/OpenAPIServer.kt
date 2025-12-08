@@ -8,5 +8,5 @@ class OpenAPIServer: AIPortToolMaker() {
     var url: String? = null
 
     var securities: Map<String, String>? = null
-    var statusMessage: String? = null
+//    var errorMessage: String = ""
 }

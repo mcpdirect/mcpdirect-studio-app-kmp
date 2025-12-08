@@ -235,13 +235,13 @@ fun MCPAccessKeyScreen(
                     HorizontalDivider()
                     LazyColumn {
                         items(viewModel.toolPermissions){
-                            val virtualToolMaker = ToolRepository.toolMaker(it.makerId)
-                            var toolMaker by remember { mutableStateOf<AIPortToolMaker?>(null) }
+                            val toolMaker = ToolRepository.toolMaker(it.makerId)
+                            var originalToolMaker by remember { mutableStateOf<AIPortToolMaker?>(null) }
                             if(it is AIPortVirtualToolPermission){
                                 LaunchedEffect(null) {
                                     ToolRepository.tool(it.originalToolId) {
                                         if(it.successful()) it.data?.let { data ->
-                                            toolMaker = ToolRepository.toolMaker(data.makerId)
+                                            originalToolMaker = ToolRepository.toolMaker(data.makerId)
                                         }
                                     }
                                 }
@@ -252,7 +252,7 @@ fun MCPAccessKeyScreen(
                                 ),
                                 headlineContent = { Text(it.name) },
                                 supportingContent = {
-                                    Text("${virtualToolMaker?.name}${toolMaker?.let { " (${it.name})" }}")
+                                    Text("${toolMaker?.name}${originalToolMaker?.let { " (${it.name})" }?:""}")
                                 },
                                 trailingContent = {
                                     Icon(painter = painterResource(Res.drawable.info),

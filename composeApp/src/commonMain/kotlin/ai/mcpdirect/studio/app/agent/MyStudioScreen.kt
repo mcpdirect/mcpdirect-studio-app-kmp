@@ -16,6 +16,7 @@ import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.ERROR
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
@@ -446,7 +447,7 @@ fun ToolMakerListView(
                 StudioBoard(Modifier.weight(2.0f)) {
                     Text("Select a tool provider to view")
                 }
-            }else {
+            } else {
                 val me = toolMaker.id<Int.MAX_VALUE|| UserRepository.me(toolMaker.userId)
                 tool?.let{
                     StudioToolDetailsView(toolAgent,toolMaker,it,Modifier.weight(2.0f)){
@@ -556,14 +557,19 @@ fun ToolMakerListView(
                         }
                     )
                     HorizontalDivider()
-                    when(toolMaker.status){
-                        -1 -> {
-                            if(toolMaker is MCPServer){
-                                (toolMaker as MCPServer).statusMessage?.let{
-                                    StudioBoard {
-                                        Text(it, color = MaterialTheme.colorScheme.error)
-                                    }
-                                }
+                    when(toolMaker.errorCode){
+                        ERROR -> {
+//                            if(toolMaker is MCPServer){
+//                                (toolMaker as MCPServer).statusMessage?.let{
+//                                    StudioBoard {
+//                                        Text(it, color = MaterialTheme.colorScheme.error)
+//                                    }
+//                                }
+//                            }
+                            StudioBoard(Modifier.weight(2.0f)) {
+                                Text("ERROR")
+                                if(toolMaker is MCPServer)  Text((toolMaker as MCPServer).errorMessage)
+                                else if (toolMaker is OpenAPIServer) Text((toolMaker as OpenAPIServer).errorMessage)
                             }
                         }
                         else -> LazyColumn(Modifier.weight(1.0f)) {
@@ -732,7 +738,7 @@ fun ToolMakerItem(
                 CircularProgressIndicator(
                     Modifier.size(16.dp)
                 )
-            } else if (toolMaker.status == AIPortToolMaker.STATUS_ERROR) StudioIcon(
+            } else if (toolMaker.errorCode == AIPortToolMaker.ERROR) StudioIcon(
                 Res.drawable.error,
                 contentDescription = "Disconnect",
                 tint = MaterialTheme.colorScheme.error

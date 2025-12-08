@@ -35,32 +35,41 @@ class MCPAccessKeyViewModel : ViewModel(){
         private set
     private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
     val toolPermissions by derivedStateOf {
-        _toolPermissions.values.filter { it.status>0 }.toList()
+        _toolPermissions.values.toList()
     }
 //    val virtualToolPermissions = mutableStateMapOf<Long, AIPortVirtualToolPermission>()
     fun mcpKey(accessKey:AIPortToolAccessKey){
         mcpKey = accessKey
         if(accessKey.id>Int.MAX_VALUE) {
-            _toolPermissions.clear()
+
             viewModelScope.launch {
+                _toolPermissions.clear()
                 ToolRepository.loadToolPermissions(accessKey) {
                     if (it.successful()) it.data?.let {
-
                         it.forEach {
-                            _toolPermissions[it.toolId] = it
+                            if(it.status>0)_toolPermissions[it.toolId] = it
                         }
                     }
                 }
-            }
-            viewModelScope.launch {
                 ToolRepository.loadVirtualToolPermissions(accessKey) {
                     if (it.successful()) it.data?.let {
                         it.forEach {
-                            _toolPermissions[it.originalToolId] = it
+//                            _toolPermissions[it.originalToolId] = it
+                            if(it.status>0) _toolPermissions[it.toolId] = it
                         }
                     }
+
                 }
             }
+//            viewModelScope.launch {
+//                ToolRepository.loadVirtualToolPermissions(accessKey) {
+//                    if (it.successful()) it.data?.let {
+//                        it.forEach {
+//                            _toolPermissions[it.originalToolId] = it
+//                        }
+//                    }
+//                }
+//            }
         }
     }
     var mcpKeyName by mutableStateOf("")

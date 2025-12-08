@@ -12,7 +12,7 @@ plugins {
 //    rootProject.file("version.properties").inputStream().use { load(it) }
 //}
 //val appVersion = properties.getProperty("version", "dev")
-val appVersion = "2.2.1"
+val appVersion = "2.2.2"
 val generatedSrcDirPath = "generated/compose/srcGenerator"
 val mcpdirectGatewayEndpoint = System.getenv("AI_MCPDIRECT_GATEWAY_ENDPOINT")?:"http://localhost:8088/"
 println("AI_MCPDIRECT_GATEWAY_ENDPOINT=$mcpdirectGatewayEndpoint")
@@ -95,7 +95,7 @@ kotlin {
 //            implementation(compose.material3)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("ai.mcpdirect:mcpdirect-studio-core:2.2.1-SNAPSHOT")
+            implementation("ai.mcpdirect:mcpdirect-studio-core:2.2.2-SNAPSHOT")
         }
         jsMain.dependencies {
 //            implementation(compose.material3)

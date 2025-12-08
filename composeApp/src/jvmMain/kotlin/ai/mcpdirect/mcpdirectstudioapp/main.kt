@@ -12,19 +12,31 @@ import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_logo_48
 import org.jetbrains.compose.resources.painterResource
 
-fun main() = application {
-    val windowState = rememberWindowState(
-        size = DpSize(1200.dp, 900.dp),
-        position = WindowPosition.Aligned(Alignment.Center),
-    )
-//    val version = System.getProperty("ai.mcpdirect.studio.app.version")?:""
-    val version = AppInfo.APP_VERSION
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "MCPdirect Studio $version",
-        state = windowState,
-        icon = painterResource(Res.drawable.mcpdirect_logo_48)
-    ) {
-        App()
+fun main(args: Array<String>) = application {
+    var mcpdirect = false;
+    var mcpdirectKey:String? = null
+    for (arg in args) {
+        if(mcpdirect) {
+            mcpdirectKey = arg
+            break;
+        }
+        if(arg=="--mcpdirect") mcpdirect=true
+    }
+    if(mcpdirectKey!=null){
+        //TODO launch mcpdirect proxy
+    }else {
+        val windowState = rememberWindowState(
+            size = DpSize(1200.dp, 900.dp),
+            position = WindowPosition.Aligned(Alignment.Center),
+        )
+        val version = AppInfo.APP_VERSION
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = "MCPdirect Studio $version",
+            state = windowState,
+            icon = painterResource(Res.drawable.mcpdirect_logo_48)
+        ) {
+            App()
+        }
     }
 }

@@ -77,6 +77,9 @@ All notable changes to this file.
 - Updated MyStudioScreen with UI improvements
 - Updated MCPAccessKeyScreen, MCPAccessKeyViewModel, and AccessKeyRepository with improvements
 - Further updated MCPAccessKeyScreen and MCPAccessKeyViewModel with additional improvements
+- Updated build.gradle.kts and model classes (MCPServer, OpenAPIServer, AIPortToolMaker) with improvements
+- Updated Platform.jvm.kt and main.kt with platform-specific changes
+- Updated MyStudioScreen with additional functionality
 
 ## 2025-11-28
 ### Added

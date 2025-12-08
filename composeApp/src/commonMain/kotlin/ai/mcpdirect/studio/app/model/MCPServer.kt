@@ -10,5 +10,4 @@ class MCPServer: AIPortToolMaker(){
     var command: String? = null
     var args: List<String>? = null
     var env: Map<String, String>? = null
-    var statusMessage:String? = null
 }

@@ -17,6 +17,8 @@ open class AIPortToolMaker {
     var userId: Long = 0
 //    var teamId: Long = 0
     var templateId: Long =0
+    var errorCode:Int=0
+    var errorMessage:String = ""
     fun virtual():Boolean{
         return type == TYPE_VIRTUAL
     }
@@ -37,7 +39,8 @@ open class AIPortToolMaker {
         const val STATUS_ABANDONED = -1
         const val STATUS_OFF = 0
         const val STATUS_ON = 1
-        const val STATUS_ERROR = 256
         const val STATUS_WAITING = Int.MAX_VALUE
+
+        const val ERROR = 1
     }
 }

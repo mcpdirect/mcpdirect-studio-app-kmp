@@ -87,7 +87,8 @@ class JVMPlatform : Platform, NotificationHandler{
                         mcpServer.command = it.command
                         mcpServer.args = it.args
                         mcpServer.env = it.env
-                        mcpServer.statusMessage = it.statusMessage()
+                        mcpServer.errorCode = it.errorCode
+                        mcpServer.errorMessage = it.errorMessage
                     }
                     StudioRepository.mcpServer(mcpServer)
                 }
@@ -107,7 +108,8 @@ class JVMPlatform : Platform, NotificationHandler{
 //                        openapiServer.teamId = it.teamId
                         openapiServer.url = it.url
                         openapiServer.securities = it.securities
-                        openapiServer.statusMessage = it.statusMessage()
+                        openapiServer.errorCode = it.errorCode
+                        openapiServer.errorMessage = it.errorMessage
                         StudioRepository.openapiServer(openapiServer)
                     }
                 }
