@@ -182,7 +182,7 @@ fun MCPAccessKeyScreen(
                     )
                 }
             }
-            OutlinedCard(Modifier.fillMaxHeight().weight(2.0f)) {
+            OutlinedCard(Modifier.fillMaxHeight().weight(3.0f)) {
                 var toolPermission by remember { mutableStateOf<AIPortToolPermission?>(null) }
                 toolPermission?.let {
                     if(it is AIPortVirtualToolPermission){

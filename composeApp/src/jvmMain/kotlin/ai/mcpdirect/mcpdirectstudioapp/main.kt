@@ -31,6 +31,7 @@ fun main(args: Array<String>) = application {
         )
         val version = AppInfo.APP_VERSION
         Window(
+//            undecorated = true,
             onCloseRequest = ::exitApplication,
             title = "MCPdirect Studio $version",
             state = windowState,

@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,14 +22,13 @@ fun Tag(
         Modifier.border(
             width = 1.dp,
             color = color,
-            shape = RoundedCornerShape(8.dp)
-        )
+            shape = ButtonDefaults.shape
+        ).padding(horizontal = 8.dp,vertical = 4.dp)
     ){
         Text(
             text,
             style = MaterialTheme.typography.bodySmall,
             color = color,
-            modifier = Modifier.padding(vertical = 2.dp, horizontal = 6.dp)
         )
     }
 }

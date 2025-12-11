@@ -25,8 +25,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 @Serializable
 data class ConfigData(
@@ -88,7 +86,42 @@ fun ConnectMCPServerDialog(
                 modifier = Modifier.fillMaxWidth().height(500.dp),
                 value = serverJsonString,
                 onValueChange = { onJsonValueChange(it) },
-                label = { Text("MCP Servers Config") },
+                label = { Text("MCP Servers Configuration") },
+                placeholder = { Text("""
+// Example:JSON (stdio):
+// {
+//   "mcpServers": {
+//     "stdio-server-example": {
+//       "command": "npx",
+//       "args": ["-y", "mcp-server-example"]
+//     }
+//   }
+// }
+
+// Example:JSON (sse):
+// {
+//   "mcpServers": {
+//     "sse-server-example": {
+//       "type": "sse",
+//       "url": "http://localhost:3000"
+//     }
+//   }
+// }
+
+// Example:JSON (streamableHttp):
+// {
+//   "mcpServers": {
+//     "streamable-http-example": {
+//       "type": "streamableHttp",
+//       "url": "http://localhost:3001",
+//       "headers": {
+//         "Content-Type": "application/json",
+//         "Authorization": "Bearer your-token"
+//       }
+//     }
+//   }
+// }
+                """.trimIndent()) },
                 isError = isJsonError,
                 supportingText = {
                     if(isJsonError)Text("invalid json format")
@@ -125,19 +158,26 @@ fun ConnectMCPServerDialog(
                                         }
                                         config.args = configArgs
                                     }
+                                    val configEnv = mutableMapOf<String,String>()
                                     val env = server.get("env")
                                     if(env is JsonObject){
-                                        val configEnv = mutableMapOf<String,String>()
                                         env.entries.forEach {
                                             if(it.value.jsonPrimitive.isString){
                                                 configEnv[it.key] = it.value.jsonPrimitive.content
                                             }
                                         }
-                                        config.env = configEnv
                                     }
+                                    val headers = server.get("headers")
+                                    if(headers is JsonObject){
+                                        headers.entries.forEach {
+                                            if(it.value.jsonPrimitive.isString){
+                                                configEnv[it.key] = it.value.jsonPrimitive.content
+                                            }
+                                        }
+                                    }
+                                    config.env = configEnv
                                     configs[it.key] = config
                                 }
-
                             }
                         }
                     }
@@ -145,7 +185,7 @@ fun ConnectMCPServerDialog(
                     onDismissRequest()
                 }
             ) {
-                Text("Connect")
+                Text("Submit")
             }
         },
         dismissButton = {

@@ -51,24 +51,6 @@ fun NavigationTopBar(
                             )
                         } else screens.forEach { screen ->
                             if (screen::class == generalViewModel.currentScreen::class) {
-//                                StudioListItem(
-//                                    modifier = Modifier.wrapContentWidth().width(140.dp),
-//                                    selected = true,
-////                                    leadingContent = { },
-//                                    headlineContent = { Row(
-////                                        modifier =  Modifier.fillMaxWidth(),
-//                                        horizontalArrangement = Arrangement.Start){
-//                                        Icon(
-//                                            painterResource(screen.icon),
-//                                            contentDescription = stringResource(screen.title))
-//                                        Text(stringResource(screen.title))
-//                                        } },
-////                                    supportingContent = {Row(
-////                                        modifier =  Modifier.fillMaxWidth(),
-////                                        horizontalArrangement = Arrangement.Center){
-////                                        Text(stringResource(screen.title))
-////                                    }}
-//                                )
                                 Row(
                                     Modifier.background(
                                         MaterialTheme.colorScheme.secondaryContainer,
@@ -83,29 +65,40 @@ fun NavigationTopBar(
                                     Text(stringResource(screen.title))
                                 }
                             }else{
-                                TooltipIconButton(
-                                    screen.icon,
-                                    contentDescription = stringResource(screen.title),
-                                    onClick = {
-//                                        generalViewModel.topBarActions = {}
-                                        generalViewModel.currentScreen(screen)
-                                    }
-                                )
+//                                TooltipIconButton(
+//                                    screen.icon,
+//                                    contentDescription = stringResource(screen.title),
+//                                    onClick = {
+////                                        generalViewModel.topBarActions = {}
+//                                        generalViewModel.currentScreen(screen)
+//                                    }
+//                                )
+                                TextButton(
+                                    onClick = { generalViewModel.currentScreen(screen) },
+                                ){
+                                    Icon(
+                                        painterResource(screen.icon),
+                                        contentDescription = stringResource(screen.title)
+                                    )
+                                    Text(stringResource(screen.title), Modifier.padding(start=8.dp))
+                                }
                             }
                         }
-//                        IconButton(
-//                            onClick = {
-//                                generalViewModel.darkMode = !(generalViewModel.darkMode)
-//                            }
-//                        ){
-//                            Icon(painterResource(
-//                                if(generalViewModel.darkMode) Res.drawable.light_mode else Res.drawable.dark_mode),
-//                                contentDescription = ""
-//                            )
-//                        }
                     }
                 },
-                title = { generalViewModel.currentScreenTitle?.let { Text(it) } },
+                title = { generalViewModel.currentScreenTitle?.let {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ){
+                        Icon(
+                            painterResource(generalViewModel.currentScreen.icon),
+                            contentDescription = it
+                        )
+                        Text(it)
+                    }
+
+                } },
                 actions = {
                     generalViewModel.topBarActions()
                     Text(

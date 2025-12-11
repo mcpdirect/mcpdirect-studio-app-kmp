@@ -80,6 +80,12 @@ All notable changes to this file.
 - Updated build.gradle.kts and model classes (MCPServer, OpenAPIServer, AIPortToolMaker) with improvements
 - Updated Platform.jvm.kt and main.kt with platform-specific changes
 - Updated MyStudioScreen with additional functionality
+- New Carousel composable component for UI carousels
+- New MCPConfig model class for MCP configuration
+- New QuickStartScreen, QuickStartViewModel, and TipsScreen for onboarding and tips
+- Added new SVG and PNG resources for UI components and tips
+- Updated App.kt, NavigationTopBar.kt, Screen.kt, Tag.kt, ConnectMCPServerDialog.kt, MCPAccessKeyScreen.kt, MCPServerConfig.kt, OpenAPIServerConfig.kt, StudioRepository.kt, and main.kt with various improvements
+- Updated strings.xml with new string resources
 
 ## 2025-11-28
 ### Added
