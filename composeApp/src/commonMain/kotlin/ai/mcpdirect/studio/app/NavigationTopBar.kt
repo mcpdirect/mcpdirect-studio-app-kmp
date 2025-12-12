@@ -60,9 +60,11 @@ fun NavigationTopBar(
                                     ){
                                     Icon(
                                         painterResource(screen.icon),
-                                        contentDescription = stringResource(screen.title))
+                                        contentDescription = stringResource(screen.title),
+                                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                    )
                                     Spacer(Modifier.size(4.dp))
-                                    Text(stringResource(screen.title))
+                                    Text(stringResource(screen.title),color = MaterialTheme.colorScheme.onSecondaryContainer)
                                 }
                             }else{
 //                                TooltipIconButton(

@@ -143,10 +143,10 @@ class MyStudioViewModel(): ViewModel() {
 //        }
 //    }
 
-    fun connectMCPServerToStudio(configs:Map<String, MCPServerConfig>){
+    fun connectMCPServerToStudio(config:MCPServerConfig){
         viewModelScope.launch {
             uiState = UIState.Loading
-            StudioRepository.connectMCPServersToStudio(_toolAgent.value,configs){
+            StudioRepository.connectMCPServerToStudio(_toolAgent.value,config){
                 code, message, data ->
                 updateUIState(code)
             }
@@ -184,7 +184,7 @@ class MyStudioViewModel(): ViewModel() {
         viewModelScope.launch {
             uiState = UIState.Loading
             StudioRepository.modifyMCPServerConfigForStudio(toolAgent,mcpServer,config){
-                code, message, data ->
+                (code, message, data) ->
                 updateUIState(code)
                 data?.let {
                     if(it.id==_toolMaker.value.id){
@@ -340,7 +340,7 @@ class MyStudioViewModel(): ViewModel() {
     fun modifyToolMakerStatus(toolAgent: AIPortToolAgent,maker: AIPortToolMaker,status: Int){
         viewModelScope.launch {
             StudioRepository.modifyToolMakerStatus(toolAgent,maker,status){
-                code, message, maker ->
+                (code, message, maker) ->
                 maker?.let {
                     if(_toolMaker.value.id==maker.id){
                         _toolMaker.value = maker
@@ -383,7 +383,7 @@ class MyStudioViewModel(): ViewModel() {
                         viewModelScope.launch {
                             if(toolMaker.mcp()) StudioRepository.queryMCPToolsFromStudio(
                                 it,toolMaker
-                            ){code, message, data ->
+                            ){(code, message, data) ->
                                 updateUIState(code)
                                 if(code==0){
                                     data?.let {
@@ -392,7 +392,7 @@ class MyStudioViewModel(): ViewModel() {
                                 }
                             } else if(toolMaker.openapi()) StudioRepository.queryOpenAPIToolsFromStudio(
                                 it,toolMaker
-                            ){code, message, data ->
+                            ){(code, message, data) ->
                                 updateUIState(code)
                                 if(code==0){
                                     data?.let {
@@ -611,10 +611,10 @@ class MyStudioViewModel(): ViewModel() {
     }
 
     fun connectOpenAPIServerToStudio(
-        name:String, config: OpenAPIServerConfig,
+        config: OpenAPIServerConfig,
         onResponse: ((code: Int, message: String?, toolMaker: AIPortToolMaker?) -> Unit)?=null){
         viewModelScope.launch {
-            StudioRepository.connectOpenAPIServerToStudio(_toolAgent.value,name,config,onResponse)
+            StudioRepository.connectOpenAPIServerToStudio(_toolAgent.value,config,onResponse)
         }
     }
 //    fun queryOpenAPIToolsFromStudio(toolMaker: AIPortToolMaker){

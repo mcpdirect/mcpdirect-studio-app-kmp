@@ -171,13 +171,22 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortVirtualTool>>>(it))
         }
     }
-    fun connectMCPServerToStudio(studioId:String, configs:Map<String, MCPServerConfig>,
-                                 onResponse: (resp: AIPortServiceResponse<List<MCPServer>>) -> Unit){
+//    fun connectMCPServerToStudio(studioId:String, configs:Map<String, MCPServerConfig>,
+//                                 onResponse: (resp: AIPortServiceResponse<List<MCPServer>>) -> Unit){
+//        httpRequest("studio.console@$studioId/mcp_server/connect",
+//            mapOf("mcpServerConfigs" to JSON.encodeToJsonElement(configs))) {
+//            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
+//        }
+//    }
+
+    fun connectMCPServerToStudio(studioId:String, config: MCPServerConfig,
+                                 onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
         httpRequest("studio.console@$studioId/mcp_server/connect",
-            mapOf("mcpServerConfigs" to JSON.encodeToJsonElement(configs))) {
-            onResponse(JSON.decodeFromString<AIPortServiceResponse<List<MCPServer>>>(it))
+            mapOf("mcpServerConfig" to JSON.encodeToJsonElement(config))) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<MCPServer>>(it))
         }
     }
+
 //    fun removeMCPServerFromStudio(studioId:String, mcpServerId:Long,
 //                                onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit){
 //        httpRequest("studio.console@$studioId/mcp_server/remove", mapOf(
@@ -286,11 +295,11 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServerDoc>>(it))
         }
     }
-    fun connectOpenAPIServerToStudio(studioId:String, name:String,config:OpenAPIServerConfig,
+    fun connectOpenAPIServerToStudio(studioId:String,config:OpenAPIServerConfig,
                                      onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
         httpRequest("studio.console@$studioId/openapi_server/connect",
             mapOf(
-                "openAPIServerName" to JsonPrimitive(name),
+//                "openAPIServerName" to JsonPrimitive(name),
                 "openAPIServerConfig" to Json.encodeToJsonElement(config)
             )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))

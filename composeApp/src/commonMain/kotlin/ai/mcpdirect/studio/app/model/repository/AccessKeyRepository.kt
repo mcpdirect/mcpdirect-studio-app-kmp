@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.model.repository
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKeyCredential
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,10 @@ object AccessKeyRepository {
             }
         }
     }
-    suspend fun loadAccessKeys(force:Boolean=false) {
+    suspend fun loadAccessKeys(
+        force:Boolean=false,
+        onResponse: ((resp: AIPortServiceResponse<List<AIPortToolAccessKey>>) -> Unit)?=null
+    ) {
         loadMutex.withLock {
             val now = TimeSource.Monotonic.markNow()
             if (_accessKeyLastQuery == null || (force && _accessKeyLastQuery!!.elapsedNow() > _duration)) {
@@ -49,6 +53,9 @@ object AccessKeyRepository {
                     generalViewModel.loaded(
                         "Load MCPdirect Access Keys",it.code,it.message
                     )
+                    onResponse?.let { response->
+                        response(it)
+                    }
                 }
             }
         }

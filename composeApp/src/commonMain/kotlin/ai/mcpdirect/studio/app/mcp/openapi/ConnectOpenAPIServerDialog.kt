@@ -19,7 +19,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun ConnectOpenAPIServerDialog(
     toolAgent: AIPortToolAgent,
-    onConfirmRequest: (name:String,config:OpenAPIServerConfig) -> Unit,
+    onConfirmRequest: (config:OpenAPIServerConfig) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     val viewModel by remember { mutableStateOf(ConnectOpenAPIServerViewModel()) }
@@ -147,12 +147,13 @@ fun ConnectOpenAPIServerDialog(
                         securities[it.key] = it.value
                     }
                     val config = OpenAPIServerConfig()
+                    config.name = viewModel.name
                     config.url = viewModel.url
                     config.securities = securities
                     if(yaml.startsWith("http://")||yaml.startsWith("https://")){
                         config.docUri = yaml
                     }else config.doc = yaml
-                    onConfirmRequest(viewModel.name,config)
+                    onConfirmRequest(config)
                     onDismissRequest()
                 }
             ) {

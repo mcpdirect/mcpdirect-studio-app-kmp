@@ -15,6 +15,7 @@ import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerTemplateScreen
+import ai.mcpdirect.studio.app.theme.blue.BlueTheme
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import ai.mcpdirect.studio.app.tips.QuickStartScreen
 import ai.mcpdirect.studio.app.tips.TipsScreen
@@ -62,7 +63,7 @@ fun App(
 //            }
 //        }
 //    }
-    PurpleTheme (
+    BlueTheme (
         darkTheme = darkTheme,
         typography = typography
     ) {

@@ -98,7 +98,7 @@ kotlin {
 //            implementation(compose.material3)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("ai.mcpdirect:mcpdirect-studio-core:2.2.2-SNAPSHOT")
+            implementation("ai.mcpdirect:mcpdirect-studio-core:2.2.3-SNAPSHOT")
         }
         jsMain.dependencies {
 //            implementation(compose.material3)

@@ -1,56 +1,113 @@
 package ai.mcpdirect.studio.app.tips
 
-import ai.mcpdirect.studio.app.model.MCPConfig
+import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
-import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
+import ai.mcpdirect.studio.app.model.OpenAPIServer
+import ai.mcpdirect.studio.app.model.aitool.AIPortTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class QuickStartViewModel: ViewModel() {
-    private val _mcpConfigs = mutableStateMapOf<String, MCPConfig>()
-    val mcpConfigs by derivedStateOf {
-        _mcpConfigs.values.toList()
+
+    val toolMakers: StateFlow<List<AIPortToolMaker>> = combine(
+        StudioRepository.toolMakers,
+        StudioRepository.localToolAgent,
+        UserRepository.me,
+    ) { servers, agent, me ->
+        servers.values.filter { server -> server.agentId == agent.id && server.userId == me.id }.toList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    private val _selectedToolMakers = mutableStateMapOf<Long,AIPortToolMaker>()
+    val selectedToolMakers by derivedStateOf {
+        _selectedToolMakers.values.toList()
     }
-    fun removeMCPConfig(mcpConfig: MCPConfig) {
-        _mcpConfigs.remove(mcpConfig.name)
+    fun selectToolMaker(selected:Boolean,maker: AIPortToolMaker){
+        if(selected) {
+            _selectedToolMakers[maker.id] = maker
+            currentToolMaker(maker)
+        }
+        else _selectedToolMakers.remove(maker.id)
     }
-    fun addMCPConfig(mcpConfig: MCPConfig) {
-        _mcpConfigs[mcpConfig.name] = mcpConfig
+
+    fun selectedToolMaker(maker: AIPortToolMaker): Boolean{
+        return _selectedToolMakers.containsKey(maker.id)
     }
-    fun addMCPConfigs(mcpConfigs: Map<String,MCPConfig>) {
-        viewModelScope.launch {
-            mcpConfigs.forEach { (name, config) ->
-                config.name = name
-                when (config) {
-                    is MCPServerConfig ->{
-                        val command = config.command?.trim()?:""
-                        val url = config.url?.trim()?:""
-                        if(command.isBlank()&&url.isBlank()){
-                            config.status = -1
-                        }
-                        if(command.isNotBlank()) {
-                            config.command = command
-                            config.transport = 0
-                            config.url = null
-                        }else if(url.isNotBlank()){
-                            config.url = url
-                            if(url.endsWith("/sse")) config.transport = 1
-                            else if(url.endsWith("/mcp")) config.transport = 2
-                            else {
-                                config.transport = -1
-                                config.status = -2
+
+    private val _tools = mutableStateMapOf<Long,AIPortTool>()
+    val tools by derivedStateOf {
+        _tools.values.toList()
+    }
+
+    var currentToolMaker by mutableStateOf<AIPortToolMaker?>(null)
+        private set
+    val currentTools = mutableStateListOf<AIPortTool>()
+    fun currentToolMaker(maker: AIPortToolMaker){
+        currentToolMaker = maker
+        currentTools.clear()
+        if(maker.errorCode==0){
+            viewModelScope.launch {
+                when(maker){
+                    is MCPServer -> StudioRepository.queryMCPToolsFromStudio(
+                        StudioRepository.localToolAgent.value,maker
+                    ){
+                        if(maker.id==currentToolMaker?.id&&it.successful()) it.data?.let{ data ->
+                            currentTools.addAll(data)
+                            for (tool in data) {
+                                _tools[tool.id] = tool
                             }
                         }
                     }
-                    is OpenAPIServerConfig ->{
-
+                    is OpenAPIServer -> StudioRepository.queryOpenAPIToolsFromStudio(
+                        StudioRepository.localToolAgent.value,maker
+                    ){
+                        if(maker.id==currentToolMaker?.id&&it.successful()) it.data?.let{ data ->
+                            currentTools.addAll(data)
+                            for (tool in data) {
+                                _tools[tool.id] = tool
+                            }
+                        }
                     }
                 }
-                addMCPConfig(config)
+            }
+        }
+    }
+
+    fun modifyMCPServerConfig(mcpServer: MCPServer,config: MCPServerConfig) {
+        viewModelScope.launch {
+            StudioRepository.modifyMCPServerConfigForStudio(
+                StudioRepository.localToolAgent.value,
+                mcpServer,config
+            ){
+                if(it.successful()) it.data?.let{ data ->
+                    currentToolMaker?.let{
+                        if(it.id==data.id) currentToolMaker(data)
+                    }
+                }
+            }
+        }
+    }
+    fun modifyToolMakerStatus(toolAgent: AIPortToolAgent,maker: AIPortToolMaker,status: Int){
+        viewModelScope.launch {
+            StudioRepository.modifyToolMakerStatus(toolAgent,maker,status){
+                if(it.successful()) it.data?.let{ data ->
+                    currentToolMaker?.let{
+                        if(it.id==data.id) currentToolMaker(data)
+                    }
+                }
             }
         }
     }

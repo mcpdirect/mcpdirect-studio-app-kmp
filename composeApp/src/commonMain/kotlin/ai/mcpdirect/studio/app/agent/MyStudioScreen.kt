@@ -119,7 +119,9 @@ fun MyStudioScreen(
             title = myStudioViewModel.toolAgent.value.name,
             onDismissRequest = {dialog=MyStudioScreenDialog.None},
             onConfirmRequest = { configs ->
-                myStudioViewModel.connectMCPServerToStudio(configs)
+                configs.forEach { config ->
+                    myStudioViewModel.connectMCPServerToStudio(config)
+                }
             }
         )
         MyStudioScreenDialog.ConnectMCPTemplate -> {
@@ -181,9 +183,9 @@ fun MyStudioScreen(
             ConnectOpenAPIServerDialog(
                 toolAgent = myStudioViewModel.toolAgent.value,
                 onDismissRequest = {dialog=MyStudioScreenDialog.None},
-                onConfirmRequest = { name,config->
+                onConfirmRequest = { config->
                     dialog = MyStudioScreenDialog.None
-                    myStudioViewModel.connectOpenAPIServerToStudio(name,config)
+                    myStudioViewModel.connectOpenAPIServerToStudio(config)
                 }
             )
         }
@@ -912,7 +914,7 @@ fun ToolMakerByTemplateListView(
                                 })
                             TooltipIconButton(
                                 Res.drawable.data_object,
-                                contentDescription = "Config MCP Server",
+                                contentDescription = "Config Template MCP Server",
                                 onClick = {
                                     showConfigServerFromTemplateDialog = true
                                 })

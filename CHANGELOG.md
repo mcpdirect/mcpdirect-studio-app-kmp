@@ -86,6 +86,12 @@ All notable changes to this file.
 - Added new SVG and PNG resources for UI components and tips
 - Updated App.kt, NavigationTopBar.kt, Screen.kt, Tag.kt, ConnectMCPServerDialog.kt, MCPAccessKeyScreen.kt, MCPServerConfig.kt, OpenAPIServerConfig.kt, StudioRepository.kt, and main.kt with various improvements
 - Updated strings.xml with new string resources
+- New setting-config SVG resource
+- Blue theme implementation with Color.kt and Theme.kt
+- Moved Type.kt from purple theme directory to main theme directory
+- Updated build.gradle.kts and various components with theme changes
+- Updated MyStudioScreen, MyStudioViewModel, MCP dialogs, and repository classes with improvements
+- Updated QuickStart and web main components
 
 ## 2025-11-28
 ### Added
