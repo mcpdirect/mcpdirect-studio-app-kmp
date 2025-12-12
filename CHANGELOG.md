@@ -92,6 +92,7 @@ All notable changes to this file.
 - Updated build.gradle.kts and various components with theme changes
 - Updated MyStudioScreen, MyStudioViewModel, MCP dialogs, and repository classes with improvements
 - Updated QuickStart and web main components
+- Updated blue theme Color.kt with modifications
 
 ## 2025-11-28
 ### Added

@@ -1,6 +1,5 @@
-package ai.mcpdirect.studio.app.theme.blue
+package ai.mcpdirect.studio.app.theme
 
-import ai.mcpdirect.studio.app.theme.AppTypography
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
@@ -253,7 +252,7 @@ val unspecified_scheme = ColorFamily(
 )
 
 @Composable
-fun BlueTheme(
+fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     typography: Typography? = null,
     content: @Composable() () -> Unit
