@@ -471,8 +471,8 @@ interface Platform {
     }
 
     fun grantToolPermission(
-        permissions: List<AIPortToolPermission?>,
-        virtualPermissions: List<AIPortVirtualToolPermission?>,
+        permissions: List<AIPortToolPermission>?,
+        virtualPermissions: List<AIPortVirtualToolPermission>?,
         onResponse: (resp: AIPortServiceResponse<List<AIPortToolPermissionMakerSummary>>) -> Unit
     ) {
         hstpRequest(

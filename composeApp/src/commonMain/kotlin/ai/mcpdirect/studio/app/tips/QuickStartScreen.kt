@@ -13,11 +13,17 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.ERROR
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
+import mcpdirectstudioapp.composeapp.generated.resources.content_copy
 import mcpdirectstudioapp.composeapp.generated.resources.error
 import mcpdirectstudioapp.composeapp.generated.resources.inbox_empty
 import mcpdirectstudioapp.composeapp.generated.resources.mobiledata_off
@@ -40,7 +47,7 @@ fun QuickStartScreen() {
     val steps = listOf(
         "1. Connect MCP servers to MCPdirect",
         "2. Generate MCPdirect key for MCP servers access",
-        "3. Configure MCPdirect in AI Agents"
+        "3. Integrate MCPdirect with AI Agents"
     )
     Column(Modifier.fillMaxSize().padding(8.dp)) {
         Row(
@@ -62,6 +69,7 @@ fun QuickStartScreen() {
         when(stepIndex){
             0 -> ConnectMCPView(Modifier.weight(1f),viewModel)
             1 -> GenerateMCPdirectKeyView(Modifier.weight(1f),viewModel)
+            2 -> IntegrateWithAIAgentView(Modifier.weight(1f),viewModel)
         }
         Row(
             Modifier.fillMaxWidth().padding(8.dp),
@@ -101,7 +109,10 @@ fun QuickStartScreen() {
                     Button(
                         modifier = Modifier.padding(start = 8.dp),
                         enabled = !viewModel.selectedTools.isEmpty()&&viewModel.currentAccessKey!=null,
-                        onClick = {stepIndex++}
+                        onClick = {
+                            stepIndex++
+//                            viewModel.grantToolPermissions()
+                        }
                     ){
                         Text("Next")
                     }
@@ -255,11 +266,22 @@ fun ConnectMCPView(
                 HorizontalDivider()
                 if(it.errorCode!=0){
                     Text(it.errorMessage,Modifier.padding(horizontal = 8.dp) , color = MaterialTheme.colorScheme.error)
-                }else LazyColumn {
-                    items(viewModel.tools) { tool ->
-                        if(tool.makerId == it.id) ListItem(
-                            modifier = Modifier.clickable {},
-                            headlineContent = { Text(tool.name) },
+                }else {
+                    val listState = rememberLazyListState()
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(
+                            state = listState,
+                        ) {
+                            items(viewModel.tools) { tool ->
+                                if (tool.makerId == it.id) ListItem(
+                                    modifier = Modifier.clickable {},
+                                    headlineContent = { Text(tool.name) },
+                                )
+                            }
+                        }
+                        VerticalScrollbar(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            adapter = rememberScrollbarAdapter(scrollState = listState)
                         )
                     }
                 }
@@ -356,7 +378,7 @@ fun GenerateMCPdirectKeyView(
                     val selectedToolCount = viewModel.countSelectedTools(toolMaker)
                     val tools = viewModel.tools.filter { it.makerId == toolMaker.id }.toList()
 
-                    Card{
+                    OutlinedCard{
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Checkbox(
                                 checked = selectedToolCount>0,
@@ -386,5 +408,114 @@ fun GenerateMCPdirectKeyView(
                 }
             }
 //        }
+    }
+}
+
+sealed class AIAgent(val name: String){
+    object General : AIAgent("General")
+    object ClaudeCode : AIAgent("Claude Code")
+    object ClaudeDesktop : AIAgent("Claude Desktop")
+    object CherryStudio : AIAgent("Cherry Studio")
+    object Cursor : AIAgent("Cursor")
+    object Dify : AIAgent("Dify")
+    object QwenCode : AIAgent("Qwen Code")
+    object VSCode : AIAgent("VS Code")
+}
+val aiAgents = listOf(
+    AIAgent.General,
+    AIAgent.ClaudeCode,
+    AIAgent.ClaudeDesktop,
+    AIAgent.CherryStudio,
+    AIAgent.Cursor,
+    AIAgent.Dify,
+    AIAgent.QwenCode,
+    AIAgent.VSCode
+)
+@Composable
+fun IntegrateWithAIAgentView(
+    modifier: Modifier,
+    viewModel: QuickStartViewModel
+){ OutlinedCard(modifier) {
+    var aiAgent by remember { mutableStateOf<AIAgent>(AIAgent.General) }
+    Row {
+        LazyColumn(Modifier.weight(1f)) {
+            items(aiAgents) {
+                StudioListItem(
+                    modifier = Modifier.clickable {
+                        aiAgent = it
+                    },
+                    selected = it == aiAgent,
+                    headlineContent = { Text(it.name) }
+                )
+            }
+        }
+        VerticalDivider()
+        IntegrationOptions(
+            modifier = Modifier.weight(2f),
+            options = when(aiAgent){
+                AIAgent.General -> listOf()
+                AIAgent.ClaudeCode -> listOf(
+                    Option(
+                        "Add HTTP server with command line",
+                        "claude mcp add --transport http private-api https://api.company.com/mcp \\\n" +
+                                "  --header \"X-API-Key: your-key-here\""
+                    ),
+                    Option(
+                        "Add HTTP server in .mcp.json",
+                        """
+{
+  "mcpServers": {
+    "api-server": {
+      "type": "http",
+      "url": "https://api.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer API_KEY"
+      }
+    }
+  }
+}                   
+                        """.trimIndent()
+                    )
+                )
+                else -> listOf()
+            }
+        )
+    }
+} }
+
+
+data class Option(val title:String,val option:String)
+
+@Composable
+fun IntegrationOptions(
+    modifier: Modifier = Modifier,
+    options:List<Option>,
+){
+    val listState = rememberLazyListState()
+    LazyColumn(
+        state = listState,
+        modifier = modifier.padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(options) { option ->
+            ElevatedCard{
+                Row(
+                    Modifier.padding(start = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(option.title)
+                    Spacer(Modifier.weight(1f))
+                    IconButton(onClick = {
+
+                    }){
+                        Icon(painterResource(Res.drawable.content_copy), contentDescription = "Copy")
+                    }
+                }
+                HorizontalDivider()
+                SelectionContainer(Modifier.padding(16.dp)) {
+                    Text(option.option)
+                }
+            }
+        }
     }
 }

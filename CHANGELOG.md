@@ -95,6 +95,8 @@ All notable changes to this file.
 - Updated blue theme Color.kt with modifications
 - Replaced tips and studio image resources with new JPG images
 - Updated App.kt, LoginScreen.kt, Carousel.kt, StudioListItem.kt, Tag.kt, MCPTeamScreen.kt, MCPTeamToolMakerScreen.kt, MCPTeamToolMakerTemplateScreen.kt, Color.kt, QuickStartScreen.kt, QuickStartViewModel.kt, TipsScreen.kt, VirtualMakerScreen.kt, VirtualMakerToolConfigScreen.kt, and VirtualToolMakerListView.kt with various improvements
+- New content_copy SVG resource
+- Updated Platform.kt, QuickStartScreen.kt, and QuickStartViewModel.kt with improvements
 
 ## 2025-11-28
 ### Added

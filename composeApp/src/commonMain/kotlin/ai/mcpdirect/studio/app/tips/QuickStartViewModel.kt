@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.tips
 
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
@@ -7,6 +8,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.collections.set
 
 class QuickStartViewModel: ViewModel() {
 
@@ -74,6 +77,7 @@ class QuickStartViewModel: ViewModel() {
     }
     private val _selectedTools = mutableStateMapOf<Long,AIPortTool>()
     val selectedTools by derivedStateOf { _selectedTools.values.toList() }
+
     fun selectTool(selected:Boolean,tool: AIPortTool){
         if(selected) _selectedTools[tool.id] = tool
         else _selectedTools.remove(tool.id)
@@ -154,5 +158,27 @@ class QuickStartViewModel: ViewModel() {
                 }
             }
         }
+    }
+
+    fun grantToolPermissions(){
+        currentAccessKey?.let { accessKey ->
+            val toolPermissions = _selectedTools.values.map { tool ->
+                AIPortToolPermission().apply {
+                    toolId = tool.id
+                    status = Short.MAX_VALUE.toInt()
+                    makerId = tool.makerId
+                    agentId = tool.agentId
+                    accessKeyId = accessKey.id
+                }
+            }.toList()
+            if(toolPermissions.isNotEmpty()) viewModelScope.launch {
+                getPlatform().grantToolPermission(
+                    toolPermissions, null
+                ){(code, message, data) ->
+                }
+            }
+        }
+
+
     }
 }
