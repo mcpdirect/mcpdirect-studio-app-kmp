@@ -4,8 +4,10 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.runtime.*
@@ -14,11 +16,27 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class QuickStartViewModel: ViewModel() {
 
+    val accessKeys: StateFlow<List<AIPortToolAccessKey>> = AccessKeyRepository.accessKeys
+        .map { it.values.toList() }      // 转为 List
+        .stateIn(
+            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
+            started = SharingStarted.WhileSubscribed(5000), // 按需启动
+            initialValue = emptyList()
+        )
+    var currentAccessKey by mutableStateOf<AIPortToolAccessKey?>(null)
+        private set
+    fun selectAccessKey(accessKey: AIPortToolAccessKey){
+        currentAccessKey = accessKey
+    }
+    fun selectedAccessKey(accessKey: AIPortToolAccessKey): Boolean{
+        return currentAccessKey?.id == accessKey.id
+    }
     val toolMakers: StateFlow<List<AIPortToolMaker>> = combine(
         StudioRepository.toolMakers,
         StudioRepository.localToolAgent,
@@ -49,7 +67,31 @@ class QuickStartViewModel: ViewModel() {
 
     private val _tools = mutableStateMapOf<Long,AIPortTool>()
     val tools by derivedStateOf {
-        _tools.values.toList()
+        _tools.values.sortedBy { it.name }.toList()
+    }
+    fun countTools(toolMaker: AIPortToolMaker): Int{
+        return _tools.values.count { it.makerId == toolMaker.id }
+    }
+    private val _selectedTools = mutableStateMapOf<Long,AIPortTool>()
+    val selectedTools by derivedStateOf { _selectedTools.values.toList() }
+    fun selectTool(selected:Boolean,tool: AIPortTool){
+        if(selected) _selectedTools[tool.id] = tool
+        else _selectedTools.remove(tool.id)
+    }
+    fun selectedTool(tool: AIPortTool):Boolean{
+        return _selectedTools.containsKey(tool.id)
+    }
+    fun selectAllTools(selected: Boolean,toolMaker: AIPortToolMaker){
+        if(selected) {
+            for (entry in _tools) if (entry.value.makerId == toolMaker.id) {
+                _selectedTools[entry.key] = entry.value
+            }
+        } else for (entry in _selectedTools) if(entry.value.makerId==toolMaker.id) {
+            _selectedTools.remove(entry.key)
+        }
+    }
+    fun countSelectedTools(toolMaker: AIPortToolMaker): Int{
+        return _selectedTools.values.count { it.makerId == toolMaker.id }
     }
 
     var currentToolMaker by mutableStateOf<AIPortToolMaker?>(null)
@@ -68,6 +110,7 @@ class QuickStartViewModel: ViewModel() {
                             currentTools.addAll(data)
                             for (tool in data) {
                                 _tools[tool.id] = tool
+                                _selectedTools[tool.id] = tool
                             }
                         }
                     }
@@ -78,6 +121,7 @@ class QuickStartViewModel: ViewModel() {
                             currentTools.addAll(data)
                             for (tool in data) {
                                 _tools[tool.id] = tool
+                                _selectedTools[tool.id] = tool
                             }
                         }
                     }

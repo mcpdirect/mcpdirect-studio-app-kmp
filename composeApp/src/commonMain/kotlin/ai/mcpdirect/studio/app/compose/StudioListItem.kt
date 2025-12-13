@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,11 +14,11 @@ import androidx.compose.ui.unit.dp
 val selectedListItemColors: ListItemColors
     @Composable
     get() = ListItemDefaults.colors(
-        containerColor = NavigationRailItemDefaults.colors().selectedIndicatorColor,
-        leadingIconColor = NavigationRailItemDefaults.colors().selectedIconColor,
-        headlineColor = NavigationRailItemDefaults.colors().selectedIconColor,
-        supportingColor = NavigationRailItemDefaults.colors().selectedIconColor,
-        trailingIconColor = NavigationRailItemDefaults.colors().selectedIconColor,
+        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+        leadingIconColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        headlineColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        supportingColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        trailingIconColor = MaterialTheme.colorScheme.onTertiaryContainer,
     )
 
 @OptIn(ExperimentalFoundationApi::class)

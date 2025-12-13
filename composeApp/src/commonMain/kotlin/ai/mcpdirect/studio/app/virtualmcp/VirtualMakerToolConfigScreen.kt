@@ -1,6 +1,5 @@
 package ai.mcpdirect.studio.app.virtualmcp
 
-import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.SearchView
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.Tag
@@ -253,11 +252,11 @@ private fun ToolItem(
                     Spacer(modifier = Modifier.width(8.dp))
                     if (tool.status == 0) Tag(
                         "inactive",
-                        color = MaterialTheme.colorScheme.error,
+                        toggleColor = MaterialTheme.colorScheme.error,
                     )
                     else Tag(
                         "active",
-                        color = MaterialTheme.colorScheme.primary,
+                        toggleColor = MaterialTheme.colorScheme.primary,
                     )
                 }
 

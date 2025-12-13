@@ -323,7 +323,7 @@ private fun TeamItem(
             when(team.status){
                 0-> Tag(
                     "inactive",
-                    color = MaterialTheme.colorScheme.error,
+                    toggleColor = MaterialTheme.colorScheme.error,
                 )
                 1-> Tag("active",)
             }
@@ -368,10 +368,10 @@ private fun TeamMemberList(
                     ) {
                         if (it.expirationDate < 0L) Tag(
                             "waiting for acceptance",
-                            color = MaterialTheme.colorScheme.error,
+                            toggleColor = MaterialTheme.colorScheme.error,
                         )else if (it.status == 0) Tag(
                             "inactive",
-                            color = MaterialTheme.colorScheme.error,
+                            toggleColor = MaterialTheme.colorScheme.error,
                         ) else Tag(
                             "active",
                         )
@@ -465,7 +465,7 @@ private fun TeamToolMakerList(
                         ) {
                             if (it.status == AIPortToolMaker.STATUS_OFF) Tag(
                                 "inactive",
-                                color = MaterialTheme.colorScheme.error,
+                                toggleColor = MaterialTheme.colorScheme.error,
                             ) else Tag(
                                 "active",
                             )
@@ -515,7 +515,7 @@ private fun TeamToolMakerTemplateList(
                         ) {
                             if (it.status == 0) Tag(
                                 "inactive",
-                                color = MaterialTheme.colorScheme.error,
+                                toggleColor = MaterialTheme.colorScheme.error,
                             ) else Tag(
                                 "active",
                             )

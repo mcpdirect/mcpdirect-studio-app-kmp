@@ -35,9 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
-import mcpdirectstudioapp.composeapp.generated.resources.one_key_all_mcps
-import mcpdirectstudioapp.composeapp.generated.resources.openapi_mcp_tools
-import mcpdirectstudioapp.composeapp.generated.resources.share_mcp_tools
+import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_tips_one_url
+import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_tips_openapi
+import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_tips_share_tools
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -144,17 +144,17 @@ fun App(
             ){
                 val slides = listOf(
                     CarouselSlide(
-                        imageResource = Res.drawable.one_key_all_mcps, // Platform-specific
-                        description = "One API Key for your any MCP Servers in house",
+                        imageResource = Res.drawable.mcpdirect_tips_one_url, // Platform-specific
+                        description = "One URL access your any MCP Servers in-house",
                         title = "Let MCP power your business"
                     ),
                     CarouselSlide(
-                        imageResource = Res.drawable.openapi_mcp_tools,
+                        imageResource = Res.drawable.mcpdirect_tips_openapi,
                         description = "Zero code to connect OpenAPI as MCP Tools",
                         title = "Let MCP power your business"
                     ),
                     CarouselSlide(
-                        imageResource = Res.drawable.share_mcp_tools,
+                        imageResource = Res.drawable.mcpdirect_tips_share_tools,
                         description = "Share MCP tools with your team",
                         title = "Let MCP power your business"
                     )

@@ -19,7 +19,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_platform_logo
-import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_studio_256
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_studio_logo
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_text_logo
 import mcpdirectstudioapp.composeapp.generated.resources.visibility

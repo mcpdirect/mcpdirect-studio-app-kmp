@@ -1,4 +1,8 @@
 package ai.mcpdirect.studio.app.theme
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF7E04B2)
@@ -217,9 +221,9 @@ val surfaceContainerDarkHighContrast = Color(0xFF313030)
 val surfaceContainerHighDarkHighContrast = Color(0xFF3C3B3B)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF484646)
 
-
-
-
-
-
-
+val AppCardColors: CardColors
+    @Composable
+    get() = CardDefaults.cardColors(
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+    )

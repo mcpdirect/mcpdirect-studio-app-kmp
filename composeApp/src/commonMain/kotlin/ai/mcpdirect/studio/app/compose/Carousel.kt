@@ -29,6 +29,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -110,16 +112,13 @@ fun CarouselSlideItem(slide: CarouselSlide) {
 
         )
         // Image
-        Box(
-            modifier = Modifier.padding(bottom = 32.dp),
-            contentAlignment = Alignment.Center
-        ) {
+        Card(Modifier.height(320.dp)){
             Image(
                 painter = painterResource(slide.imageResource),
                 contentDescription = slide.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp),
+                    .height(320.dp),
                 contentScale = ContentScale.Fit
             )
         }

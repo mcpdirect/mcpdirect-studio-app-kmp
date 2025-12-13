@@ -13,7 +13,6 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.ERROR
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
-import ai.mcpdirect.studio.app.model.repository.ToolRepository.toolMaker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -30,7 +29,6 @@ import mcpdirectstudioapp.composeapp.generated.resources.error
 import mcpdirectstudioapp.composeapp.generated.resources.inbox_empty
 import mcpdirectstudioapp.composeapp.generated.resources.mobiledata_off
 import mcpdirectstudioapp.composeapp.generated.resources.restart_alt
-import mcpdirectstudioapp.composeapp.generated.resources.save
 import mcpdirectstudioapp.composeapp.generated.resources.setting_config
 import org.jetbrains.compose.resources.painterResource
 
@@ -52,7 +50,7 @@ fun QuickStartScreen() {
             repeat(steps.size) { index ->
                 Box(
                     Modifier.background(
-                        if(stepIndex==index) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                        if(stepIndex>=index) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                         ButtonDefaults.shape,
                     ).height(40.dp).padding(horizontal = 16.dp),
                     contentAlignment = Alignment.Center
@@ -83,11 +81,26 @@ fun QuickStartScreen() {
                 0 -> {
                     Text(
                         "Select MCP servers for MCPdirect key and go to ",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Button(
                         modifier = Modifier.padding(start = 8.dp),
                         enabled = !viewModel.selectedToolMakers.isEmpty(),
+                        onClick = {stepIndex++}
+                    ){
+                        Text("Next")
+                    }
+                }
+                1 -> {
+                    Text(
+                        "Select MCP tools that MCPdirect key can access and go to ",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Button(
+                        modifier = Modifier.padding(start = 8.dp),
+                        enabled = !viewModel.selectedTools.isEmpty()&&viewModel.currentAccessKey!=null,
                         onClick = {stepIndex++}
                     ){
                         Text("Next")
@@ -302,6 +315,7 @@ fun GenerateMCPdirectKeyView(
     modifier: Modifier,
     viewModel: QuickStartViewModel
 ){
+    val accessKeys by viewModel.accessKeys.collectAsState()
     Row(modifier.fillMaxSize()){
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
             Row(Modifier.padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
@@ -313,52 +327,64 @@ fun GenerateMCPdirectKeyView(
                 }
             }
             HorizontalDivider()
+            LazyColumn {
+                items(accessKeys) { accessKey ->
+                    val selected = viewModel.selectedAccessKey(accessKey)
+                    StudioListItem(
+                        modifier = Modifier.clickable {
+                            viewModel.selectAccessKey(accessKey)
+                        },
+                        selected = selected,
+                        leadingContent = {
+                            Checkbox(checked = selected, onCheckedChange = {})
+                        },
+                        headlineContent = { Text(accessKey.name) },
+                    )
+                }
+            }
         }
         Spacer(Modifier.width(8.dp))
-        OutlinedCard(Modifier.weight(2f).fillMaxHeight()) {
-            Row(Modifier.padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
-                Text("Select the tools that MCPdirect key can access", style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = {
-                }) {
-                    Icon(painterResource(Res.drawable.save), contentDescription = "")
-                }
-            }
-            HorizontalDivider()
-            Row(Modifier.fillMaxSize()) {
-                LazyColumn(Modifier.padding(8.dp)) {
-                    items(viewModel.selectedToolMakers) { toolMaker ->
-                        val toolCount = viewModel.tools.count { it.makerId == toolMaker.id }
-                        val tools = viewModel.tools.filter { it.makerId == toolMaker.id }.toList()
+//        OutlinedCard(Modifier.weight(2f).fillMaxHeight()) {
+//            Row(Modifier.height(48.dp).padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
+//                Text("Select the tools that MCPdirect key can access", style = MaterialTheme.typography.titleLarge)
+//                Spacer(Modifier.weight(1f))
+//            }
+//            HorizontalDivider()
+            LazyColumn(Modifier.weight(2f)) {
+                items(viewModel.selectedToolMakers) { toolMaker ->
+                    val toolCount = viewModel.countTools(toolMaker)
+                    val selectedToolCount = viewModel.countSelectedTools(toolMaker)
+                    val tools = viewModel.tools.filter { it.makerId == toolMaker.id }.toList()
 
-                        ElevatedCard {
-                            ListItem(
-                                headlineContent = { Text(toolMaker.name) },
-                                trailingContent = {
-                                    Text("$toolCount/$toolCount")
-                                },
-                                supportingContent = {
-                                    FlowRow(
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                                    ){
-                                        tools.forEach { tool ->
-                                            Tag(tool.name)
-                                        }
-                                    }
+                    Card{
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = selectedToolCount>0,
+                                onCheckedChange = {
+                                    viewModel.selectAllTools(it,toolMaker)
                                 }
                             )
+                            Text("${toolMaker.name} ($selectedToolCount/$toolCount)")
                         }
-                        Spacer(Modifier.height(8.dp))
+                        HorizontalDivider()
+                        FlowRow(
+                            Modifier.padding(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ){
+                            tools.forEach { tool ->
+                                Tag(
+                                    tool.name,
+                                    toggle = viewModel.selectedTool(tool),
+                                ){
+                                    viewModel.selectTool(it,tool)
+                                }
+                            }
+                        }
                     }
-                }
-                VerticalDivider()
-                LazyColumn {
-                    items(viewModel.tools) { tool ->
-
-                    }
+                    Spacer(Modifier.height(8.dp))
                 }
             }
-        }
+//        }
     }
 }

@@ -1,14 +1,12 @@
 package ai.mcpdirect.studio.app.virtualmcp
 
 import ai.mcpdirect.studio.app.Screen
-import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.mcp.EditMCPServerNameDialog
 import ai.mcpdirect.studio.app.mcp.EditMCPServerTagsDialog
-import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
@@ -37,7 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -312,11 +309,11 @@ private fun VirtualToolItem(
                 Spacer(modifier = Modifier.width(8.dp))
                 if (tool.status == 0) Tag(
                     "inactive",
-                    color = MaterialTheme.colorScheme.error,
+                    toggleColor = MaterialTheme.colorScheme.error,
                 )
                 else Tag(
                     "active",
-                    color = MaterialTheme.colorScheme.primary,
+                    toggleColor = MaterialTheme.colorScheme.primary,
                 )
             }
         }

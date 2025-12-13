@@ -1,7 +1,6 @@
 package ai.mcpdirect.studio.app.team
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.compose.StudioCard
 import ai.mcpdirect.studio.app.compose.Tag
@@ -199,7 +198,7 @@ fun ToolMakerItem(
 //                Tag("offline", color = MaterialTheme.colorScheme.error,)
 //            else
             when(maker.status){
-                STATUS_OFF-> Tag("inactive", color = MaterialTheme.colorScheme.error)
+                STATUS_OFF-> Tag("inactive", toggleColor = MaterialTheme.colorScheme.error)
                 STATUS_ON-> Tag("active",)
             }
         },

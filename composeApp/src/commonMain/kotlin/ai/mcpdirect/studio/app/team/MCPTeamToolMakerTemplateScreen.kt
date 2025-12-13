@@ -155,7 +155,7 @@ fun ToolMakerTemplateItem(
 //                Tag("offline", color = MaterialTheme.colorScheme.error,)
 //            else
                 when(template.status){
-                0-> Tag("inactive", color = MaterialTheme.colorScheme.error)
+                0-> Tag("inactive", toggleColor = MaterialTheme.colorScheme.error)
                 1-> Tag("active",)
             }
         },
