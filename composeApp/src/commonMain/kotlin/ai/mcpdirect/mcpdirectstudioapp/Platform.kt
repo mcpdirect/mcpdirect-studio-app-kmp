@@ -412,6 +412,24 @@ interface Platform {
         }
     }
 
+    fun checkMCPServerRTMFromStudio(studioId:String,rtm:String,
+                          onResponse: (resp: AIPortServiceResponse<String>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/rtm/check", mapOf(
+            "rtm" to JsonPrimitive(rtm)
+        )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<String>>(it))
+        }
+    }
+
+    fun installMCPServerRTMFromStudio(studioId:String,rtm:String,
+                                    onResponse: (resp: AIPortServiceResponse<String>) -> Unit){
+        httpRequest("studio.console@$studioId/mcp_server/rtm/install", mapOf(
+            "rtm" to JsonPrimitive(rtm)
+        )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<String>>(it))
+        }
+    }
+
     fun queryToolAccessKeys(onResponse: (resp: AIPortServiceResponse<List<AIPortToolAccessKey>>) -> Unit) {
         hstpRequest("$aitoolsUSL/tool_access_key/query", mapOf()){
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortToolAccessKey>>>(it))

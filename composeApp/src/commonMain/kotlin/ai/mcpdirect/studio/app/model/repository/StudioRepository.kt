@@ -689,4 +689,34 @@ object StudioRepository {
             }
         }
     }
+    suspend fun checkMCPServerRTMFromStudio(
+        toolAgent: AIPortToolAgent, rtm:String,
+        onResponse: (AIPortServiceResponse<String>) -> Unit){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().checkMCPServerRTMFromStudio(
+                toolAgent.engineId,rtm
+            ){
+                generalViewModel.loaded(
+                    "Check MCP server RTM #${rtm} From Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it)
+            }
+        }
+    }
+    suspend fun installMCPServerRTMFromStudio(
+        toolAgent: AIPortToolAgent, rtm:String,
+        onResponse: (AIPortServiceResponse<String>) -> Unit){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().installMCPServerRTMFromStudio(
+                toolAgent.engineId,rtm
+            ){
+                generalViewModel.loaded(
+                    "Install MCP server RTM #${rtm} From Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it)
+            }
+        }
+    }
 }

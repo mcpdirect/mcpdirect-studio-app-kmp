@@ -97,6 +97,11 @@ All notable changes to this file.
 - Updated App.kt, LoginScreen.kt, Carousel.kt, StudioListItem.kt, Tag.kt, MCPTeamScreen.kt, MCPTeamToolMakerScreen.kt, MCPTeamToolMakerTemplateScreen.kt, Color.kt, QuickStartScreen.kt, QuickStartViewModel.kt, TipsScreen.kt, VirtualMakerScreen.kt, VirtualMakerToolConfigScreen.kt, and VirtualToolMakerListView.kt with various improvements
 - New content_copy SVG resource
 - Updated Platform.kt, QuickStartScreen.kt, and QuickStartViewModel.kt with improvements
+- New docs.svg, inbox_empty.svg, keyboard_arrow_left.svg resources and rename inbox-empty.svg to inbox_empty.svg
+- New mcp_install_dark.png resource
+- New AIPortMCPServer model class
+- New QuickStartAIAgent component
+- Updated build.gradle.kts, App.kt, Platform.kt, Carousel.kt, ConfigMCPServerDialog.kt, StudioRepository.kt, and QuickStartScreen.kt with improvements
 
 ## 2025-11-28
 ### Added

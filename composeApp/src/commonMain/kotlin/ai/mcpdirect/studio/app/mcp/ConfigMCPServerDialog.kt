@@ -1,13 +1,19 @@
 package ai.mcpdirect.studio.app.mcp
 
+import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
@@ -23,6 +29,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +38,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.delete
 import org.jetbrains.compose.resources.painterResource
@@ -202,6 +212,199 @@ fun ConfigMCPServerDialog(
             TextButton(onClick = { onDismissRequest() }) {
                 Text("Cancel")
             }
+        }
+    )
+}
+
+@Composable
+fun ConfigMCPServerView(
+    mcpServer: MCPServer?=null,
+    modifier: Modifier = Modifier,
+){
+    var name by remember { mutableStateOf("") }
+    var isNameError by remember { mutableStateOf(true) }
+    var transport by remember { mutableStateOf(mcpServer?.transport?:0)  }
+    var url by remember { mutableStateOf(mcpServer?.url?:"")}
+    var command by remember { mutableStateOf(mcpServer?.command?:"")}
+    val args = remember { mutableStateListOf<String>()}
+    mcpServer?.args?.let {
+        args.addAll(it)
+    }
+    val newServerEnv = remember { mutableStateListOf<Pair<String, String>>()}
+    mcpServer?.env?.let {
+        newServerEnv.addAll(it.entries.map { it.toPair() })
+    }
+    var isCommandValid by remember {mutableStateOf(true)}
+    var isUrlError by remember {mutableStateOf(true)}
+    val formScrollState = rememberScrollState()
+    fun onNewServerCommandChange(value: String) { command = value }
+    fun onNewServerUrlChange(value: String) {
+        url = value
+        isUrlError = !(url.trim().startsWith("http://")|| url.trim().startsWith("https://"))
+    }
+    fun onNewServerTypeChange(type: Int) { transport = type }
+    fun onNameChange(value:String){
+        isNameError = value.isBlank()||value.length>20
+        name = value
+    }
+    Column(
+        modifier.verticalScroll(formScrollState),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = name,
+            onValueChange = { onNameChange(it)},
+            label = { Text("MCP Server Name") },
+            isError = isNameError,
+            supportingText = {
+                Text("Name must not be empty and length < 21")
+            },
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Text("Type: ")
+            Row(verticalAlignment = Alignment.CenterVertically,){
+                RadioButton(selected = transport == 0, onClick = { onNewServerTypeChange(0) })
+                Text("STDIO")
+            }
+            Row(verticalAlignment = Alignment.CenterVertically,) {
+                RadioButton(selected = transport == 1, onClick = { onNewServerTypeChange(1) })
+                Text("SSE")
+            }
+            Row(verticalAlignment = Alignment.CenterVertically,) {
+                RadioButton(selected = transport == 2, onClick = { onNewServerTypeChange(2) })
+                Text("Streamable Http")
+            }
+        }
+
+        if (transport == 0) {
+            OutlinedTextField(
+                value = command,
+                onValueChange = { onNewServerCommandChange(it) },
+                label = { Text("Command") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = !isCommandValid,
+                supportingText = {
+                    Text("Command must not be empty")
+                },
+                trailingIcon = {
+                    if(command == "node"||command=="npx"||command=="npm"){
+                        var version by remember { mutableStateOf<String?>(null) }
+                        LaunchedEffect(null){
+                            StudioRepository.checkMCPServerRTMFromStudio(
+                                StudioRepository.localToolAgent.value,command
+                            ){
+                                version = it.data
+                            }
+                        }
+                        version?.let{
+                            Box(Modifier.padding(end=16.dp)) {
+                                Tag("$command $version installed")
+                            }
+                        }?:Button(
+                            onClick = {}
+                        ){
+                            Text("Install $command")
+                        }
+                    }
+                }
+            )
+            OutlinedTextField(
+                label = { Text("Arguments") },
+                value = args.joinToString(separator = "\n"),
+                placeholder = { Text("arg1\narg2\narg3") },
+                onValueChange = {},
+                modifier = Modifier.fillMaxWidth().height(150.dp),
+                supportingText = {Text("Each argument on a new line")}
+            )
+        } else {
+            OutlinedTextField(
+                value = url,
+                onValueChange = { onNewServerUrlChange(it) },
+                label = { Text("URL") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = isUrlError,
+                supportingText = {
+                    Text("URL must not be empty", color = MaterialTheme.colorScheme.error)
+                }
+            )
+
+        }
+        OutlinedTextField(
+            label = {Text(if(transport==0) "Environment Variables" else "Headers")},
+            placeholder = { Text("KEY1=value1\nKEY2=value2\nKEY3=value3") },
+            value = "",
+            onValueChange = {},
+            modifier = Modifier.fillMaxWidth().height(150.dp),
+            supportingText = {Text("Each KEY=value on a new line")}
+        )
+    }
+}
+
+@Composable
+fun ConfigMCPServerJSONView(
+    mcpServer: MCPServer?=null,
+    modifier: Modifier = Modifier,
+){
+    val prettyJson = Json { prettyPrint = true }
+    var serverJson = mapOf<String, JsonElement>(
+        "mcpServers" to JsonObject(
+            mapOf()
+        )
+    )
+    var serverJsonString by remember { mutableStateOf("") }
+    var isJsonError by remember { mutableStateOf(false) }
+    var configError by remember { mutableStateOf<String?>(null) }
+
+    fun onJsonValueChange(value:String){
+        try {
+            serverJson = prettyJson.decodeFromString(value)
+            serverJsonString = prettyJson.encodeToString(serverJson)
+            isJsonError = false
+        }catch(e: Exception){
+            isJsonError = true
+            serverJsonString = value
+        }
+    }
+    OutlinedTextField(
+        modifier = modifier.fillMaxSize(),
+        value = serverJsonString,
+        onValueChange = { onJsonValueChange(it) },
+        label = { Text("MCP Servers Configuration") },
+        placeholder = { Text("""
+{
+  "mcpServers": {
+    "stdio-server-example": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-example"],
+      "env": {
+        "ENV_VARIABLE": "env-variable"
+      }
+    },
+    "sse-server-example": {
+      "type": "sse",
+      "url": "http://localhost:3000"
+    },
+    "streamable-http-example": {
+      "type": "streamableHttp",
+      "url": "http://localhost:3001",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer your-token"
+      }
+    }
+  }
+}
+                """.trimIndent(), style = MaterialTheme.typography.bodyMedium) },
+        isError = isJsonError||configError!=null,
+        supportingText = {
+            if(configError!=null) {Text(configError!!)}
+            else if(isJsonError)Text("invalid json format")
         }
     )
 }

@@ -146,38 +146,24 @@ fun App(
                     CarouselSlide(
                         imageResource = Res.drawable.mcpdirect_tips_one_url, // Platform-specific
                         description = "One URL access your any MCP Servers in-house",
-                        title = "Let MCP power your business"
+                        title = ""
                     ),
                     CarouselSlide(
                         imageResource = Res.drawable.mcpdirect_tips_openapi,
                         description = "Zero code to connect OpenAPI as MCP Tools",
-                        title = "Let MCP power your business"
+                        title = ""
                     ),
                     CarouselSlide(
                         imageResource = Res.drawable.mcpdirect_tips_share_tools,
                         description = "Share MCP tools with your team",
-                        title = "Let MCP power your business"
+                        title = ""
                     )
                 )
                 Carousel(
+                    "Let MCP power your business",
                     slides,
                     Modifier.width(800.dp),
                 )
-//                Column(
-//                    Modifier.width(800.dp),
-//                    verticalArrangement = Arrangement.Center,
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    Text(
-//                        "One API Key for your any MCP Servers in house",
-//                        style = MaterialTheme.typography.headlineMedium,
-//                    )
-//                    Image(
-//                        painterResource(Res.drawable.one_key_all_mcps),
-//                        contentDescription = null,
-//                        modifier = Modifier.width(600.dp)
-//                    )
-//                }
                 VerticalDivider()
                 when(authViewModel.currentScreen){
                     AuthScreen.Login -> {

@@ -5,6 +5,8 @@ import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerDialog
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerFromTemplatesDialog
+import ai.mcpdirect.studio.app.mcp.ConfigMCPServerJSONView
+import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
 import ai.mcpdirect.studio.app.mcp.ConnectMCPServerDialog
 import ai.mcpdirect.studio.app.mcp.openapi.ConnectOpenAPIServerDialog
 import ai.mcpdirect.studio.app.model.MCPServer
@@ -13,6 +15,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.ERROR
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,18 +23,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
+import mcpdirectstudioapp.composeapp.generated.resources.allDrawableResources
 import mcpdirectstudioapp.composeapp.generated.resources.content_copy
+import mcpdirectstudioapp.composeapp.generated.resources.docs
 import mcpdirectstudioapp.composeapp.generated.resources.error
 import mcpdirectstudioapp.composeapp.generated.resources.inbox_empty
 import mcpdirectstudioapp.composeapp.generated.resources.mobiledata_off
@@ -52,7 +56,7 @@ fun QuickStartScreen() {
     Column(Modifier.fillMaxSize().padding(8.dp)) {
         Row(
             Modifier.fillMaxWidth().padding(top = 8.dp,bottom = 16.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             repeat(steps.size) { index ->
                 Box(
@@ -69,7 +73,7 @@ fun QuickStartScreen() {
         when(stepIndex){
             0 -> ConnectMCPView(Modifier.weight(1f),viewModel)
             1 -> GenerateMCPdirectKeyView(Modifier.weight(1f),viewModel)
-            2 -> IntegrateWithAIAgentView(Modifier.weight(1f),viewModel)
+            2 -> ConfigAIAgentView(Modifier.weight(1f),viewModel)
         }
         Row(
             Modifier.fillMaxWidth().padding(8.dp),
@@ -232,8 +236,8 @@ fun ConnectMCPView(
                 }
             }
         }
+        VerticalDivider()
         viewModel.currentToolMaker?.let {
-            VerticalDivider()
             Column(Modifier.weight(2f)) {
                 Row(Modifier.padding(start = 16.dp, end = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -286,6 +290,28 @@ fun ConnectMCPView(
                     }
                 }
             }
+        }?: Column(modifier=Modifier.weight(2f)) {
+            val tabs = listOf("General", "Connect MCP from JSON","Connect Open API")
+            var tabIndex by remember { mutableStateOf(0) }
+            SecondaryTabRow(
+                selectedTabIndex = tabIndex
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = tabIndex == index,
+                        onClick = {
+                            tabIndex = index
+                        },
+                        text = { Text(title) }
+                    )
+                }
+            }
+            when (tabIndex) {
+                0 -> {
+                    ConfigMCPServerView(modifier = Modifier.padding(16.dp))
+                }
+                1 -> ConfigMCPServerJSONView(modifier = Modifier.padding(16.dp))
+            }
         }
     }
     when(dialog){
@@ -331,6 +357,12 @@ fun ConnectMCPView(
         )
     }
 } }
+@Composable
+fun MCPServerCatalog(){
+    Row(Modifier.fillMaxSize()) {
+
+    }
+}
 
 @Composable
 fun GenerateMCPdirectKeyView(
@@ -411,35 +443,18 @@ fun GenerateMCPdirectKeyView(
     }
 }
 
-sealed class AIAgent(val name: String){
-    object General : AIAgent("General")
-    object ClaudeCode : AIAgent("Claude Code")
-    object ClaudeDesktop : AIAgent("Claude Desktop")
-    object CherryStudio : AIAgent("Cherry Studio")
-    object Cursor : AIAgent("Cursor")
-    object Dify : AIAgent("Dify")
-    object QwenCode : AIAgent("Qwen Code")
-    object VSCode : AIAgent("VS Code")
-}
-val aiAgents = listOf(
-    AIAgent.General,
-    AIAgent.ClaudeCode,
-    AIAgent.ClaudeDesktop,
-    AIAgent.CherryStudio,
-    AIAgent.Cursor,
-    AIAgent.Dify,
-    AIAgent.QwenCode,
-    AIAgent.VSCode
-)
 @Composable
-fun IntegrateWithAIAgentView(
+fun ConfigAIAgentView(
     modifier: Modifier,
     viewModel: QuickStartViewModel
 ){ OutlinedCard(modifier) {
-    var aiAgent by remember { mutableStateOf<AIAgent>(AIAgent.General) }
+    var aiAgent by remember { mutableStateOf<AIAgent?>(null) }
     Row {
         LazyColumn(Modifier.weight(1f)) {
             items(aiAgents) {
+                if(aiAgent==null){
+                    aiAgent = it
+                }
                 StudioListItem(
                     modifier = Modifier.clickable {
                         aiAgent = it
@@ -449,73 +464,84 @@ fun IntegrateWithAIAgentView(
                 )
             }
         }
-        VerticalDivider()
-        IntegrationOptions(
-            modifier = Modifier.weight(2f),
-            options = when(aiAgent){
-                AIAgent.General -> listOf()
-                AIAgent.ClaudeCode -> listOf(
-                    Option(
-                        "Add HTTP server with command line",
-                        "claude mcp add --transport http private-api https://api.company.com/mcp \\\n" +
-                                "  --header \"X-API-Key: your-key-here\""
-                    ),
-                    Option(
-                        "Add HTTP server in .mcp.json",
-                        """
-{
-  "mcpServers": {
-    "api-server": {
-      "type": "http",
-      "url": "https://api.example.com/mcp",
-      "headers": {
-        "Authorization": "Bearer API_KEY"
-      }
-    }
-  }
-}                   
-                        """.trimIndent()
-                    )
-                )
-                else -> listOf()
-            }
-        )
+        aiAgent?.let { aiAgent ->
+            VerticalDivider()
+            AIAgentConfigOptionView(
+                modifier = Modifier.weight(2f),
+                configs = aiAgent.configs,
+                aiAgent.references
+            )
+        }
     }
 } }
 
-
-data class Option(val title:String,val option:String)
-
 @Composable
-fun IntegrationOptions(
+fun AIAgentConfigOptionView(
     modifier: Modifier = Modifier,
-    options:List<Option>,
+    configs:List<AIAgentConfig>,
+    references: List<AIAgentReference>? = null
 ){
     val listState = rememberLazyListState()
-    LazyColumn(
-        state = listState,
-        modifier = modifier.padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(options) { option ->
-            ElevatedCard{
-                Row(
-                    Modifier.padding(start = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(option.title)
-                    Spacer(Modifier.weight(1f))
-                    IconButton(onClick = {
-
-                    }){
-                        Icon(painterResource(Res.drawable.content_copy), contentDescription = "Copy")
+    val uriHandler = LocalUriHandler.current
+    Column( modifier.padding(8.dp),) {
+        references?.let {
+            if (it.isNotEmpty()) Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ){
+                TextButton(
+                    onClick = {
+                        uriHandler.openUri(it[0].url)
                     }
+                ) {
+                    Text(it[0].name)
+                    Icon(painterResource(Res.drawable.docs), contentDescription = "")
                 }
-                HorizontalDivider()
-                SelectionContainer(Modifier.padding(16.dp)) {
-                    Text(option.option)
+            }
+        }
+        LazyColumn(
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(configs) { option ->
+                ElevatedCard{
+                    Row(
+                        Modifier.padding(start = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(option.title)
+                        Spacer(Modifier.weight(1f))
+                        option.deeplink?.let { deeplink ->
+                            deeplink.icon?.let { icon ->
+                                Res.allDrawableResources[icon]?.let {
+                                    Image(painterResource(it),contentDescription = "")
+                                }
+                            }?: TextButton(onClick = {
+
+                            }){
+                                Text(deeplink.name)
+                            }
+                        }
+                        IconButton(onClick = {
+
+                        }){
+                            Icon(painterResource(Res.drawable.content_copy), contentDescription = "Copy")
+                        }
+                    }
+                    HorizontalDivider()
+                    SelectionContainer(Modifier.padding(16.dp)) {
+                        Text(option.config, style = MaterialTheme.typography.bodyMedium)
+                    }
+                    option.paths?.let { paths ->
+                        HorizontalDivider()
+                        for (path in paths) {
+                            Text(path.os,modifier = Modifier.padding(start = 16.dp,top=16.dp))
+                            Text(path.path,modifier = Modifier.padding(start = 32.dp),style = MaterialTheme.typography.bodyMedium)
+                        }
+                        Spacer(Modifier.height(16.dp))
+                    }
                 }
             }
         }
     }
+
 }
