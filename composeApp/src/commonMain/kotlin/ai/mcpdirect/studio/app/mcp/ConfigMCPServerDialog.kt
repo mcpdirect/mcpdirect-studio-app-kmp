@@ -1,18 +1,25 @@
 package ai.mcpdirect.studio.app.mcp
 
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.compose.Tag
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
+import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServer
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -20,27 +27,51 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.delete
 import org.jetbrains.compose.resources.painterResource
@@ -230,19 +261,19 @@ fun ConfigMCPServerView(
     mcpServer?.args?.let {
         args.addAll(it)
     }
-    val newServerEnv = remember { mutableStateListOf<Pair<String, String>>()}
+    val env = remember { mutableStateMapOf<String, String>()}
     mcpServer?.env?.let {
-        newServerEnv.addAll(it.entries.map { it.toPair() })
+        env.putAll(it)
     }
     var isCommandValid by remember {mutableStateOf(true)}
     var isUrlError by remember {mutableStateOf(true)}
     val formScrollState = rememberScrollState()
-    fun onNewServerCommandChange(value: String) { command = value }
-    fun onNewServerUrlChange(value: String) {
-        url = value
-        isUrlError = !(url.trim().startsWith("http://")|| url.trim().startsWith("https://"))
+    fun onCommandChange(value: String) { command = value }
+    fun onUrlChange(value: String) {
+        url = value.trim().replace(" ","")
+        isUrlError = !(url.startsWith("http://")|| url.startsWith("https://"))
     }
-    fun onNewServerTypeChange(type: Int) { transport = type }
+    fun onTypeChange(type: Int) { transport = type }
     fun onNameChange(value:String){
         isNameError = value.isBlank()||value.length>20
         name = value
@@ -251,6 +282,123 @@ fun ConfigMCPServerView(
         modifier.verticalScroll(formScrollState),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            SingleChoiceSegmentedButtonRow {
+                SegmentedButton(
+                    selected = transport == 0,
+                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+//                    contentPadding = PaddingValues(horizontal = 0.dp),
+                    onClick = { onTypeChange(0) }){
+                    Text("STDIO",style = MaterialTheme.typography.bodyMedium)
+                }
+                SegmentedButton(
+                    selected = transport == 1,
+                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+//                    contentPadding = PaddingValues(horizontal = 0.dp),
+                    onClick = { onTypeChange(1) }) {
+                    Text("SSE",style = MaterialTheme.typography.bodyMedium)
+                }
+                SegmentedButton(
+                    selected = transport == 2,
+                    shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+//                    contentPadding = PaddingValues(horizontal = 0.dp),
+                    onClick = { onTypeChange(2) }) {
+                    Text("HTTP",style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+//            Row(verticalAlignment = Alignment.CenterVertically,){
+//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 0,
+//                    onClick = { onTypeChange(0) })
+//                Text("STDIO")
+//            }
+//            Row(verticalAlignment = Alignment.CenterVertically,) {
+//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 1,
+//                    onClick = { onTypeChange(1) })
+//                Text("SSE")
+//            }
+//            Row(verticalAlignment = Alignment.CenterVertically,) {
+//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 2,
+//                    onClick = { onTypeChange(2) })
+//                Text("Streamable HTTP")
+//            }
+            Button(onClick = {
+                val text = getPlatform().pasteFromClipboard()
+                if(text==null){
+                    generalViewModel.showSnackbar("Clipboard is empty")
+                }else try{
+                    var config:Map<String, JsonElement>? = null
+                    val json = Json.decodeFromString<Map<String, JsonElement>>(text)
+                    val mcpServersConfig = json["mcpServers"]?.jsonObject
+                    if(mcpServersConfig==null) for (entry in json) {
+                        onNameChange(entry.key)
+                        config = entry.value.jsonObject
+                        break;
+                    }else for (entry in mcpServersConfig) {
+                        onNameChange(entry.key)
+                        config = entry.value.jsonObject
+                        break;
+                    }
+                    if(config!=null) {
+                        val command = config["command"]?.jsonPrimitive?.content
+                        val url = config["url"]?.jsonPrimitive?.content
+                        val type = config["type"]?.jsonPrimitive?.content
+                        val a = config["args"]?.jsonArray
+                        val e = config["env"]?.jsonObject
+                        val h = config["headers"]?.jsonObject
+                        if (command == null && url == null) {
+                            throw Exception()
+                        }
+                        if (type == null) {
+                            if (command != null) {
+                                onTypeChange(0)
+                            } else if (url != null) {
+                                if (url.endsWith("/sse")) onTypeChange(1)
+                                else onTypeChange(2)
+                            }
+                        } else when (type.lowercase()) {
+                            "stdio" -> onTypeChange(0)
+                            "sse" -> onTypeChange(1)
+                            "http" -> onTypeChange(2)
+                            "streamable" -> onTypeChange(2)
+                            "streamablehttp" -> onTypeChange(2)
+                            else -> throw Exception()
+                        }
+                        if (transport == 0) {
+                            onCommandChange(command!!)
+                            a?.let {
+                                args.clear()
+                                for (element in it) {
+                                    args.add(element.jsonPrimitive.content)
+                                }
+                            }
+                            e?.let {
+                                env.clear()
+                                for (entry in it) {
+                                    env[entry.key] = entry.value.jsonPrimitive.content
+                                }
+                            }
+                        } else {
+                            onUrlChange(url!!)
+                            h?.let {
+                                env.clear()
+                                for (entry in it) {
+                                    env[entry.key] = entry.value.jsonPrimitive.content
+                                }
+                            }
+                        }
+                    }else throw Exception()
+                }catch (e:Exception){
+                    generalViewModel.showSnackbar("Invalid JSON format:\n$text")
+                }
+            }) {
+                Text("Paste from JSON")
+            }
+        }
+
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = name,
@@ -261,29 +409,11 @@ fun ConfigMCPServerView(
                 Text("Name must not be empty and length < 21")
             },
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Text("Type: ")
-            Row(verticalAlignment = Alignment.CenterVertically,){
-                RadioButton(selected = transport == 0, onClick = { onNewServerTypeChange(0) })
-                Text("STDIO")
-            }
-            Row(verticalAlignment = Alignment.CenterVertically,) {
-                RadioButton(selected = transport == 1, onClick = { onNewServerTypeChange(1) })
-                Text("SSE")
-            }
-            Row(verticalAlignment = Alignment.CenterVertically,) {
-                RadioButton(selected = transport == 2, onClick = { onNewServerTypeChange(2) })
-                Text("Streamable Http")
-            }
-        }
 
         if (transport == 0) {
             OutlinedTextField(
                 value = command,
-                onValueChange = { onNewServerCommandChange(it) },
+                onValueChange = { onCommandChange(it) },
                 label = { Text("Command") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -324,13 +454,13 @@ fun ConfigMCPServerView(
         } else {
             OutlinedTextField(
                 value = url,
-                onValueChange = { onNewServerUrlChange(it) },
+                onValueChange = { onUrlChange(it) },
                 label = { Text("URL") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 isError = isUrlError,
                 supportingText = {
-                    Text("URL must not be empty", color = MaterialTheme.colorScheme.error)
+                    Text("URL must not be empty and must start with http:// or https://")
                 }
             )
 
@@ -346,65 +476,208 @@ fun ConfigMCPServerView(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConfigMCPServerJSONView(
-    mcpServer: MCPServer?=null,
+fun ConfigMCPServerView(
+    mcpServer: AIPortMCPServer,
     modifier: Modifier = Modifier,
 ){
-    val prettyJson = Json { prettyPrint = true }
-    var serverJson = mapOf<String, JsonElement>(
-        "mcpServers" to JsonObject(
-            mapOf()
-        )
-    )
-    var serverJsonString by remember { mutableStateOf("") }
-    var isJsonError by remember { mutableStateOf(false) }
-    var configError by remember { mutableStateOf<String?>(null) }
+//    val prettyJson = Json { prettyPrint = true }
+//    var preview by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var isNameError by remember { mutableStateOf(false) }
+    var args by remember { mutableStateOf("") }
+    val inputArgs = remember { mutableStateListOf<String>() }
+    var isInputArgsError by remember { mutableStateOf(false) }
+//    mcpServer.inputArgs?.let { inputArgs.addAll(it)}
+    var env by remember { mutableStateOf("") }
+    val inputEnv =  mutableStateMapOf<String,String>()
+    var isInputEnvError by remember { mutableStateOf(false) }
+//    mcpServer.inputEnv?.let {
+//        inputEnv.clear()
+//        inputEnv.putAll(it)
+//    }
+    val formScrollState = rememberScrollState()
+    LaunchedEffect(mcpServer){
+        name = mcpServer.name
+        isNameError = false
+        args = mcpServer.inputArgs?.joinToString(separator = "\n")?:""
+        isInputArgsError = false
+        inputArgs.clear()
+        env = mcpServer.inputEnv?.entries?.joinToString(separator = "\n") {
+            "${it.key}=${it.value}"
+        }?:""
+        isInputEnvError = false
+        inputEnv.clear()
+    }
+//    fun build(){
+//        val type = when(mcpServer.transport){
+//            0 -> "stdio"
+//            1 -> "sse"
+//            2 -> "http"
+//            else -> null
+//        }
+//        val map = mutableMapOf<String, JsonElement>()
+//        map["type"]=JsonPrimitive(type);
+//        if(type=="stdio"){
+//            map["command"]=JsonPrimitive(mcpServer.command)
+//            val args = inputArgs.toMutableList()
+//            mcpServer.args?.let { args.addAll(it) }
+//            map["args"] = Json.encodeToJsonElement(args)
+//            val env = inputEnv.toMutableMap()
+//            mcpServer.env?.let { env.putAll(it) }
+//            map["env"] = Json.encodeToJsonElement(env)
+//        }else{
+//            map["url"]=Json.encodeToJsonElement(mcpServer.url)
+//            val env = inputEnv.toMutableMap()
+//            mcpServer.env?.let { env.putAll(it) }
+//            map["headers"] = Json.encodeToJsonElement(env)
+//        }
+//        preview = prettyJson.encodeToString(mapOf<String, JsonElement>(
+//            "mcpServers" to JsonObject(mapOf(
+//                name to JsonObject(map),
+//            ))
+//        ))
+//    }
+//    build()
+    fun onNameChange(value:String){
+        isNameError = value.isBlank()||value.length>20
+        name = value
+//        if(!isNameError){
+//            build()
+//        }
+    }
+    fun onArgsChange(value:String){
+        args = value.replace(" ","").replace("\n\n","\n")
+        inputArgs.clear()
+        val strings = value.split("\n")
+        strings.forEach {
+            val arg = it.trim()
+            if(it.isNotEmpty())inputArgs.add(arg)
+        }
+    }
+    fun onEnvChange(value:String){
+        env = value.replace(" ","").replace("\n\n","\n")
+        inputEnv.clear()
+        val strings = value.split("\n")
+        var errorCount = 0
+        strings.forEach { pair ->
+            if(pair.isNotBlank())pair.split("=").let {
+                if(it.size == 2 && it[0].isNotBlank() && it[1].isNotBlank()) inputEnv[it[0].trim()]=it[1].trim()
+                else errorCount++
+            }
+        }
+        isInputEnvError = errorCount>0
+    }
+    Column(
+        modifier.verticalScroll(formScrollState),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+//        ElevatedCard { Column(Modifier.fillMaxWidth().padding(16.dp)) {
+//            Text(preview, style = MaterialTheme.typography.bodySmall)
+//        } }
+        val type = when(mcpServer.transport){
+            0 -> "stdio"
+            1 -> "sse"
+            2 -> "http"
+            else -> "Invalid Type"
+        }
+        val bodyMedium = MaterialTheme.typography.bodyMedium
+        val bodySmall = MaterialTheme.typography.bodySmall
+        val bold = FontWeight.Bold
+        Card{Column(Modifier.fillMaxWidth().padding(8.dp)) {
+            Row{
+                Text("Type:",Modifier.width(80.dp), style = bodyMedium)
+                Text(type,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
+            }
+            HorizontalDivider()
+            if (mcpServer.transport == 0) {
+                Row{
+                    Text("Command:",Modifier.width(80.dp), style = bodyMedium)
+                    Text(mcpServer.command!!,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
+                }
+                mcpServer.args?.let { args ->
+                    if(args.isNotEmpty()){
+                        HorizontalDivider()
+                        Row{
+                            Text("Arguments: ",Modifier.width(80.dp), style = bodyMedium)
+                            Column(
+                                Modifier.padding(2.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                args.forEach { arg ->
+                                    Text(arg, style = bodySmall,fontWeight = bold)
+                                }
+                            }
+                        }
+                    }
+                }
+            } else Row{
+                Text("URL:",Modifier.width(80.dp), style = bodyMedium)
+                Text(mcpServer.url!!,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
+            }
 
-    fun onJsonValueChange(value:String){
-        try {
-            serverJson = prettyJson.decodeFromString(value)
-            serverJsonString = prettyJson.encodeToString(serverJson)
-            isJsonError = false
-        }catch(e: Exception){
-            isJsonError = true
-            serverJsonString = value
+            mcpServer.env?.let { env ->
+                if(env.isNotEmpty()) {
+                    HorizontalDivider()
+                    Row{
+                        Text(if (mcpServer.transport == 0) "Env:" else "Headers:",Modifier.width(80.dp), style = bodyMedium)
+                        Column(
+                            Modifier.padding(2.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            env.forEach {
+                                Text("${it.key} = ${it.value}", style = bodySmall,fontWeight = bold)
+                            }
+                        }
+                    }
+                }
+            }
+        } }
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = name,
+            onValueChange = { onNameChange(it)},
+            label = { Text("MCP Server Name") },
+            isError = isNameError,
+            supportingText = {
+                Text("Name must not be empty and length < 21")
+            }
+        )
+
+        mcpServer.inputs?.let { inputs ->
+            inputs.forEach { input ->
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = "",
+                    onValueChange = {},
+                    label = { Text(input.key) },
+                    isError = isNameError,
+                    supportingText = {
+                        Text("${input.key} must not be empty")
+                    },
+                )
+            }
         }
-    }
-    OutlinedTextField(
-        modifier = modifier.fillMaxSize(),
-        value = serverJsonString,
-        onValueChange = { onJsonValueChange(it) },
-        label = { Text("MCP Servers Configuration") },
-        placeholder = { Text("""
-{
-  "mcpServers": {
-    "stdio-server-example": {
-      "command": "npx",
-      "args": ["-y", "mcp-server-example"],
-      "env": {
-        "ENV_VARIABLE": "env-variable"
-      }
-    },
-    "sse-server-example": {
-      "type": "sse",
-      "url": "http://localhost:3000"
-    },
-    "streamable-http-example": {
-      "type": "streamableHttp",
-      "url": "http://localhost:3001",
-      "headers": {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer your-token"
-      }
-    }
-  }
-}
-                """.trimIndent(), style = MaterialTheme.typography.bodyMedium) },
-        isError = isJsonError||configError!=null,
-        supportingText = {
-            if(configError!=null) {Text(configError!!)}
-            else if(isJsonError)Text("invalid json format")
+        if(mcpServer.transport == 0) {
+            OutlinedTextField(
+                label = { Text("Arguments") },
+                value = args,
+                placeholder = { Text("arg1\narg2") },
+                onValueChange = {onArgsChange(it)},
+                modifier = Modifier.fillMaxWidth().height(120.dp),
+                supportingText = {Text("Each argument on a new line")}
+            )
         }
-    )
+        OutlinedTextField(
+            label = {Text(if(mcpServer.transport==0) "Environment Variables" else "Headers")},
+            placeholder = { Text("KEY1=value1\nKEY2=value2") },
+            value = env,
+            onValueChange = { onEnvChange(it)},
+            modifier = Modifier.fillMaxWidth().height(120.dp),
+            isError = isInputEnvError,
+            supportingText = {Text("Each KEY=value on a new line")}
+        )
+    }
 }

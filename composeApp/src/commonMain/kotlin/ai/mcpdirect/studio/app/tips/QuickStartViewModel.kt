@@ -101,10 +101,10 @@ class QuickStartViewModel: ViewModel() {
     var currentToolMaker by mutableStateOf<AIPortToolMaker?>(null)
         private set
     val currentTools = mutableStateListOf<AIPortTool>()
-    fun currentToolMaker(maker: AIPortToolMaker){
+    fun currentToolMaker(maker: AIPortToolMaker?){
         currentToolMaker = maker
         currentTools.clear()
-        if(maker.errorCode==0){
+        if(maker!=null&&maker.errorCode==0){
             viewModelScope.launch {
                 when(maker){
                     is MCPServer -> StudioRepository.queryMCPToolsFromStudio(

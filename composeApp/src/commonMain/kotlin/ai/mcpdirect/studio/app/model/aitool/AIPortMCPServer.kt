@@ -13,14 +13,17 @@ class AIPortMCPServer {
     var args: List<String>? = null
     var env: Map<String,String>? = null
     var inputs:Map<String,String>? = null
-    var inputArgs:Map<String,String>? = null
+    var inputArgs:List<String>? = null
     var inputEnv: Map<String,String>? = null
     constructor()
+    constructor(id: Long){
+        this.id = id
+    }
     constructor(id: Long, name: String, command: String,
                 args: List<String>? = null,
                 env: Map<String,String>? = null,
                 inputs: Map<String,String>? = null,
-                inputArgs: Map<String,String>? = null,
+                inputArgs: List<String>? = null,
         ) {
         this.id = id
         this.name = name

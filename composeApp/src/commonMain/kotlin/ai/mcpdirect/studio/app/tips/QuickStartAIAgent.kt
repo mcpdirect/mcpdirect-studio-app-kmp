@@ -137,11 +137,14 @@ val aiAgents = listOf(
 //    AIAgent("VS Code")
 )
 
-val mcpServers = listOf(
+val mcpServerCatalog = listOf(
+    AIPortMCPServer(),
+    AIPortMCPServer(1),
+    AIPortMCPServer(-1),
     AIPortMCPServer(300,"Chrome DevTools","npx",listOf(
         "chrome-devtools-mcp@latest"
     )),
-    AIPortMCPServer(400,"dbhub","npx",
+    AIPortMCPServer(400,"DBHub","npx",
         listOf("@bytebase/dbhub", "--transport", "stdio", "--dsn", $$"${DSN}"),
         null,mapOf("DSN" to "postgres://user:password@localhost:5432/dbname")
     ),
