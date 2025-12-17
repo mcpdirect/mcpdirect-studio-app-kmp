@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.tips
 
+import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.Tag
@@ -30,6 +31,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
@@ -140,16 +142,15 @@ fun ConnectMCPView(
     modifier: Modifier,
     viewModel: QuickStartViewModel
 ){ Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp),){
-    OutlinedCard(Modifier.fillMaxHeight().weight(1f)) {
+    OutlinedCard(Modifier.fillMaxHeight().weight(0.8f)) {
         val toolMakers by viewModel.toolMakers.collectAsState()
-        Row(Modifier.padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
-            Text("Connected MCP servers", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.weight(1f))
-            TextButton(onClick = {
+        StudioActionBar (
+            "Connected MCP servers",
+        ){
+            IconButton(onClick = {
                 viewModel.currentToolMaker(null)
             }) {
                 Icon(painterResource(Res.drawable.add), contentDescription = "")
-                Text("Add")
             }
         }
         HorizontalDivider()
@@ -321,10 +322,8 @@ fun MCPServerCatalogView(
 ){Column(modifier.fillMaxHeight()) {
     Row{
         var currentMCPServer by remember { mutableStateOf(AIPortMCPServer()) }
-        Column(modifier = Modifier.weight(1f))  {
-            Row(Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),verticalAlignment = Alignment.CenterVertically) {
-                Text("MCP server catalog", style = MaterialTheme.typography.titleLarge)
-            }
+        Column(modifier = Modifier.weight(0.8f))  {
+            StudioActionBar("MCP server catalog")
             HorizontalDivider()
             LazyColumn{
                 items(mcpServerCatalog) { mcpServer ->
@@ -354,9 +353,9 @@ fun MCPServerCatalogView(
 
         VerticalDivider()
         when(currentMCPServer.id){
-            0L -> ConfigMCPServerView(modifier = Modifier.weight(2f).padding(8.dp))
+            0L -> ConfigMCPServerView("General",modifier = Modifier.weight(2f))
             1L -> {}
-            else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f).padding(8.dp))
+            else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f))
         }
     }
 } }

@@ -1,25 +1,21 @@
 package ai.mcpdirect.studio.app.mcp
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServer
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -27,24 +23,21 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,20 +48,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -246,9 +229,31 @@ fun ConfigMCPServerDialog(
         }
     )
 }
-
+@Composable
+fun InstallRTMView(command: String){
+    if(command == "node"||command=="npx"||command=="npm"){
+        var version by remember { mutableStateOf<String?>("") }
+        LaunchedEffect(command){
+            StudioRepository.checkMCPServerRTMFromStudio(
+                StudioRepository.localToolAgent.value,command
+            ){
+                version = it.data
+            }
+        }
+        version?.let{
+            if(it.isNotEmpty())Box(Modifier.padding(end=16.dp)) {
+                Tag("$command $it installed")
+            }
+        }?:Button(
+            onClick = {}
+        ){
+            Text("Install $command")
+        }
+    }
+}
 @Composable
 fun ConfigMCPServerView(
+    title:String,
     mcpServer: MCPServer?=null,
     modifier: Modifier = Modifier,
 ){
@@ -278,54 +283,9 @@ fun ConfigMCPServerView(
         isNameError = value.isBlank()||value.length>20
         name = value
     }
-    Column(
-        modifier.verticalScroll(formScrollState),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            SingleChoiceSegmentedButtonRow {
-                SegmentedButton(
-                    selected = transport == 0,
-                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
-//                    contentPadding = PaddingValues(horizontal = 0.dp),
-                    onClick = { onTypeChange(0) }){
-                    Text("STDIO",style = MaterialTheme.typography.bodyMedium)
-                }
-                SegmentedButton(
-                    selected = transport == 1,
-                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
-//                    contentPadding = PaddingValues(horizontal = 0.dp),
-                    onClick = { onTypeChange(1) }) {
-                    Text("SSE",style = MaterialTheme.typography.bodyMedium)
-                }
-                SegmentedButton(
-                    selected = transport == 2,
-                    shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
-//                    contentPadding = PaddingValues(horizontal = 0.dp),
-                    onClick = { onTypeChange(2) }) {
-                    Text("HTTP",style = MaterialTheme.typography.bodyMedium)
-                }
-            }
-            Spacer(modifier = Modifier.weight(1f))
-//            Row(verticalAlignment = Alignment.CenterVertically,){
-//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 0,
-//                    onClick = { onTypeChange(0) })
-//                Text("STDIO")
-//            }
-//            Row(verticalAlignment = Alignment.CenterVertically,) {
-//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 1,
-//                    onClick = { onTypeChange(1) })
-//                Text("SSE")
-//            }
-//            Row(verticalAlignment = Alignment.CenterVertically,) {
-//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 2,
-//                    onClick = { onTypeChange(2) })
-//                Text("Streamable HTTP")
-//            }
-            Button(onClick = {
+    Column(modifier) {
+        StudioActionBar(title) {
+            TextButton(onClick = {
                 val text = getPlatform().pasteFromClipboard()
                 if(text==null){
                     generalViewModel.showSnackbar("Clipboard is empty")
@@ -398,85 +358,118 @@ fun ConfigMCPServerView(
                 Text("Paste from JSON")
             }
         }
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = name,
-            onValueChange = { onNameChange(it)},
-            label = { Text("MCP Server Name") },
-            isError = isNameError,
-            supportingText = {
-                Text("Name must not be empty and length < 21")
-            },
-        )
-
-        if (transport == 0) {
-            OutlinedTextField(
-                value = command,
-                onValueChange = { onCommandChange(it) },
-                label = { Text("Command") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                isError = !isCommandValid,
-                supportingText = {
-                    Text("Command must not be empty")
-                },
-                trailingIcon = {
-                    if(command == "node"||command=="npx"||command=="npm"){
-                        var version by remember { mutableStateOf<String?>(null) }
-                        LaunchedEffect(null){
-                            StudioRepository.checkMCPServerRTMFromStudio(
-                                StudioRepository.localToolAgent.value,command
-                            ){
-                                version = it.data
-                            }
-                        }
-                        version?.let{
-                            Box(Modifier.padding(end=16.dp)) {
-                                Tag("$command $version installed")
-                            }
-                        }?:Button(
-                            onClick = {}
-                        ){
-                            Text("Install $command")
-                        }
+        HorizontalDivider()
+        Column(
+            Modifier.verticalScroll(formScrollState).padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                SingleChoiceSegmentedButtonRow {
+                    SegmentedButton(
+                        selected = transport == 0,
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+//                    contentPadding = PaddingValues(horizontal = 0.dp),
+                        onClick = { onTypeChange(0) }){
+                        Text("STDIO",style = MaterialTheme.typography.bodyMedium)
+                    }
+                    SegmentedButton(
+                        selected = transport == 1,
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+//                    contentPadding = PaddingValues(horizontal = 0.dp),
+                        onClick = { onTypeChange(1) }) {
+                        Text("SSE",style = MaterialTheme.typography.bodyMedium)
+                    }
+                    SegmentedButton(
+                        selected = transport == 2,
+                        shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+//                    contentPadding = PaddingValues(horizontal = 0.dp),
+                        onClick = { onTypeChange(2) }) {
+                        Text("HTTP",style = MaterialTheme.typography.bodyMedium)
                     }
                 }
-            )
+//            Spacer(modifier = Modifier.weight(1f))
+//            Row(verticalAlignment = Alignment.CenterVertically,){
+//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 0,
+//                    onClick = { onTypeChange(0) })
+//                Text("STDIO")
+//            }
+//            Row(verticalAlignment = Alignment.CenterVertically,) {
+//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 1,
+//                    onClick = { onTypeChange(1) })
+//                Text("SSE")
+//            }
+//            Row(verticalAlignment = Alignment.CenterVertically,) {
+//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 2,
+//                    onClick = { onTypeChange(2) })
+//                Text("Streamable HTTP")
+//            }
+
+            }
+
             OutlinedTextField(
-                label = { Text("Arguments") },
-                value = args.joinToString(separator = "\n"),
-                placeholder = { Text("arg1\narg2\narg3") },
+                modifier = Modifier.fillMaxWidth(),
+                value = name,
+                onValueChange = { onNameChange(it)},
+                label = { Text("MCP Server Name") },
+                isError = isNameError,
+                supportingText = {
+                    Text("Name must not be empty and length < 21")
+                },
+            )
+
+            if (transport == 0) {
+                OutlinedTextField(
+                    value = command,
+                    onValueChange = { onCommandChange(it) },
+                    label = { Text("Command") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = !isCommandValid,
+                    supportingText = {
+                        Text("Command must not be empty")
+                    },
+                    trailingIcon = {
+                        InstallRTMView(command)
+                    }
+                )
+                OutlinedTextField(
+                    label = { Text("Arguments") },
+                    value = args.joinToString(separator = "\n"),
+                    placeholder = { Text("arg1\narg2\narg3") },
+                    onValueChange = {},
+                    modifier = Modifier.fillMaxWidth().height(150.dp),
+                    supportingText = {Text("Each argument on a new line")}
+                )
+            } else {
+                OutlinedTextField(
+                    value = url,
+                    onValueChange = { onUrlChange(it) },
+                    label = { Text("URL") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = isUrlError,
+                    supportingText = {
+                        Text("URL must not be empty and must start with http:// or https://")
+                    }
+                )
+
+            }
+            OutlinedTextField(
+                label = {Text(if(transport==0) "Environment Variables" else "Headers")},
+                placeholder = { Text("KEY1=value1\nKEY2=value2\nKEY3=value3") },
+                value = "",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth().height(150.dp),
-                supportingText = {Text("Each argument on a new line")}
-            )
-        } else {
-            OutlinedTextField(
-                value = url,
-                onValueChange = { onUrlChange(it) },
-                label = { Text("URL") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                isError = isUrlError,
-                supportingText = {
-                    Text("URL must not be empty and must start with http:// or https://")
-                }
+                supportingText = {Text("Each KEY=value on a new line")}
             )
 
         }
-        OutlinedTextField(
-            label = {Text(if(transport==0) "Environment Variables" else "Headers")},
-            placeholder = { Text("KEY1=value1\nKEY2=value2\nKEY3=value3") },
-            value = "",
-            onValueChange = {},
-            modifier = Modifier.fillMaxWidth().height(150.dp),
-            supportingText = {Text("Each KEY=value on a new line")}
-        )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfigMCPServerView(
     mcpServer: AIPortMCPServer,
@@ -569,115 +562,157 @@ fun ConfigMCPServerView(
         }
         isInputEnvError = errorCount>0
     }
-    Column(
-        modifier.verticalScroll(formScrollState),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-//        ElevatedCard { Column(Modifier.fillMaxWidth().padding(16.dp)) {
-//            Text(preview, style = MaterialTheme.typography.bodySmall)
-//        } }
-        val type = when(mcpServer.transport){
-            0 -> "stdio"
-            1 -> "sse"
-            2 -> "http"
-            else -> "Invalid Type"
+    Column(modifier) {
+        StudioActionBar(mcpServer.name) {
+            mcpServer.command?.let { InstallRTMView(it) }
         }
-        val bodyMedium = MaterialTheme.typography.bodyMedium
-        val bodySmall = MaterialTheme.typography.bodySmall
-        val bold = FontWeight.Bold
-        Card{Column(Modifier.fillMaxWidth().padding(8.dp)) {
-            Row{
-                Text("Type:",Modifier.width(80.dp), style = bodyMedium)
-                Text(type,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
+        HorizontalDivider()
+        Column(
+            Modifier.weight(1f).padding(8.dp).verticalScroll(formScrollState),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            val type = when(mcpServer.transport){
+                0 -> "stdio"
+                1 -> "sse"
+                2 -> "http"
+                else -> "Invalid Type"
             }
-            HorizontalDivider()
-            if (mcpServer.transport == 0) {
+            val bodyMedium = MaterialTheme.typography.bodyMedium
+            val bodySmall = MaterialTheme.typography.bodySmall
+            val bold = FontWeight.Bold
+
+            ElevatedCard{Column(Modifier.fillMaxWidth().padding(8.dp)) {
                 Row{
-                    Text("Command:",Modifier.width(80.dp), style = bodyMedium)
-                    Text(mcpServer.command!!,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
+                    Text("Type:",Modifier.width(80.dp), style = bodyMedium)
+                    Text(type,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
                 }
-                mcpServer.args?.let { args ->
-                    if(args.isNotEmpty()){
+                HorizontalDivider()
+                if (mcpServer.transport == 0) {
+                    Row{
+                        Text("Command:",Modifier.width(80.dp), style = bodyMedium)
+                        Text(mcpServer.command!!,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
+                    }
+                    mcpServer.args?.let { args ->
+                        if(args.isNotEmpty()){
+                            HorizontalDivider()
+                            Row{
+                                Text("Arguments: ",Modifier.width(80.dp), style = bodyMedium)
+                                Column(
+                                    Modifier.padding(2.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    args.forEach { arg ->
+                                        Text(arg, style = bodySmall,fontWeight = bold)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else Row{
+                    Text("URL:",Modifier.width(80.dp), style = bodyMedium)
+                    Text(mcpServer.url!!,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
+                }
+
+                mcpServer.env?.let { env ->
+                    if(env.isNotEmpty()) {
                         HorizontalDivider()
                         Row{
-                            Text("Arguments: ",Modifier.width(80.dp), style = bodyMedium)
+                            Text(if (mcpServer.transport == 0) "Env:" else "Headers:",Modifier.width(80.dp), style = bodyMedium)
                             Column(
                                 Modifier.padding(2.dp),
                                 verticalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
-                                args.forEach { arg ->
-                                    Text(arg, style = bodySmall,fontWeight = bold)
+                                env.forEach {
+                                    Text("${it.key} = ${it.value}", style = bodySmall,fontWeight = bold)
                                 }
                             }
                         }
                     }
                 }
-            } else Row{
-                Text("URL:",Modifier.width(80.dp), style = bodyMedium)
-                Text(mcpServer.url!!,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
+            } }
+
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = name,
+                onValueChange = { onNameChange(it)},
+                label = { Text("MCP Server Name") },
+                isError = isNameError,
+                supportingText = {
+                    Text("Name must not be empty and length < 21")
+                }
+            )
+//            val envTabName = if(mcpServer.transport==0) "Environment Variables" else "Headers"
+            var currentTab by remember { mutableStateOf(0) }
+            val tabs = mutableListOf<String>()
+            if(mcpServer.inputs!=null){
+                tabs.add("Inputs")
+            }
+            if(mcpServer.transport == 0) {
+                tabs.add("Arguments")
+                tabs.add("Env")
+                currentTab = 3-tabs.size
+            }else {
+                tabs.add("Headers")
+                if(tabs.size==1) currentTab = 2
             }
 
-            mcpServer.env?.let { env ->
-                if(env.isNotEmpty()) {
-                    HorizontalDivider()
-                    Row{
-                        Text(if (mcpServer.transport == 0) "Env:" else "Headers:",Modifier.width(80.dp), style = bodyMedium)
-                        Column(
-                            Modifier.padding(2.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            env.forEach {
-                                Text("${it.key} = ${it.value}", style = bodySmall,fontWeight = bold)
+            var currentTabIndex by remember { mutableStateOf(0) }
+            SecondaryTabRow(selectedTabIndex = currentTabIndex) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = currentTabIndex == index,
+                        onClick = {
+//                            currentTabIndex = index
+                            currentTab = when(tabs[index]){
+                                "Inputs" -> 0
+                                "Arguments" -> 1
+                                "Env" -> 2
+                                "Headers" -> 2
+                                else -> 0
                             }
-                        }
-                    }
+                        },
+                        text = { Text(title) }
+                    )
                 }
             }
-        } }
-
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = name,
-            onValueChange = { onNameChange(it)},
-            label = { Text("MCP Server Name") },
-            isError = isNameError,
-            supportingText = {
-                Text("Name must not be empty and length < 21")
+            Column(Modifier.weight(1f)) {
+                // Content based on selected tab
+                when (currentTab) {
+                    0 -> mcpServer.inputs?.let { inputs ->
+                        inputs.forEach { input ->
+                            OutlinedTextField(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = "",
+                                onValueChange = {},
+                                label = { Text(input.key) },
+                                isError = isNameError,
+                                supportingText = {
+                                    Text("${input.key} must not be empty")
+                                },
+                            )
+                        }
+                    }
+                    1 -> OutlinedTextField(
+//                    label = { Text("Arguments") },
+                        value = args,
+                        placeholder = { Text("arg1\narg2") },
+                        onValueChange = {onArgsChange(it)},
+                        modifier = Modifier.fillMaxSize(),
+                        supportingText = {Text("Each argument on a new line")}
+                    )
+                    2 -> OutlinedTextField(
+//                    label = {Text(if(mcpServer.transport==0) "Environment Variables" else "Headers")},
+                        placeholder = { Text("KEY1=value1\nKEY2=value2") },
+                        value = env,
+                        onValueChange = { onEnvChange(it)},
+                        modifier = Modifier.fillMaxSize(),
+                        isError = isInputEnvError,
+                        supportingText = {Text("Each KEY=value on a new line")}
+                    )
+                }
             }
-        )
 
-        mcpServer.inputs?.let { inputs ->
-            inputs.forEach { input ->
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = "",
-                    onValueChange = {},
-                    label = { Text(input.key) },
-                    isError = isNameError,
-                    supportingText = {
-                        Text("${input.key} must not be empty")
-                    },
-                )
-            }
         }
-        if(mcpServer.transport == 0) {
-            OutlinedTextField(
-                label = { Text("Arguments") },
-                value = args,
-                placeholder = { Text("arg1\narg2") },
-                onValueChange = {onArgsChange(it)},
-                modifier = Modifier.fillMaxWidth().height(120.dp),
-                supportingText = {Text("Each argument on a new line")}
-            )
-        }
-        OutlinedTextField(
-            label = {Text(if(mcpServer.transport==0) "Environment Variables" else "Headers")},
-            placeholder = { Text("KEY1=value1\nKEY2=value2") },
-            value = env,
-            onValueChange = { onEnvChange(it)},
-            modifier = Modifier.fillMaxWidth().height(120.dp),
-            isError = isInputEnvError,
-            supportingText = {Text("Each KEY=value on a new line")}
-        )
     }
+
 }

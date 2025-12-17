@@ -6,29 +6,32 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun StudioActionBar(
     title: String?=null,
-    navigationIcon: @Composable (() -> Unit) = {},
-    actions: @Composable (RowScope.() -> Unit) = {},
+    navigationIcon: @Composable ((() -> Unit))? = null,
+    actions: @Composable (RowScope.() -> Unit)? = null
 ){
-    Row(Modifier.fillMaxWidth(),
-//        .padding().padding(horizontal = 8.dp)
-//        .background(color = MaterialTheme.colorScheme.secondaryContainer),
+    val start = if(navigationIcon!=null) 4.dp else 8.dp
+    Row(Modifier.fillMaxWidth().height(48.dp).padding(start = start, end = 4.dp).fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically) {
-        navigationIcon()
+        navigationIcon?.invoke()
         title?.let {
-            Text(it, modifier = Modifier.padding(horizontal = 8.dp), style = MaterialTheme.typography.titleMedium)
+            Text(it, modifier = Modifier.padding(horizontal = 8.dp),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.weight(1.0f))
-        actions()
+        actions?.let { it() }
     }
 }

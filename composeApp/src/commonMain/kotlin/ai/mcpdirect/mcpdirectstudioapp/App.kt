@@ -145,7 +145,7 @@ fun App(
                 val slides = listOf(
                     CarouselSlide(
                         imageResource = Res.drawable.mcpdirect_tips_one_url, // Platform-specific
-                        description = "One URL access your any MCP Servers in-house",
+                        description = "One URL access your any in-house MCP Servers",
                         title = ""
                     ),
                     CarouselSlide(

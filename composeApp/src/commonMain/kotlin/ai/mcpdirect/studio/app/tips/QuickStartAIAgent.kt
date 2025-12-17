@@ -180,7 +180,7 @@ val mcpServerCatalog = listOf(
             "PLANE_WORKSPACE_SLUG" to "plane workspace slug",
         )
     ),
-    AIPortMCPServer(1900,"Strip","npx",
+    AIPortMCPServer(1900,"Stripe","npx",
         listOf("-y", "@stripe/mcp", "--tools=all", $$"--api-key=${YOUR_STRIPE_SECRET_KEY}"),
         null,mapOf("YOUR_STRIPE_SECRET_KEY" to "your stripe secret key",)
     ),
