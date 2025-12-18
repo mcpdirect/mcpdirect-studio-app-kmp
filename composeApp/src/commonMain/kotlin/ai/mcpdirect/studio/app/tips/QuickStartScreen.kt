@@ -356,7 +356,9 @@ fun MCPServerCatalogView(
         when(currentMCPServer.id){
             0L -> ConfigMCPServerView("General",modifier = Modifier.weight(2f))
             1L -> {}
-            else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f))
+            else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f)){
+
+            }
         }
     }
 } }

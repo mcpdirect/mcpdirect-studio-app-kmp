@@ -27,8 +27,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,9 +53,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.input.pointer.PointerIcon
-import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -485,6 +480,7 @@ fun ConfigMCPServerView(
 fun ConfigMCPServerView(
     mcpServer: AIPortMCPServer,
     modifier: Modifier = Modifier,
+    onInstallRequest: (config:MCPServerConfig) -> Unit,
 ){
 //    val prettyJson = Json { prettyPrint = true }
 //    var preview by remember { mutableStateOf("") }
@@ -665,18 +661,6 @@ fun ConfigMCPServerView(
                     }
                 }
             } }
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = name,
-                onValueChange = { onNameChange(it)},
-                label = { Text("MCP Server Name") },
-                isError = isNameError,
-                supportingText = {
-                    Text("Name must not be empty and length < 21")
-                },
-                shape = CardDefaults.shape,
-                singleLine = true
-            )
             OutlinedCard(Modifier.weight(1f)) {
                 SecondaryTabRow(selectedTabIndex = currentTabIndex) {
                     tabs.forEachIndexed { index, title ->
@@ -702,13 +686,14 @@ fun ConfigMCPServerView(
                     when (currentTab) {
                         0 -> mcpServer.inputs?.let {
                             it.forEach { input ->
-                                TextField(
-                                    modifier = Modifier.fillMaxWidth(),
+                                OutlinedTextField(
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp,vertical = 8.dp),
                                     value = inputs[input.key] ?: "",
                                     onValueChange = { value ->
-                                        isInputsError = value.isBlank()
-                                        if (isInputsError) inputs.remove(input.key)
+                                        val error = value.isBlank()
+                                        if (error) inputs.remove(input.key)
                                         else inputs[input.key] = value
+                                        isInputsError = inputs.size != it.size
                                     },
                                     label = { Text(input.key) },
                                     placeholder = { Text(input.value) },
@@ -716,7 +701,7 @@ fun ConfigMCPServerView(
                                     supportingText = {
                                         Text("${input.key} must not be empty")
                                     },
-                                    colors = OutlinedTextFieldDefaults.colors()
+                                    shape = ButtonDefaults.shape
                                 )
                             }
                         }
@@ -745,12 +730,56 @@ fun ConfigMCPServerView(
                 }
             }
         }
-
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            value = name,
+            onValueChange = { onNameChange(it)},
+            label = { Text("MCP Server Name") },
+            isError = isNameError,
+            supportingText = {
+                Text("Name must not be empty and length < 21")
+            },
+            shape = CardDefaults.shape,
+            singleLine = true
+        )
         val enabled = !isNameError&&!isInputsError&&!isInputEnvError
         Button(
             enabled = enabled,
             modifier =Modifier.padding(8.dp).fillMaxWidth(),
-            onClick = {print("test")}){
+            onClick = {
+                val config = MCPServerConfig()
+                config.transport = mcpServer.transport
+                config.url = mcpServer.url
+                if(config.url!=null)inputs.forEach { entry ->
+                    config.url = config.url!!.replace($$"${$${entry.key}}",entry.value)
+                }
+                config.command = mcpServer.command
+                if(config.command!=null)inputs.forEach { entry ->
+                    config.command = config.command!!.replace($$"${$${entry.key}}",entry.value)
+                }
+                val args =  hashSetOf<String>()
+                inputArgs.forEach { arg ->
+                    args.add(arg)
+                }
+                mcpServer.args?.forEach { arg ->
+                    var value = arg
+                    inputs.forEach { entry ->
+                        value = value.replace($$"${$${entry.key}}",entry.value)
+                    }
+                    args.add(value)
+                }
+                val env = mutableStateMapOf<String,String>()
+                env.putAll(inputEnv)
+                mcpServer.env?.forEach { entry ->
+                    var value = entry.value
+                    inputs.forEach { entry ->
+                        value = value.replace($$"${$${entry.key}}",entry.value)
+                    }
+                    env[entry.key]=value
+                }
+                onInstallRequest(config)
+            }
+        ){
             if(enabled)Text("Install")
             else Text("Please complete required inputs and MCP server name before install")
         }
