@@ -31,7 +31,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
@@ -141,7 +140,9 @@ enum class ConnectMCPDialog {
 fun ConnectMCPView(
     modifier: Modifier,
     viewModel: QuickStartViewModel
-){ Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp),){
+){
+    val currentToolMaker by viewModel.currentToolMaker.collectAsState()
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp),){
     OutlinedCard(Modifier.fillMaxHeight().weight(0.8f)) {
         val toolMakers by viewModel.toolMakers.collectAsState()
         StudioActionBar (
@@ -165,7 +166,7 @@ fun ConnectMCPView(
         } else LazyColumn {
             items(toolMakers) { toolMaker ->
                 StudioListItem(
-                    selected = viewModel.currentToolMaker?.id==toolMaker.id,
+                    selected = currentToolMaker?.id==toolMaker.id,
                     modifier = Modifier.clickable {
                         viewModel.currentToolMaker(toolMaker)
                     },
@@ -185,12 +186,15 @@ fun ConnectMCPView(
                             contentDescription = "Error",
                             Modifier.size(48.dp).padding( 12.dp),
                             tint = MaterialTheme.colorScheme.error
-                        )else Checkbox(
-                            checked = viewModel.selectedToolMaker(toolMaker),
-                            onCheckedChange = {
-                                viewModel.selectToolMaker(it,toolMaker)
-                            },
-                        )
+                        )else {
+                            viewModel.updateCurrentToolMaker(toolMaker)
+                            Checkbox(
+                                checked = viewModel.selectedToolMaker(toolMaker),
+                                onCheckedChange = {
+                                    viewModel.selectToolMaker(it, toolMaker)
+                                },
+                            )
+                        }
                     },
                     supportingContent = { Row(horizontalArrangement = Arrangement.spacedBy(8.dp),) {
                         when (toolMaker) {
@@ -213,9 +217,14 @@ fun ConnectMCPView(
         }
     }
     OutlinedCard(Modifier.weight(2f)) {
-        viewModel.currentToolMaker?.let {
+        currentToolMaker?.let {
             Column(Modifier.weight(2f)) {
-                Row(Modifier.padding(start = 16.dp, end = 4.dp),
+                if(it.status == STATUS_WAITING){
+                    StudioBoard {
+                        CircularProgressIndicator()
+                        Text("starting")
+                    }
+                }else Row(Modifier.padding(start = 16.dp, end = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(it.name, style = MaterialTheme.typography.titleSmall)
@@ -246,7 +255,7 @@ fun ConnectMCPView(
                 HorizontalDivider()
                 if(it.errorCode!=0){
                     Text(it.errorMessage,Modifier.padding(horizontal = 8.dp) , color = MaterialTheme.colorScheme.error)
-                }else {
+                } else {
                     val listState = rememberLazyListState()
                     Box(modifier = Modifier.fillMaxSize()) {
                         LazyColumn(
@@ -266,7 +275,7 @@ fun ConnectMCPView(
                     }
                 }
             }
-        }?: MCPServerCatalogView(Modifier.weight(2f))
+        }?: MCPServerCatalogView(viewModel,Modifier.weight(2f))
     }
 }
 
@@ -276,9 +285,9 @@ fun ConnectMCPView(
 
     when(dialog){
         ConnectMCPDialog.None -> {}
-        ConnectMCPDialog.MCP -> if(viewModel.currentToolMaker is MCPServer){
+        ConnectMCPDialog.MCP -> if(currentToolMaker is MCPServer){
             ConfigMCPServerDialog(
-                viewModel.currentToolMaker as MCPServer,
+                currentToolMaker as MCPServer,
                 onDismissRequest = { dialog = ConnectMCPDialog.None },
                 onConfirmRequest = { mcpServer,config ->
                     viewModel.modifyMCPServerConfig(mcpServer, config)
@@ -287,7 +296,7 @@ fun ConnectMCPView(
         }
         ConnectMCPDialog.MCP_TEMPLATE -> ConfigMCPServerFromTemplatesDialog(
             StudioRepository.localToolAgent.value,
-            viewModel.currentToolMaker!!,
+            currentToolMaker!!,
             onConfirmRequest = { toolMaker,inputs->
 //                myStudioViewModel.modifyMCPServerConfig(
 //                    toolAgent!!,toolMaker,inputs
@@ -319,6 +328,7 @@ fun ConnectMCPView(
 }
 @Composable
 fun MCPServerCatalogView(
+    viewModel: QuickStartViewModel,
     modifier: Modifier
 ){Column(modifier.fillMaxHeight()) {
     Row{
@@ -356,8 +366,12 @@ fun MCPServerCatalogView(
         when(currentMCPServer.id){
             0L -> ConfigMCPServerView("General",modifier = Modifier.weight(2f))
             1L -> {}
-            else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f)){
-
+            else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f)){ config ->
+                viewModel.installMCPServer(config){
+                    if(it.successful()) it.data?.let { data ->
+                        viewModel.currentToolMaker(data)
+                    }
+                }
             }
         }
     }

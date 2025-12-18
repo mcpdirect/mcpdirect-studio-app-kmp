@@ -748,6 +748,7 @@ fun ConfigMCPServerView(
             modifier =Modifier.padding(8.dp).fillMaxWidth(),
             onClick = {
                 val config = MCPServerConfig()
+                config.name = name
                 config.transport = mcpServer.transport
                 config.url = mcpServer.url
                 if(config.url!=null)inputs.forEach { entry ->

@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.tips
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
@@ -15,6 +16,7 @@ import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -98,19 +100,29 @@ class QuickStartViewModel: ViewModel() {
         return _selectedTools.values.count { it.makerId == toolMaker.id }
     }
 
-    var currentToolMaker by mutableStateOf<AIPortToolMaker?>(null)
-        private set
+//    var currentToolMaker by mutableStateOf<AIPortToolMaker?>(null)
+//        private set
+    private var _currentToolMaker:MutableStateFlow<AIPortToolMaker?> = MutableStateFlow(AIPortToolMaker())
+    val currentToolMaker : StateFlow<AIPortToolMaker?> = combine(
+        StudioRepository.toolMakers,
+        _currentToolMaker,
+    ) { servers, toolMaker ->
+        if(toolMaker!=null)servers[toolMaker.id] else null
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
     val currentTools = mutableStateListOf<AIPortTool>()
-    fun currentToolMaker(maker: AIPortToolMaker?){
-        currentToolMaker = maker
-        currentTools.clear()
-        if(maker!=null&&maker.errorCode==0){
+    fun updateCurrentToolMaker(maker: AIPortToolMaker){
+        if(_currentToolMaker.value?.id==maker.id&&maker.status==1&&maker.errorCode==0){
+            currentTools.clear()
             viewModelScope.launch {
                 when(maker){
                     is MCPServer -> StudioRepository.queryMCPToolsFromStudio(
                         StudioRepository.localToolAgent.value,maker
                     ){
-                        if(maker.id==currentToolMaker?.id&&it.successful()) it.data?.let{ data ->
+                        if(maker.id==currentToolMaker.value?.id&&it.successful()) it.data?.let{ data ->
                             currentTools.addAll(data)
                             for (tool in data) {
                                 _tools[tool.id] = tool
@@ -121,7 +133,7 @@ class QuickStartViewModel: ViewModel() {
                     is OpenAPIServer -> StudioRepository.queryOpenAPIToolsFromStudio(
                         StudioRepository.localToolAgent.value,maker
                     ){
-                        if(maker.id==currentToolMaker?.id&&it.successful()) it.data?.let{ data ->
+                        if(maker.id==currentToolMaker.value?.id&&it.successful()) it.data?.let{ data ->
                             currentTools.addAll(data)
                             for (tool in data) {
                                 _tools[tool.id] = tool
@@ -133,6 +145,10 @@ class QuickStartViewModel: ViewModel() {
             }
         }
     }
+    fun currentToolMaker(maker: AIPortToolMaker?){
+        _currentToolMaker.value = maker
+        if(maker!=null)updateCurrentToolMaker(maker)
+    }
 
     fun modifyMCPServerConfig(mcpServer: MCPServer,config: MCPServerConfig) {
         viewModelScope.launch {
@@ -141,7 +157,7 @@ class QuickStartViewModel: ViewModel() {
                 mcpServer,config
             ){
                 if(it.successful()) it.data?.let{ data ->
-                    currentToolMaker?.let{
+                    currentToolMaker.value?.let{
                         if(it.id==data.id) currentToolMaker(data)
                     }
                 }
@@ -152,12 +168,20 @@ class QuickStartViewModel: ViewModel() {
         viewModelScope.launch {
             StudioRepository.modifyToolMakerStatus(toolAgent,maker,status){
                 if(it.successful()) it.data?.let{ data ->
-                    currentToolMaker?.let{
+                    currentToolMaker.value?.let{
                         if(it.id==data.id) currentToolMaker(data)
                     }
                 }
             }
         }
+    }
+    fun installMCPServer(
+        config: MCPServerConfig,
+        onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit
+    ) {
+        viewModelScope.launch { StudioRepository.connectMCPServerToStudio(
+            StudioRepository.localToolAgent.value, config, onResponse
+        ) }
     }
 
     fun grantToolPermissions(){
@@ -178,7 +202,5 @@ class QuickStartViewModel: ViewModel() {
                 }
             }
         }
-
-
     }
 }

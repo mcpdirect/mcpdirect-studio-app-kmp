@@ -240,7 +240,7 @@ object StudioRepository {
 //    }
     suspend fun connectMCPServerToStudio(
         toolAgent: AIPortToolAgent, config:MCPServerConfig,
-        onResponse:((code:Int,message:String?,data:MCPServer?) -> Unit)){
+        onResponse:((resp:AIPortServiceResponse<MCPServer>) -> Unit)?=null){
         val studioId = toolAgent.engineId
         loadMutex.withLock {
             generalViewModel.loading()
@@ -255,7 +255,7 @@ object StudioRepository {
                 generalViewModel.loaded(
                     "Connect MCP Servers to Studio #${toolAgent.name}",it.code,it.message
                 )
-                onResponse(it.code,it.message,it.data)
+                onResponse?.invoke(it)
             }
         }
     }

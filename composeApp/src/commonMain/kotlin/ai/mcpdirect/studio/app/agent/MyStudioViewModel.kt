@@ -147,7 +147,7 @@ class MyStudioViewModel(): ViewModel() {
         viewModelScope.launch {
             uiState = UIState.Loading
             StudioRepository.connectMCPServerToStudio(_toolAgent.value,config){
-                code, message, data ->
+                (code, message, data) ->
                 updateUIState(code)
             }
         }
