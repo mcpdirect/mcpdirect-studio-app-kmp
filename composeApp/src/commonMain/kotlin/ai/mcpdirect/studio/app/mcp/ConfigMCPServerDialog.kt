@@ -769,6 +769,7 @@ fun ConfigMCPServerView(
                     }
                     args.add(value)
                 }
+                config.args = args.toList()
                 val env = mutableStateMapOf<String,String>()
                 env.putAll(inputEnv)
                 mcpServer.env?.forEach { entry ->
@@ -778,6 +779,7 @@ fun ConfigMCPServerView(
                     }
                     env[entry.key]=value
                 }
+                config.env = env
                 onInstallRequest(config)
             }
         ){

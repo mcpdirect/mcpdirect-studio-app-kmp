@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 open class MCPConfig {
     var id: Long = 0
     var name: String = ""
-    var status:Int = 0
+    var status:Int = 1
 }

@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.tips
 
+import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioListItem
@@ -367,6 +368,7 @@ fun MCPServerCatalogView(
             0L -> ConfigMCPServerView("General",modifier = Modifier.weight(2f))
             1L -> {}
             else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f)){ config ->
+//                println(JSON.encodeToString(config))
                 viewModel.installMCPServer(config){
                     if(it.successful()) it.data?.let { data ->
                         viewModel.currentToolMaker(data)

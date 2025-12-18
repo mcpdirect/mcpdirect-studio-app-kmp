@@ -2,6 +2,15 @@
 
 ## [December 18, 2025]
 ### Summary
+Fixed MCP server configuration saving and adjusted default status
+
+### Details
+- Added config arguments and environment variable assignments in ConfigMCPServerDialog.kt
+- Changed default status from 0 to 1 in MCPConfig.kt
+- Added JSON import and commented debug print statement in QuickStartScreen.kt
+
+## [December 18, 2025]
+### Summary
 Updated MCP server connection handling and improved UI state management
 
 ### Details
