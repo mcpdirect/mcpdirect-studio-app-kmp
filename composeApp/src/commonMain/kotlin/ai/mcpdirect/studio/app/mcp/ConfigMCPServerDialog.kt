@@ -11,6 +11,7 @@ import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,13 +24,18 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SegmentedButton
@@ -38,6 +44,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,7 +55,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -478,30 +489,51 @@ fun ConfigMCPServerView(
 //    val prettyJson = Json { prettyPrint = true }
 //    var preview by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
-    var isNameError by remember { mutableStateOf(false) }
+    var isNameError by remember { mutableStateOf(true) }
+    val inputs =  remember { mutableStateMapOf<String,String>() }
+    var isInputsError by remember { mutableStateOf(true) }
     var args by remember { mutableStateOf("") }
     val inputArgs = remember { mutableStateListOf<String>() }
-    var isInputArgsError by remember { mutableStateOf(false) }
+//    var isInputArgsError by remember { mutableStateOf(false) }
 //    mcpServer.inputArgs?.let { inputArgs.addAll(it)}
     var env by remember { mutableStateOf("") }
-    val inputEnv =  mutableStateMapOf<String,String>()
+    val inputEnv =  remember { mutableStateMapOf<String,String>() }
     var isInputEnvError by remember { mutableStateOf(false) }
 //    mcpServer.inputEnv?.let {
 //        inputEnv.clear()
 //        inputEnv.putAll(it)
 //    }
     val formScrollState = rememberScrollState()
+    var currentTab by remember { mutableStateOf(0) }
+    var currentTabIndex by remember { mutableStateOf(0) }
+    val tabs = remember { mutableStateListOf<String>() }
     LaunchedEffect(mcpServer){
-        name = mcpServer.name
-        isNameError = false
+        name = mcpServer.name.lowercase().replace(" ","_")
+        isNameError = name.isBlank()
         args = mcpServer.inputArgs?.joinToString(separator = "\n")?:""
-        isInputArgsError = false
+        inputs.clear()
+        isInputsError = mcpServer.inputs?.isEmpty() == false
         inputArgs.clear()
+
         env = mcpServer.inputEnv?.entries?.joinToString(separator = "\n") {
             "${it.key}=${it.value}"
         }?:""
         isInputEnvError = false
         inputEnv.clear()
+
+        currentTabIndex = 0
+        tabs.clear()
+        if(mcpServer.inputs!=null){
+            tabs.add("Inputs")
+        }
+        if(mcpServer.transport == 0) {
+            tabs.add("Arguments")
+            tabs.add("Env")
+            currentTab = 3-tabs.size
+        }else {
+            tabs.add("Headers")
+            if(tabs.size==1) currentTab = 2
+        }
     }
 //    fun build(){
 //        val type = when(mcpServer.transport){
@@ -581,25 +613,28 @@ fun ConfigMCPServerView(
             val bodySmall = MaterialTheme.typography.bodySmall
             val bold = FontWeight.Bold
 
-            ElevatedCard{Column(Modifier.fillMaxWidth().padding(8.dp)) {
-                Row{
-                    Text("Type:",Modifier.width(80.dp), style = bodyMedium)
+            Card{Column(
+                Modifier.fillMaxWidth().padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                    Text("Type: ",Modifier.width(80.dp),textAlign = TextAlign.End, style = bodyMedium)
                     Text(type,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
                 }
-                HorizontalDivider()
+//                HorizontalDivider()
                 if (mcpServer.transport == 0) {
-                    Row{
-                        Text("Command:",Modifier.width(80.dp), style = bodyMedium)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                        Text("Command: ",Modifier.width(80.dp),textAlign = TextAlign.End, style = bodyMedium)
                         Text(mcpServer.command!!,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
                     }
                     mcpServer.args?.let { args ->
                         if(args.isNotEmpty()){
-                            HorizontalDivider()
-                            Row{
-                                Text("Arguments: ",Modifier.width(80.dp), style = bodyMedium)
-                                Column(
+//                            HorizontalDivider()
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                                Text("Arguments: ",Modifier.width(80.dp),textAlign = TextAlign.End, style = bodyMedium)
+                                FlowRow(
                                     Modifier.padding(2.dp),
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     args.forEach { arg ->
                                         Text(arg, style = bodySmall,fontWeight = bold)
@@ -608,16 +643,16 @@ fun ConfigMCPServerView(
                             }
                         }
                     }
-                } else Row{
-                    Text("URL:",Modifier.width(80.dp), style = bodyMedium)
+                } else Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                    Text("URL: ",Modifier.width(80.dp),textAlign = TextAlign.End, style = bodyMedium)
                     Text(mcpServer.url!!,Modifier.padding(2.dp), style = bodySmall,fontWeight = bold)
                 }
 
                 mcpServer.env?.let { env ->
                     if(env.isNotEmpty()) {
-                        HorizontalDivider()
-                        Row{
-                            Text(if (mcpServer.transport == 0) "Env:" else "Headers:",Modifier.width(80.dp), style = bodyMedium)
+//                        HorizontalDivider()
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
+                            Text(if (mcpServer.transport == 0) "Env: " else "Headers: ",Modifier.width(80.dp),textAlign = TextAlign.End, style = bodyMedium)
                             Column(
                                 Modifier.padding(2.dp),
                                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -630,7 +665,6 @@ fun ConfigMCPServerView(
                     }
                 }
             } }
-
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = name,
@@ -639,79 +673,86 @@ fun ConfigMCPServerView(
                 isError = isNameError,
                 supportingText = {
                     Text("Name must not be empty and length < 21")
-                }
+                },
+                shape = CardDefaults.shape,
+                singleLine = true
             )
-//            val envTabName = if(mcpServer.transport==0) "Environment Variables" else "Headers"
-            var currentTab by remember { mutableStateOf(0) }
-            val tabs = mutableListOf<String>()
-            if(mcpServer.inputs!=null){
-                tabs.add("Inputs")
-            }
-            if(mcpServer.transport == 0) {
-                tabs.add("Arguments")
-                tabs.add("Env")
-                currentTab = 3-tabs.size
-            }else {
-                tabs.add("Headers")
-                if(tabs.size==1) currentTab = 2
-            }
-
-            var currentTabIndex by remember { mutableStateOf(0) }
-            SecondaryTabRow(selectedTabIndex = currentTabIndex) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = currentTabIndex == index,
-                        onClick = {
-//                            currentTabIndex = index
-                            currentTab = when(tabs[index]){
-                                "Inputs" -> 0
-                                "Arguments" -> 1
-                                "Env" -> 2
-                                "Headers" -> 2
-                                else -> 0
-                            }
-                        },
-                        text = { Text(title) }
-                    )
-                }
-            }
-            Column(Modifier.weight(1f)) {
-                // Content based on selected tab
-                when (currentTab) {
-                    0 -> mcpServer.inputs?.let { inputs ->
-                        inputs.forEach { input ->
-                            OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = "",
-                                onValueChange = {},
-                                label = { Text(input.key) },
-                                isError = isNameError,
-                                supportingText = {
-                                    Text("${input.key} must not be empty")
-                                },
-                            )
-                        }
+            OutlinedCard(Modifier.weight(1f)) {
+                SecondaryTabRow(selectedTabIndex = currentTabIndex) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            selected = currentTabIndex == index,
+                            onClick = {
+                                currentTabIndex = index
+                                currentTab = when (tabs[index]) {
+                                    "Inputs" -> 0
+                                    "Arguments" -> 1
+                                    "Env" -> 2
+                                    "Headers" -> 2
+                                    else -> 0
+                                }
+                                println(currentTab)
+                            },
+                            text = { Text(title) }
+                        )
                     }
-                    1 -> OutlinedTextField(
+                }
+                Column(Modifier.weight(1f)) {
+                    // Content based on selected tab
+                    when (currentTab) {
+                        0 -> mcpServer.inputs?.let {
+                            it.forEach { input ->
+                                TextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = inputs[input.key] ?: "",
+                                    onValueChange = { value ->
+                                        isInputsError = value.isBlank()
+                                        if (isInputsError) inputs.remove(input.key)
+                                        else inputs[input.key] = value
+                                    },
+                                    label = { Text(input.key) },
+                                    placeholder = { Text(input.value) },
+                                    isError = inputs[input.key] == null,
+                                    supportingText = {
+                                        Text("${input.key} must not be empty")
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors()
+                                )
+                            }
+                        }
+
+                        1 -> TextField(
 //                    label = { Text("Arguments") },
-                        value = args,
-                        placeholder = { Text("arg1\narg2") },
-                        onValueChange = {onArgsChange(it)},
-                        modifier = Modifier.fillMaxSize(),
-                        supportingText = {Text("Each argument on a new line")}
-                    )
-                    2 -> OutlinedTextField(
+                            value = args,
+                            placeholder = { Text("arg1\narg2") },
+                            onValueChange = { onArgsChange(it) },
+                            modifier = Modifier.fillMaxSize().padding(bottom = 8.dp),
+                            supportingText = { Text("Each argument on a new line") },
+                            colors = OutlinedTextFieldDefaults.colors()
+                        )
+
+                        2 -> TextField(
 //                    label = {Text(if(mcpServer.transport==0) "Environment Variables" else "Headers")},
-                        placeholder = { Text("KEY1=value1\nKEY2=value2") },
-                        value = env,
-                        onValueChange = { onEnvChange(it)},
-                        modifier = Modifier.fillMaxSize(),
-                        isError = isInputEnvError,
-                        supportingText = {Text("Each KEY=value on a new line")}
-                    )
+                            placeholder = { Text("KEY1=value1\nKEY2=value2") },
+                            value = env,
+                            onValueChange = { onEnvChange(it) },
+                            modifier = Modifier.fillMaxSize().padding(bottom = 8.dp),
+                            isError = isInputEnvError,
+                            supportingText = { Text("Each KEY=value on a new line") },
+                            colors = OutlinedTextFieldDefaults.colors()
+                        )
+                    }
                 }
             }
+        }
 
+        val enabled = !isNameError&&!isInputsError&&!isInputEnvError
+        Button(
+            enabled = enabled,
+            modifier =Modifier.padding(8.dp).fillMaxWidth(),
+            onClick = {print("test")}){
+            if(enabled)Text("Install")
+            else Text("Please complete required inputs and MCP server name before install")
         }
     }
 

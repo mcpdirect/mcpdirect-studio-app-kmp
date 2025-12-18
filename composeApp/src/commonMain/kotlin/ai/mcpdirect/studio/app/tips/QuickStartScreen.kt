@@ -145,7 +145,7 @@ fun ConnectMCPView(
     OutlinedCard(Modifier.fillMaxHeight().weight(0.8f)) {
         val toolMakers by viewModel.toolMakers.collectAsState()
         StudioActionBar (
-            "Connected MCP servers",
+            "Installed MCP servers",
         ){
             IconButton(onClick = {
                 viewModel.currentToolMaker(null)
@@ -160,7 +160,8 @@ fun ConnectMCPView(
                 contentDescription = null,
                 modifier = Modifier.size(80.dp).padding(bottom = 16.dp)
             )
-            Text("No MCP servers available")
+            Text("No MCP server installed.")
+            Text("Install one from MCP catalog.")
         } else LazyColumn {
             items(toolMakers) { toolMaker ->
                 StudioListItem(
@@ -323,7 +324,7 @@ fun MCPServerCatalogView(
     Row{
         var currentMCPServer by remember { mutableStateOf(AIPortMCPServer()) }
         Column(modifier = Modifier.weight(0.8f))  {
-            StudioActionBar("MCP server catalog")
+            StudioActionBar("MCP catalog")
             HorizontalDivider()
             LazyColumn{
                 items(mcpServerCatalog) { mcpServer ->

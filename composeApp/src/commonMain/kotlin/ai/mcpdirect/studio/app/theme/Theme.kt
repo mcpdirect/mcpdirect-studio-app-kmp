@@ -266,7 +266,6 @@ fun AppTheme(
       darkTheme -> darkScheme
       else -> lightScheme
   }
-
   MaterialTheme(
     colorScheme = colorScheme,
     typography = typography ?: AppTypography,

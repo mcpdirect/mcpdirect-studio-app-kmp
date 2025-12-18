@@ -43,7 +43,15 @@ fun TipsScreen() {
             style = MaterialTheme.typography.displayMedium)
 //        https://storage.googleapis.com/mcpdirect-image/tips/mcpdirect_diagram_simple.png
         Spacer(Modifier.height(16.dp))
-        OutlinedCard(Modifier.width(900.dp)) {
+        Row(Modifier.width(900.dp)) {
+            Column(Modifier.padding(end=16.dp).weight(1f)) {
+                Text("3 steps",style = MaterialTheme.typography.displayMedium)
+                Text("Let any of your agents",style = MaterialTheme.typography.headlineLarge)
+                Text("Access any of your",style = MaterialTheme.typography.headlineLarge)
+//                Text("Any of your MCP servers",style = MaterialTheme.typography.headlineLarge)
+                Text("in-house MCP servers",style = MaterialTheme.typography.headlineLarge)
+            }
+            OutlinedCard(Modifier.width(500.dp)) {
 //            Row(Modifier.padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
 //                Text("3 steps, let any of your agents access any of your in-house MCP servers",
 //                    style = MaterialTheme.typography.titleLarge)
@@ -58,32 +66,37 @@ fun TipsScreen() {
 //            }
 //
 //            HorizontalDivider()
-            Box(Modifier.clickable{
-                generalViewModel.currentScreen(
-                    Screen.QuickStart,
-                    "3 steps, let any of your agents access any of your in-house MCP servers",
-                    Screen.Tips
-                )
-            },){
-                Image(
-                    painterResource(Res.drawable.mcpdirect_tips_one_url),
-                    contentDescription = "MCPdirect: Universal MCP Access Gateway",
+                Box(
+                    Modifier.clickable {
+                        generalViewModel.currentScreen(
+                            Screen.QuickStart,
+                            "3 steps, let any of your agents access any of your in-house MCP servers",
+                            Screen.Tips
+                        )
+                    },
+                ) {
+                    Image(
+                        painterResource(Res.drawable.mcpdirect_tips_one_url),
+                        contentDescription = "MCPdirect: Universal MCP Access Gateway",
 //                    Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp).fillMaxWidth().clip(CardDefaults.shape),
-                )
-                Column(Modifier.padding(16.dp),) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("3 steps, let any of your agents access any of your in-house MCP servers",
-                            style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(start = 8.dp))
-                        Spacer(Modifier.weight(1f))
-                        Icon(painterResource(Res.drawable.keyboard_arrow_right), contentDescription = "")
+                    )
+                    Column(Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            Text(
+//                                "3 steps, let any of your agents access any of your in-house MCP servers",
+//                                style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold,
+//                                modifier = Modifier.padding(start = 8.dp)
+//                            )
+                            Spacer(Modifier.weight(1f))
+                            Icon(painterResource(Res.drawable.keyboard_arrow_right), contentDescription = "")
+                        }
+//                        Spacer(Modifier.height(300.dp))
+//                        Text("1. Connect MCP servers to MCPdirect", style = MaterialTheme.typography.bodyLarge)
+//                        Text("2. Generate MCPdirect key to access", style = MaterialTheme.typography.bodyLarge)
+//                        Text("3. Configure MCPdirect in AI Agents", style = MaterialTheme.typography.bodyLarge)
                     }
-                    Spacer(Modifier.height(300.dp))
-                    Text("1. Connect MCP servers to MCPdirect",style=MaterialTheme.typography.bodyLarge)
-                    Text("2. Generate MCPdirect key to access",style=MaterialTheme.typography.bodyLarge)
-                    Text("3. Configure MCPdirect in AI Agents",style=MaterialTheme.typography.bodyLarge)
-                }
 
+                }
             }
         }
         Spacer(Modifier.height(16.dp))

@@ -104,6 +104,7 @@ All notable changes to this file.
 - Updated build.gradle.kts, App.kt, Platform.kt, Carousel.kt, ConfigMCPServerDialog.kt, StudioRepository.kt, and QuickStartScreen.kt with improvements
 - Updated ConfigMCPServerDialog.kt, AIPortMCPServer.kt, Color.kt, QuickStartAIAgent.kt, QuickStartScreen.kt, and QuickStartViewModel.kt with improvements
 - Updated App.kt, StudioActionBar.kt, ConfigMCPServerDialog.kt, MCPServer.kt, QuickStartAIAgent.kt, QuickStartScreen.kt, and TipsScreen.kt with improvements
+- Updated ConfigMCPServerDialog.kt, Theme.kt, QuickStartScreen.kt, and TipsScreen.kt with improvements
 
 ## 2025-11-28
 ### Added
