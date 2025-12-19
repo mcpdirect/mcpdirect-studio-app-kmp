@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,6 +54,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,6 +65,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
 import mcpdirectstudioapp.composeapp.generated.resources.delete
 import org.jetbrains.compose.resources.painterResource
 
@@ -259,39 +263,99 @@ fun InstallRTMView(command: String){
 }
 @Composable
 fun ConfigMCPServerView(
-    title:String,
     mcpServer: MCPServer?=null,
     modifier: Modifier = Modifier,
+    onBack:(()->Unit)?=null,
+    onConfirmRequest: (MCPServer?,MCPServerConfig) -> Unit,
 ){
     var name by remember { mutableStateOf("") }
     var isNameError by remember { mutableStateOf(true) }
-    var transport by remember { mutableStateOf(mcpServer?.transport?:0)  }
-    var url by remember { mutableStateOf(mcpServer?.url?:"")}
-    var command by remember { mutableStateOf(mcpServer?.command?:"")}
-    val args = remember { mutableStateListOf<String>()}
-    mcpServer?.args?.let {
-        args.addAll(it)
-    }
-    val env = remember { mutableStateMapOf<String, String>()}
-    mcpServer?.env?.let {
-        env.putAll(it)
-    }
-    var isCommandValid by remember {mutableStateOf(true)}
+    var transport by remember { mutableStateOf(0)  }
+    var command by remember { mutableStateOf<String>("")}
+    var isCommandError by remember {mutableStateOf(true)}
+    var url by remember { mutableStateOf<String>("")}
     var isUrlError by remember {mutableStateOf(true)}
+    var args by remember { mutableStateOf("") }
+    val inputArgs = remember { mutableStateListOf<String>()}
+    var env by remember { mutableStateOf("") }
+    val inputEnv = remember { mutableStateMapOf<String, String>()}
+    var isEnvError by remember {mutableStateOf(false)}
     val formScrollState = rememberScrollState()
-    fun onCommandChange(value: String) { command = value }
+    fun onTypeChange(type: Int) {
+        transport = type
+        if(type==0) {
+            url = ""
+            isUrlError = false
+        } else {
+            command = ""
+            isCommandError = false
+        }
+    }
+
+    fun onCommandChange(value: String) {
+        command = value
+        isCommandError = command.isBlank()
+    }
     fun onUrlChange(value: String) {
         url = value.trim().replace(" ","")
         isUrlError = !(url.startsWith("http://")|| url.startsWith("https://"))
     }
-    fun onTypeChange(type: Int) { transport = type }
+
     fun onNameChange(value:String){
         isNameError = value.isBlank()||value.length>20
         name = value
     }
+    fun onArgsChange(value:String){
+        args = value.replace(" ","").replace("\n\n","\n")
+        inputArgs.clear()
+        val strings = value.split("\n")
+        strings.forEach {
+            val arg = it.trim()
+            if(it.isNotEmpty())inputArgs.add(arg)
+        }
+    }
+    fun onEnvChange(value:String){
+        env = value.replace(" ","").replace("\n\n","\n")
+        inputEnv.clear()
+        val strings = value.split("\n")
+        var errorCount = 0
+        strings.forEach { pair ->
+            if(pair.isNotBlank())pair.split("=").let {
+                if(it.size == 2 && it[0].isNotBlank() && it[1].isNotBlank()) inputEnv[it[0].trim()]=it[1].trim()
+                else errorCount++
+            }
+        }
+        isEnvError = errorCount>0
+    }
+
+    LaunchedEffect(mcpServer){
+        onNameChange(mcpServer?.name?:"")
+
+        onUrlChange(mcpServer?.url?:"")
+        onCommandChange(mcpServer?.command?:"")
+
+        onTypeChange(mcpServer?.transport?:0)
+
+        mcpServer?.args?.let {
+            onArgsChange(it.joinToString("\n"))
+        }?:inputArgs.clear()
+
+        mcpServer?.env?.let {
+            onEnvChange(it.map { (key,value)-> "$key=${value}"}.toList().joinToString("\n"))
+        }?:inputEnv.clear()
+    }
     Column(modifier) {
-        StudioActionBar(title) {
-            TextButton(onClick = {
+        StudioActionBar(
+            mcpServer?.name?:"New MCP Server",
+            navigationIcon = {
+                onBack?.let {
+                    IconButton(onClick = onBack) {
+                        Icon(painterResource(Res.drawable.arrow_back),contentDescription = "Back")
+                    }
+                }
+            }
+        ) {
+            if(mcpServer==null)TextButton(onClick = {
                 val text = getPlatform().pasteFromClipboard()
                 if(text==null){
                     generalViewModel.showSnackbar("Clipboard is empty")
@@ -336,24 +400,18 @@ fun ConfigMCPServerView(
                         if (transport == 0) {
                             onCommandChange(command!!)
                             a?.let {
-                                args.clear()
-                                for (element in it) {
-                                    args.add(element.jsonPrimitive.content)
-                                }
+                                inputArgs.clear()
+                                onArgsChange(it.map { value -> value.jsonPrimitive.content }.toList().joinToString("\n"))
                             }
                             e?.let {
-                                env.clear()
-                                for (entry in it) {
-                                    env[entry.key] = entry.value.jsonPrimitive.content
-                                }
+                                inputEnv.clear()
+                                onEnvChange(it.map { (key,value) -> "$key=$(value.jsonPrimitive.content)" }.toList().joinToString("\n"))
                             }
                         } else {
                             onUrlChange(url!!)
                             h?.let {
-                                env.clear()
-                                for (entry in it) {
-                                    env[entry.key] = entry.value.jsonPrimitive.content
-                                }
+                                inputEnv.clear()
+                                onEnvChange(it.map { (key,value) -> "$key=$(value.jsonPrimitive.content)" }.toList().joinToString("\n"))
                             }
                         }
                     }else throw Exception()
@@ -369,52 +427,6 @@ fun ConfigMCPServerView(
             Modifier.verticalScroll(formScrollState).padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                SingleChoiceSegmentedButtonRow {
-                    SegmentedButton(
-                        selected = transport == 0,
-                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
-//                    contentPadding = PaddingValues(horizontal = 0.dp),
-                        onClick = { onTypeChange(0) }){
-                        Text("STDIO",style = MaterialTheme.typography.bodyMedium)
-                    }
-                    SegmentedButton(
-                        selected = transport == 1,
-                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
-//                    contentPadding = PaddingValues(horizontal = 0.dp),
-                        onClick = { onTypeChange(1) }) {
-                        Text("SSE",style = MaterialTheme.typography.bodyMedium)
-                    }
-                    SegmentedButton(
-                        selected = transport == 2,
-                        shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
-//                    contentPadding = PaddingValues(horizontal = 0.dp),
-                        onClick = { onTypeChange(2) }) {
-                        Text("HTTP",style = MaterialTheme.typography.bodyMedium)
-                    }
-                }
-//            Spacer(modifier = Modifier.weight(1f))
-//            Row(verticalAlignment = Alignment.CenterVertically,){
-//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 0,
-//                    onClick = { onTypeChange(0) })
-//                Text("STDIO")
-//            }
-//            Row(verticalAlignment = Alignment.CenterVertically,) {
-//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 1,
-//                    onClick = { onTypeChange(1) })
-//                Text("SSE")
-//            }
-//            Row(verticalAlignment = Alignment.CenterVertically,) {
-//                RadioButton(modifier=Modifier.scale(0.75f),selected = transport == 2,
-//                    onClick = { onTypeChange(2) })
-//                Text("Streamable HTTP")
-//            }
-
-            }
-
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = name,
@@ -424,6 +436,36 @@ fun ConfigMCPServerView(
                 supportingText = {
                     Text("Name must not be empty and length < 21")
                 },
+                trailingIcon = {
+                    SingleChoiceSegmentedButtonRow(
+                        Modifier.padding(8.dp).pointerHoverIcon(PointerIcon.Default)
+                    ) {
+                        SegmentedButton(
+                            selected = transport == 0,
+                            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+                            modifier = Modifier.height(32.dp),
+                            contentPadding = PaddingValues(start = 8.dp,end = 16.dp),
+                            onClick = { onTypeChange(0) }){
+                            Text("stdio",style = MaterialTheme.typography.bodyMedium)
+                        }
+                        SegmentedButton(
+                            selected = transport == 1,
+                            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+                            modifier = Modifier.height(32.dp),
+                            contentPadding = PaddingValues(start = 8.dp,end = 16.dp),
+                            onClick = { onTypeChange(1) }) {
+                            Text("sse",style = MaterialTheme.typography.bodyMedium)
+                        }
+                        SegmentedButton(
+                            selected = transport == 2,
+                            shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+                            modifier = Modifier.height(32.dp),
+                            contentPadding = PaddingValues(start = 8.dp,end = 16.dp),
+                            onClick = { onTypeChange(2) }) {
+                            Text("http",style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                }
             )
 
             if (transport == 0) {
@@ -433,9 +475,9 @@ fun ConfigMCPServerView(
                     label = { Text("Command") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    isError = !isCommandValid,
+                    isError = isCommandError,
                     supportingText = {
-                        Text("Command must not be empty")
+                        Text("Command can't not be empty")
                     },
                     trailingIcon = {
                         InstallRTMView(command)
@@ -443,9 +485,9 @@ fun ConfigMCPServerView(
                 )
                 OutlinedTextField(
                     label = { Text("Arguments") },
-                    value = args.joinToString(separator = "\n"),
+                    value = args,
                     placeholder = { Text("arg1\narg2\narg3") },
-                    onValueChange = {},
+                    onValueChange = { onArgsChange(it) },
                     modifier = Modifier.fillMaxWidth().height(150.dp),
                     supportingText = {Text("Each argument on a new line")}
                 )
@@ -458,7 +500,7 @@ fun ConfigMCPServerView(
                     singleLine = true,
                     isError = isUrlError,
                     supportingText = {
-                        Text("URL must not be empty and must start with http:// or https://")
+                        Text("URL can't not be empty and must start with http:// or https://")
                     }
                 )
 
@@ -466,12 +508,32 @@ fun ConfigMCPServerView(
             OutlinedTextField(
                 label = {Text(if(transport==0) "Environment Variables" else "Headers")},
                 placeholder = { Text("KEY1=value1\nKEY2=value2\nKEY3=value3") },
-                value = "",
-                onValueChange = {},
+                value = env,
+                onValueChange = { onEnvChange(it) },
                 modifier = Modifier.fillMaxWidth().height(150.dp),
                 supportingText = {Text("Each KEY=value on a new line")}
             )
 
+        }
+        Spacer(Modifier.weight(1f))
+        val enabled = !isNameError&&!isUrlError&&!isCommandError&&!isEnvError
+        Button(
+            enabled = enabled,
+            modifier =Modifier.padding(8.dp).fillMaxWidth(),
+            onClick = {
+                val config = MCPServerConfig()
+                config.name = name
+                config.transport = transport
+                config.url = url
+
+                config.command = command
+                config.args = inputArgs
+                config.env = inputEnv
+                onConfirmRequest(mcpServer,config)
+            }
+        ){
+            if(enabled)Text("Confirm")
+            else Text("Please complete required inputs and MCP server name before confirm")
         }
     }
 }
@@ -480,7 +542,7 @@ fun ConfigMCPServerView(
 fun ConfigMCPServerView(
     mcpServer: AIPortMCPServer,
     modifier: Modifier = Modifier,
-    onInstallRequest: (config:MCPServerConfig) -> Unit,
+    onConfirmRequest: (config:MCPServerConfig) -> Unit,
 ){
 //    val prettyJson = Json { prettyPrint = true }
 //    var preview by remember { mutableStateOf("") }
@@ -564,9 +626,6 @@ fun ConfigMCPServerView(
     fun onNameChange(value:String){
         isNameError = value.isBlank()||value.length>20
         name = value
-//        if(!isNameError){
-//            build()
-//        }
     }
     fun onArgsChange(value:String){
         args = value.replace(" ","").replace("\n\n","\n")
@@ -780,11 +839,11 @@ fun ConfigMCPServerView(
                     env[entry.key]=value
                 }
                 config.env = env
-                onInstallRequest(config)
+                onConfirmRequest(config)
             }
         ){
-            if(enabled)Text("Install")
-            else Text("Please complete required inputs and MCP server name before install")
+            if(enabled)Text("Confirm")
+            else Text("Please complete required inputs and MCP server name before confirm")
         }
     }
 
