@@ -38,6 +38,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.docs
 import mcpdirectstudioapp.composeapp.generated.resources.error
 import mcpdirectstudioapp.composeapp.generated.resources.inbox_empty
 import mcpdirectstudioapp.composeapp.generated.resources.mobiledata_off
+import mcpdirectstudioapp.composeapp.generated.resources.more
 import mcpdirectstudioapp.composeapp.generated.resources.restart_alt
 import mcpdirectstudioapp.composeapp.generated.resources.setting_config
 import org.jetbrains.compose.resources.painterResource
@@ -46,6 +47,7 @@ import org.jetbrains.compose.resources.painterResource
 
 fun QuickStartScreen() {
     val viewModel by remember { mutableStateOf(QuickStartViewModel()) }
+
     var stepIndex by remember { mutableStateOf(0) }
     val steps = listOf(
         "1. Connect MCP servers to MCPdirect",
@@ -138,10 +140,13 @@ fun ConnectMCPView(
     modifier: Modifier,
     viewModel: QuickStartViewModel
 ){
+    val toolAgents by viewModel.toolAgents.collectAsState()
+    val localToolAgent by StudioRepository.localToolAgent.collectAsState()
+    val currentToolAgent by viewModel.currentToolAgent.collectAsState()
     val currentToolMaker by viewModel.currentToolMaker.collectAsState()
     var action by remember { mutableStateOf(ConnectMCPViewAction.MAIN) }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp),){
-    OutlinedCard(Modifier.fillMaxHeight().weight(0.8f)) {
+    OutlinedCard(Modifier.fillMaxHeight().weight(1f)) {
         val toolMakers by viewModel.toolMakers.collectAsState()
         StudioActionBar (
             "Installed MCP servers",
@@ -153,7 +158,7 @@ fun ConnectMCPView(
             }
         }
         HorizontalDivider()
-        if(toolMakers.isEmpty()) StudioBoard {
+        if(toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {
             Icon(
                 painterResource(Res.drawable.inbox_empty),
                 contentDescription = null,
@@ -161,7 +166,7 @@ fun ConnectMCPView(
             )
             Text("No MCP server installed.")
             Text("Install one from MCP catalog.")
-        } else LazyColumn {
+        } else LazyColumn(Modifier.weight(1f)) {
             items(toolMakers) { toolMaker ->
                 StudioListItem(
                     selected = currentToolMaker?.id==toolMaker.id,
@@ -214,6 +219,18 @@ fun ConnectMCPView(
                 )
             }
         }
+        HorizontalDivider()
+        TextButton (
+            modifier = Modifier.padding(horizontal = 8.dp),
+            onClick = {}
+        ){
+            if(currentToolAgent.id==0L&&toolAgents.isNotEmpty())
+                viewModel.currentToolAgent(toolAgents[0])
+
+            Text(if(localToolAgent.id==currentToolAgent.id) "This Device" else currentToolAgent.name)
+            Spacer(Modifier.weight(1f))
+            Icon(painterResource(Res.drawable.more), contentDescription = "")
+        }
     }
     OutlinedCard(Modifier.weight(2f)) {
         currentToolMaker?.let { toolMaker ->
@@ -232,7 +249,7 @@ fun ConnectMCPView(
                         viewModel.modifyMCPServerConfig(
                             toolMaker,config.name,
                             config = if(changed) config else null
-                        )
+                        ){ if(it.successful()) action = ConnectMCPViewAction.MAIN }
                     }
                 }
                 ConnectMCPViewAction.CONFIG_MCP_TEMPLATE ->{
@@ -265,7 +282,6 @@ fun MCPServerMainView(
             Spacer(Modifier.weight(1f))
             IconButton(onClick = {
                 viewModel.modifyToolMakerStatus(
-                    StudioRepository.localToolAgent.value,
                     toolMaker,1
                 )
             }){

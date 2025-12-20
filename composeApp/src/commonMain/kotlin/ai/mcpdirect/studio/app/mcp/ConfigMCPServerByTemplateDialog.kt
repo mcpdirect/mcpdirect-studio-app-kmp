@@ -1,12 +1,8 @@
 package ai.mcpdirect.studio.app.mcp
 
 import ai.mcpdirect.mcpdirectstudioapp.JSON
-import ai.mcpdirect.studio.app.model.MCPServerConfig
-import ai.mcpdirect.studio.app.model.ToolMakerTemplate
-import ai.mcpdirect.studio.app.model.ToolMakerTemplateConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ConfigMCPServerFromTemplatesDialog(
+fun ConfigMCPServerByTemplateDialog(
     toolAgent: AIPortToolAgent,
     toolMaker: AIPortToolMaker,
     onConfirmRequest: (toolMaker:AIPortToolMaker,inputs:String) -> Unit,
@@ -28,11 +24,11 @@ fun ConfigMCPServerFromTemplatesDialog(
     val inputMap = remember { mutableStateMapOf<String, String>() }
     val inputErrorMap = remember { mutableStateMapOf<String, Boolean>() }
     LaunchedEffect(null){
-        StudioRepository.getMakerTemplateConfigFromStudio(
+        StudioRepository.getToolMakerTemplateConfigFromStudio(
             toolAgent,toolMaker
-        ){  code, message, data ->
-            if(code==0&&data!=null){
-                inputMap.putAll(JSON.decodeFromString(data.inputs!!))
+        ){
+            if(it.successful()&&it.data!=null){
+                inputMap.putAll(JSON.decodeFromString(it.data!!.inputs!!))
                 inputs.addAll(inputMap.map { it.key }.toList())
                 inputs.forEach {
                     inputErrorMap[it]=false

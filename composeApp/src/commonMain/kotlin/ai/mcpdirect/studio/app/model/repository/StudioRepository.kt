@@ -685,16 +685,16 @@ object StudioRepository {
             }
         }
     }
-    suspend fun getMakerTemplateConfigFromStudio(
+    suspend fun getToolMakerTemplateConfigFromStudio(
         toolAgent: AIPortToolAgent, toolMaker: AIPortToolMaker,
-        onResponse: (code: Int, message: String?, data: ToolMakerTemplateConfig?) -> Unit){
+        onResponse: (resp: AIPortServiceResponse<ToolMakerTemplateConfig>) -> Unit){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().getMakerTemplateConfigFromStudio(toolAgent.engineId,toolMaker.id,){
                 generalViewModel.loaded(
                     "Get ToolMaker Template Config #${toolMaker.name} From Studio #${toolAgent.name}",it.code,it.message
                 )
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }

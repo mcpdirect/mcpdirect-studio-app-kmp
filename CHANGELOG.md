@@ -2,6 +2,21 @@
 
 ## [December 18, 2025]
 ### Summary
+Renamed dialog, improved API response handling, and enhanced tool agent management
+
+### Details
+- Renamed ConfigMCPServerFromTemplateDialog.kt to ConfigMCPServerByTemplateDialog.kt
+- Updated function name from ConfigMCPServerFromTemplatesDialog to ConfigMCPServerByTemplateDialog
+- Renamed getMakerTemplateConfigFromStudio to getToolMakerTemplateConfigFromStudio in StudioRepository
+- Updated API response handling to use AIPortServiceResponse consistently
+- Added currentToolAgent state management in QuickStartViewModel
+- Improved UI layout and added tool agent selection in QuickStartScreen
+- Removed redundant parameter in modifyToolMakerStatus function
+- Updated all relevant function calls to use the new currentToolAgent instead of localToolAgent
+- Added more icon import and adjusted StudioBoard sizing
+
+## [December 18, 2025]
+### Summary
 Added modifyMCPServerForStudio function and improved MCP configuration change detection
 
 ### Details

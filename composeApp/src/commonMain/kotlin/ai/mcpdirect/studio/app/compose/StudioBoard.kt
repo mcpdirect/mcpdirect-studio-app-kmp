@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.CombinedModifier
@@ -17,7 +18,7 @@ fun StudioBoard(
     content: @Composable (ColumnScope.() -> Unit)
 ){
     Column(
-        modifier = CombinedModifier(Modifier.fillMaxSize(),modifier),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = verticalArrangement,
         horizontalAlignment = horizontalAlignment,
         content = content

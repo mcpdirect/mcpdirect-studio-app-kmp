@@ -982,7 +982,7 @@ fun ToolMakerByTemplateListView(
                         }
                     )
                 } else if(showConfigServerFromTemplateDialog){
-                    ConfigMCPServerFromTemplatesDialog(
+                    ConfigMCPServerByTemplateDialog(
                         toolAgent!!,
                         selectedToolMaker,
                         onConfirmRequest = { toolMaker,inputs->
