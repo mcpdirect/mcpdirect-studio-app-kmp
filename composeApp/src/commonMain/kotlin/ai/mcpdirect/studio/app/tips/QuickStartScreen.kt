@@ -227,9 +227,12 @@ fun ConnectMCPView(
                     ConfigMCPServerView(
                         toolMaker as MCPServer, Modifier.weight(2f),
                         onBack = {action= ConnectMCPViewAction.MAIN}
-                    ){
-                        mcpServer,config ->
+                    ){ config,changed ->
                         println(JSON.encodeToString(config))
+                        viewModel.modifyMCPServerConfig(
+                            toolMaker,config.name,
+                            config = if(changed) config else null
+                        )
                     }
                 }
                 ConnectMCPViewAction.CONFIG_MCP_TEMPLATE ->{
@@ -345,13 +348,16 @@ fun MCPServerCatalogView(
 
         VerticalDivider()
         when(currentMCPServer.id){
-            0L -> ConfigMCPServerView(modifier = Modifier.weight(2f)){
-                mcpServer,config ->
+            0L -> ConfigMCPServerView(modifier = Modifier.weight(2f)){ config,changed ->
                 println(JSON.encodeToString(config))
+                viewModel.installMCPServer(config){
+                    if(it.successful()) it.data?.let { data ->
+                        viewModel.currentToolMaker(data)
+                    }
+                }
             }
             1L -> {}
             else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f)){ config ->
-//                println(JSON.encodeToString(config))
                 viewModel.installMCPServer(config){
                     if(it.successful()) it.data?.let { data ->
                         viewModel.currentToolMaker(data)

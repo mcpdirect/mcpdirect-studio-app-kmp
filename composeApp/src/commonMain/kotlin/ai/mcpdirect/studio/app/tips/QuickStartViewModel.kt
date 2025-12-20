@@ -150,11 +150,11 @@ class QuickStartViewModel: ViewModel() {
         if(maker!=null)updateCurrentToolMaker(maker)
     }
 
-    fun modifyMCPServerConfig(mcpServer: MCPServer,config: MCPServerConfig) {
+    fun modifyMCPServerConfig(mcpServer: MCPServer,name:String?=null,status:Int?=null,config: MCPServerConfig?=null) {
         viewModelScope.launch {
-            StudioRepository.modifyMCPServerConfigForStudio(
+            StudioRepository.modifyMCPServerForStudio(
                 StudioRepository.localToolAgent.value,
-                mcpServer,config
+                mcpServer,name,status,config
             ){
                 if(it.successful()) it.data?.let{ data ->
                     currentToolMaker.value?.let{
@@ -183,7 +183,6 @@ class QuickStartViewModel: ViewModel() {
             StudioRepository.localToolAgent.value, config, onResponse
         ) }
     }
-
     fun grantToolPermissions(){
         currentAccessKey?.let { accessKey ->
             val toolPermissions = _selectedTools.values.map { tool ->

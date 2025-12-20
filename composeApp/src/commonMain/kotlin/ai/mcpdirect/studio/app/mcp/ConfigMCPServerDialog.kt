@@ -266,7 +266,7 @@ fun ConfigMCPServerView(
     mcpServer: MCPServer?=null,
     modifier: Modifier = Modifier,
     onBack:(()->Unit)?=null,
-    onConfirmRequest: (MCPServer?,MCPServerConfig) -> Unit,
+    onConfirmRequest: (config:MCPServerConfig,changed:Boolean) -> Unit,
 ){
     var name by remember { mutableStateOf("") }
     var isNameError by remember { mutableStateOf(true) }
@@ -521,15 +521,41 @@ fun ConfigMCPServerView(
             enabled = enabled,
             modifier =Modifier.padding(8.dp).fillMaxWidth(),
             onClick = {
+                var changed = false;
                 val config = MCPServerConfig()
-                config.name = name
+                mcpServer?.let {
+                    config.id = it.id
+                    config.status = it.status
+                }
+                if(name!=mcpServer?.name){
+                    config.name = name
+                }
+                if(transport!=mcpServer?.transport) { changed = true }
                 config.transport = transport
-                config.url = url
-
-                config.command = command
-                config.args = inputArgs
-                config.env = inputEnv
-                onConfirmRequest(mcpServer,config)
+                if(transport==0){
+                    if(command!=mcpServer?.command) { changed = true }
+                    config.command = command
+                    config.args = inputArgs.toList()
+                    if(config.args!=mcpServer?.args) { changed = true }
+                }else{
+                    if(url!=mcpServer?.url) { changed = true }
+                    config.url = url
+                }
+                config.env = inputEnv.toMap()
+                if(config.env!=mcpServer?.env) changed = true
+//                if(mcpServer==null) {
+//                    changed = true
+//                    config.name = name
+//                    config.transport = transport
+//                    if(transport==0) {
+//                        config.command = command
+//                        config.args = inputArgs
+//                    } else config.url = url
+//                    config.env = inputEnv
+//                }else{
+//
+//                }
+                onConfirmRequest(config, changed)
             }
         ){
             if(enabled)Text("Confirm")

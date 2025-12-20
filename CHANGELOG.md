@@ -2,6 +2,20 @@
 
 ## [December 18, 2025]
 ### Summary
+Added modifyMCPServerForStudio function and improved MCP configuration change detection
+
+### Details
+- Updated ConfigMCPServerView function signature to include change detection
+- Added logic to compare current config values with previous ones to detect changes
+- Changed name property in MCPConfig from String to String?
+- Added modifyMCPServerForStudio function in StudioRepository with separate parameters for name, status, and config
+- Updated modifyMCPServerConfigForStudio to use the new parameters
+- Added "-y" flag to Chrome DevTools in QuickStartAIAgent
+- Updated function calls in QuickStartScreen to handle change detection
+- Modified modifyMCPServerConfig in QuickStartViewModel to accept name, status, and config separately
+
+## [December 18, 2025]
+### Summary
 Major UI improvements to MCP server configuration screen and refactored dialogs
 
 ### Details

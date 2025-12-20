@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 open class MCPConfig {
     var id: Long = 0
-    var name: String = ""
+    var name: String? = null
     var status:Int = 1
 }

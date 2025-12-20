@@ -142,6 +142,7 @@ val mcpServerCatalog = listOf(
     AIPortMCPServer(1),
     AIPortMCPServer(-1),
     AIPortMCPServer(300,"Chrome DevTools","npx",listOf(
+        "-y",
         "chrome-devtools-mcp@latest"
     )),
     AIPortMCPServer(400,"DBHub","npx",

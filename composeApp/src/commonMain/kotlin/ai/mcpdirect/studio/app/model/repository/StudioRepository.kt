@@ -280,8 +280,48 @@ object StudioRepository {
             }
         }
     }
+    suspend fun modifyMCPServerForStudio(
+        toolAgent: AIPortToolAgent,
+        mcpServer: MCPServer,
+        serverName: String? = null,
+        serverStatus: Int? = null,
+        serverConfig: MCPServerConfig? = null,
+        onResponse: ((resp: AIPortServiceResponse<MCPServer>) -> Unit)? = null
+    ){
+        val studioId = toolAgent.engineId
+        val mcpServerId = mcpServer.id
+        if(serverName == null && serverStatus == null && serverConfig==null){
+            onResponse?.invoke(AIPortServiceResponse())
+        }
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().modifyMCPServerForStudio(
+                studioId, mcpServerId, serverName,serverStatus, serverConfig
+            ){
+                if(it.code==0) it.data?.let { server ->
+                    _mcpServers.update { map ->
+                        map.toMutableMap().apply {
+                            put(server.id, server)
+                        }
+                    }
+                    _toolMakers.update { map ->
+                        map.toMutableMap().apply {
+                            put(server.id, server)
+                        }
+                    }
+                }
+                generalViewModel.loaded(
+                    "Modify config of MCP Server #${mcpServer.name} in Studio #${toolAgent.name}",it.code,it.message
+                )
+//                onResponse(it.code,it.message,it.data)
+                onResponse?.let{ response->
+                    response(it)
+                }
+            }
+        }
+    }
     suspend fun modifyMCPServerConfigForStudio(
-        toolAgent: AIPortToolAgent, mcpServer: MCPServer, config:MCPServerConfig,
+        toolAgent: AIPortToolAgent, mcpServer: MCPServer,config:MCPServerConfig,
         onResponse: ((resp: AIPortServiceResponse<MCPServer>) -> Unit)? = null
     ){
         val studioId = toolAgent.engineId
@@ -289,7 +329,7 @@ object StudioRepository {
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().modifyMCPServerForStudio(
-                studioId, mcpServerId, serverConfig = config
+                studioId, mcpServerId, null,null, config
             ){
                 if(it.code==0) it.data?.let { server ->
                     _mcpServers.update { map ->
