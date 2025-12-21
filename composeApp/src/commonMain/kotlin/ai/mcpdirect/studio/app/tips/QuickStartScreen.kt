@@ -7,6 +7,7 @@ import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
 import ai.mcpdirect.studio.app.model.MCPServer
+import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServer
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
@@ -14,6 +15,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.ERROR
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
@@ -22,8 +24,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -306,21 +310,33 @@ fun MCPServerMainView(
         if(toolMaker.errorCode!=0){
             Text(toolMaker.errorMessage,Modifier.padding(horizontal = 8.dp) , color = MaterialTheme.colorScheme.error)
         } else {
-            val listState = rememberLazyListState()
+            val scrollState = rememberScrollState()
             Box(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    state = listState,
-                ) {
-                    items(viewModel.tools) { tool ->
-                        if (tool.makerId == toolMaker.id) ListItem(
-                            modifier = Modifier.clickable {},
-                            headlineContent = { Text(tool.name) },
-                        )
+                Column (
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
+                        .padding(16.dp) // Add padding to prevent content from going under the scrollbar
+                )  {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ){
+                        var index = 1
+                        viewModel.tools.forEach { tool ->
+                            if (tool.makerId == toolMaker.id) TextButton(
+                                shape = OutlinedTextFieldDefaults.shape,
+                                border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor),
+                                onClick = {}
+                            ){
+                                Text("${index++}. ${tool.name}")
+                            }
+
+                        }
                     }
                 }
                 VerticalScrollbar(
                     modifier = Modifier.align(Alignment.CenterEnd),
-                    adapter = rememberScrollbarAdapter(scrollState = listState)
+                    adapter = rememberScrollbarAdapter(scrollState = scrollState)
                 )
             }
         }
@@ -362,23 +378,22 @@ fun MCPServerCatalogView(
             }
         }
 
+        fun installMCPServer(config: MCPServerConfig){
+            viewModel.installMCPServer(config){
+                if(it.successful()) it.data?.let { data ->
+                    viewModel.currentToolMaker(data)
+                    viewModel.selectToolMaker(true,data)
+                }
+            }
+        }
         VerticalDivider()
         when(currentMCPServer.id){
             0L -> ConfigMCPServerView(modifier = Modifier.weight(2f)){ config,changed ->
-                println(JSON.encodeToString(config))
-                viewModel.installMCPServer(config){
-                    if(it.successful()) it.data?.let { data ->
-                        viewModel.currentToolMaker(data)
-                    }
-                }
+                installMCPServer(config)
             }
             1L -> {}
             else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f)){ config ->
-                viewModel.installMCPServer(config){
-                    if(it.successful()) it.data?.let { data ->
-                        viewModel.currentToolMaker(data)
-                    }
-                }
+                installMCPServer(config)
             }
         }
     }

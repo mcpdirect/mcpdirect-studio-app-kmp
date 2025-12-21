@@ -424,7 +424,7 @@ fun ConfigMCPServerView(
         }
         HorizontalDivider()
         Column(
-            Modifier.verticalScroll(formScrollState).padding(8.dp),
+            Modifier.verticalScroll(formScrollState).padding(horizontal = 16.dp,vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             OutlinedTextField(
@@ -519,7 +519,7 @@ fun ConfigMCPServerView(
         val enabled = !isNameError&&!isUrlError&&!isCommandError&&!isEnvError
         Button(
             enabled = enabled,
-            modifier =Modifier.padding(8.dp).fillMaxWidth(),
+            modifier =Modifier.padding(16.dp).fillMaxWidth(),
             onClick = {
                 var changed = false;
                 val config = MCPServerConfig()
@@ -681,8 +681,8 @@ fun ConfigMCPServerView(
         }
         HorizontalDivider()
         Column(
-            Modifier.weight(1f).padding(8.dp).verticalScroll(formScrollState),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier.weight(1f).padding(horizontal = 16.dp, vertical = 16.dp).verticalScroll(formScrollState),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             val type = when(mcpServer.transport){
                 0 -> "stdio"
@@ -816,7 +816,7 @@ fun ConfigMCPServerView(
             }
         }
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             value = name,
             onValueChange = { onNameChange(it)},
             label = { Text("MCP Server Name") },
@@ -830,7 +830,7 @@ fun ConfigMCPServerView(
         val enabled = !isNameError&&!isInputsError&&!isInputEnvError
         Button(
             enabled = enabled,
-            modifier =Modifier.padding(8.dp).fillMaxWidth(),
+            modifier =Modifier.padding(16.dp).fillMaxWidth(),
             onClick = {
                 val config = MCPServerConfig()
                 config.name = name
@@ -843,16 +843,16 @@ fun ConfigMCPServerView(
                 if(config.command!=null)inputs.forEach { entry ->
                     config.command = config.command!!.replace($$"${$${entry.key}}",entry.value)
                 }
-                val args =  hashSetOf<String>()
-                inputArgs.forEach { arg ->
-                    args.add(arg)
-                }
+                val args =  mutableListOf<String>()
                 mcpServer.args?.forEach { arg ->
                     var value = arg
                     inputs.forEach { entry ->
                         value = value.replace($$"${$${entry.key}}",entry.value)
                     }
                     args.add(value)
+                }
+                inputArgs.forEach { arg ->
+                    if(arg !in args) args.add(arg)
                 }
                 config.args = args.toList()
                 val env = mutableStateMapOf<String,String>()

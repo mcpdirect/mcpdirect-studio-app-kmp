@@ -3,15 +3,12 @@ package ai.mcpdirect.studio.app
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.auth.PasswordChangeState
 import ai.mcpdirect.studio.app.auth.authViewModel
-import ai.mcpdirect.studio.app.compose.StudioListItem
-import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.setting.settingsViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +31,33 @@ fun NavigationTopBar(
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     Scaffold (
-        snackbarHost = { SnackbarHost(generalViewModel.snackbarHostState) },
+        snackbarHost = { SnackbarHost(generalViewModel.snackbarHostState){ data ->
+            var containerColor = SnackbarDefaults.color
+            var contentColor = SnackbarDefaults.contentColor
+            var actionColor = SnackbarDefaults.actionColor
+            var actionContentColor = SnackbarDefaults.actionContentColor
+            var dismissActionContentColor = SnackbarDefaults.dismissActionContentColor
+            data.visuals.actionLabel?.let { label->
+                when(label.lowercase()) {
+                    "error" -> {
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                        contentColor = MaterialTheme.colorScheme.error
+                        actionColor = MaterialTheme.colorScheme.error
+                        actionContentColor = MaterialTheme.colorScheme.error
+                        dismissActionContentColor = MaterialTheme.colorScheme.error
+                    }
+                    else -> {}
+                }
+            }
+            Snackbar(
+                data,
+                containerColor = containerColor,
+                contentColor = contentColor,
+                actionColor = actionColor,
+                actionContentColor = actionContentColor,
+                dismissActionContentColor = dismissActionContentColor,
+            )
+        } },
         topBar = {
             TopAppBar(
                 navigationIcon = {

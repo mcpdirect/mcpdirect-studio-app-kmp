@@ -193,11 +193,9 @@ class QuickStartViewModel: ViewModel() {
     fun installMCPServer(
         config: MCPServerConfig,
         onResponse: (resp: AIPortServiceResponse<MCPServer>) -> Unit
-    ) {
-        viewModelScope.launch { StudioRepository.connectMCPServerToStudio(
-            currentToolAgent.value, config, onResponse
-        ) }
-    }
+    ) { viewModelScope.launch { StudioRepository.connectMCPServerToStudio(
+        currentToolAgent.value, config, onResponse
+    ) } }
     fun grantToolPermissions(){
         currentAccessKey?.let { accessKey ->
             val toolPermissions = _selectedTools.values.map { tool ->

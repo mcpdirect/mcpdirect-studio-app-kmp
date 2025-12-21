@@ -2,6 +2,19 @@
 
 ## [December 18, 2025]
 ### Summary
+Enhanced UI components, snackbar functionality, and MCP server configuration handling
+
+### Details
+- Enhanced snackbar with color customization based on message type in NavigationTopBar.kt
+- Updated padding/spacing in ConfigMCPServerDialog.kt for better UI consistency
+- Fixed args logic in ConfigMCPServerDialog.kt to properly handle input arguments
+- Improved tool display layout in QuickStartScreen.kt using FlowRow instead of LazyColumn
+- Extracted installMCPServer function in QuickStartScreen.kt for better code organization
+- Removed unused imports and cleaned up commented code in GeneralViewModel.kt
+- Minor formatting improvements in QuickStartViewModel.kt
+
+## [December 18, 2025]
+### Summary
 Renamed dialog, improved API response handling, and enhanced tool agent management
 
 ### Details
