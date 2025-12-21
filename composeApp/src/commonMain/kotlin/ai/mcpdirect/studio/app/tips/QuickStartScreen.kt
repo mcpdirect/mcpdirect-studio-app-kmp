@@ -283,6 +283,15 @@ fun MCPServerMainView(
     modifier: Modifier = Modifier,
     onActionChange: (action: ConnectMCPViewAction)->Unit
 ){
+    var currentTool by remember { mutableStateOf<AIPortTool?>(null) }
+    val tools = remember(toolMaker.id, viewModel.tools) {
+        derivedStateOf {
+            viewModel.tools.filter { it.makerId == toolMaker.id }
+        }
+    }.value
+    LaunchedEffect(toolMaker) {
+        currentTool = null
+    }
     Column(modifier) {
         if(toolMaker.status == STATUS_WAITING){
             StudioBoard {
@@ -320,32 +329,40 @@ fun MCPServerMainView(
         if(toolMaker.errorCode!=0){
             Text(toolMaker.errorMessage,Modifier.padding(horizontal = 8.dp) , color = MaterialTheme.colorScheme.error)
         } else {
-            var currentTool by remember { mutableStateOf<AIPortTool?>(null) }
+
+            var toolDetails by remember { mutableStateOf(ToolDetails("","{}")) }
             val scrollState = rememberScrollState()
-            currentTool?.let { tool ->
-                var tabIndex by remember { mutableStateOf(0) }
-                var toolDetails by remember { mutableStateOf(ToolDetails("","{}")) }
-                LaunchedEffect(null){
-                    ToolRepository.tool(tool.id){
-                        if(it.successful()) it.data?.let{
+
+            LaunchedEffect(currentTool){
+                currentTool?.let { tool ->
+                    ToolRepository.tool(tool.id) {
+                        if (it.successful()) it.data?.let {
                             val json = JSON.parseToJsonElement(it.metaData)
                             val description = json.jsonObject["description"]?.jsonPrimitive?.content
                             val inputSchema = json.jsonObject["requestSchema"]?.jsonPrimitive?.content
-                            toolDetails = ToolDetails(description?:"",inputSchema?:"{}")
+                            toolDetails = ToolDetails(description ?: "", inputSchema ?: "{}")
                         }
                     }
                 }
+            }
+            currentTool?.let { tool ->
+                var tabIndex by remember { mutableStateOf(0) }
                 Card(modifier = Modifier.fillMaxSize().padding(16.dp)){
                     StudioActionBar(tool.name) {
+                        SecondaryTabRow(
+                            tabIndex,
+                            Modifier.width(300.dp),
+                            containerColor = CardDefaults.cardColors().containerColor,
+                            contentColor = CardDefaults.cardColors().contentColor,
+                        ){
+                            Tab(tabIndex==0, onClick = {tabIndex = 0}, text = {Text("Description")})
+                            Tab(tabIndex==1, onClick = {tabIndex = 1}, text = {Text("Input Schema")})
+                        }
                         IconButton(onClick = {currentTool=null}){
                             Icon(painterResource(Res.drawable.close), contentDescription = "")
                         }
                     }
                     HorizontalDivider()
-                    SecondaryTabRow(tabIndex){
-                        Tab(tabIndex==0, onClick = {tabIndex = 0}, text = {Text("Description")})
-                        Tab(tabIndex==1, onClick = {tabIndex = 1}, text = {Text("Input Schema")})
-                    }
                     when(tabIndex){
                         0 -> Text(toolDetails.description, Modifier.padding(16.dp))
                         1 -> JsonTreeView(toolDetails.inputSchema, Modifier.padding(16.dp))
@@ -363,7 +380,7 @@ fun MCPServerMainView(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ){
                         var index = 1
-                        viewModel.tools.forEach { tool ->
+                        tools.forEach { tool ->
                             if (tool.makerId == toolMaker.id) TextButton(
                                 shape = OutlinedTextFieldDefaults.shape,
                                 border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor),

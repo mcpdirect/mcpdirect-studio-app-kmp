@@ -1,5 +1,17 @@
 # Changelog
 
+## [December 21, 2025]
+### Summary
+Optimized tool filtering and improved UI state management in MCPServerMainView
+
+### Details
+- Moved currentTool state declaration outside the conditional block in MCPServerMainView
+- Implemented derivedStateOf for efficient tool filtering based on toolMaker.id
+- Added LaunchedEffect to reset currentTool when toolMaker changes
+- Restructured tool details loading with proper state management
+- Separated tool selection UI from details display for better performance
+- Updated tools iteration to use the filtered tools list instead of full viewModel.tools
+
 ## [December 18, 2025]
 ### Summary
 Added JSON tree viewer component and enhanced tool details view
