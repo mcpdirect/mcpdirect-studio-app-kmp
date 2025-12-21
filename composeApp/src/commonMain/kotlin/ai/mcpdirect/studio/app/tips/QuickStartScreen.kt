@@ -34,6 +34,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -283,15 +284,11 @@ fun MCPServerMainView(
     modifier: Modifier = Modifier,
     onActionChange: (action: ConnectMCPViewAction)->Unit
 ){
-    var currentTool by remember { mutableStateOf<AIPortTool?>(null) }
     val tools = remember(toolMaker.id, viewModel.tools) {
         derivedStateOf {
             viewModel.tools.filter { it.makerId == toolMaker.id }
         }
     }.value
-    LaunchedEffect(toolMaker) {
-        currentTool = null
-    }
     Column(modifier) {
         if(toolMaker.status == STATUS_WAITING){
             StudioBoard {
@@ -329,10 +326,12 @@ fun MCPServerMainView(
         if(toolMaker.errorCode!=0){
             Text(toolMaker.errorMessage,Modifier.padding(horizontal = 8.dp) , color = MaterialTheme.colorScheme.error)
         } else {
-
+            var currentTool by remember{ mutableStateOf<AIPortTool?>(null) }
             var toolDetails by remember { mutableStateOf(ToolDetails("","{}")) }
             val scrollState = rememberScrollState()
-
+            LaunchedEffect(toolMaker){
+                currentTool = null
+            }
             LaunchedEffect(currentTool){
                 currentTool?.let { tool ->
                     ToolRepository.tool(tool.id) {

@@ -2,6 +2,16 @@
 
 ## [December 21, 2025]
 ### Summary
+Refined state management in MCPServerMainView and added rememberSaveable import
+
+### Details
+- Moved currentTool state declaration back inside the conditional block in MCPServerMainView
+- Restored LaunchedEffect for resetting currentTool when toolMaker changes
+- Added import for androidx.compose.runtime.saveable.rememberSaveable
+- Adjusted the placement of state variables for better composability
+
+## [December 21, 2025]
+### Summary
 Optimized tool filtering and improved UI state management in MCPServerMainView
 
 ### Details
