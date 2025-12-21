@@ -2,6 +2,19 @@
 
 ## [December 18, 2025]
 ### Summary
+Added JSON tree viewer component and enhanced tool details view
+
+### Details
+- Added new JsonTree.kt file with JsonTreeView composable for displaying JSON in a tree structure with expand/collapse functionality
+- Added JsonTreeNode sealed class with ObjectNode, ArrayNode and PrimitiveNode implementations
+- Implemented JsonTreeParser to convert JSON strings to tree nodes with filtering capabilities
+- Integrated JSON tree viewer into QuickStartScreen.kt for displaying tool input schemas
+- Added tool details view with description and input schema tabs in QuickStartScreen.kt
+- Added secondary tab row for switching between description and input schema
+- Created SimpleSchema data class and convertSchemaToReadableText function for schema display
+
+## [December 18, 2025]
+### Summary
 Enhanced UI components, snackbar functionality, and MCP server configuration handling
 
 ### Details

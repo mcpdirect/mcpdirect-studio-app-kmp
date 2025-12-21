@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.tips
 
 import ai.mcpdirect.mcpdirectstudioapp.JSON
+import ai.mcpdirect.studio.app.compose.JsonTreeView
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioListItem
@@ -10,11 +11,14 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServer
+import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.ERROR
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import ai.mcpdirect.studio.app.tool.ToolDetails
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
@@ -30,13 +34,19 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
 import mcpdirectstudioapp.composeapp.generated.resources.allDrawableResources
+import mcpdirectstudioapp.composeapp.generated.resources.close
 import mcpdirectstudioapp.composeapp.generated.resources.content_copy
 import mcpdirectstudioapp.composeapp.generated.resources.docs
 import mcpdirectstudioapp.composeapp.generated.resources.error
@@ -310,8 +320,39 @@ fun MCPServerMainView(
         if(toolMaker.errorCode!=0){
             Text(toolMaker.errorMessage,Modifier.padding(horizontal = 8.dp) , color = MaterialTheme.colorScheme.error)
         } else {
+            var currentTool by remember { mutableStateOf<AIPortTool?>(null) }
             val scrollState = rememberScrollState()
-            Box(modifier = Modifier.fillMaxSize()) {
+            currentTool?.let { tool ->
+                var tabIndex by remember { mutableStateOf(0) }
+                var toolDetails by remember { mutableStateOf(ToolDetails("","{}")) }
+                LaunchedEffect(null){
+                    ToolRepository.tool(tool.id){
+                        if(it.successful()) it.data?.let{
+                            val json = JSON.parseToJsonElement(it.metaData)
+                            val description = json.jsonObject["description"]?.jsonPrimitive?.content
+                            val inputSchema = json.jsonObject["requestSchema"]?.jsonPrimitive?.content
+                            toolDetails = ToolDetails(description?:"",inputSchema?:"{}")
+                        }
+                    }
+                }
+                Card(modifier = Modifier.fillMaxSize().padding(16.dp)){
+                    StudioActionBar(tool.name) {
+                        IconButton(onClick = {currentTool=null}){
+                            Icon(painterResource(Res.drawable.close), contentDescription = "")
+                        }
+                    }
+                    HorizontalDivider()
+                    SecondaryTabRow(tabIndex){
+                        Tab(tabIndex==0, onClick = {tabIndex = 0}, text = {Text("Description")})
+                        Tab(tabIndex==1, onClick = {tabIndex = 1}, text = {Text("Input Schema")})
+                    }
+                    when(tabIndex){
+                        0 -> Text(toolDetails.description, Modifier.padding(16.dp))
+                        1 -> JsonTreeView(toolDetails.inputSchema, Modifier.padding(16.dp))
+                    }
+//                    Text(toolDetails.description, Modifier.padding(16.dp))
+                }
+            }?: Box(modifier = Modifier.fillMaxSize()) {
                 Column (
                     modifier = Modifier
                         .verticalScroll(scrollState)
@@ -326,7 +367,7 @@ fun MCPServerMainView(
                             if (tool.makerId == toolMaker.id) TextButton(
                                 shape = OutlinedTextFieldDefaults.shape,
                                 border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor),
-                                onClick = {}
+                                onClick = {currentTool = tool}
                             ){
                                 Text("${index++}. ${tool.name}")
                             }
@@ -579,4 +620,39 @@ fun AIAgentConfigOptionView(
         }
     }
 
+}
+
+@Serializable
+data class SimpleSchema(
+    val title: String? = null,
+    val description: String? = null,
+    val type: String,
+    val properties: Map<String, SimpleSchema>? = null,
+    val required: Set<String>? = null
+)
+
+fun convertSchemaToReadableText(schemaJsonString: String): String {
+    val schema = JSON.decodeFromString<SimpleSchema>(schemaJsonString)
+    val builder = StringBuilder()
+
+    // Function to recursively build the readable text
+    fun buildText(s: SimpleSchema, indent: String = "") {
+        s.title?.let { builder.append(indent).append("Title: ").appendLine(it) }
+        s.description?.let { builder.append(indent).append("Description: ").appendLine(it) }
+        builder.append(indent).append("Type: ").appendLine(s.type)
+
+        if (s.properties != null) {
+            builder.append(indent).appendLine("Properties:")
+            for ((name, propSchema) in s.properties) {
+                val isRequired = s.required?.contains(name)?: false
+                builder.append(indent).append("  - $name")
+                s.required?.contains(name)?.let{builder.append(" (required): ")}?:builder.append(" : ")
+                // Recursively describe properties
+                buildText(propSchema, "$indent    ")
+            }
+        }
+    }
+
+    buildText(schema)
+    return builder.toString()
 }
