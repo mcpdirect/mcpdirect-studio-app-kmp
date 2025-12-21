@@ -2,6 +2,16 @@
 
 ## [December 21, 2025]
 ### Summary
+Improved UI responsiveness and fixed tool maker update in QuickStartScreen
+
+### Details
+- Wrapped viewModel.updateCurrentToolMaker in LaunchedEffect to improve UI responsiveness
+- Adjusted the UI layout in MCPServerMainView to show loading state differently
+- Updated the loading text to include the tool maker name for better UX
+- Made minor formatting improvements to code in QuickStartScreen.kt
+
+## [December 21, 2025]
+### Summary
 Refined state management in MCPServerMainView and added rememberSaveable import
 
 ### Details

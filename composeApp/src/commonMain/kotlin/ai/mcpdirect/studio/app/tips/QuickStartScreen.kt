@@ -206,7 +206,9 @@ fun ConnectMCPView(
                             Modifier.size(48.dp).padding( 12.dp),
                             tint = MaterialTheme.colorScheme.error
                         )else {
-                            viewModel.updateCurrentToolMaker(toolMaker)
+                            LaunchedEffect(toolMaker){
+                                viewModel.updateCurrentToolMaker(toolMaker)
+                            }
                             Checkbox(
                                 checked = viewModel.selectedToolMaker(toolMaker),
                                 onCheckedChange = {
@@ -289,33 +291,34 @@ fun MCPServerMainView(
             viewModel.tools.filter { it.makerId == toolMaker.id }
         }
     }.value
-    Column(modifier) {
-        if(toolMaker.status == STATUS_WAITING){
-            StudioBoard {
-                CircularProgressIndicator()
-                Text("starting")
-            }
-        }else Row(Modifier.padding(start = 16.dp, end = 4.dp),
+    if(toolMaker.status == STATUS_WAITING){
+        StudioBoard(modifier) {
+            CircularProgressIndicator()
+            Text("${toolMaker.name} starting")
+        }
+    }else Column(modifier) {
+        Row(
+            Modifier.padding(start = 16.dp, end = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(toolMaker.name, style = MaterialTheme.typography.titleSmall)
             Spacer(Modifier.weight(1f))
             IconButton(onClick = {
                 viewModel.modifyToolMakerStatus(
-                    toolMaker,1
+                    toolMaker, 1
                 )
-            }){
+            }) {
                 Icon(
                     painterResource(Res.drawable.restart_alt), contentDescription = "",
                     Modifier.size(24.dp)
                 )
             }
             IconButton(onClick = {
-                if(toolMaker.templateId>0){
-                    if(toolMaker.mcp()) onActionChange(ConnectMCPViewAction.CONFIG_MCP_TEMPLATE)
-                }else if(toolMaker.mcp()) onActionChange(ConnectMCPViewAction.CONFIG_MCP)
-                else if(toolMaker.openapi()) onActionChange(ConnectMCPViewAction.CONFIG_OPENAPI)
-            }){
+                if (toolMaker.templateId > 0) {
+                    if (toolMaker.mcp()) onActionChange(ConnectMCPViewAction.CONFIG_MCP_TEMPLATE)
+                } else if (toolMaker.mcp()) onActionChange(ConnectMCPViewAction.CONFIG_MCP)
+                else if (toolMaker.openapi()) onActionChange(ConnectMCPViewAction.CONFIG_OPENAPI)
+            }) {
                 Icon(
                     painterResource(Res.drawable.setting_config), contentDescription = "",
                     Modifier.size(24.dp)
