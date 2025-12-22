@@ -1,11 +1,7 @@
 package ai.mcpdirect.studio.app.tips
 
 import ai.mcpdirect.mcpdirectstudioapp.JSON
-import ai.mcpdirect.studio.app.compose.JsonTreeView
-import ai.mcpdirect.studio.app.compose.StudioActionBar
-import ai.mcpdirect.studio.app.compose.StudioBoard
-import ai.mcpdirect.studio.app.compose.StudioListItem
-import ai.mcpdirect.studio.app.compose.Tag
+import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
@@ -19,43 +15,21 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAI
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.tool.ToolDetails
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import mcpdirectstudioapp.composeapp.generated.resources.Res
-import mcpdirectstudioapp.composeapp.generated.resources.add
-import mcpdirectstudioapp.composeapp.generated.resources.allDrawableResources
-import mcpdirectstudioapp.composeapp.generated.resources.close
-import mcpdirectstudioapp.composeapp.generated.resources.content_copy
-import mcpdirectstudioapp.composeapp.generated.resources.docs
-import mcpdirectstudioapp.composeapp.generated.resources.error
-import mcpdirectstudioapp.composeapp.generated.resources.inbox_empty
-import mcpdirectstudioapp.composeapp.generated.resources.mobiledata_off
-import mcpdirectstudioapp.composeapp.generated.resources.more
-import mcpdirectstudioapp.composeapp.generated.resources.restart_alt
-import mcpdirectstudioapp.composeapp.generated.resources.setting_config
+import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -82,7 +56,7 @@ fun QuickStartScreen() {
                     ).height(40.dp).padding(horizontal = 16.dp),
                     contentAlignment = Alignment.Center
                 ){
-                    Text(steps[index], color = if(stepIndex==index) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,)
+                    Text(steps[index], color = if(stepIndex==index) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -160,7 +134,7 @@ fun ConnectMCPView(
     val currentToolAgent by viewModel.currentToolAgent.collectAsState()
     val currentToolMaker by viewModel.currentToolMaker.collectAsState()
     var action by remember { mutableStateOf(ConnectMCPViewAction.MAIN) }
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp),){
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)){
     OutlinedCard(Modifier.fillMaxHeight().weight(1f)) {
         val toolMakers by viewModel.toolMakers.collectAsState()
         StudioActionBar (
@@ -217,7 +191,7 @@ fun ConnectMCPView(
                             )
                         }
                     },
-                    supportingContent = { Row(horizontalArrangement = Arrangement.spacedBy(8.dp),) {
+                    supportingContent = { Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         when (toolMaker) {
                             is MCPServer -> {
                                 if (toolMaker.transport == 0) {
@@ -338,11 +312,12 @@ fun MCPServerMainView(
             LaunchedEffect(currentTool){
                 currentTool?.let { tool ->
                     ToolRepository.tool(tool.id) {
-                        if (it.successful()) it.data?.let {
-                            val json = JSON.parseToJsonElement(it.metaData)
-                            val description = json.jsonObject["description"]?.jsonPrimitive?.content
-                            val inputSchema = json.jsonObject["requestSchema"]?.jsonPrimitive?.content
-                            toolDetails = ToolDetails(description ?: "", inputSchema ?: "{}")
+                        if (it.successful()) it.data?.let { data->
+                            val json = JSON.parseToJsonElement(data.metaData)
+                            toolDetails = ToolDetails(
+                                json.jsonObject["description"]?.jsonPrimitive?.content ?: "",
+                                json.jsonObject["requestSchema"]?.jsonPrimitive?.content ?: "{}"
+                            )
                         }
                     }
                 }
@@ -485,7 +460,9 @@ fun GenerateMCPdirectKeyView(
                         },
                         selected = selected,
                         leadingContent = {
-                            Checkbox(checked = selected, onCheckedChange = {})
+                            Checkbox(checked = selected, onCheckedChange = {
+                                viewModel.selectAccessKey(accessKey)
+                            })
                         },
                         headlineContent = { Text(accessKey.name) },
                     )
@@ -578,7 +555,7 @@ fun AIAgentConfigOptionView(
 ){
     val listState = rememberLazyListState()
     val uriHandler = LocalUriHandler.current
-    Column( modifier.padding(8.dp),) {
+    Column( modifier.padding(8.dp)) {
         references?.let {
             if (it.isNotEmpty()) Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -639,39 +616,4 @@ fun AIAgentConfigOptionView(
         }
     }
 
-}
-
-@Serializable
-data class SimpleSchema(
-    val title: String? = null,
-    val description: String? = null,
-    val type: String,
-    val properties: Map<String, SimpleSchema>? = null,
-    val required: Set<String>? = null
-)
-
-fun convertSchemaToReadableText(schemaJsonString: String): String {
-    val schema = JSON.decodeFromString<SimpleSchema>(schemaJsonString)
-    val builder = StringBuilder()
-
-    // Function to recursively build the readable text
-    fun buildText(s: SimpleSchema, indent: String = "") {
-        s.title?.let { builder.append(indent).append("Title: ").appendLine(it) }
-        s.description?.let { builder.append(indent).append("Description: ").appendLine(it) }
-        builder.append(indent).append("Type: ").appendLine(s.type)
-
-        if (s.properties != null) {
-            builder.append(indent).appendLine("Properties:")
-            for ((name, propSchema) in s.properties) {
-                val isRequired = s.required?.contains(name)?: false
-                builder.append(indent).append("  - $name")
-                s.required?.contains(name)?.let{builder.append(" (required): ")}?:builder.append(" : ")
-                // Recursively describe properties
-                buildText(propSchema, "$indent    ")
-            }
-        }
-    }
-
-    buildText(schema)
-    return builder.toString()
 }

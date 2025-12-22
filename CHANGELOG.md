@@ -2,6 +2,18 @@
 
 ## [December 21, 2025]
 ### Summary
+Code cleanup and import optimizations in QuickStartScreen
+
+### Details
+- Consolidated imports using wildcard (*) for ai.mcpdirect.studio.app.compose.*
+- Simplified imports by using wildcard (*) for mcpdirectstudioapp.composeapp.generated.resources.*
+- Removed unused imports including VerticalScrollbar, rememberScrollState, rememberScrollbarAdapter, verticalScroll, Serializable, and Json
+- Removed unused variables and simplified code formatting in several functions
+- Removed the SimpleSchema data class and convertSchemaToReadableText function that were no longer needed
+- Added checkbox functionality for selecting access keys in GenerateMCPdirectKeyView
+
+## [December 21, 2025]
+### Summary
 Improved UI responsiveness and fixed tool maker update in QuickStartScreen
 
 ### Details
