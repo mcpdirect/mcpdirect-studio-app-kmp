@@ -1,38 +1,17 @@
 package ai.mcpdirect.studio.app.mcp.openapi
 
-import ai.mcpdirect.studio.app.compose.SimpleYamlTextField
+import ai.mcpdirect.studio.app.compose.YamlText
 import ai.mcpdirect.studio.app.compose.YamlTextField
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.unit.dp
-import com.wakaztahir.codeeditor.model.CodeLang
-import com.wakaztahir.codeeditor.prettify.PrettifyParser
-import com.wakaztahir.codeeditor.theme.CodeThemeType
-import com.wakaztahir.codeeditor.utils.parseCodeAsAnnotatedString
 
 @Composable
 fun ConfigOpenAPIServerView(
     modifier: Modifier = Modifier,
 ){
 
-    val language = CodeLang.YAML
     val code = """             
 components:
   schemas:
@@ -2115,8 +2094,11 @@ servers:
         default: "27123"
         description: "HTTP port"
     """.trimIndent()
+    var value by remember { mutableStateOf(code) }
     Column(modifier) {
-        YamlTextField(code, onValueChange = {})
+//        YamlTextField(code, onValueChange = {})
+//        BasicTextField(value, onValueChange = {value = it})
+        YamlText(code)
     }
 
 }

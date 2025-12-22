@@ -2,6 +2,17 @@
 
 ## [December 21, 2025]
 ### Summary
+Removed external code editor dependencies and simplified OpenAPI configuration
+
+### Details
+- Removed Wakaztahir code editor library files (com.wakaztahir.codeeditor.*)
+- Replaced SimpleYamlTextField with YamlText in ConfigOpenAPIServer.kt
+- Removed unused imports related to the code editor library
+- Simplified ConfigOpenAPIServerView implementation by removing complex YAML editor
+- Added YamlText composable for basic YAML display without editing capabilities
+
+## [December 21, 2025]
+### Summary
 Added SimpleYamlTextField and further simplified YamlTextField
 
 ### Details
