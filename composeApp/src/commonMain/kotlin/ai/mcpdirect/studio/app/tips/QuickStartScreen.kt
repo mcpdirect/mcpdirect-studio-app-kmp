@@ -3,6 +3,7 @@ package ai.mcpdirect.studio.app.tips
 import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
+import ai.mcpdirect.studio.app.mcp.openapi.ConfigOpenAPIServerView
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
@@ -426,7 +427,7 @@ fun MCPServerCatalogView(
             0L -> ConfigMCPServerView(modifier = Modifier.weight(2f)){ config,changed ->
                 installMCPServer(config)
             }
-            1L -> {}
+            1L -> ConfigOpenAPIServerView(modifier = Modifier.weight(2f))
             else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f)){ config ->
                 installMCPServer(config)
             }

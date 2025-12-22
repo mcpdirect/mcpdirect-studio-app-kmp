@@ -2,6 +2,20 @@
 
 ## [December 21, 2025]
 ### Summary
+Added OpenAPI server configuration with YAML editor functionality
+
+### Details
+- Created new ConfigOpenAPIServer.kt file with OpenAPI server configuration UI
+- Added YamlEditor.kt with full-featured YAML editor component with syntax highlighting
+- Implemented YamlTextField.kt with custom YAML syntax highlighting and line numbers
+- Added YAML color scheme and highlighting functions for proper syntax visualization
+- Integrated OpenAPI server configuration into the QuickStartScreen
+- Added import for ConfigOpenAPIServerView in QuickStartScreen.kt
+- Implemented YAML highlighting transformation for enhanced editing experience
+- Added line numbers column and status bar to YAML editor
+
+## [December 21, 2025]
+### Summary
 Code cleanup and import optimizations in QuickStartScreen
 
 ### Details
