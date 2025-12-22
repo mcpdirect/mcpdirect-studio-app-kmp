@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.mcp.openapi
 
+import ai.mcpdirect.studio.app.compose.SimpleYamlTextField
 import ai.mcpdirect.studio.app.compose.YamlTextField
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
