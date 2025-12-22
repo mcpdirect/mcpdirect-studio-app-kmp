@@ -2,29 +2,21 @@ package ai.mcpdirect.studio.app.compose
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.max
 
 // Custom VisualTransformation for YAML highlighting
 class YamlHighlightTransformation(
@@ -51,11 +43,7 @@ fun YamlTextField(
     modifier: Modifier = Modifier,
     label: String? = null,
     placeholder: String = "Enter YAML content...",
-    readOnly: Boolean = false,
-    showLineNumbers: Boolean = true,
-    lineNumberColor: Color = Color.Gray,
-    lineNumberBackground: Color = Color(0xFFF5F5F5),
-    lineHighlightColor: Color = Color.Blue.copy(alpha = 0.1f)
+    readOnly: Boolean = false
 ) {
 
     val yamlColors = remember {
@@ -65,13 +53,7 @@ fun YamlTextField(
     var textFieldValue by remember(value) {
         mutableStateOf(TextFieldValue(text = value))
     }
-    val lineCount = remember(textFieldValue.text) {
-        max(1, textFieldValue.text.lines().size)
-    }
 
-    val currentLine = remember(textFieldValue.selection.start) {
-        textFieldValue.text.substring(0, textFieldValue.selection.start).count { it == '\n' } + 1
-    }
     // Create highlighted text
     val annotatedString = remember(textFieldValue.text) {
         buildAnnotatedString {
@@ -104,171 +86,60 @@ fun YamlTextField(
                 modifier = Modifier.padding(start = 12.dp, top = 12.dp, bottom = 4.dp)
             )
         }
-        Row(
-            modifier = Modifier.fillMaxWidth()
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 100.dp)
+                .padding(12.dp)
         ) {
-            // Line numbers column
-            if (showLineNumbers) {
-                LineNumbersColumn(
-                    lineCount = lineCount,
-                    currentLine = currentLine,
-                    lineNumberColor = lineNumberColor,
-                    lineNumberBackground = lineNumberBackground,
-                    lineHighlightColor = lineHighlightColor,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .fillMaxHeight()
-                        .background(lineNumberBackground)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outline,
-                            shape = MaterialTheme.shapes.small
-                        )
-                )
+            BasicTextField(
+                value = textFieldValue,
+                onValueChange = { newValue ->
+                    textFieldValue = newValue
+                    onValueChange(newValue.text)
+                },
+                modifier = Modifier.fillMaxSize(),
+                textStyle = textStyle,
+                cursorBrush = SolidColor(yamlColors.cursor),
+                readOnly = readOnly,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Default
+                ),
+                visualTransformation = YamlHighlightTransformation(
+                    colors = yamlColors,
+                    originalText = textFieldValue.text
+                ),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        propagateMinConstraints = true
+                    ) {
+                        // Show placeholder when empty
+                        if (textFieldValue.text.isEmpty()) {
+                            Text(
+                                text = placeholder,
+                                style = textStyle.copy(color = yamlColors.placeholder),
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1
+                            )
+                        }
 
-                // Vertical divider
-                Spacer(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .fillMaxHeight()
-                        .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 100.dp)
-                    .padding(12.dp)
-            ) {
-                BasicTextField(
-                    value = textFieldValue,
-                    onValueChange = { newValue ->
-                        textFieldValue = newValue
-                        onValueChange(newValue.text)
-                    },
-                    modifier = Modifier.fillMaxSize(),
-                    textStyle = textStyle,
-                    cursorBrush = SolidColor(yamlColors.cursor),
-                    readOnly = readOnly,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Default
-                    ),
-                    visualTransformation = YamlHighlightTransformation(
-                        colors = yamlColors,
-                        originalText = textFieldValue.text
-                    ),
-                    decorationBox = { innerTextField ->
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            propagateMinConstraints = true
-                        ) {
-                            // Show placeholder when empty
-                            if (textFieldValue.text.isEmpty()) {
-                                Text(
-                                    text = placeholder,
-                                    style = textStyle.copy(color = yamlColors.placeholder),
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1
-                                )
-                            }
-
-                            // Show the syntax-highlighted version
+                        // Show the syntax-highlighted version
 //                        Text(
 //                            text = annotatedString,
 //                            style = textStyle,
 //                            modifier = Modifier.fillMaxSize()
 //                        )
 
-                            // This is the actual text field for input
-                            innerTextField()
-                        }
+                        // This is the actual text field for input
+                        innerTextField()
                     }
-                )
-            }
-        }
-
-    }
-}
-@Composable
-private fun LineNumbersLazyColumn(
-    lineCount: Int,
-    currentLine: Int,
-    scrollState: LazyListState,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        state = scrollState,
-        modifier = modifier,
-        userScrollEnabled = false
-    ) {
-        itemsIndexed(List(max(1, lineCount)) { it + 1 }) { index, lineNumber ->
-            val isCurrentLine = lineNumber == currentLine
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-                    .background(
-                        if (isCurrentLine) Color.Blue.copy(alpha = 0.1f)
-                        else Color.Transparent
-                    )
-                    .padding(horizontal = 8.dp),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Text(
-                    text = lineNumber.toString(),
-                    style = TextStyle(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 12.sp,
-                        color = if (isCurrentLine) MaterialTheme.colorScheme.primary
-                        else Color.Gray,
-                        fontWeight = if (isCurrentLine) FontWeight.Bold else FontWeight.Normal
-                    )
-                )
-            }
+                }
+            )
         }
     }
 }
-@Composable
-private fun LineNumbersColumn(
-    lineCount: Int,
-    currentLine: Int,
-    lineNumberColor: Color,
-    lineNumberBackground: Color,
-    lineHighlightColor: Color,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.verticalScroll(rememberScrollState())
-    ) {
-        for (lineNumber in 1..lineCount) {
-            val isCurrentLine = lineNumber == currentLine
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-                    .background(
-                        if (isCurrentLine) lineHighlightColor
-                        else Color.Transparent
-                    )
-                    .padding(horizontal = 8.dp),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Text(
-                    text = lineNumber.toString(),
-                    style = TextStyle(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 12.sp,
-                        color = if (isCurrentLine) MaterialTheme.colorScheme.primary
-                        else lineNumberColor,
-                        fontWeight = if (isCurrentLine) FontWeight.Bold else FontWeight.Normal
-                    )
-                )
-            }
-        }
-    }
-}
 // Improved YAML highlighting function
 private fun AnnotatedString.Builder.highlightYamlFull(yamlContent: String, colors: YamlColorScheme) {
     if (yamlContent.isEmpty()) return

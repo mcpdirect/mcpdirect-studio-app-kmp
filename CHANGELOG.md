@@ -2,6 +2,17 @@
 
 ## [December 21, 2025]
 ### Summary
+Simplified YamlTextField by removing line numbers functionality
+
+### Details
+- Removed line numbers column from YamlTextField.kt
+- Removed unused imports related to line numbering and scrolling
+- Simplified the YamlTextField composable function parameters
+- Removed LineNumbersColumn and LineNumbersLazyColumn composables
+- Streamlined the layout structure of the YamlTextField
+
+## [December 21, 2025]
+### Summary
 Added OpenAPI server configuration with YAML editor functionality
 
 ### Details
