@@ -272,10 +272,9 @@ class YamlHighlighter(private val colors: YamlColorScheme) {
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun YamlTextField(
-    value: String,
+    value: String="",
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     label: String? = null,

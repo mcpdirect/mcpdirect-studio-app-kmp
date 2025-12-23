@@ -49,6 +49,10 @@ class JVMPlatform : Platform, NotificationHandler{
         return System.getenv(key)
     }
 
+    override fun convertYamlToJson(yaml: String): String {
+        return MCPDirectStudio.convertYamlToJson(yaml)
+    }
+
     override fun onToolAgentNotification(agent: ai.mcpdirect.backend.dao.entity.aitool.AIPortToolAgent?) {
         agent?.let {
             val toolAgent = AIPortToolAgent()

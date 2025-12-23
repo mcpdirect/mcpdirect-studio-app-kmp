@@ -427,7 +427,9 @@ fun MCPServerCatalogView(
             0L -> ConfigMCPServerView(modifier = Modifier.weight(2f)){ config,changed ->
                 installMCPServer(config)
             }
-            1L -> ConfigOpenAPIServerView(modifier = Modifier.weight(2f))
+            1L -> ConfigOpenAPIServerView(modifier = Modifier.weight(2f)){ yaml ->
+
+            }
             else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f)){ config ->
                 installMCPServer(config)
             }

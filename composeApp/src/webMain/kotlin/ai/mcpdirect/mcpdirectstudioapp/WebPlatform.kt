@@ -21,8 +21,9 @@ abstract class WebPlatform : Platform {
     fun accessToken():String{
         return if (accountDetails == null) "" else accountDetails!!.accessToken!!
     }
-
-
+    override fun convertYamlToJson(yaml: String): String {
+        TODO("Not yet implemented")
+    }
     override val name: String = "MCPdirect User Platform"
     override val type: Int = 0
     override val toolAgentId: Long = -1

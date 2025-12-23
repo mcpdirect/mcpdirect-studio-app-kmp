@@ -2,6 +2,23 @@
 
 ## [December 21, 2025]
 ### Summary
+Implemented OpenAPI server configuration with YAML parsing and UI enhancements
+
+### Details
+- Created ConfigOpenAPIServerViewModel with state management for server configuration
+- Added YAML parsing functionality with error handling in OpenAPI server configuration
+- Implemented paste from clipboard feature in OpenAPI server configuration UI
+- Added JSON tree view for displaying parsed OpenAPI specification
+- Added security configuration fields for OpenAPI servers
+- Updated QuickStartScreen to pass callback for YAML confirmation
+- Added OpenAPI documentation field to OpenAPIServerDoc model
+- Updated compose hot reload version in libs.versions.toml
+- Added platform-specific implementations for YAML/JSON conversion
+- Added search_off.svg icon resource for UI
+- Implemented back navigation functionality in OpenAPI configuration
+
+## [December 21, 2025]
+### Summary
 Removed external code editor dependencies and simplified OpenAPI configuration
 
 ### Details

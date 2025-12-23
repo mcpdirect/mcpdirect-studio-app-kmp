@@ -14,7 +14,7 @@ class OpenAPIServerDoc {
         var description: String? = null
         var url: String? = null
     }
-
+    var doc:String? = null
     var servers: MutableList<Server>? = null
     var securities: MutableMap<String, Security>? = null
 }

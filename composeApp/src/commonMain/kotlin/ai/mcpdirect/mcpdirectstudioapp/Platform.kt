@@ -39,6 +39,7 @@ interface Platform {
     fun pasteFromClipboard():String?
     fun copyToClipboard(text:String)
     fun getenv(key:String):String?
+    fun convertYamlToJson(yaml:String):String
     fun httpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit)
     fun hstpRequest(usl:String, parameters:Map<String, JsonElement>, onResponse:(resp:String)->Unit)
     fun hstpRequest(usl:String, parameters:String, onResponse:(resp:String)->Unit)
