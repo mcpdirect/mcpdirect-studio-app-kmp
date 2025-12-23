@@ -2,6 +2,21 @@
 
 ## [December 21, 2025]
 ### Summary
+Enhanced OpenAPI server configuration UI with URL and security fields
+
+### Details
+- Added URL input field with dropdown menu for available OpenAPI servers
+- Implemented security configuration fields based on OpenAPI specification
+- Added MCP server name input field with validation
+- Enhanced ConfigOpenAPIServerView with additional UI components for server configuration
+- Added dropdown menu functionality to select from available OpenAPI servers
+- Implemented proper error handling and validation for URL and name fields
+- Added supporting text for user guidance in configuration fields
+- Improved layout with proper spacing and arrangement of UI components
+- Updated error message text for better clarity
+
+## [December 21, 2025]
+### Summary
 Enhanced YAML text field with optimized highlighting and performance improvements
 
 ### Details
