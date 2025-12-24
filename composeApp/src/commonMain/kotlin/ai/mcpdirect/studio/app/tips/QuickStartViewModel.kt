@@ -5,6 +5,8 @@ import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
+import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
+import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
@@ -196,6 +198,20 @@ class QuickStartViewModel: ViewModel() {
     ) { viewModelScope.launch { StudioRepository.connectMCPServerToStudio(
         currentToolAgent.value, config, onResponse
     ) } }
+
+    fun getOpenAPIServerConfig(
+        maker: AIPortToolMaker,
+        onResponse: (resp: AIPortServiceResponse<OpenAPIServerConfig>) -> Unit
+    ){
+        viewModelScope.launch {
+            StudioRepository.getOpenAPIServerConfigFromStudio(
+                currentToolAgent.value,maker
+            ){
+                onResponse(it)
+            }
+        }
+    }
+
     fun grantToolPermissions(){
         currentAccessKey?.let { accessKey ->
             val toolPermissions = _selectedTools.values.map { tool ->

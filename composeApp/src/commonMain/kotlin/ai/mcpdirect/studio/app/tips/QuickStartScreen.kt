@@ -7,6 +7,8 @@ import ai.mcpdirect.studio.app.mcp.openapi.ConfigOpenAPIServerView
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServer
+import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
+import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServer
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
@@ -136,7 +138,7 @@ fun ConnectMCPView(
     val currentToolMaker by viewModel.currentToolMaker.collectAsState()
     var action by remember { mutableStateOf(ConnectMCPViewAction.MAIN) }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)){
-    OutlinedCard(Modifier.fillMaxHeight().weight(1f)) {
+    OutlinedCard(Modifier.fillMaxHeight().weight(0.8f)) {
         val toolMakers by viewModel.toolMakers.collectAsState()
         StudioActionBar (
             "Installed MCP servers",
@@ -234,7 +236,7 @@ fun ConnectMCPView(
                 }
                 ConnectMCPViewAction.CONFIG_MCP ->{
                     ConfigMCPServerView(
-                        toolMaker as MCPServer, Modifier.weight(2f),
+                        currentToolAgent,toolMaker as MCPServer, Modifier.weight(2f),
                         onBack = {action= ConnectMCPViewAction.MAIN}
                     ){ config,changed ->
                         println(JSON.encodeToString(config))
@@ -247,7 +249,25 @@ fun ConnectMCPView(
                 ConnectMCPViewAction.CONFIG_MCP_TEMPLATE ->{
 
                 }
-                ConnectMCPViewAction.CONFIG_OPENAPI ->{}
+                ConnectMCPViewAction.CONFIG_OPENAPI ->{
+                    var openAPIServerConfig by remember { mutableStateOf<OpenAPIServerConfig?>(null) }
+                    LaunchedEffect(toolMaker){
+                        viewModel.getOpenAPIServerConfig(toolMaker){
+                            if(it.successful()) openAPIServerConfig = it.data
+                        }
+                    }
+                    openAPIServerConfig?.let { config->
+                        ConfigOpenAPIServerView(
+                            toolMaker.name,config,
+                            onBack = {action= ConnectMCPViewAction.MAIN}
+                        ) {
+
+                        }
+                    }?: StudioBoard(modifier) {
+                        CircularProgressIndicator()
+                        Text("${toolMaker.name} config loading")
+                    }
+                }
             }
 
         }?: MCPServerCatalogView(viewModel,Modifier.weight(2f))
@@ -384,6 +404,7 @@ fun MCPServerCatalogView(
     modifier: Modifier
 ){Column(modifier.fillMaxHeight()) {
     Row{
+        val currentToolAgent by viewModel.currentToolAgent.collectAsState()
         var currentMCPServer by remember { mutableStateOf(AIPortMCPServer()) }
         Column(modifier = Modifier.weight(0.8f))  {
             StudioActionBar("MCP catalog")
@@ -424,13 +445,13 @@ fun MCPServerCatalogView(
         }
         VerticalDivider()
         when(currentMCPServer.id){
-            0L -> ConfigMCPServerView(modifier = Modifier.weight(2f)){ config,changed ->
+            0L -> ConfigMCPServerView(currentToolAgent,modifier = Modifier.weight(2f)){ config,changed ->
                 installMCPServer(config)
             }
             1L -> ConfigOpenAPIServerView(modifier = Modifier.weight(2f)){ yaml ->
 
             }
-            else -> ConfigMCPServerView(currentMCPServer,Modifier.weight(2f)){ config ->
+            else -> ConfigMCPServerView(currentToolAgent,currentMCPServer,Modifier.weight(2f)){ config ->
                 installMCPServer(config)
             }
         }

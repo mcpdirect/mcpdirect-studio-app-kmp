@@ -2,6 +2,22 @@
 
 ## [December 21, 2025]
 ### Summary
+Implemented OpenAPI server configuration functionality with repository and platform integration
+
+### Details
+- Added OpenAPIServerConfig and OpenAPIServerDoc models to QuickStartScreen.kt
+- Implemented getOpenAPIServerConfigFromStudio method in StudioRepository.kt
+- Added getOpenAPIServerConfigFromStudio API endpoint in Platform.kt
+- Integrated OpenAPI server configuration into ConnectMCPView in QuickStartScreen.kt
+- Added InstallRTMViewModel for managing RTM installation in ConfigMCPServerDialog.kt
+- Enhanced ConfigMCPServerView to accept AIPortToolAgent parameter
+- Implemented OpenAPI server configuration loading with LaunchedEffect in QuickStartScreen.kt
+- Added proper state management for OpenAPI server configuration in UI
+- Created ConfigOpenAPIServerView with back navigation support
+- Implemented proper error handling and loading states for OpenAPI server configuration
+
+## [December 21, 2025]
+### Summary
 Improved OpenAPI and MCP server configuration UI with enhanced layout and validation
 
 ### Details

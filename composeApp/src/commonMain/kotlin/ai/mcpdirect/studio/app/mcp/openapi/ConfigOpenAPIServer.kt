@@ -1,39 +1,28 @@
 package ai.mcpdirect.studio.app.mcp.openapi
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.compose.JsonTreeView
 import ai.mcpdirect.studio.app.compose.StudioActionBar
-import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.YamlTextField
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
-import ai.mcpdirect.studio.app.model.OpenAPIServer
+import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.ViewModel
@@ -114,7 +103,8 @@ class ConfigOpenAPIServerViewModel: ViewModel() {
 
 @Composable
 fun ConfigOpenAPIServerView(
-    openAPIServer: OpenAPIServer?=null,
+    title:String?=null,
+    config:OpenAPIServerConfig?=null,
     modifier: Modifier = Modifier,
     onBack:(()->Unit)?=null,
     onConfirmRequest: (yaml:String) -> Unit,
@@ -123,9 +113,36 @@ fun ConfigOpenAPIServerView(
     val serverDoc = viewModel.serverDoc
     var value by remember { mutableStateOf("") }
     var yaml by remember { mutableStateOf("") }
+    LaunchedEffect(config) {
+        if(config!=null){
+            config.docUri?.let{
+                yaml = it
+            }
+            config.doc?.let {
+                yaml = it
+            }
+            viewModel.onUrlChange(config.url?:"")
+            viewModel.onNameChange(config.name?:"")
+            val doc = OpenAPIServerDoc()
+            doc.securities = mutableMapOf()
+            config.securities?.let { securities->
+                securities.forEach { entry->
+                    val security = OpenAPIServerDoc.Security()
+                    security.key = entry.key
+                    security.description = entry.value
+                    viewModel.onSecurityChange(entry.key,entry.value)
+                    doc.securities?.let { docSecurities->
+                        docSecurities[entry.key] = security
+                    }
+                }
+            }
+            viewModel.serverDoc = doc
+        }
+    }
+
     Column(modifier) {
         StudioActionBar(
-            openAPIServer?.name?:"New OpenAPI Server",
+            title?:"New OpenAPI Server",
             navigationIcon = {
                 onBack?.let {
                     IconButton(onClick = onBack) {
@@ -240,7 +257,8 @@ fun ConfigOpenAPIServerView(
                                     pair.second.description?.let {
                                         Text(it)
                                     }
-                                }
+                                },
+                                shape = MaterialTheme.shapes.extraLarge
                             )
                         }
                     }

@@ -7,6 +7,7 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServer
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +60,10 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
@@ -239,23 +244,39 @@ fun ConfigMCPServerDialog(
         }
     )
 }
-@Composable
-fun InstallRTMView(command: String){
-    if(command == "node"||command=="npx"||command=="npm"){
-        var version by remember { mutableStateOf<String?>("") }
-        LaunchedEffect(command){
+class InstallRTMViewModel: ViewModel(){
+    var version by mutableStateOf<String?>("")
+    fun checkRTMVersion(toolAgent: AIPortToolAgent,command:String){
+        viewModelScope.launch {
             StudioRepository.checkMCPServerRTMFromStudio(
-                StudioRepository.localToolAgent.value,command
+                toolAgent,command
             ){
                 version = it.data
             }
+        }
+    }
+    fun installRTM(toolAgent: AIPortToolAgent,command:String){
+        viewModelScope.launch {
+            StudioRepository.installMCPServerRTMFromStudio(toolAgent,command){
+                version = it.data
+            }
+        }
+    }
+}
+@Composable
+fun InstallRTMView(toolAgent: AIPortToolAgent,command: String){
+    if(command == "node"||command=="npx"||command=="npm"){
+        val viewModel by remember { mutableStateOf(InstallRTMViewModel()) }
+        val version = viewModel.version
+        LaunchedEffect(command){
+            viewModel.checkRTMVersion(toolAgent,command)
         }
         version?.let{
             if(it.isNotEmpty())Box(Modifier.padding(end=16.dp)) {
                 Tag("$command $it installed")
             }
         }?:Button(
-            onClick = {}
+            onClick = { viewModel.installRTM(toolAgent,command) }
         ){
             Text("Install $command")
         }
@@ -263,6 +284,7 @@ fun InstallRTMView(command: String){
 }
 @Composable
 fun ConfigMCPServerView(
+    toolAgent: AIPortToolAgent,
     mcpServer: MCPServer?=null,
     modifier: Modifier = Modifier,
     onBack:(()->Unit)?=null,
@@ -480,7 +502,7 @@ fun ConfigMCPServerView(
                         Text("Command can't not be empty")
                     },
                     trailingIcon = {
-                        InstallRTMView(command)
+                        InstallRTMView(toolAgent,command)
                     }
                 )
                 OutlinedTextField(
@@ -566,6 +588,7 @@ fun ConfigMCPServerView(
 
 @Composable
 fun ConfigMCPServerView(
+    toolAgent: AIPortToolAgent,
     mcpServer: AIPortMCPServer,
     modifier: Modifier = Modifier,
     onConfirmRequest: (config:MCPServerConfig) -> Unit,
@@ -677,7 +700,7 @@ fun ConfigMCPServerView(
     }
     Column(modifier) {
         StudioActionBar(mcpServer.name) {
-            mcpServer.command?.let { InstallRTMView(it) }
+            mcpServer.command?.let { InstallRTMView(toolAgent,it) }
         }
         HorizontalDivider()
         Column(

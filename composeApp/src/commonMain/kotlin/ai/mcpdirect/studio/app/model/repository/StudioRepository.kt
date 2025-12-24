@@ -613,6 +613,23 @@ object StudioRepository {
         }
     }
 
+    suspend fun getOpenAPIServerConfigFromStudio(
+        toolAgent: AIPortToolAgent,toolMaker: AIPortToolMaker,
+        onResponse: (resp:AIPortServiceResponse<OpenAPIServerConfig>) -> Unit
+    ){
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().getOpenAPIServerConfigFromStudio(
+                toolAgent.engineId,toolMaker.id
+            ){
+                generalViewModel.loaded(
+                    "Get OpenAPI Server Config #${toolMaker.name} from Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it)
+            }
+        }
+    }
+
     suspend fun createToolMakerTemplateForStudio(toolAgent: AIPortToolAgent,name:String,type:Int,config:String,inputs:String){
         loadMutex.withLock {
             generalViewModel.loading()

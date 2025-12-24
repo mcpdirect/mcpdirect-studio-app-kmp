@@ -287,6 +287,15 @@ interface Platform {
         }
     }
 
+    fun getOpenAPIServerConfigFromStudio(studioId:String, openapiServerId:Long,
+                                  onResponse: (resp: AIPortServiceResponse<OpenAPIServerConfig>) -> Unit){
+        httpRequest("studio.console@$studioId/openapi_server/config/query",
+            mapOf(
+                "openapiServerId" to JsonPrimitive(openapiServerId)
+            )) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServerConfig>>(it))
+        }
+    }
     fun parseOpenAPIDocFromStudio(studioId:String, doc:String,
                                   onResponse: (resp: AIPortServiceResponse<OpenAPIServerDoc>) -> Unit){
         httpRequest("studio.console@$studioId/openapi_server/doc/parse",
