@@ -2,6 +2,22 @@
 
 ## [December 21, 2025]
 ### Summary
+Improved OpenAPI and MCP server configuration UI with enhanced layout and validation
+
+### Details
+- Updated confirmation button text in ConfigMCPServerDialog.kt to remove redundant reference to MCP server name
+- Enhanced OpenAPI server configuration UI with improved layout organization
+- Moved OpenAPI server name field to appear before URL field for better user flow
+- Improved security configuration UI with LazyColumn for better performance with multiple security schemes
+- Added border and background styling to security configuration section for better visual separation
+- Added header text for security configuration section
+- Implemented error validation for security input fields
+- Updated confirmation button text in ConfigOpenAPIServer.kt to remove redundant reference to OpenAPI server name
+- Added padding and spacing improvements for better UI consistency
+- Added fontWeight styling to security section header
+
+## [December 21, 2025]
+### Summary
 Enhanced OpenAPI server configuration UI with URL and security fields
 
 ### Details

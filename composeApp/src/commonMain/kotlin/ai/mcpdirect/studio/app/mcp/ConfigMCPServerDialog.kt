@@ -559,7 +559,7 @@ fun ConfigMCPServerView(
             }
         ){
             if(enabled)Text("Confirm")
-            else Text("Please complete required inputs and MCP server name before confirm")
+            else Text("Please complete required inputs before confirm")
         }
     }
 }
@@ -869,7 +869,7 @@ fun ConfigMCPServerView(
             }
         ){
             if(enabled)Text("Confirm")
-            else Text("Please complete required inputs and MCP server name before confirm")
+            else Text("Please complete required inputs before confirm")
         }
     }
 

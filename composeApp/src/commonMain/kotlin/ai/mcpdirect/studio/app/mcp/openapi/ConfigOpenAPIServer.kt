@@ -10,6 +10,8 @@ import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -20,6 +22,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -147,64 +151,93 @@ fun ConfigOpenAPIServerView(
         HorizontalDivider()
         if(serverDoc!=null){
             if(serverDoc.doc!=null) yaml = serverDoc.doc!!
-            val json = getPlatform().convertYamlToJson(yaml)
-            if(json.startsWith("{")) {
-                JsonTreeView(json, Modifier.weight(1f).padding(16.dp))
-                OutlinedCard(Modifier.weight(1f)) {
-                    var textFieldSize by remember { mutableStateOf(Size.Zero) }
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth().onGloballyPositioned { coordinates ->
-                            textFieldSize = coordinates.size.toSize()
-                        },
-                        value = viewModel.url,
-                        onValueChange = { viewModel.onUrlChange(it)},
-                        label = { Text("OpenAPI Server URL") },
-                        isError = viewModel.isUrlError,
-                        supportingText = {
-                            Text("URL must start with http:// or https://")
-                        },
-                        trailingIcon = {
-                            viewModel.serverDoc?.servers?.let { servers ->
-                                var showMenu by remember { mutableStateOf(false) }
-                                IconButton(
-                                    onClick = {showMenu=true}
-                                ){
-                                    Icon(
-                                        painterResource(Res.drawable.keyboard_arrow_down),
-                                        contentDescription = ""
-                                    )
-                                }
-                                DropdownMenu(
-                                    modifier = Modifier
-                                        .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
-                                    expanded = showMenu,
-                                    onDismissRequest = {showMenu=false}
-                                ){
-                                    servers.forEach { server ->
-                                        server.url?.let { url ->
-                                            DropdownMenuItem(
-                                                { Text(url) },
-                                                onClick = {
-                                                    showMenu = false
-                                                    viewModel.onUrlChange(url)
-                                                }
-                                            )
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                value = viewModel.name,
+                onValueChange = { viewModel.onNameChange(it)},
+                label = { Text("OpenAPI Server Name") },
+                isError = viewModel.isNameError,
+                supportingText = {
+                    Text("Name must not be empty and length < 21")
+                },
+                singleLine = true
+            )
+            var textFieldSize by remember { mutableStateOf(Size.Zero) }
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .onGloballyPositioned { coordinates ->
+                    textFieldSize = coordinates.size.toSize()
+                },
+                value = viewModel.url,
+                onValueChange = { viewModel.onUrlChange(it)},
+                label = { Text("OpenAPI Server URL") },
+                isError = viewModel.isUrlError,
+                supportingText = {
+                    Text("URL must start with http:// or https://")
+                },
+                trailingIcon = {
+                    viewModel.serverDoc?.servers?.let { servers ->
+                        var showMenu by remember { mutableStateOf(false) }
+                        IconButton(
+                            onClick = {showMenu=true}
+                        ){
+                            Icon(
+                                painterResource(Res.drawable.keyboard_arrow_down),
+                                contentDescription = ""
+                            )
+                        }
+                        DropdownMenu(
+                            modifier = Modifier
+                                .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
+                            expanded = showMenu,
+                            onDismissRequest = {showMenu=false}
+                        ){
+                            servers.forEach { server ->
+                                server.url?.let { url ->
+                                    DropdownMenuItem(
+                                        { Text(url) },
+                                        onClick = {
+                                            showMenu = false
+                                            viewModel.onUrlChange(url)
                                         }
-                                    }
+                                    )
                                 }
                             }
                         }
+                    }
+                }
+            )
+            Column(
+                modifier = modifier.weight(weight = 1f)
+                    .padding(horizontal = 16.dp)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = MaterialTheme.shapes.small
                     )
-                    viewModel.serverDoc?.securities?.let{
-                        it.forEach { security ->
-                            Spacer(Modifier.height(8.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                Text(
+                    text = "Securities",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp,vertical = 8.dp)
+                )
+                HorizontalDivider()
+                viewModel.serverDoc?.securities?.let{ securities->
+                    LazyColumn {
+                        items(securities.toList()){ pair ->
+                            val key = pair.first
+                            val value = viewModel.securities[key]
                             OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = viewModel.securities[security.key]?:"",
-                                onValueChange = {viewModel.onSecurityChange(security.key,it)},
-                                label = {Text(security.key)},
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp,vertical = 8.dp),
+                                value = value?:"",
+                                onValueChange = {viewModel.onSecurityChange(key,it)},
+                                label = {Text(key)},
+                                isError = value.isNullOrBlank(),
                                 supportingText = {
-                                    security.value.description?.let {
+                                    pair.second.description?.let {
                                         Text(it)
                                     }
                                 }
@@ -212,20 +245,6 @@ fun ConfigOpenAPIServerView(
                         }
                     }
                 }
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    value = viewModel.name,
-                    onValueChange = { viewModel.onNameChange(it)},
-                    label = { Text("MCP Server Name") },
-                    isError = viewModel.isNameError,
-                    supportingText = {
-                        Text("Name must not be empty and length < 21")
-                    },
-                    shape = CardDefaults.shape,
-                    singleLine = true
-                )
-            } else StudioBoard(Modifier.weight(1f).padding(16.dp)) {
-                Text(json, color = MaterialTheme.colorScheme.error)
             }
         }
         else YamlTextField(value,onValueChange = { yaml = it }, Modifier.weight(1f))
@@ -244,7 +263,7 @@ fun ConfigOpenAPIServerView(
         ){
             if(serverDoc==null) Text("Parse OpenAPI doc")
             else if(enabled)Text("Confirm")
-            else Text("Please complete required inputs and OpenAPI server name before confirm")
+            else Text("Please complete required inputs before confirm")
         }
     }
 
