@@ -8,16 +8,28 @@ import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -162,11 +174,11 @@ fun ConfigOpenAPIServerView(
                 Icon(painterResource(Res.drawable.edit),contentDescription = "Edit")
             }
         }
-        HorizontalDivider()
+        HorizontalDivider(Modifier.padding(bottom = 16.dp))
         if(serverDoc!=null){
             if(serverDoc.doc!=null) yaml = serverDoc.doc!!
             serverDoc.paths?.let { paths->
-                OutlinedCard(
+                Card(
                     modifier = modifier.weight(weight = 1f)
                         .padding(horizontal = 16.dp)
                 ) {
@@ -177,74 +189,113 @@ fun ConfigOpenAPIServerView(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                     HorizontalDivider()
-                    LazyColumn {
-                        items(paths.entries.toList()) { entry->
-                            Column(Modifier.padding(horizontal = 16.dp,vertical = 8.dp)) {
-                                Text(entry.key,style = MaterialTheme.typography.bodyLarge,)
-                                Text("${entry.value.method?.uppercase()} ${entry.value.path}",
-                                    style = MaterialTheme.typography.bodySmall)
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        val scrollState = rememberScrollState()
+                        Column (
+                            modifier = Modifier
+                                .verticalScroll(scrollState)
+                                .padding(8.dp) // Add padding to prevent content from going under the scrollbar
+                        )  {
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                            ){
+                                var index = 1
+                                paths.entries.forEach { entry ->
+                                    TextButton(
+                                        shape = OutlinedTextFieldDefaults.shape,
+                                        border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor),
+                                        contentPadding = PaddingValues(8.dp,4.dp),
+                                        onClick = {}
+                                    ){
+                                        Column{
+                                            Text("${index++}. ${entry.key}",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Text("${entry.value.method?.uppercase()} ${entry.value.path}",
+                                                style = MaterialTheme.typography.labelSmall)
+                                        }
+                                    }
+
+                                }
                             }
                         }
+                        VerticalScrollbar(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            adapter = rememberScrollbarAdapter(scrollState = scrollState)
+                        )
                     }
+//                    LazyColumn {
+//                        items(paths.entries.toList()) { entry->
+//                            Column(Modifier.padding(horizontal = 16.dp,vertical = 8.dp)) {
+//                                Text(entry.key,style = MaterialTheme.typography.bodyLarge,)
+//                                Text("${entry.value.method?.uppercase()} ${entry.value.path}",
+//                                    style = MaterialTheme.typography.bodySmall)
+//                            }
+//                        }
+//                    }
                 }
             }
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                value = viewModel.name,
-                onValueChange = { viewModel.onNameChange(it)},
-                label = { Text("OpenAPI Server Name") },
-                isError = viewModel.isNameError,
-                supportingText = {
-                    Text("Name must not be empty and length < 21")
-                },
-                singleLine = true
-            )
-            var textFieldSize by remember { mutableStateOf(Size.Zero) }
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .onGloballyPositioned { coordinates ->
-                    textFieldSize = coordinates.size.toSize()
-                },
-                value = viewModel.url,
-                onValueChange = { viewModel.onUrlChange(it)},
-                label = { Text("OpenAPI Server URL") },
-                isError = viewModel.isUrlError,
-                supportingText = {
-                    Text("URL must start with http:// or https://")
-                },
-                trailingIcon = {
-                    viewModel.serverDoc?.servers?.let { servers ->
-                        var showMenu by remember { mutableStateOf(false) }
-                        IconButton(
-                            onClick = {showMenu=true}
-                        ){
-                            Icon(
-                                painterResource(Res.drawable.keyboard_arrow_down),
-                                contentDescription = ""
-                            )
-                        }
-                        DropdownMenu(
-                            modifier = Modifier
-                                .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
-                            expanded = showMenu,
-                            onDismissRequest = {showMenu=false}
-                        ){
-                            servers.forEach { server ->
-                                server.url?.let { url ->
-                                    DropdownMenuItem(
-                                        { Text(url) },
-                                        onClick = {
-                                            showMenu = false
-                                            viewModel.onUrlChange(url)
-                                        }
-                                    )
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),) {
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f),
+                    value = viewModel.name,
+                    onValueChange = { viewModel.onNameChange(it) },
+                    label = { Text("OpenAPI Server Name") },
+                    isError = viewModel.isNameError,
+                    supportingText = {
+                        Text("Name cannot be empty and length < 21")
+                    },
+                    singleLine = true
+                )
+                var textFieldSize by remember { mutableStateOf(Size.Zero) }
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f)
+                        .onGloballyPositioned { coordinates ->
+                            textFieldSize = coordinates.size.toSize()
+                        },
+                    value = viewModel.url,
+                    onValueChange = { viewModel.onUrlChange(it) },
+                    label = { Text("OpenAPI Server URL") },
+                    isError = viewModel.isUrlError,
+                    supportingText = {
+                        Text("URL must start with http:// or https://")
+                    },
+                    trailingIcon = {
+                        viewModel.serverDoc?.servers?.let { servers ->
+                            var showMenu by remember { mutableStateOf(false) }
+                            IconButton(
+                                onClick = { showMenu = true }
+                            ) {
+                                Icon(
+                                    painterResource(Res.drawable.keyboard_arrow_down),
+                                    contentDescription = ""
+                                )
+                            }
+                            DropdownMenu(
+                                modifier = Modifier
+                                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false }
+                            ) {
+                                servers.forEach { server ->
+                                    server.url?.let { url ->
+                                        DropdownMenuItem(
+                                            { Text(url) },
+                                            onClick = {
+                                                showMenu = false
+                                                viewModel.onUrlChange(url)
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            )
+                )
+            }
             Column(
                 modifier = modifier.weight(weight = 1f)
                     .padding(horizontal = 16.dp)

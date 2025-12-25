@@ -2,6 +2,19 @@
 
 ## [December 25, 2025]
 ### Summary
+Enhanced OpenAPI server configuration UI with improved path display and scrollable layout
+
+### Details
+- Updated OpenAPI path display UI with scrollable FlowRow layout and vertical scrollbar
+- Added padding to horizontal divider in OpenAPI server configuration view
+- Changed from OutlinedCard to Card for OpenAPI paths display component
+- Arranged OpenAPI server name and URL fields in a side-by-side layout
+- Added imports for UI components including VerticalScrollbar, FlowRow, and various layout elements
+- Improved accessibility and usability of OpenAPI paths display with numbered entries
+- Enhanced layout with proper alignment and spacing for better user experience
+
+## [December 25, 2025]
+### Summary
 Enhanced OpenAPI server configuration with path display and improved parsing functionality
 
 ### Details
