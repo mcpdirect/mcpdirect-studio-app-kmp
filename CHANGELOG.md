@@ -2,9 +2,11 @@
 
 ## [December 25, 2025]
 ### Summary
-Enhanced OpenAPI server configuration UI with improved path display and scrollable layout
+Updated security configuration UI with improved styling and component changes
 
 ### Details
+- Changed from OutlinedTextField to TextField for security configuration inputs
+- Commented out shape property in security configuration UI for better default styling
 - Updated OpenAPI path display UI with scrollable FlowRow layout and vertical scrollbar
 - Added padding to horizontal divider in OpenAPI server configuration view
 - Changed from OutlinedCard to Card for OpenAPI paths display component

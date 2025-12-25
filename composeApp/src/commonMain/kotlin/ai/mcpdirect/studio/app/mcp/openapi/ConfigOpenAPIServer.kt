@@ -318,7 +318,7 @@ fun ConfigOpenAPIServerView(
                         items(securities.toList()){ pair ->
                             val key = pair.first
                             val value = viewModel.securities[key]
-                            OutlinedTextField(
+                            TextField(
                                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp,vertical = 8.dp),
                                 value = value?:"",
                                 onValueChange = {viewModel.onSecurityChange(key,it)},
@@ -329,7 +329,7 @@ fun ConfigOpenAPIServerView(
                                         Text(it)
                                     }
                                 },
-                                shape = MaterialTheme.shapes.extraLarge
+//                                shape = MaterialTheme.shapes.extraLarge
                             )
                         }
                     }
