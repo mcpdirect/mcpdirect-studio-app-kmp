@@ -14,7 +14,13 @@ class OpenAPIServerDoc {
         var description: String? = null
         var url: String? = null
     }
+    @Serializable
+    class Path {
+        var method: String? = null
+        var path: String? = null
+    }
     var doc:String? = null
     var servers: MutableList<Server>? = null
     var securities: MutableMap<String, Security>? = null
+    var paths: MutableMap<String,Path>? = null
 }

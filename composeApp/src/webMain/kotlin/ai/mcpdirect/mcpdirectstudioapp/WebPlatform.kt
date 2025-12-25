@@ -1,6 +1,7 @@
 package ai.mcpdirect.mcpdirectstudioapp
 
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 
 import kotlinx.serialization.Serializable
@@ -21,7 +22,9 @@ abstract class WebPlatform : Platform {
     fun accessToken():String{
         return if (accountDetails == null) "" else accountDetails!!.accessToken!!
     }
-    override fun convertYamlToJson(yaml: String): String {
+    override fun parseOpenAPIDoc(
+        yaml: String,
+        onResponse: (resp: AIPortServiceResponse<OpenAPIServerDoc>) -> Unit){
         TODO("Not yet implemented")
     }
     override val name: String = "MCPdirect User Platform"

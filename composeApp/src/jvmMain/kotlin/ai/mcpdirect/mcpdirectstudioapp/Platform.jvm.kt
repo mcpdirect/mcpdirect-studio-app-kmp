@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.OpenAPIServer
+import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
@@ -49,8 +50,21 @@ class JVMPlatform : Platform, NotificationHandler{
         return System.getenv(key)
     }
 
-    override fun convertYamlToJson(yaml: String): String {
-        return MCPDirectStudio.convertYamlToJson(yaml)
+    override fun parseOpenAPIDoc(
+        yaml: String,
+        onResponse: (resp: AIPortServiceResponse<OpenAPIServerDoc>) -> Unit){
+        CoroutineScope(Dispatchers.IO).launch {
+            val resp = AIPortServiceResponse<OpenAPIServerDoc>()
+            try {
+                val data = MCPDirectStudio.parseOpenAPIDoc(yaml)
+                resp.data = JSON.decodeFromString<OpenAPIServerDoc>(data)
+                resp.code = 0
+            }catch (e:Exception){
+                resp.message = e.message
+            }
+
+            onResponse(resp)
+        }
     }
 
     override fun onToolAgentNotification(agent: ai.mcpdirect.backend.dao.entity.aitool.AIPortToolAgent?) {

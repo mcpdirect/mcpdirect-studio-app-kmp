@@ -1,5 +1,19 @@
 # Changelog
 
+## [December 25, 2025]
+### Summary
+Enhanced OpenAPI server configuration with path display and improved parsing functionality
+
+### Details
+- Replaced convertYamlToJson with parseOpenAPIDoc function in Platform interface
+- Updated parseYaml function in ConfigOpenAPIServerViewModel with simplified parameters
+- Updated onConfirmRequest parameter in ConfigOpenAPIServerView to pass full config object
+- Added UI component to display OpenAPI paths and tools in ConfigOpenAPIServerView
+- Added Path class and paths field to OpenAPIServerDoc model for storing API endpoints
+- Added status filter to tool display in QuickStartScreen to show only active tools
+- Implemented parseOpenAPIDoc function in JVMPlatform with proper error handling
+- Updated androidx-lifecycle version from 2.9.5 to 2.9.6 in libs.versions.toml
+
 ## [December 21, 2025]
 ### Summary
 Implemented OpenAPI server configuration functionality with repository and platform integration

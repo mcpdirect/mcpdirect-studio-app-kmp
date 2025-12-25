@@ -67,19 +67,16 @@ class ConfigOpenAPIServerViewModel: ViewModel() {
         securities[keyName]=value
     }
     fun parseYaml(
-        studioId:String,doc:String,
-        onResponse:((code:Int,message:String?,serverDoc: OpenAPIServerDoc?)->Unit)? = null
+        doc:String,
+        onResponse: ((resp: AIPortServiceResponse<OpenAPIServerDoc>) -> Unit)? = null
     ){
         viewModelScope.launch {
-            getPlatform().parseOpenAPIDocFromStudio(
-                studioId,doc,
-            ){
+            getPlatform().parseOpenAPIDoc(doc){
                 if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL) it.data?.let {
                     serverDoc = it
                     it.servers?.let {
                         for (server in it) {
                             if(server.url!=null){
-//                                url = server.url!!
                                 onUrlChange(server.url!!)
                                 break;
                             }
@@ -94,7 +91,7 @@ class ConfigOpenAPIServerViewModel: ViewModel() {
                     }
                 }
                 onResponse?.let { resp ->
-                    resp(it.code,it.message,it.data)
+                    resp(it)
                 }
             }
         }
@@ -107,7 +104,7 @@ fun ConfigOpenAPIServerView(
     config:OpenAPIServerConfig?=null,
     modifier: Modifier = Modifier,
     onBack:(()->Unit)?=null,
-    onConfirmRequest: (yaml:String) -> Unit,
+    onConfirmRequest: (config:OpenAPIServerConfig) -> Unit,
 ){
     val viewModel by remember { mutableStateOf(ConfigOpenAPIServerViewModel()) }
     val serverDoc = viewModel.serverDoc
@@ -168,6 +165,29 @@ fun ConfigOpenAPIServerView(
         HorizontalDivider()
         if(serverDoc!=null){
             if(serverDoc.doc!=null) yaml = serverDoc.doc!!
+            serverDoc.paths?.let { paths->
+                OutlinedCard(
+                    modifier = modifier.weight(weight = 1f)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Text(
+                        text = "Tools",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    HorizontalDivider()
+                    LazyColumn {
+                        items(paths.entries.toList()) { entry->
+                            Column(Modifier.padding(horizontal = 16.dp,vertical = 8.dp)) {
+                                Text(entry.key,style = MaterialTheme.typography.bodyLarge,)
+                                Text("${entry.value.method?.uppercase()} ${entry.value.path}",
+                                    style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                    }
+                }
+            }
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 value = viewModel.name,
@@ -265,17 +285,16 @@ fun ConfigOpenAPIServerView(
                 }
             }
         }
-        else YamlTextField(value,onValueChange = { yaml = it }, Modifier.weight(1f))
+        else {
+            YamlTextField(value, onValueChange = { yaml = it }, Modifier.weight(1f))
+        }
         val enabled = serverDoc==null
         Button(
             enabled = enabled,
             modifier =Modifier.padding(16.dp).fillMaxWidth(),
             onClick = {
                 if(serverDoc==null){
-                    viewModel.parseYaml(
-                        StudioRepository.localToolAgent.value.engineId,
-                        yaml
-                    )
+                    viewModel.parseYaml(yaml)
                 }
             }
         ){

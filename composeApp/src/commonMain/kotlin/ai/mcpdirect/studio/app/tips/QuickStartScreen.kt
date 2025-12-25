@@ -379,7 +379,7 @@ fun MCPServerMainView(
                     ){
                         var index = 1
                         tools.forEach { tool ->
-                            if (tool.makerId == toolMaker.id) TextButton(
+                            if (tool.makerId == toolMaker.id && tool.status>-1) TextButton(
                                 shape = OutlinedTextFieldDefaults.shape,
                                 border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor),
                                 onClick = {currentTool = tool}
