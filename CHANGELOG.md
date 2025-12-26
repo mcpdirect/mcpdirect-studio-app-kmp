@@ -2,6 +2,20 @@
 
 ## [December 25, 2025]
 ### Summary
+Implemented catalog toggle feature and restructured MCP server management UI
+
+### Details
+- Added catalog toggle functionality to switch between "MCP Catalog" and "Installed MCP servers"
+- Implemented UI restructuring to support catalog/installation views in ConnectMCPView
+- Removed unused OpenAPIServerDoc import from QuickStartScreen.kt
+- Removed MCPServerCatalogView composable function and integrated its functionality into ConnectMCPView
+- Enhanced StudioActionBar with toggle button between catalog and installed servers views
+- Updated UI layout weights and styling for better user experience
+- Added currentMCPServer state management for catalog selection
+- Implemented installMCPServer function within the catalog view context
+
+## [December 25, 2025]
+### Summary
 Updated security configuration UI with improved styling and component changes
 
 ### Details
