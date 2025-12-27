@@ -2,6 +2,21 @@
 
 ## [December 25, 2025]
 ### Summary
+Enhanced OpenAPI configuration validation and template management
+
+### Details
+- Added security input validation with securityErrorCount tracking in ConfigOpenAPIServerViewModel
+- Updated isConfigError logic to include security validation errors
+- Modified parseYaml function to support tool agent parameter for studio-based parsing
+- Implemented improved UI with different button states based on configuration state
+- Added wildcard imports for better code readability in ConfigOpenAPIServer.kt
+- Renamed currentMCPServer to currentMCPTemplate in QuickStartScreen.kt for clarity
+- Added toolAgent parameter to ConfigOpenAPIServerView function
+- Updated variable references to use currentMCPTemplate in catalog view
+- Improved validation for security inputs to ensure they are not blank
+
+## [December 25, 2025]
+### Summary
 Implemented catalog toggle feature and restructured MCP server management UI
 
 ### Details

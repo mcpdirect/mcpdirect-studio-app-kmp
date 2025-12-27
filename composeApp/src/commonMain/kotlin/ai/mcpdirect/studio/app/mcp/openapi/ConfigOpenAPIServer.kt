@@ -7,26 +7,11 @@ import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
-import ai.mcpdirect.studio.app.model.repository.StudioRepository
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -58,15 +43,16 @@ class ConfigOpenAPIServerViewModel: ViewModel() {
         private set
     var securities = mutableStateMapOf<String,String>()
         private set
+    var securityErrorCount by mutableStateOf(0)
     val isConfigError by derivedStateOf {
-        isNameError||isUrlError
+        isNameError||isUrlError||securityErrorCount>0
     }
 
     fun onNameChange(value:String){
         val v = value.trim()
         isNameError = v.isEmpty()||v.length>20
         if(!isNameError){
-            name = v.replace(" ","_");
+            name = v.replace(" ","_")
         }
     }
 
@@ -76,35 +62,46 @@ class ConfigOpenAPIServerViewModel: ViewModel() {
         url = u
     }
     fun onSecurityChange(keyName:String,value:String){
-        securities[keyName]=value
+        if(value.isBlank()) securityErrorCount++
+        else securities[keyName]=value.trim()
+    }
+    private fun handleParseYamlResponse(
+        resp: AIPortServiceResponse<OpenAPIServerDoc>,
+        onResponse: ((resp: AIPortServiceResponse<OpenAPIServerDoc>) -> Unit)? = null
+    ){
+        if(resp.code== AIPortServiceResponse.SERVICE_SUCCESSFUL) resp.data?.let { data ->
+            serverDoc = data
+            data.servers?.let {
+                for (server in it) {
+                    if(server.url!=null){
+                        onUrlChange(server.url!!)
+                        break
+                    }
+                }
+            }
+            data.securities?.let {
+                it.forEach { entry ->
+                    entry.value.key?.let { key ->
+                        securities[key]=""
+                    }
+                }
+            }
+        }
+        onResponse?.let { onResponse ->
+            onResponse(resp)
+        }
     }
     fun parseYaml(
-        doc:String,
+        doc:String,toolAgent: AIPortToolAgent?=null,
         onResponse: ((resp: AIPortServiceResponse<OpenAPIServerDoc>) -> Unit)? = null
     ){
         viewModelScope.launch {
-            getPlatform().parseOpenAPIDoc(doc){
-                if(it.code== AIPortServiceResponse.SERVICE_SUCCESSFUL) it.data?.let {
-                    serverDoc = it
-                    it.servers?.let {
-                        for (server in it) {
-                            if(server.url!=null){
-                                onUrlChange(server.url!!)
-                                break;
-                            }
-                        }
-                    }
-                    it.securities?.let {
-                        it.forEach {
-                            it.value.key?.let {
-                                securities[it]=""
-                            }
-                        }
-                    }
-                }
-                onResponse?.let { resp ->
-                    resp(it)
-                }
+            if(toolAgent!=null) getPlatform().parseOpenAPIDocFromStudio(
+                toolAgent.engineId,doc
+            ){
+                handleParseYamlResponse(it,onResponse)
+            } else getPlatform().parseOpenAPIDoc(doc){
+                handleParseYamlResponse(it,onResponse)
             }
         }
     }
@@ -113,6 +110,7 @@ class ConfigOpenAPIServerViewModel: ViewModel() {
 @Composable
 fun ConfigOpenAPIServerView(
     title:String?=null,
+    toolAgent: AIPortToolAgent?=null,
     config:OpenAPIServerConfig?=null,
     modifier: Modifier = Modifier,
     onBack:(()->Unit)?=null,
@@ -340,18 +338,23 @@ fun ConfigOpenAPIServerView(
             YamlTextField(value, onValueChange = { yaml = it }, Modifier.weight(1f))
         }
         val enabled = serverDoc==null
-        Button(
-            enabled = enabled,
+        if(serverDoc==null) Button(
             modifier =Modifier.padding(16.dp).fillMaxWidth(),
             onClick = {
-                if(serverDoc==null){
-                    viewModel.parseYaml(yaml)
-                }
+                viewModel.parseYaml(yaml,toolAgent)
             }
-        ){
-            if(serverDoc==null) Text("Parse OpenAPI doc")
-            else if(enabled)Text("Confirm")
-            else Text("Please complete required inputs before confirm")
+        ){ Text("Parse OpenAPI doc") }
+        else {
+            Button(
+                enabled = !viewModel.isConfigError,
+                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                onClick = {
+
+                }
+            ) {
+                if (viewModel.isConfigError) Text("Please complete required inputs before confirm")
+                else Text("Confirm")
+            }
         }
     }
 

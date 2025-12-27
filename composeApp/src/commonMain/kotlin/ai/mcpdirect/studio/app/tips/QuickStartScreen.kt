@@ -137,7 +137,7 @@ fun ConnectMCPView(
     val toolMakers by viewModel.toolMakers.collectAsState()
     var action by remember { mutableStateOf(ConnectMCPViewAction.MAIN) }
     var catalog by remember { mutableStateOf(true) }
-    var currentMCPServer by remember { mutableStateOf(AIPortMCPServer()) }
+    var currentMCPTemplate by remember { mutableStateOf(AIPortMCPServer()) }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)){
     OutlinedCard(Modifier.fillMaxHeight().weight(1f)) {
         StudioActionBar (
@@ -224,43 +224,42 @@ fun ConnectMCPView(
                     )
                 }
             }
-            HorizontalDivider()
-            TextButton(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                onClick = {}
-            ) {
-                if (currentToolAgent.id == 0L && toolAgents.isNotEmpty())
-                    viewModel.currentToolAgent(toolAgents[0])
-
-                Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name)
-                Spacer(Modifier.weight(1f))
-                Icon(painterResource(Res.drawable.more), contentDescription = "")
-            }
         }else{
-
-            LazyColumn{
+            LazyColumn(Modifier.weight(1f)){
                 items(mcpServerCatalog) { mcpServer ->
                     if (mcpServer.id <100) {
                         when(mcpServer.id){
                             0L -> StudioListItem(
-                                selected = currentMCPServer.id==mcpServer.id,
+                                selected = currentMCPTemplate.id==mcpServer.id,
                                 headlineContent = { Text("MCP Server") },
-                                modifier = Modifier.clickable {currentMCPServer = mcpServer }
+                                modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
                             )
                             1L -> StudioListItem(
-                                selected = currentMCPServer.id==mcpServer.id,
+                                selected = currentMCPTemplate.id==mcpServer.id,
                                 headlineContent = { Text("OpenAPI") },
-                                modifier = Modifier.clickable {currentMCPServer = mcpServer }
+                                modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
                             )
                             -1L -> HorizontalDivider()
                         }
                     }else StudioListItem(
-                        selected = currentMCPServer.id==mcpServer.id,
+                        selected = currentMCPTemplate.id==mcpServer.id,
                         headlineContent = { Text(mcpServer.name) },
-                        modifier = Modifier.clickable {currentMCPServer = mcpServer }
+                        modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
                     )
                 }
             }
+        }
+        HorizontalDivider()
+        TextButton(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            onClick = {}
+        ) {
+            if (currentToolAgent.id == 0L && toolAgents.isNotEmpty())
+                viewModel.currentToolAgent(toolAgents[0])
+
+            Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name)
+            Spacer(Modifier.weight(1f))
+            Icon(painterResource(Res.drawable.more), contentDescription = "")
         }
     }
     OutlinedCard(Modifier.weight(2f)) {
@@ -299,7 +298,7 @@ fun ConnectMCPView(
                         }
                         openAPIServerConfig?.let { config ->
                             ConfigOpenAPIServerView(
-                                toolMaker.name, config,
+                                toolMaker.name, currentToolAgent,config,
                                 onBack = { action = ConnectMCPViewAction.MAIN }
                             ) {
 
@@ -321,14 +320,14 @@ fun ConnectMCPView(
                     }
                 }
             }
-            when(currentMCPServer.id){
+            when(currentMCPTemplate.id){
                 0L -> ConfigMCPServerView(currentToolAgent,modifier = Modifier.weight(2f)){ config,changed ->
                     installMCPServer(config)
                 }
                 1L -> ConfigOpenAPIServerView(modifier = Modifier.weight(2f)){ yaml ->
 
                 }
-                else -> ConfigMCPServerView(currentToolAgent,currentMCPServer,Modifier.weight(2f)){ config ->
+                else -> ConfigMCPServerView(currentToolAgent,currentMCPTemplate,Modifier.weight(2f)){ config ->
                     installMCPServer(config)
                 }
             }
