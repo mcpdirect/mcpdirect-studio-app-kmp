@@ -353,6 +353,30 @@ object StudioRepository {
             }
         }
     }
+    private fun updateMCPServers(toolMaker: AIPortToolMaker,resp: AIPortServiceResponse<MCPServer>){
+        if(resp.code==0) resp.data?.let { server ->
+            _mcpServers.update { map ->
+                map.toMutableMap().apply {
+                    put(server.id, server)
+                    if(server.id!=toolMaker.id){
+                        remove(toolMaker.id)
+                    }
+                }
+            }
+        }
+    }
+    private fun updateOpenAPIServers(toolMaker: AIPortToolMaker,resp: AIPortServiceResponse<OpenAPIServer>){
+        if(resp.code==0) resp.data?.let { server ->
+            _openapiServers.update { map ->
+                map.toMutableMap().apply {
+                    put(server.id, server)
+                    if(server.id!=toolMaker.id){
+                        remove(toolMaker.id)
+                    }
+                }
+            }
+        }
+    }
     suspend fun modifyToolMakerNameForStudio(
         toolAgent: AIPortToolAgent, toolMaker: AIPortToolMaker, name:String,
         onResponse: (code: Int, message: String?, maker: AIPortToolMaker?) -> Unit
@@ -364,16 +388,7 @@ object StudioRepository {
             if(toolMaker.mcp()) getPlatform().modifyMCPServerForStudio(
                 studioId, serverId, serverName = name
             ){
-                if(it.code==0) it.data?.let { server ->
-                    _mcpServers.update { map ->
-                        map.toMutableMap().apply {
-                            put(server.id, server)
-                            if(server.id!=toolMaker.id){
-                                remove(toolMaker.id)
-                            }
-                        }
-                    }
-                }
+                updateMCPServers(toolMaker,it)
                 generalViewModel.loaded(
                     "Modify name of MCP Server #${toolMaker.name} in Studio #${toolAgent.name}",it.code,it.message
                 )
@@ -381,16 +396,7 @@ object StudioRepository {
             } else if(toolMaker.openapi()) getPlatform().modifyOpenAPIServerForStudio(
                 studioId, serverId, serverName = name
             ){
-                if(it.code==0) it.data?.let { server ->
-                    _openapiServers.update { map ->
-                        map.toMutableMap().apply {
-                            put(server.id, server)
-                            if(server.id!=toolMaker.id){
-                                remove(toolMaker.id)
-                            }
-                        }
-                    }
-                }
+                updateOpenAPIServers(toolMaker, it)
                 generalViewModel.loaded(
                     "Modify name of OpenAPI Server #${toolMaker.name} in Studio #${toolAgent.name}",it.code,it.message
                 )
@@ -497,31 +503,13 @@ object StudioRepository {
         loadMutex.withLock {
             generalViewModel.loading()
             if(toolMaker.mcp()) getPlatform().publishMCPToolsFromStudio(toolAgent.engineId,toolMaker.id){
-                if(it.code==0) it.data?.let { server ->
-                    _mcpServers.update { map ->
-                        map.toMutableMap().apply {
-                            put(server.id, server)
-                            if(server.id!=toolMaker.id){
-                                remove(toolMaker.id)
-                            }
-                        }
-                    }
-                }
+                updateMCPServers(toolMaker,it)
                 generalViewModel.loaded(
                     "Publish tools of MCP Server #${toolMaker.name} from Studio #${toolAgent.name}",it.code,it.message
                 )
                 onResponse(it.code,it.message,it.data)
             } else getPlatform().publishOpenAPIToolsFromStudio(toolAgent.engineId,toolMaker.id){
-                if(it.code==0) it.data?.let { server ->
-                    _openapiServers.update { map ->
-                        map.toMutableMap().apply {
-                            put(server.id, server)
-                            if(server.id!=toolMaker.id){
-                                remove(toolMaker.id)
-                            }
-                        }
-                    }
-                }
+                updateOpenAPIServers(toolMaker,it)
                 generalViewModel.loaded(
                     "Publish tools of OpenAPI Server #${toolMaker.name} from Studio #${toolAgent.name}",it.code,it.message
                 )

@@ -2,6 +2,24 @@
 
 ## [December 25, 2025]
 ### Summary
+Added code file icon and enhanced OpenAPI configuration and access key management
+
+### Details
+- Added new code_file.svg resource for code editing icon
+- Changed parameter name from "openAPIServerConfig" to "openapiServerConfig" in Platform.kt
+- Added modifyOpenAPIServer function to ConfigOpenAPIServerViewModel
+- Updated edit icon in ConfigOpenAPIServerView to use code_file resource
+- Added logic to create and apply new OpenAPIServerConfig in onConfirmRequest
+- Added helper functions to update MCPServers and OpenAPIServers in StudioRepository
+- Refactored existing code in StudioRepository to use the new update functions
+- Updated AIAgentConfigOptionView to use access keys and credentials
+- Added credential replacement logic in AIAgentConfigOptionView
+- Added AppInfo import for gateway endpoint access
+- Added AccessKeyRepository import for credential management
+- Minor formatting changes in AccessKeyRepository
+
+## [December 25, 2025]
+### Summary
 Enhanced OpenAPI configuration validation and template management
 
 ### Details

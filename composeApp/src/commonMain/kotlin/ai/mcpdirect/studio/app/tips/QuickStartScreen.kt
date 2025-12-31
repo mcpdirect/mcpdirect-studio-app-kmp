@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.tips
 
+import ai.mcpdirect.mcpdirectstudioapp.AppInfo
 import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
@@ -10,10 +11,12 @@ import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServer
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.ERROR
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_OFF
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAITING
+import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.tool.ToolDetails
@@ -301,7 +304,7 @@ fun ConnectMCPView(
                                 toolMaker.name, currentToolAgent,config,
                                 onBack = { action = ConnectMCPViewAction.MAIN }
                             ) {
-
+//                                viewModel.modifyMCPServerConfig()
                             }
                         } ?: StudioBoard(modifier) {
                             CircularProgressIndicator()
@@ -565,6 +568,7 @@ fun ConfigAIAgentView(
         aiAgent?.let { aiAgent ->
             VerticalDivider()
             AIAgentConfigOptionView(
+                viewModel.currentAccessKey!!,
                 modifier = Modifier.weight(2f),
                 configs = aiAgent.configs,
                 aiAgent.references
@@ -575,10 +579,19 @@ fun ConfigAIAgentView(
 
 @Composable
 fun AIAgentConfigOptionView(
+    accessKey: AIPortToolAccessKey,
     modifier: Modifier = Modifier,
     configs:List<AIAgentConfig>,
     references: List<AIAgentReference>? = null
 ){
+    var accessKeyCredential by remember { mutableStateOf("") }
+    LaunchedEffect(accessKey){
+        AccessKeyRepository.getAccessKeyCredential(accessKey){ data->
+            data?.let {
+                accessKeyCredential = it.secretKey
+            }
+        }
+    }
     val listState = rememberLazyListState()
     val uriHandler = LocalUriHandler.current
     Column( modifier.padding(8.dp)) {
@@ -601,6 +614,7 @@ fun AIAgentConfigOptionView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(configs) { option ->
+
                 ElevatedCard{
                     Row(
                         Modifier.padding(start = 16.dp),
@@ -609,14 +623,18 @@ fun AIAgentConfigOptionView(
                         Text(option.title)
                         Spacer(Modifier.weight(1f))
                         option.deeplink?.let { deeplink ->
-                            deeplink.icon?.let { icon ->
-                                Res.allDrawableResources[icon]?.let {
-                                    Image(painterResource(it),contentDescription = "")
-                                }
-                            }?: TextButton(onClick = {
-
+                            TextButton(onClick = {
+                                uriHandler.openUri(deeplink.deeplink(
+                                    accessKey.name,
+                                    accessKeyCredential,
+                                    AppInfo.MCPDIRECT_GATEWAY_ENDPOINT
+                                    ))
                             }){
-                                Text(deeplink.name)
+                                deeplink.icon?.let { icon ->
+                                    Res.allDrawableResources[icon]?.let {
+                                        Image(painterResource(it),contentDescription = "")
+                                    }
+                                }?: Text(deeplink.name)
                             }
                         }
                         IconButton(onClick = {
@@ -627,7 +645,11 @@ fun AIAgentConfigOptionView(
                     }
                     HorizontalDivider()
                     SelectionContainer(Modifier.padding(16.dp)) {
-                        Text(option.config, style = MaterialTheme.typography.bodyMedium)
+                        val config = option.config
+                            .replace($$"${MCPDIRECT_KEY_NAME}",accessKey.name)
+                            .replace($$"${MCPDIRECT_URL}", AppInfo.MCPDIRECT_GATEWAY_ENDPOINT)
+                            .replace($$"${MCPDIRECT_KEY}",accessKeyCredential)
+                        Text(config, style = MaterialTheme.typography.bodyMedium)
                     }
                     option.paths?.let { paths ->
                         HorizontalDivider()

@@ -100,7 +100,7 @@ object AccessKeyRepository {
         }
     }
     suspend fun getAccessKeyCredential(key: AIPortToolAccessKey,
-                                          onResponse: (resp: AIPortToolAccessKeyCredential?) -> Unit){
+                                       onResponse: (resp: AIPortToolAccessKeyCredential?) -> Unit){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().getToolAccessKeyCredential(key.id){

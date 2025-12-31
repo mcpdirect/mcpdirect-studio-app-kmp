@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.OpenAPIServerConfig
 import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
+import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +28,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
+import mcpdirectstudioapp.composeapp.generated.resources.code_file
 import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_down
 import org.jetbrains.compose.resources.painterResource
@@ -105,6 +107,10 @@ class ConfigOpenAPIServerViewModel: ViewModel() {
             }
         }
     }
+    fun modifyOpenAPIServer(){
+        viewModelScope.launch {
+        }
+    }
 }
 
 @Composable
@@ -169,7 +175,7 @@ fun ConfigOpenAPIServerView(
                 value = yaml
                 viewModel.serverDoc = null
             }) {
-                Icon(painterResource(Res.drawable.edit),contentDescription = "Edit")
+                Icon(painterResource(Res.drawable.code_file),contentDescription = "Edit")
             }
         }
         HorizontalDivider(Modifier.padding(bottom = 16.dp))
@@ -264,14 +270,10 @@ fun ConfigOpenAPIServerView(
                     trailingIcon = {
                         viewModel.serverDoc?.servers?.let { servers ->
                             var showMenu by remember { mutableStateOf(false) }
-                            IconButton(
-                                onClick = { showMenu = true }
-                            ) {
-                                Icon(
+                            IconButton(onClick = { showMenu = true }) { Icon(
                                     painterResource(Res.drawable.keyboard_arrow_down),
                                     contentDescription = ""
-                                )
-                            }
+                            ) }
                             DropdownMenu(
                                 modifier = Modifier
                                     .width(with(LocalDensity.current) { textFieldSize.width.toDp() }),
@@ -337,7 +339,6 @@ fun ConfigOpenAPIServerView(
         else {
             YamlTextField(value, onValueChange = { yaml = it }, Modifier.weight(1f))
         }
-        val enabled = serverDoc==null
         if(serverDoc==null) Button(
             modifier =Modifier.padding(16.dp).fillMaxWidth(),
             onClick = {
@@ -349,7 +350,21 @@ fun ConfigOpenAPIServerView(
                 enabled = !viewModel.isConfigError,
                 modifier = Modifier.padding(16.dp).fillMaxWidth(),
                 onClick = {
-
+                    val newConfig = OpenAPIServerConfig().apply {
+                        name = viewModel.name
+                        url = viewModel.url
+                        doc = yaml
+                        securities = viewModel.securities
+                    }
+                    if(config!=null) {
+                        newConfig.id = config.id
+                        newConfig.status = config.status
+                        if(newConfig.url==config.url) config.url = null
+                        if(newConfig.name == config.name) config.name = null
+                        if(newConfig.doc==config.doc) config.doc = null
+                        if(newConfig.securities == config.securities) config.securities = null
+                    }
+                    onConfirmRequest(newConfig)
                 }
             ) {
                 if (viewModel.isConfigError) Text("Please complete required inputs before confirm")

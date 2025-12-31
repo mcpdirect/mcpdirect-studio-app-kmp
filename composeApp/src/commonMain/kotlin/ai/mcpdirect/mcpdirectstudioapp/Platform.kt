@@ -311,7 +311,7 @@ interface Platform {
         httpRequest("studio.console@$studioId/openapi_server/connect",
             mapOf(
 //                "openAPIServerName" to JsonPrimitive(name),
-                "openAPIServerConfig" to Json.encodeToJsonElement(config)
+                "openapiServerConfig" to Json.encodeToJsonElement(config)
             )) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
         }
