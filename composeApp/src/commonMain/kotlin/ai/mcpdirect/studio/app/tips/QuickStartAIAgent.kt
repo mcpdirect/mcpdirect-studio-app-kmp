@@ -145,6 +145,12 @@ val mcpServerCatalog = listOf(
         "-y",
         "chrome-devtools-mcp@latest"
     )),
+    AIPortMCPServer(301,"Context7","npx",listOf(
+        "-y",
+        "@upstash/context7-mcp",
+        "--api-key",
+        $$"${YOUR_API_KEY}"
+    ),null,mapOf("YOUR_API_KEY" to "your api key")),
     AIPortMCPServer(400,"DBHub","npx",
         listOf("@bytebase/dbhub", "--transport", "stdio", "--dsn", $$"${DSN}"),
         null,mapOf("DSN" to "postgres://user:password@localhost:5432/dbname")

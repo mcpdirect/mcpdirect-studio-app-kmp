@@ -469,13 +469,13 @@ fun GenerateMCPdirectKeyView(
     viewModel: QuickStartViewModel
 ){
     val accessKeys by viewModel.accessKeys.collectAsState()
+    val currentAccessKey = viewModel.currentAccessKey
     Row(modifier.fillMaxSize()){
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
             Row(Modifier.padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
                 Text("Generate MCPdirect Key", style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.weight(1f))
-                IconButton(onClick = {
-                }) {
+                IconButton(onClick = { viewModel.selectAccessKey(null) }) {
                     Icon(painterResource(Res.drawable.add), contentDescription = "")
                 }
             }
@@ -505,41 +505,51 @@ fun GenerateMCPdirectKeyView(
 //                Spacer(Modifier.weight(1f))
 //            }
 //            HorizontalDivider()
-            LazyColumn(Modifier.weight(2f)) {
-                items(viewModel.selectedToolMakers) { toolMaker ->
-                    val toolCount = viewModel.countTools(toolMaker)
-                    val selectedToolCount = viewModel.countSelectedTools(toolMaker)
-                    val tools = viewModel.tools.filter { it.makerId == toolMaker.id }.toList()
+        currentAccessKey?.let { key ->
+            OutlinedCard(Modifier.weight(2f).fillMaxHeight()) {
+                StudioActionBar("Generate a new MCPDirect Key"){
+                    Button(onClick = {}){
+                        Text("Generate")
+                    }
+                }
+                HorizontalDivider()
+            }
+        }?:LazyColumn(Modifier.weight(2f)) {
+            items(viewModel.selectedToolMakers) { toolMaker ->
+                val toolCount = viewModel.countTools(toolMaker)
+                val selectedToolCount = viewModel.countSelectedTools(toolMaker)
+                val tools = viewModel.tools.filter { it.makerId == toolMaker.id }.toList()
 
-                    OutlinedCard{
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(
-                                checked = selectedToolCount>0,
-                                onCheckedChange = {
-                                    viewModel.selectAllTools(it,toolMaker)
-                                }
-                            )
-                            Text("${toolMaker.name} ($selectedToolCount/$toolCount)")
-                        }
-                        HorizontalDivider()
-                        FlowRow(
-                            Modifier.padding(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                        ){
-                            tools.forEach { tool ->
-                                Tag(
-                                    tool.name,
-                                    toggle = viewModel.selectedTool(tool),
-                                ){
-                                    viewModel.selectTool(it,tool)
-                                }
+                OutlinedCard{
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = selectedToolCount>0,
+                            onCheckedChange = {
+                                viewModel.selectAllTools(it,toolMaker)
+                            }
+                        )
+                        Text("${toolMaker.name} ($selectedToolCount/$toolCount)")
+                    }
+                    HorizontalDivider()
+                    FlowRow(
+                        Modifier.padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ){
+                        tools.forEach { tool ->
+                            Tag(
+                                tool.name,
+                                toggle = viewModel.selectedTool(tool),
+                            ){
+                                viewModel.selectTool(it,tool)
                             }
                         }
                     }
-                    Spacer(Modifier.height(8.dp))
                 }
+                Spacer(Modifier.height(8.dp))
             }
+        }
+
 //        }
     }
 }

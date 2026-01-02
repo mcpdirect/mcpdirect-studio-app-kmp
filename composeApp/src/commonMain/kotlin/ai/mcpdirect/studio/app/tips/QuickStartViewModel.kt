@@ -49,7 +49,7 @@ class QuickStartViewModel: ViewModel() {
         )
     var currentAccessKey by mutableStateOf<AIPortToolAccessKey?>(null)
         private set
-    fun selectAccessKey(accessKey: AIPortToolAccessKey){
+    fun selectAccessKey(accessKey: AIPortToolAccessKey?){
         currentAccessKey = accessKey
     }
     fun selectedAccessKey(accessKey: AIPortToolAccessKey): Boolean{
