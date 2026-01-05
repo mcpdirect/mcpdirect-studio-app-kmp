@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.dashboard.card
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.compose.StudioBoard
+import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.dashboard.DashboardViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,9 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -48,7 +52,7 @@ fun MCPDirectKeyCard(
                 painterResource(Res.drawable.key),
                 ""
             )
-            Text("MCPdirect Keys")
+            Text("MCPdirect Keys (${accessKeys.size})",)
             Spacer(Modifier.weight(1.0f))
             IconButton(
                 onClick = {viewModel.refreshAccessKeys(true)}
@@ -61,8 +65,12 @@ fun MCPDirectKeyCard(
         }
         HorizontalDivider()
         if(accessKeys.isNotEmpty()) {
-            StudioBoard {
-                Text("${accessKeys.size}", style = MaterialTheme.typography.displayLarge)
+            LazyColumn {
+                items(accessKeys){ accessKey ->
+                    ListItem(
+                        headlineContent = {Text(accessKey.name) },
+                    )
+                }
             }
         } else if(getPlatform().type == 0) Column(
             Modifier.fillMaxSize(),

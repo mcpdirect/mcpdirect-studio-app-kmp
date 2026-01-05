@@ -2,8 +2,13 @@ package ai.mcpdirect.studio.app.dashboard.card
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.compose.StudioBoard
+import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.dashboard.DashboardViewModel
+import ai.mcpdirect.studio.app.model.repository.UserRepository
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,8 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.cloud_off
 import mcpdirectstudioapp.composeapp.generated.resources.plug_connect
 import mcpdirectstudioapp.composeapp.generated.resources.refresh
 import org.jetbrains.compose.resources.painterResource
@@ -38,7 +45,7 @@ fun MyStudiosCard(
                 ""
             )
 //            Text("My Studios (${toolAgents.size})")
-            Text("My Studios")
+            Text("My Studios (${toolAgents.size - 1})")
             Spacer(Modifier.weight(1.0f))
             IconButton(
                 onClick = {viewModel.refreshToolAgents(true)}
@@ -51,34 +58,35 @@ fun MyStudiosCard(
         }
         HorizontalDivider()
         if(toolAgents.size>1) {
-//            val localToolAgent by viewModel.localToolAgent.collectAsState()
-//            LazyColumn {
-//                items(toolAgents) {
-//                    println("${it.id},${it.name}")
-//                    if (it.id != 0L && it.userId == authViewModel.user.id) ListItem(
+            val localToolAgent by viewModel.localToolAgent.collectAsState()
+            LazyColumn {
+                items(toolAgents) {
+                    println("${it.id},${it.name}")
+                    if (it.id != 0L && UserRepository.me(it.userId)) ListItem(
 //                        modifier = Modifier.clickable(
 //                            enabled = it.status == AIPortToolMaker.STATUS_ON
 //                        ) {
 //                            generalViewModel.currentScreen(Screen.MyStudio(it))
 //                        },
-//                        headlineContent = { Text(it.name, softWrap = false, overflow = TextOverflow.MiddleEllipsis) },
-//                        supportingContent = {
-//                            if (it.id == localToolAgent.id)
-//                                Tag("This device")
-//                        },
-//                        trailingContent = {
-//                            if (it.status == 0) Icon(
-//                                painterResource(Res.drawable.cloud_off),
-//                                contentDescription = "Offline",
-//                                tint = MaterialTheme.colorScheme.error
-//                            )
-//                        },
-//                    )
-//                }
-//            }
-            StudioBoard {
-                Text("${toolAgents.size-1}", style = MaterialTheme.typography.displayLarge)
+                        headlineContent = { Text(it.name, softWrap = false,
+                            overflow = TextOverflow.MiddleEllipsis) },
+                        supportingContent = {
+                            if (it.id == localToolAgent.id)
+                                Tag("This device")
+                        },
+                        trailingContent = {
+                            if (it.status == 0) Icon(
+                                painterResource(Res.drawable.cloud_off),
+                                contentDescription = "Offline",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        },
+                    )
+                }
             }
+//            StudioBoard {
+//                Text("${toolAgents.size-1}", style = MaterialTheme.typography.displayLarge)
+//            }
         } else if(getPlatform().type == 0) Column(
             Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,

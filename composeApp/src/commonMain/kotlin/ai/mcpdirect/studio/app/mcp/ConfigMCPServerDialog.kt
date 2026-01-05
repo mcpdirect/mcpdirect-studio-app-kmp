@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
@@ -32,6 +33,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Label
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
@@ -72,6 +74,12 @@ import kotlinx.serialization.json.jsonPrimitive
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
 import mcpdirectstudioapp.composeapp.generated.resources.delete
+import mcpdirectstudioapp.composeapp.generated.resources.http
+import mcpdirectstudioapp.composeapp.generated.resources.label
+import mcpdirectstudioapp.composeapp.generated.resources.link
+import mcpdirectstudioapp.composeapp.generated.resources.parameter
+import mcpdirectstudioapp.composeapp.generated.resources.symbol_parameter
+import mcpdirectstudioapp.composeapp.generated.resources.terminal
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -449,71 +457,105 @@ fun ConfigMCPServerView(
             Modifier.verticalScroll(formScrollState).padding(horizontal = 16.dp,vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = name,
-                onValueChange = { onNameChange(it)},
-                label = { Text("MCP Server Name") },
-                isError = isNameError,
-                supportingText = {
-                    Text("Name must not be empty and length < 21")
-                },
-                trailingIcon = {
-                    SingleChoiceSegmentedButtonRow(
-                        Modifier.padding(8.dp).pointerHoverIcon(PointerIcon.Default)
-                    ) {
-                        SegmentedButton(
-                            selected = transport == 0,
-                            shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
-                            modifier = Modifier.height(32.dp),
-                            contentPadding = PaddingValues(start = 8.dp,end = 16.dp),
-                            onClick = { onTypeChange(0) }){
-                            Text("stdio",style = MaterialTheme.typography.bodyMedium)
-                        }
-                        SegmentedButton(
-                            selected = transport == 1,
-                            shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
-                            modifier = Modifier.height(32.dp),
-                            contentPadding = PaddingValues(start = 8.dp,end = 16.dp),
-                            onClick = { onTypeChange(1) }) {
-                            Text("sse",style = MaterialTheme.typography.bodyMedium)
-                        }
-                        SegmentedButton(
-                            selected = transport == 2,
-                            shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
-                            modifier = Modifier.height(32.dp),
-                            contentPadding = PaddingValues(start = 8.dp,end = 16.dp),
-                            onClick = { onTypeChange(2) }) {
-                            Text("http",style = MaterialTheme.typography.bodyMedium)
-                        }
-                    }
-                }
-            )
-
-            if (transport == 0) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Icon(
+                    modifier = Modifier.padding(top = 16.dp).size(24.dp),
+                    painter = painterResource(Res.drawable.label),
+                    contentDescription = null
+                )
                 OutlinedTextField(
-                    value = command,
-                    onValueChange = { onCommandChange(it) },
-                    label = { Text("Command") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    isError = isCommandError,
+                    value = name,
+                    onValueChange = { onNameChange(it) },
+                    label = { Text("MCP Server Name") },
+                    isError = isNameError,
                     supportingText = {
-                        Text("Command can't not be empty")
+                        Text("Name must not be empty and length < 21")
                     },
                     trailingIcon = {
-                        InstallRTMView(toolAgent,command)
+                        SingleChoiceSegmentedButtonRow(
+                            Modifier.padding(8.dp).pointerHoverIcon(PointerIcon.Default)
+                        ) {
+                            SegmentedButton(
+                                selected = transport == 0,
+                                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+                                modifier = Modifier.height(32.dp),
+                                contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
+                                onClick = { onTypeChange(0) }) {
+                                Text("stdio", style = MaterialTheme.typography.bodyMedium)
+                            }
+                            SegmentedButton(
+                                selected = transport == 1,
+                                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+                                modifier = Modifier.height(32.dp),
+                                contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
+                                onClick = { onTypeChange(1) }) {
+                                Text("sse", style = MaterialTheme.typography.bodyMedium)
+                            }
+                            SegmentedButton(
+                                selected = transport == 2,
+                                shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+                                modifier = Modifier.height(32.dp),
+                                contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
+                                onClick = { onTypeChange(2) }) {
+                                Text("http", style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
                     }
                 )
-                OutlinedTextField(
-                    label = { Text("Arguments") },
-                    value = args,
-                    placeholder = { Text("arg1\narg2\narg3") },
-                    onValueChange = { onArgsChange(it) },
-                    modifier = Modifier.fillMaxWidth().height(150.dp),
-                    supportingText = {Text("Each argument on a new line")}
+            }
+
+            if (transport == 0) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(top = 16.dp).size(24.dp),
+                        painter = painterResource(Res.drawable.terminal),
+                        contentDescription = null
+                    )
+                    OutlinedTextField(
+                        value = command,
+                        onValueChange = { onCommandChange(it) },
+                        label = { Text("Command") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        isError = isCommandError,
+                        supportingText = {
+                            Text("Command can't not be empty")
+                        },
+                        trailingIcon = {
+                            InstallRTMView(toolAgent, command)
+                        }
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(top = 16.dp).size(24.dp),
+                        painter = painterResource(Res.drawable.symbol_parameter),
+                        contentDescription = null
+                    )
+                    OutlinedTextField(
+                        label = { Text("Arguments") },
+                        value = args,
+                        placeholder = { Text("arg1\narg2\narg3") },
+                        onValueChange = { onArgsChange(it) },
+                        modifier = Modifier.fillMaxWidth().height(150.dp),
+                        supportingText = { Text("Each argument on a new line") }
+                    )
+                }
+            } else Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Icon(
+                    modifier = Modifier.padding(top = 16.dp).size(24.dp),
+                    painter = painterResource(Res.drawable.link),
+                    contentDescription = null
                 )
-            } else {
                 OutlinedTextField(
                     value = url,
                     onValueChange = { onUrlChange(it) },
@@ -525,16 +567,24 @@ fun ConfigMCPServerView(
                         Text("URL can't not be empty and must start with http:// or https://")
                     }
                 )
-
             }
-            OutlinedTextField(
-                label = {Text(if(transport==0) "Environment Variables" else "Headers")},
-                placeholder = { Text("KEY1=value1\nKEY2=value2\nKEY3=value3") },
-                value = env,
-                onValueChange = { onEnvChange(it) },
-                modifier = Modifier.fillMaxWidth().height(150.dp),
-                supportingText = {Text("Each KEY=value on a new line")}
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Icon(
+                    modifier = Modifier.padding(top = 16.dp).size(24.dp),
+                    painter = painterResource(Res.drawable.parameter),
+                    contentDescription = null
+                )
+                OutlinedTextField(
+                    label = { Text(if (transport == 0) "Environment Variables" else "Headers") },
+                    placeholder = { Text("KEY1=value1\nKEY2=value2\nKEY3=value3") },
+                    value = env,
+                    onValueChange = { onEnvChange(it) },
+                    modifier = Modifier.fillMaxWidth().height(150.dp),
+                    supportingText = { Text("Each KEY=value on a new line") }
+                )
+            }
 
         }
         Spacer(Modifier.weight(1f))
@@ -642,36 +692,7 @@ fun ConfigMCPServerView(
             if(tabs.size==1) currentTab = 2
         }
     }
-//    fun build(){
-//        val type = when(mcpServer.transport){
-//            0 -> "stdio"
-//            1 -> "sse"
-//            2 -> "http"
-//            else -> null
-//        }
-//        val map = mutableMapOf<String, JsonElement>()
-//        map["type"]=JsonPrimitive(type);
-//        if(type=="stdio"){
-//            map["command"]=JsonPrimitive(mcpServer.command)
-//            val args = inputArgs.toMutableList()
-//            mcpServer.args?.let { args.addAll(it) }
-//            map["args"] = Json.encodeToJsonElement(args)
-//            val env = inputEnv.toMutableMap()
-//            mcpServer.env?.let { env.putAll(it) }
-//            map["env"] = Json.encodeToJsonElement(env)
-//        }else{
-//            map["url"]=Json.encodeToJsonElement(mcpServer.url)
-//            val env = inputEnv.toMutableMap()
-//            mcpServer.env?.let { env.putAll(it) }
-//            map["headers"] = Json.encodeToJsonElement(env)
-//        }
-//        preview = prettyJson.encodeToString(mapOf<String, JsonElement>(
-//            "mcpServers" to JsonObject(mapOf(
-//                name to JsonObject(map),
-//            ))
-//        ))
-//    }
-//    build()
+
     fun onNameChange(value:String){
         isNameError = value.isBlank()||value.length>20
         name = value

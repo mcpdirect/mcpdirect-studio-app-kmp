@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -48,7 +51,7 @@ fun MyTeamCard(
                 painterResource(Res.drawable.groups),
                 ""
             )
-            Text("My Teams")
+            Text("My Teams (${teams.size})")
             Spacer(Modifier.weight(1.0f))
             IconButton(
                 onClick = {viewModel.refreshTeams(true)}
@@ -61,8 +64,12 @@ fun MyTeamCard(
         }
         HorizontalDivider()
         if(teams.isNotEmpty()) {
-            StudioBoard {
-                Text("${teams.size}", style = MaterialTheme.typography.displayLarge)
+            LazyColumn {
+                items(teams) { team ->
+                    ListItem(
+                        headlineContent = {Text(team.name) },
+                    )
+                }
             }
         } else if(getPlatform().type == 0) Column(
             Modifier.fillMaxSize(),

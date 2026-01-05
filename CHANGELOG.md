@@ -1,5 +1,20 @@
 # Changelog
 
+## [January 2, 2026]
+### Summary
+Added Context7 MCP server and enhanced Quick Start UI with access key management
+
+### Details
+- Added Context7 MCP server configuration to mcpServerCatalog with API key support
+- Enhanced GenerateMCPdirectKeyView with current access key display and generation UI
+- Modified QuickStartViewModel to support nullable access key selection
+- Updated TipsScreen UI with improved layout, styling, and updated text
+- Added steps display for MCP server connection process in TipsScreen
+- Implemented access key selection functionality in QuickStartScreen
+- Added background styling for step indicators in TipsScreen
+- Updated "Let MCP power your business" text to "Let MCP power your work"
+- Added Button and background imports to TipsScreen for enhanced UI components
+
 ## [December 25, 2025]
 ### Summary
 Added code file icon and enhanced OpenAPI configuration and access key management

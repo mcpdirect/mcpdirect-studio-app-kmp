@@ -82,14 +82,14 @@ fun DashboardScreen(){
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(
-                    Modifier.fillMaxWidth().height(200.dp),
+                    Modifier.fillMaxWidth().weight(1f),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ){
                     MyStudiosCard(viewModel,Modifier.weight(1.0f).fillMaxHeight())
                     MCPDirectKeyCard(viewModel,Modifier.weight(1.0f).fillMaxHeight())
                     MyTeamCard(viewModel,Modifier.weight(1.0f).fillMaxHeight())
                 }
-                OutlinedCard(Modifier.weight(1.0f)) {
+                OutlinedCard(Modifier.weight(2f)) {
                     Text("MCP Tools", modifier = Modifier.padding(16.dp))
                     HorizontalDivider()
                 }

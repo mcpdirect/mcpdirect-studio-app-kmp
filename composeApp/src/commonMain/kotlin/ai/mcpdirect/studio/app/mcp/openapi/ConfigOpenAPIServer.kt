@@ -175,7 +175,8 @@ fun ConfigOpenAPIServerView(
                 value = yaml
                 viewModel.serverDoc = null
             }) {
-                Icon(painterResource(Res.drawable.code_file),contentDescription = "Edit")
+                Icon(painterResource(Res.drawable.code_file),
+                    contentDescription = "Edit",modifier= Modifier.size(24.dp))
             }
         }
         HorizontalDivider(Modifier.padding(bottom = 16.dp))
@@ -230,15 +231,6 @@ fun ConfigOpenAPIServerView(
                             adapter = rememberScrollbarAdapter(scrollState = scrollState)
                         )
                     }
-//                    LazyColumn {
-//                        items(paths.entries.toList()) { entry->
-//                            Column(Modifier.padding(horizontal = 16.dp,vertical = 8.dp)) {
-//                                Text(entry.key,style = MaterialTheme.typography.bodyLarge,)
-//                                Text("${entry.value.method?.uppercase()} ${entry.value.path}",
-//                                    style = MaterialTheme.typography.bodySmall)
-//                            }
-//                        }
-//                    }
                 }
             }
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
