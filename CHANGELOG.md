@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced dashboard UI and MCP server configuration with new icons and layout improvements
+
+### Details
+- Enhanced dashboard UI with improved layout using weight-based sizing
+- Added list views for MCPDirect keys, studios, and teams with count indicators
+- Implemented user filtering in MyStudiosCard to show only user's studios
+- Added new SVG icons for UI elements (asterisk, captive_portal, http, label, language, link, parameter, symbol-parameter, terminal)
+- Improved MCP server configuration UI with icon labels for name, command, arguments, URL, and environment variables
+- Enhanced ConfigMCPServerDialog with better form layout and icon indicators
+- Updated QuickStartScreen UI layout for access key generation
+- Added cloud_off icon for offline status indicators
+- Improved text overflow handling with MiddleEllipsis in studio card
+- Added size modifier to code file icon in OpenAPI configuration
+
+## [January 2, 2026]
+### Summary
 Added Context7 MCP server and enhanced Quick Start UI with access key management
 
 ### Details

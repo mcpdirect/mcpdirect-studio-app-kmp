@@ -472,13 +472,20 @@ fun GenerateMCPdirectKeyView(
     val currentAccessKey = viewModel.currentAccessKey
     Row(modifier.fillMaxSize()){
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-            Row(Modifier.padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
-                Text("Generate MCPdirect Key", style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = { viewModel.selectAccessKey(null) }) {
-                    Icon(painterResource(Res.drawable.add), contentDescription = "")
+            StudioActionBar("MCPdirect Keys"){
+                TextButton(onClick = { viewModel.selectAccessKey(null) }) {
+//                    Icon(painterResource(Res.drawable.add), contentDescription = "")
+                    Text("Add New")
                 }
             }
+//            Row(Modifier.padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
+//                Text("MCPdirect Keys", style = MaterialTheme.typography.titleLarge)
+//                Spacer(Modifier.weight(1f))
+//                TextButton(onClick = { viewModel.selectAccessKey(null) }) {
+////                    Icon(painterResource(Res.drawable.add), contentDescription = "")
+//                    Text("Add New")
+//                }
+//            }
             HorizontalDivider()
             LazyColumn {
                 items(accessKeys) { accessKey ->
