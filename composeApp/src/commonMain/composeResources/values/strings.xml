@@ -19,6 +19,7 @@
     <string name="virtual_mcp">Virtual MCP</string>
     <string name="tool_details">Tool Details</string>
     <string name="dashboard">Dashboard</string>
+    <string name="home">Home</string>
     <string name="mcp_tools">MCP Tools</string>
     <string name="open_api_mcp">OpenAPI MCP</string>
     <string name="tips">Tips</string>

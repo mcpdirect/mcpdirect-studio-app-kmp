@@ -38,18 +38,20 @@ import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun QuickStartScreen() {
+fun QuickStartScreen(
+    paddingValues: PaddingValues
+) {
     val viewModel by remember { mutableStateOf(QuickStartViewModel()) }
 
     var stepIndex by remember { mutableStateOf(0) }
     val steps = listOf(
         "1. Connect MCP servers to MCPdirect",
-        "2. Generate MCPdirect key for MCP servers access",
+        "2. Generate MCPdirect key for access",
         "3. Integrate MCPdirect with AI Agents"
     )
-    Column(Modifier.fillMaxSize().padding(8.dp)) {
+    Column(Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
         Row(
-            Modifier.fillMaxWidth().padding(top = 8.dp,bottom = 16.dp),
+            Modifier.fillMaxWidth().padding(top = 16.dp,bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             repeat(steps.size) { index ->
@@ -438,17 +440,21 @@ fun MCPServerMainView(
                         .padding(16.dp) // Add padding to prevent content from going under the scrollbar
                 )  {
                     FlowRow(
+                        Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ){
                         var index = 1
+
                         tools.forEach { tool ->
-                            if (tool.makerId == toolMaker.id && tool.status>-1) TextButton(
-                                shape = OutlinedTextFieldDefaults.shape,
-                                border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor),
-                                onClick = {currentTool = tool}
-                            ){
-                                Text("${index++}. ${tool.name}")
+                            if (tool.makerId == toolMaker.id && tool.status>-1) {
+                                TextButton(
+                                    shape = OutlinedTextFieldDefaults.shape,
+                                    border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor),
+                                    onClick = { currentTool = tool }
+                                ) {
+                                    Text("${index++}. ${tool.name}")
+                                }
                             }
 
                         }

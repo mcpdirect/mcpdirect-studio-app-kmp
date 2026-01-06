@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.compose.Carousel
 import ai.mcpdirect.studio.app.compose.CarouselSlide
 import ai.mcpdirect.studio.app.dashboard.DashboardScreen
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.home.HomeScreen
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
 import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
@@ -24,6 +25,7 @@ import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
@@ -46,22 +48,6 @@ fun App(
     darkTheme: Boolean = isSystemInDarkTheme(),
     typography: Typography? = null,
 ) {
-//    MaterialTheme {
-//        Column(
-//            modifier = Modifier
-//                .background(MaterialTheme.colorScheme.primaryContainer)
-//                .safeContentPadding()
-//                .fillMaxSize(),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//        ) {
-//            Button(onClick = { authViewModel.login("a","b") }) {
-//                Text("Click me!字体")
-//            }
-//            authViewModel.user?.let {
-//                Text(it.name)
-//            }
-//        }
-//    }
     AppTheme (
         darkTheme = darkTheme,
         typography = typography
@@ -82,6 +68,9 @@ fun App(
                     )
                 ){
                     when (val screen = generalViewModel.currentScreen) {
+                        Screen.Home -> {
+                            HomeScreen()
+                        }
                         Screen.Tips -> {
                             TipsScreen()
                         }
@@ -133,7 +122,7 @@ fun App(
 //                            OpenAPIToolMakerScreen()
 //                        }
                         Screen.QuickStart ->{
-                            QuickStartScreen()
+                            QuickStartScreen(PaddingValues())
                         }
                     }
                 }

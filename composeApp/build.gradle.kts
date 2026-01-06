@@ -12,7 +12,7 @@ plugins {
 //    rootProject.file("version.properties").inputStream().use { load(it) }
 //}
 //val appVersion = properties.getProperty("version", "dev")
-val appVersion = "2.2.2"
+val appVersion = "2.3.0"
 val generatedSrcDirPath = "generated/compose/srcGenerator"
 val mcpdirectGatewayEndpoint = System.getenv("AI_MCPDIRECT_GATEWAY_ENDPOINT")?:"http://localhost:8088/"
 println("AI_MCPDIRECT_GATEWAY_ENDPOINT=$mcpdirectGatewayEndpoint")

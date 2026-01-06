@@ -81,4 +81,5 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
     ) : Screen(Res.string.connect_mcp, Res.drawable.plug_connect)
     object Tips : Screen(Res.string.tips, Res.drawable.lightbulb_2)
     object QuickStart : Screen(Res.string.tips, Res.drawable.lightbulb_2)
+    object Home: Screen(Res.string.home, Res.drawable.home)
 }
