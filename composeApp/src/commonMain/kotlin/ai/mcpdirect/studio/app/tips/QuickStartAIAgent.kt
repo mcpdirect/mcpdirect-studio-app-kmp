@@ -42,6 +42,7 @@ val generalStreamableHTTPConfig = $$"""
 {
   "mcpServers": {
     "${MCPDIRECT_KEY_NAME}": {
+      "type": "http",
       "url": "${MCPDIRECT_URL}/mcp",
       "headers": {
         "Authorization": "Bearer ${MCPDIRECT_KEY}"
@@ -56,6 +57,7 @@ val generalConfigs = listOf(
             {
               "mcpServers": {
                 "${MCPDIRECT_KEY_NAME}": {
+                  "type": "sse",
                   "url": "${MCPDIRECT_URL}/${MCPDIRECT_KEY}/sse"
                 }
               }
@@ -165,7 +167,7 @@ val mcpServerCatalog = listOf(
     ),
     AIPortMCPServer(601,"File System","npx",listOf(
         "-y","@modelcontextprotocol/server-filesystem"
-    )),
+    ), inputArgs = listOf("/absolute/path/to/allowed/folder1", "/absolute/path/to/allowed/folder2")),
     AIPortMCPServer(700,"GitHub",2,
         "https://api.githubcopilot.com/mcp/",
         mapOf("Authorization" to $$"Bearer ${YOUR_TOKEN}"),

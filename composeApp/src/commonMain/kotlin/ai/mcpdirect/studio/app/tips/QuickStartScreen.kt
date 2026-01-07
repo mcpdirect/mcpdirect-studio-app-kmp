@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.tips
 
 import ai.mcpdirect.mcpdirectstudioapp.AppInfo
 import ai.mcpdirect.mcpdirectstudioapp.JSON
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
 import ai.mcpdirect.studio.app.mcp.openapi.ConfigOpenAPIServerView
@@ -657,7 +658,7 @@ fun AIAgentConfigOptionView(
     LaunchedEffect(accessKey){
         AccessKeyRepository.getAccessKeyCredential(accessKey){ data->
             data?.let {
-                accessKeyCredential = it.secretKey
+                accessKeyCredential = it.secretKey.substring(4)
             }
         }
     }
@@ -689,6 +690,11 @@ fun AIAgentConfigOptionView(
                     if(endpoint.endsWith("/")){
                         endpoint = endpoint.substring(0, endpoint.length - 1)
                     }
+                    val keyName = accessKey.name.replace(" ","_")
+                    val config = option.config
+                        .replace($$"${MCPDIRECT_KEY_NAME}",keyName)
+                        .replace($$"${MCPDIRECT_URL}", endpoint)
+                        .replace($$"${MCPDIRECT_KEY}",accessKeyCredential)
                     Row(
                         Modifier.padding(start = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -698,7 +704,7 @@ fun AIAgentConfigOptionView(
                         option.deeplink?.let { deeplink ->
                             TextButton(onClick = {
                                 uriHandler.openUri(deeplink.deeplink(
-                                    accessKey.name.replace(" ","_"),
+                                    keyName,
                                     accessKeyCredential,
                                     endpoint
                                     ))
@@ -711,17 +717,13 @@ fun AIAgentConfigOptionView(
                             }
                         }
                         IconButton(onClick = {
-
+                            getPlatform().copyToClipboard(config)
                         }){
                             Icon(painterResource(Res.drawable.content_copy), contentDescription = "Copy")
                         }
                     }
                     HorizontalDivider()
                     SelectionContainer(Modifier.padding(16.dp)) {
-                        val config = option.config
-                            .replace($$"${MCPDIRECT_KEY_NAME}",accessKey.name)
-                            .replace($$"${MCPDIRECT_URL}", endpoint)
-                            .replace($$"${MCPDIRECT_KEY}",accessKeyCredential)
                         Text(config, style = MaterialTheme.typography.bodyMedium)
                     }
                     option.paths?.let { paths ->
