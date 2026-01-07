@@ -30,6 +30,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import kotlinx.serialization.json.jsonObject
@@ -479,19 +481,17 @@ fun GenerateMCPdirectKeyView(
     Row(modifier.fillMaxSize()){
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
             StudioActionBar("MCPdirect Keys"){
-                TextButton(onClick = { viewModel.selectAccessKey(null) }) {
-//                    Icon(painterResource(Res.drawable.add), contentDescription = "")
-                    Text("Add New")
+                TextButton(
+                    modifier = Modifier.height(32.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp),
+                    onClick = { viewModel.selectAccessKey(null) }
+                ) {
+                    Text(
+                        "Add New",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
                 }
             }
-//            Row(Modifier.padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
-//                Text("MCPdirect Keys", style = MaterialTheme.typography.titleLarge)
-//                Spacer(Modifier.weight(1f))
-//                TextButton(onClick = { viewModel.selectAccessKey(null) }) {
-////                    Icon(painterResource(Res.drawable.add), contentDescription = "")
-//                    Text("Add New")
-//                }
-//            }
             HorizontalDivider()
             LazyColumn {
                 items(accessKeys) { accessKey ->
@@ -512,12 +512,6 @@ fun GenerateMCPdirectKeyView(
             }
         }
         Spacer(Modifier.width(8.dp))
-//        OutlinedCard(Modifier.weight(2f).fillMaxHeight()) {
-//            Row(Modifier.height(48.dp).padding(start = 16.dp, end = 4.dp),verticalAlignment = Alignment.CenterVertically) {
-//                Text("Select the tools that MCPdirect key can access", style = MaterialTheme.typography.titleLarge)
-//                Spacer(Modifier.weight(1f))
-//            }
-//            HorizontalDivider()
         currentAccessKey?.let { key ->
             LazyColumn(Modifier.weight(2f)) {
                 items(viewModel.selectedToolMakers) { toolMaker ->
@@ -555,15 +549,38 @@ fun GenerateMCPdirectKeyView(
                 }
             }
         }?:OutlinedCard(Modifier.weight(2f).fillMaxHeight()) {
-            StudioActionBar("Generate a new MCPDirect Key"){
-                Button(onClick = {}){
-                    Text("Generate")
+            StudioActionBar("Generate a new MCPDirect Key")
+            HorizontalDivider()
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Icon(
+                    modifier = Modifier.padding(top = 16.dp).size(24.dp),
+                    painter = painterResource(Res.drawable.label),
+                    contentDescription = null
+                )
+                OutlinedTextField(
+//                    modifier = Modifier.fillMaxWidth(),
+                    value = "",
+                    onValueChange = {  },
+                    label = { Text("MCPdirect Key Name") },
+                    isError = true,
+                    supportingText = {
+                        Text("Name must not be empty and length < 21")
+                    },
+                )
+                Button(
+                    onClick = {},
+//                    modifier = Modifier.height(32.dp),
+//                    contentPadding = PaddingValues(horizontal = 8.dp),
+                ){
+                    Text(
+                        "Generate",
+//                        style = MaterialTheme.typography.bodySmall,
+                    )
                 }
             }
-            HorizontalDivider()
         }
-
-//        }
     }
 }
 

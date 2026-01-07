@@ -55,7 +55,8 @@ sealed class MCPKeyNameError() {
 @Composable
 fun MCPAccessKeyScreen(
     accessKey: AIPortToolAccessKey?,
-    dialog: MCPKeyDialog
+    dialog: MCPKeyDialog,
+    paddingValues: PaddingValues = PaddingValues()
 ) {
 //    val viewModel = mcpAccessKeyViewModel
     val viewModel by remember { mutableStateOf(MCPAccessKeyViewModel()) }
@@ -90,7 +91,7 @@ fun MCPAccessKeyScreen(
                 generalViewModel.topBarActions = {}
             }
         }
-        Row(Modifier.fillMaxSize().padding(8.dp)){
+        Row(Modifier.fillMaxSize().padding(paddingValues).padding(start=16.dp,end=16.dp, bottom = 16.dp)){
             LazyColumn(Modifier.weight(1.0f).padding(vertical = 8.dp)) {
                 items(accessKeys){
                     accessKey?.let { key ->

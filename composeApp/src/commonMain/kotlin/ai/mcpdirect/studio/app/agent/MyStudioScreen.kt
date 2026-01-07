@@ -53,7 +53,8 @@ enum class MyStudioScreenDialog {
 fun MyStudioScreen(
     toolAgent: AIPortToolAgent?,
     toolMaker: AIPortToolMaker?,
-    dialog: MyStudioScreenDialog = MyStudioScreenDialog.None
+    dialog: MyStudioScreenDialog = MyStudioScreenDialog.None,
+    paddingValues: PaddingValues = PaddingValues()
 ){
     val mcpTemplateListViewModel by remember { mutableStateOf(MCPTemplateListViewModel()) }
     val myStudioViewModel = remember { MyStudioViewModel() }
@@ -76,7 +77,7 @@ fun MyStudioScreen(
         toolAgent?.let { myStudioViewModel.toolAgent(it) }
         toolMaker?.let { myStudioViewModel.toolMaker(it) }
     }
-    Row(Modifier.fillMaxSize()){
+    Row(Modifier.fillMaxSize().padding(paddingValues).padding(start = 16.dp, end = 16.dp, bottom = 16.dp)){
         Column(
             Modifier.width(300.dp)
                 .padding(start = 8.dp, top = 16.dp, bottom = 16.dp)

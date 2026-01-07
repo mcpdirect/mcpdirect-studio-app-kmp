@@ -37,7 +37,8 @@ import org.jetbrains.compose.resources.painterResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MCPTeamScreen(
-    dialog: MCPTeamDialog
+    dialog: MCPTeamDialog,
+    paddingValues: PaddingValues = PaddingValues(),
 ) {
     val mcpTeamViewModel by remember { mutableStateOf(MCPTeamViewModel()) }
     val teams by mcpTeamViewModel.teams.collectAsState()
@@ -91,17 +92,17 @@ fun MCPTeamScreen(
 //        }
 //    }
 
-    if(teams.isEmpty()) Column(
-        Modifier.fillMaxSize(),
+    Column(
+        Modifier.fillMaxSize().padding(paddingValues).padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = {
+        if(teams.isEmpty()) Button(onClick = {
             mcpTeamViewModel.dialog = MCPTeamDialog.CreateTeam
         }){
             Text("Create your first MCP Team")
-        }
-    } else TeamListView(mcpTeamViewModel)
+        } else TeamListView(mcpTeamViewModel)
+    }
     when(mcpTeamViewModel.dialog){
         MCPTeamDialog.None -> {}
         MCPTeamDialog.CreateTeam -> {
@@ -189,7 +190,7 @@ fun CreateTeamDialog(
 
 @Composable
 private fun TeamListView(
-    mcpTeamViewModel: MCPTeamViewModel
+    mcpTeamViewModel: MCPTeamViewModel,
 ) {
     val mcpTeam by mcpTeamViewModel.mcpTeam.collectAsState()
     val teams by mcpTeamViewModel.teams.collectAsState()
@@ -206,31 +207,37 @@ private fun TeamListView(
         }
     }
 //    val viewModel = mcpTeamViewModel
-    Column {
-//        SearchView(
-//            query = viewModel.searchQuery,
-//            onQueryChange = { viewModel.updateSearchQuery(it) },
-//            placeholder = "Search MCP teams..."
-//        )
-        StudioCard(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxSize()
-        ){
-            Row(modifier = Modifier.fillMaxWidth()) {
-                LazyColumn(modifier = Modifier.weight(3.0f)) {
-                    items(teams) {
-                        TeamItem(it,mcpTeamViewModel) {
-                            mcpTeamViewModel.setMCPTeam(it)
+//    Column {
+////        SearchView(
+////            query = viewModel.searchQuery,
+////            onQueryChange = { viewModel.updateSearchQuery(it) },
+////            placeholder = "Search MCP teams..."
+////        )
+//        StudioCard(
+//            modifier = Modifier
+//                .padding(8.dp)
+//                .fillMaxSize()
+//        ){
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                OutlinedCard(Modifier.weight(1f)) {
+                    LazyColumn(modifier = Modifier.weight(3.0f)) {
+                        items(teams) {
+                            TeamItem(it,mcpTeamViewModel) {
+                                mcpTeamViewModel.setMCPTeam(it)
+                            }
                         }
                     }
                 }
+
                 if(mcpTeam.id>Int.MAX_VALUE) mcpTeam.let {
-                    VerticalDivider()
+//                    VerticalDivider()
                     var currentTabIndex by remember { mutableStateOf(0) }
                     val tabs = listOf("Team Members", "Shared MCP Servers","Shared MCP Templates")
 
-                    Column(Modifier.weight(5.0f)) {
+                    OutlinedCard(Modifier.weight(2.0f).fillMaxHeight()) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -291,8 +298,8 @@ private fun TeamListView(
                     }
                 }
             }
-        }
-    }
+//        }
+//    }
 }
 
 @Composable

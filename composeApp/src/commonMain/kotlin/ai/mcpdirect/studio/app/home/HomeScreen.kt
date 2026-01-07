@@ -33,13 +33,38 @@ fun HomeScreen(){
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     Row{
-        Column(Modifier.width(250.dp).padding(top = 16.dp, bottom = 16.dp, start = 16.dp)){
-            MyStudios(viewModel, Modifier.weight(1f))
+        Column(Modifier.width(300.dp).padding(top = 16.dp, bottom = 16.dp, start = 16.dp)){
+            Row{
+                Image(
+                    painter = painterResource(Res.drawable.mcpdirect_logo_48),
+                    contentDescription = "MCPdirect Studio",
+                    modifier = Modifier.size(64.dp)
+                )
+                Column {
+                    Image(
+                        painter = painterResource(Res.drawable.mcpdirect_text_logo_150),
+                        contentDescription = "MCPdirect Studio",
+                        modifier = Modifier.width(150.dp)
+                    )
+                    if(getPlatform().type==0) Image(
+                        painter = painterResource(Res.drawable.mcpdirect_platform_logo),
+                        contentDescription = "MCPdirect Studio",
+                        modifier = Modifier.width(150.dp)
+                    ) else Image(
+                        painter = painterResource(Res.drawable.mcpdirect_studio_logo),
+                        contentDescription = "MCPdirect Studio",
+                        modifier = Modifier.width(150.dp)
+                    )
+                }
+            }
+
             Spacer(Modifier.height(32.dp))
-            MCPDirectKeys(viewModel,Modifier.weight(1f))
+            MyStudios(viewModel, Modifier)
             Spacer(Modifier.height(32.dp))
-            MyTeams(viewModel,Modifier.weight(1f))
+            MCPDirectKeys(viewModel,Modifier)
             Spacer(Modifier.height(32.dp))
+            MyTeams(viewModel,Modifier)
+            Spacer(Modifier.weight(1f))
             Row(
                 Modifier.padding(top = 32.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -91,6 +116,20 @@ fun HomeScreen(){
                             }
                         )
                     }
+                }
+                Spacer(Modifier.weight(1f))
+                IconButton(
+                    onClick = {
+                        viewModel.refreshToolAgents(true)
+                        viewModel.refreshToolMakers(true)
+                        viewModel.refreshAccessKeys(true)
+                        viewModel.refreshTeams(true)
+                    }
+                ) {
+                    Icon(
+                        painterResource(Res.drawable.refresh),
+                        contentDescription = ""
+                    )
                 }
             }
         }

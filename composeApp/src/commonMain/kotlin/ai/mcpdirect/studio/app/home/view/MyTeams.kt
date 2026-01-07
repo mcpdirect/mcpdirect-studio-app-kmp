@@ -1,7 +1,9 @@
 package ai.mcpdirect.studio.app.home.view
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.dashboard.DashboardViewModel
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.hoverable
@@ -9,6 +11,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +39,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.add
 import mcpdirectstudioapp.composeapp.generated.resources.group
 import mcpdirectstudioapp.composeapp.generated.resources.groups
 import mcpdirectstudioapp.composeapp.generated.resources.refresh
@@ -65,10 +69,16 @@ fun MyTeams(
             Text("My Teams (${teams.size})", fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1.0f))
             if(isHovered)IconButton(
-                onClick = { viewModel.refreshTeams(true) }
+                onClick = {
+                    generalViewModel.currentScreen(
+                        Screen.MCPTeam(),
+                        "My Team",
+                        Screen.Home
+                    )
+                }
             ) {
                 Icon(
-                    painterResource(Res.drawable.refresh),
+                    painterResource(Res.drawable.add),
                     contentDescription = ""
                 )
             }
@@ -77,7 +87,15 @@ fun MyTeams(
             LazyColumn {
                 items(teams) { team ->
                     TextButton(
-                        onClick = {},
+                        modifier = Modifier.height(32.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        onClick = {
+                            generalViewModel.currentScreen(
+                                Screen.MCPTeam(),
+                                "My Team",
+                                Screen.Home
+                            )
+                        },
 //                        border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor)
                     ) {Text(team.name)}
                 }

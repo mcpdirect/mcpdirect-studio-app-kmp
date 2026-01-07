@@ -21,6 +21,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_platform_logo
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_studio_logo
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_text_logo
+import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_text_logo_256
 import mcpdirectstudioapp.composeapp.generated.resources.visibility
 import mcpdirectstudioapp.composeapp.generated.resources.visibility_off
 import org.jetbrains.compose.resources.painterResource
@@ -38,7 +39,7 @@ fun LoginScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(Res.drawable.mcpdirect_text_logo),
+            painter = painterResource(Res.drawable.mcpdirect_text_logo_256),
             contentDescription = "MCPdirect Studio",
             modifier = Modifier.width(256.dp)
         )

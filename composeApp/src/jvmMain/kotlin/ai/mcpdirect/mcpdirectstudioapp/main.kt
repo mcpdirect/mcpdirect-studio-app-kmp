@@ -98,8 +98,8 @@ import java.awt.Cursor
 @OptIn(ExperimentalMaterial3Api::class)
 fun main() = application {
     val windowState = rememberWindowState(
-        width = 1200.dp,
-        height = 900.dp,
+        width = 1280.dp,
+        height = 960.dp,
         position = WindowPosition(Alignment.Center)
     )
 
@@ -206,7 +206,8 @@ fun main() = application {
                                 is Screen.MCPAccessKey -> {
                                     MCPAccessKeyScreen(
                                         screen.accessKey,
-                                        screen.dialog
+                                        screen.dialog,
+                                        paddingValues
                                     )
                                 }
                                 Screen.ToolsLogbook -> {}
@@ -219,10 +220,11 @@ fun main() = application {
                                 is Screen.MyStudio -> MyStudioScreen(
                                     screen.toolAgent,
                                     screen.toolMaker,
-                                    screen.dialog
+                                    screen.dialog,
+                                    paddingValues
                                 )
                                 is Screen.MCPTeam -> {
-                                    MCPTeamScreen(screen.dialog)
+                                    MCPTeamScreen(screen.dialog,paddingValues)
                                 }
                                 is Screen.MCPTeamToolMaker -> {
                                     MCPTeamToolMakerScreen(screen.team)

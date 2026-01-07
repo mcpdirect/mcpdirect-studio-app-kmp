@@ -1,7 +1,9 @@
 package ai.mcpdirect.studio.app.home.view
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.Tag
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_ON
@@ -50,6 +52,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.add
 import mcpdirectstudioapp.composeapp.generated.resources.check
 import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.key
@@ -83,10 +86,16 @@ fun MCPServers(
             Text("MCP Servers (${toolMakers.size})", fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1.0f))
             IconButton(
-                onClick = { viewModel.refreshToolMakers(true) }
+                onClick = {
+                    generalViewModel.currentScreen(
+                        Screen.QuickStart,
+                        "3 steps, let any of your agents access any of your MCP servers",
+                        Screen.Home
+                    )
+                }
             ) {
                 Icon(
-                    painterResource(Res.drawable.refresh),
+                    painterResource(Res.drawable.add),
                     contentDescription = ""
                 )
             }
@@ -135,7 +144,13 @@ fun MCPServers(
                                 )
                             }
                             IconButton(
-                                onClick = { },
+                                onClick = {
+                                    generalViewModel.currentScreen(
+                                        Screen.MyStudio(),
+                                        "My Studios",
+                                        Screen.Home
+                                    )
+                                },
                                 modifier = Modifier.size(32.dp)
                             ) {
                                 Icon(

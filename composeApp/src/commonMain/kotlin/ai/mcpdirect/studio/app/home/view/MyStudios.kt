@@ -1,8 +1,10 @@
 package ai.mcpdirect.studio.app.home.view
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.dashboard.DashboardViewModel
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.BorderStroke
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.add
 import mcpdirectstudioapp.composeapp.generated.resources.cloud_off
 import mcpdirectstudioapp.composeapp.generated.resources.design_services
 import mcpdirectstudioapp.composeapp.generated.resources.plug_connect
@@ -55,10 +58,16 @@ fun MyStudios(
             Text("My Studios (${toolAgents.size - 1})", fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1.0f))
             if(isHovered)IconButton(
-                onClick = { viewModel.refreshToolAgents(true) }
+                onClick = {
+                    generalViewModel.currentScreen(
+                        Screen.MyStudio(),
+                        "My Studios",
+                        Screen.Home
+                    )
+                }
             ) {
                 Icon(
-                    painterResource(Res.drawable.refresh),
+                    painterResource(Res.drawable.add),
                     contentDescription = ""
                 )
             }
@@ -70,7 +79,15 @@ fun MyStudios(
                 items(toolAgents) {
                     if (it.id != 0L && UserRepository.me(it.userId)) {
                         TextButton(
-                            onClick = {},
+                            modifier = Modifier.height(32.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            onClick = {
+                                generalViewModel.currentScreen(
+                                    Screen.MyStudio(),
+                                    "My Studios",
+                                    Screen.Home
+                                )
+                            },
 //                            border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor),
 //                            elevation = ButtonDefaults.elevatedButtonElevation(1.dp)
                         ) {
