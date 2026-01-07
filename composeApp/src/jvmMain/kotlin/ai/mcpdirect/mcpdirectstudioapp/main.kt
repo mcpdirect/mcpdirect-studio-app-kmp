@@ -78,6 +78,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
@@ -94,6 +98,8 @@ import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Cursor
+import java.awt.Frame
+import javax.swing.SwingUtilities
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun main() = application {
@@ -116,13 +122,16 @@ fun main() = application {
     ) {
         AppTheme{
             // This Surface is our actual "Window" background
+            var padding by remember { mutableStateOf(16.dp) }
+            var shadowElevation by remember { mutableStateOf(8.dp) }
+            var maximize by remember { mutableStateOf(false) }
             Surface(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier.fillMaxSize().padding(padding),
                 color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(8.dp,8.dp,0.dp,0.dp),
+//                shape = RoundedCornerShape(8.dp,8.dp,0.dp,0.dp),
 //            border = BorderStroke(1.dp,MaterialTheme.colorScheme.onBackground),
 //            tonalElevation = 8.dp,
-                shadowElevation = 8.dp
+                shadowElevation = shadowElevation
             ) {
                 println(MaterialTheme.colorScheme.background.value.toHexString())
                 WindowDraggableArea(modifier = Modifier.fillMaxSize()) {
@@ -306,14 +315,31 @@ fun main() = application {
                         Row(modifier = Modifier.fillMaxSize()) {
                             Spacer(Modifier.weight(1f))
                             IconButton(
-                                onClick = {  },
+                                onClick = {
+                                    SwingUtilities.invokeLater {
+                                        (window as? Frame)?.extendedState = Frame.ICONIFIED
+                                    }
+                                },
                                 modifier = Modifier.size(32.dp)
                             ) {
                                 Icon(painterResource(Res.drawable.check_indeterminate_small),contentDescription = "")
                             }
 
                             IconButton(
-                                onClick = {  },
+                                onClick = {
+                                    SwingUtilities.invokeLater {
+                                        if(!maximize){
+                                            padding = 0.dp
+                                            shadowElevation = 0.dp
+                                            (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
+                                        }else{
+                                            padding = 16.dp
+                                            shadowElevation = 8.dp
+                                            (window as? Frame)?.extendedState = Frame.NORMAL
+                                        }
+                                        maximize = !maximize
+                                    }
+                                },
                                 modifier = Modifier.size(32.dp)
                             ) {
                                 Icon(
@@ -324,7 +350,7 @@ fun main() = application {
                             }
 
                             IconButton(
-                                onClick = {  },
+                                onClick = { exitApplication() },
                                 modifier = Modifier.size(32.dp)
                             ) {
                                 Icon(painterResource(Res.drawable.close_small),contentDescription = "")

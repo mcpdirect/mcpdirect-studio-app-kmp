@@ -2,6 +2,44 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced Home screen UI with MCPDirect branding and improved navigation
+
+### Details
+- Enhanced Home screen with MCPDirect logo and branding elements
+- Added refresh functionality to Home screen for all data views
+- Updated LoginScreen to use higher resolution text logo (256px)
+- Modified MyStudioScreen, MCPAccessKeyScreen, and MCPTeamScreen to accept padding values
+- Implemented navigation from Home screen cards to respective detail screens
+- Added new mcpdirect_text_logo_150.png and mcpdirect_text_logo_256.png resources
+- Updated window dimensions from 1200x900 to 1280x960 in main.kt
+- Improved UI elements in QuickStartScreen for generating MCPDirect keys
+- Enhanced padding and layout in various screens for better UI consistency
+- Added hover pointer icons to UI elements for better user experience
+- Improved button styling and sizing in key management views
+
+## [January 2, 2026]
+### Summary
+Implemented new Home screen with enhanced UI and window management features
+
+### Details
+- Implemented new Home screen with MCPDirect Keys, Studios, Teams, and Servers views
+- Added HomeViewModel with data flows for access keys, tool agents, tool makers, and teams
+- Created dedicated view components for MCPDirectKeys, MCPServers, MyStudios, and MyTeams
+- Added new SVG icons (check_box_outline_blank, group, home, toggle_off, toggle_on)
+- Implemented hover effects and improved UI interactions for cards
+- Added mcpdirect_tips_600.png image resource for dashboard
+- Updated app version from 2.2.2 to 2.3.0 in build.gradle.kts
+- Added 'home' string resource for UI localization
+- Changed default screen from Dashboard to Home in GeneralViewModel
+- Implemented custom window management with resize edges in main.kt
+- Added rounded corner window styling with shadow elevation
+- Updated background color from FDF8F8 to FAFAFA
+- Modified QuickStartScreen to accept padding values and adjusted step text
+- Enhanced dashboard UI with improved layout and navigation elements
+- Added custom resize functionality for application window
+
+## [January 2, 2026]
+### Summary
 Enhanced dashboard UI and MCP server configuration with new icons and layout improvements
 
 ### Details

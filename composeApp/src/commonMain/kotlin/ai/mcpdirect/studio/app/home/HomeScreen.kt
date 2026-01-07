@@ -13,15 +13,20 @@ import ai.mcpdirect.studio.app.home.view.MyTeams
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.setting.settingsViewModel
+import ai.mcpdirect.studio.app.tips.TipsScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
@@ -32,6 +37,7 @@ fun HomeScreen(){
     var showMenu by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
+    var showTipsDialog by remember { mutableStateOf(false) }
     Row{
         Column(Modifier.width(300.dp).padding(top = 16.dp, bottom = 16.dp, start = 16.dp)){
             Row{
@@ -137,11 +143,22 @@ fun HomeScreen(){
             MCPServers(viewModel,Modifier.weight(1f))
         }
         Column(Modifier.width(300.dp).padding(top = 16.dp, bottom = 16.dp, end = 16.dp)){
-            Text(
-                "Quick start",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(8.dp)
-            )
+            Row {
+                Text(
+                    "Quick start",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(8.dp)
+                )
+                Spacer(Modifier.weight(1f))
+                IconButton(
+                    onClick = { showTipsDialog = true }
+                ) {
+                    Icon(
+                        painterResource(Res.drawable.lightbulb_2),
+                        contentDescription = ""
+                    )
+                }
+            }
             HorizontalDivider()
             Row(
                 Modifier.padding(horizontal = 8.dp),
@@ -301,4 +318,44 @@ fun HomeScreen(){
         )
     }
 
+    if(showTipsDialog) FullControlDialog { showTipsDialog = false }
+    if(generalViewModel.previousScreen!=null){
+        showTipsDialog = false
+    }
+}
+
+@Composable
+fun FullControlDialog(onDismiss: () -> Unit) {
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            // 1. Allow custom width/height (CRITICAL for custom sizes)
+            usePlatformDefaultWidth = false,
+            // 2. Allow clicking outside to dismiss?
+            dismissOnClickOutside = true,
+            // 3. Allow back button to dismiss? (Android only)
+            dismissOnBackPress = true
+        )
+    ) {
+        // Now you have full control over the size.
+        // Example: A nearly full-screen dialog
+        Surface(
+            modifier = Modifier
+                .fillMaxSize(0.9f) // Take up 90% of the screen
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(24.dp),
+            color = Color.White
+        ) {
+            Box(Modifier.fillMaxSize()) {
+                TipsScreen()
+                Row{
+                    Spacer(Modifier.weight(1f))
+                    IconButton(onClick = onDismiss){
+                        Icon(painterResource(Res.drawable.close),contentDescription = null)
+                    }
+                }
+            }
+        }
+    }
 }

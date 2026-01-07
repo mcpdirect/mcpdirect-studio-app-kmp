@@ -82,7 +82,7 @@ fun TipsScreen() {
                             generalViewModel.currentScreen(
                                 Screen.QuickStart,
                                 "3 steps, let any of your agents access any of your in-house MCP servers",
-                                Screen.Tips
+                                Screen.Home
                             )
                         },
                     ) {
@@ -98,7 +98,7 @@ fun TipsScreen() {
                                     generalViewModel.currentScreen(
                                         Screen.QuickStart,
                                         "3 steps, let any of your agents access any of your in-house MCP servers",
-                                        Screen.Tips
+                                        Screen.Home
                                     )
                                 }){
                                     Text("Let's start")
