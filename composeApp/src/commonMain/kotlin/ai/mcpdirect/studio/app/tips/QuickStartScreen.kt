@@ -143,28 +143,28 @@ fun ConnectMCPView(
     val currentToolMaker by viewModel.currentToolMaker.collectAsState()
     val toolMakers by viewModel.toolMakers.collectAsState()
     var action by remember { mutableStateOf(ConnectMCPViewAction.MAIN) }
-    var catalog by remember { mutableStateOf(true) }
+    var catalog by remember { mutableStateOf(false) }
     var currentMCPTemplate by remember { mutableStateOf(AIPortMCPServer()) }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)){
     OutlinedCard(Modifier.fillMaxHeight().weight(1f)) {
-        StudioActionBar (
-            if(catalog) "MCP Catalog" else "Installed MCP servers",
-        ){
-            TextButton(
-                modifier = Modifier.height(32.dp),
-                contentPadding = PaddingValues(8.dp,0.dp),
-                onClick = {
+        if(!catalog&&toolMakers.isNotEmpty()) {
+            StudioActionBar (
+                "Installed MCP servers",
+            ){
+                TextButton(
+                    modifier = Modifier.height(32.dp),
+                    contentPadding = PaddingValues(8.dp,0.dp),
+                    onClick = {
 //                viewModel.currentToolMaker(null)
-                    catalog = !catalog
-            }) {
-                Text(
-                    if(!catalog) "MCP Catalog" else "Installed MCP servers",
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                        catalog = !catalog
+                    }) {
+                    Text(
+                        "MCP Catalog",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
             }
-        }
-        HorizontalDivider()
-        if(!catalog) {
+            HorizontalDivider()
             if (toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {
                 Icon(
                     painterResource(Res.drawable.inbox_empty),
@@ -232,6 +232,23 @@ fun ConnectMCPView(
                 }
             }
         }else{
+            StudioActionBar (
+                "MCP Catalog",
+            ){
+                if(toolMakers.isNotEmpty())TextButton(
+                    modifier = Modifier.height(32.dp),
+                    contentPadding = PaddingValues(8.dp,0.dp),
+                    onClick = {
+//                viewModel.currentToolMaker(null)
+                        catalog = !catalog
+                    }) {
+                    Text(
+                        "Installed MCP servers",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+            HorizontalDivider()
             LazyColumn(Modifier.weight(1f)){
                 items(mcpServerCatalog) { mcpServer ->
                     if (mcpServer.id <100) {
@@ -261,16 +278,16 @@ fun ConnectMCPView(
             modifier = Modifier.padding(horizontal = 8.dp),
             onClick = {}
         ) {
-            if (currentToolAgent.id == 0L && toolAgents.isNotEmpty())
+            if (currentToolAgent.id == 0L && toolAgents.isNotEmpty()) {
                 viewModel.currentToolAgent(toolAgents[0])
-
+            }
             Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name)
             Spacer(Modifier.weight(1f))
             Icon(painterResource(Res.drawable.more), contentDescription = "")
         }
     }
     OutlinedCard(Modifier.weight(2f)) {
-        if(!catalog) {
+        if(!catalog&&toolMakers.isNotEmpty()) {
             currentToolMaker?.let { toolMaker ->
                 when (action) {
                     ConnectMCPViewAction.MAIN -> {
@@ -324,6 +341,7 @@ fun ConnectMCPView(
                     if(it.successful()) it.data?.let { data ->
                         viewModel.currentToolMaker(data)
                         viewModel.selectToolMaker(true,data)
+                        catalog = false
                     }
                 }
             }
@@ -477,7 +495,7 @@ fun GenerateMCPdirectKeyView(
     viewModel: QuickStartViewModel
 ){
     val accessKeys by viewModel.accessKeys.collectAsState()
-    val currentAccessKey = viewModel.currentAccessKey
+//    val currentAccessKey = viewModel.currentAccessKey
     var generateKey by remember { mutableStateOf(false) }
     Row(modifier.fillMaxSize()){
         LazyColumn(Modifier.weight(2f)) {
@@ -516,10 +534,42 @@ fun GenerateMCPdirectKeyView(
             }
         }
         Spacer(Modifier.width(8.dp))
-        if(generateKey){
-            OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-                StudioActionBar("Generate New Key"){
+        OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
+            if(!generateKey&&accessKeys.isNotEmpty()){
+
+                StudioActionBar("MCPdirect Keys"){
                     TextButton(
+                        modifier = Modifier.height(32.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        onClick = { generateKey = true }
+                    ) {
+                        Text(
+                            "Generate New Key",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
+                HorizontalDivider()
+                LazyColumn {
+                    items(accessKeys) { accessKey ->
+                        val selected = viewModel.selectedAccessKey(accessKey)
+                        StudioListItem(
+                            modifier = Modifier.clickable {
+                                viewModel.selectAccessKey(accessKey)
+                            },
+                            selected = selected,
+                            leadingContent = {
+                                Checkbox(checked = selected, onCheckedChange = {
+                                    viewModel.selectAccessKey(accessKey)
+                                })
+                            },
+                            headlineContent = { Text(accessKey.name) },
+                        )
+                    }
+                }
+            } else {
+                StudioActionBar("Generate New Key"){
+                    if(accessKeys.isNotEmpty())TextButton(
                         modifier = Modifier.height(32.dp),
                         contentPadding = PaddingValues(horizontal = 8.dp),
                         onClick = { generateKey = false }
@@ -557,39 +607,6 @@ fun GenerateMCPdirectKeyView(
                     },
                 ){
                     Text("Generate")
-                }
-            }
-        } else {
-            OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-                StudioActionBar("MCPdirect Keys"){
-                    TextButton(
-                        modifier = Modifier.height(32.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp),
-                        onClick = { generateKey = true }
-                    ) {
-                        Text(
-                            "Generate New Key",
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                    }
-                }
-                HorizontalDivider()
-                LazyColumn {
-                    items(accessKeys) { accessKey ->
-                        val selected = viewModel.selectedAccessKey(accessKey)
-                        StudioListItem(
-                            modifier = Modifier.clickable {
-                                viewModel.selectAccessKey(accessKey)
-                            },
-                            selected = selected,
-                            leadingContent = {
-                                Checkbox(checked = selected, onCheckedChange = {
-                                    viewModel.selectAccessKey(accessKey)
-                                })
-                            },
-                            headlineContent = { Text(accessKey.name) },
-                        )
-                    }
                 }
             }
         }

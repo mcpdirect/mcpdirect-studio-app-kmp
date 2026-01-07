@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced Home screen with Tips dialog automation and UI improvements
+
+### Details
+- Implemented automatic Tips dialog display when no MCP servers are installed
+- Added showTips state management in HomeViewModel for Tips dialog control
+- Enhanced HomeScreen to conditionally show Tips dialog based on server availability
+- Updated Home screen layout with improved padding in cards
+- Modified Home screen view components to accept optional modifier parameter
+- Enhanced ToolRepository with loadToolMakers state flow and response callbacks
+- Improved endpoint URL handling by removing trailing slashes in QuickStart screen
+- Added access key name sanitization by replacing spaces with underscores
+- Enhanced UI consistency with uniform padding in home view components
+- Improved navigation and dialog dismissal behavior in Home screen
+
+## [January 2, 2026]
+### Summary
 Enhanced MCPDirect key generation UI and repository functionality
 
 ### Details
