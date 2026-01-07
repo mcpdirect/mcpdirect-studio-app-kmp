@@ -113,7 +113,7 @@ fun QuickStartScreen(
                         enabled = !viewModel.selectedTools.isEmpty()&&viewModel.currentAccessKey!=null,
                         onClick = {
                             stepIndex++
-//                            viewModel.grantToolPermissions()
+                            viewModel.grantToolPermissions()
                         }
                     ){
                         Text("Next")
@@ -478,106 +478,118 @@ fun GenerateMCPdirectKeyView(
 ){
     val accessKeys by viewModel.accessKeys.collectAsState()
     val currentAccessKey = viewModel.currentAccessKey
+    var generateKey by remember { mutableStateOf(false) }
     Row(modifier.fillMaxSize()){
-        OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-            StudioActionBar("MCPdirect Keys"){
-                TextButton(
-                    modifier = Modifier.height(32.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp),
-                    onClick = { viewModel.selectAccessKey(null) }
-                ) {
-                    Text(
-                        "Add New",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-            }
-            HorizontalDivider()
-            LazyColumn {
-                items(accessKeys) { accessKey ->
-                    val selected = viewModel.selectedAccessKey(accessKey)
-                    StudioListItem(
-                        modifier = Modifier.clickable {
-                            viewModel.selectAccessKey(accessKey)
-                        },
-                        selected = selected,
-                        leadingContent = {
-                            Checkbox(checked = selected, onCheckedChange = {
-                                viewModel.selectAccessKey(accessKey)
-                            })
-                        },
-                        headlineContent = { Text(accessKey.name) },
-                    )
-                }
-            }
-        }
-        Spacer(Modifier.width(8.dp))
-        currentAccessKey?.let { key ->
-            LazyColumn(Modifier.weight(2f)) {
-                items(viewModel.selectedToolMakers) { toolMaker ->
-                    val toolCount = viewModel.countTools(toolMaker)
-                    val selectedToolCount = viewModel.countSelectedTools(toolMaker)
-                    val tools = viewModel.tools.filter { it.makerId == toolMaker.id }.toList()
+        LazyColumn(Modifier.weight(2f)) {
+            items(viewModel.selectedToolMakers) { toolMaker ->
+                val toolCount = viewModel.countTools(toolMaker)
+                val selectedToolCount = viewModel.countSelectedTools(toolMaker)
+                val tools = viewModel.tools.filter { it.makerId == toolMaker.id }.toList()
 
-                    OutlinedCard{
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(
-                                checked = selectedToolCount>0,
-                                onCheckedChange = {
-                                    viewModel.selectAllTools(it,toolMaker)
-                                }
-                            )
-                            Text("${toolMaker.name} ($selectedToolCount/$toolCount)")
-                        }
-                        HorizontalDivider()
-                        FlowRow(
-                            Modifier.padding(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                        ){
-                            tools.forEach { tool ->
-                                Tag(
-                                    tool.name,
-                                    toggle = viewModel.selectedTool(tool),
-                                ){
-                                    viewModel.selectTool(it,tool)
-                                }
+                OutlinedCard{
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(
+                            checked = selectedToolCount>0,
+                            onCheckedChange = {
+                                viewModel.selectAllTools(it,toolMaker)
+                            }
+                        )
+                        Text("${toolMaker.name} ($selectedToolCount/$toolCount)")
+                    }
+                    HorizontalDivider()
+                    FlowRow(
+                        Modifier.padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ){
+                        tools.forEach { tool ->
+                            Tag(
+                                tool.name,
+                                toggle = viewModel.selectedTool(tool),
+                            ){
+                                viewModel.selectTool(it,tool)
                             }
                         }
                     }
-                    Spacer(Modifier.height(8.dp))
                 }
+                Spacer(Modifier.height(8.dp))
             }
-        }?:OutlinedCard(Modifier.weight(2f).fillMaxHeight()) {
-            StudioActionBar("Generate a new MCPDirect Key")
-            HorizontalDivider()
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Icon(
-                    modifier = Modifier.padding(top = 16.dp).size(24.dp),
-                    painter = painterResource(Res.drawable.label),
-                    contentDescription = null
-                )
+        }
+        Spacer(Modifier.width(8.dp))
+        if(generateKey){
+            OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
+                StudioActionBar("Generate New Key"){
+                    TextButton(
+                        modifier = Modifier.height(32.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        onClick = { generateKey = false }
+                    ) {
+                        Text(
+                            "MCPdirect Keys",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
+                HorizontalDivider()
+                var name by remember { mutableStateOf("") }
+                var nameError by remember { mutableStateOf(true) }
                 OutlinedTextField(
-//                    modifier = Modifier.fillMaxWidth(),
-                    value = "",
-                    onValueChange = {  },
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    value = name,
+                    onValueChange = { text ->
+                        nameError = text.isBlank() || text.length>20
+                        if(text.isBlank()) name = ""
+                        else name = text
+                    },
                     label = { Text("MCPdirect Key Name") },
-                    isError = true,
+                    isError = nameError,
                     supportingText = {
-                        Text("Name must not be empty and length < 21")
+                        Text("Name must not be empty and should have at most 20 characters")
                     },
                 )
                 Button(
-                    onClick = {},
-//                    modifier = Modifier.height(32.dp),
-//                    contentPadding = PaddingValues(horizontal = 8.dp),
+                    enabled = !nameError,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    onClick = {
+                        viewModel.generateMCPdirectKey(name){
+                            generateKey = !it.successful()
+                        }
+                    },
                 ){
-                    Text(
-                        "Generate",
-//                        style = MaterialTheme.typography.bodySmall,
-                    )
+                    Text("Generate")
+                }
+            }
+        } else {
+            OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
+                StudioActionBar("MCPdirect Keys"){
+                    TextButton(
+                        modifier = Modifier.height(32.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp),
+                        onClick = { generateKey = true }
+                    ) {
+                        Text(
+                            "Generate New Key",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
+                HorizontalDivider()
+                LazyColumn {
+                    items(accessKeys) { accessKey ->
+                        val selected = viewModel.selectedAccessKey(accessKey)
+                        StudioListItem(
+                            modifier = Modifier.clickable {
+                                viewModel.selectAccessKey(accessKey)
+                            },
+                            selected = selected,
+                            leadingContent = {
+                                Checkbox(checked = selected, onCheckedChange = {
+                                    viewModel.selectAccessKey(accessKey)
+                                })
+                            },
+                            headlineContent = { Text(accessKey.name) },
+                        )
+                    }
                 }
             }
         }
@@ -685,9 +697,13 @@ fun AIAgentConfigOptionView(
                     }
                     HorizontalDivider()
                     SelectionContainer(Modifier.padding(16.dp)) {
+                        var endpoint = AppInfo.MCPDIRECT_GATEWAY_ENDPOINT
+                        if(endpoint.endsWith("/")){
+                            endpoint = endpoint.substring(0, endpoint.length - 1)
+                        }
                         val config = option.config
                             .replace($$"${MCPDIRECT_KEY_NAME}",accessKey.name)
-                            .replace($$"${MCPDIRECT_URL}", AppInfo.MCPDIRECT_GATEWAY_ENDPOINT)
+                            .replace($$"${MCPDIRECT_URL}", endpoint)
                             .replace($$"${MCPDIRECT_KEY}",accessKeyCredential)
                         Text(config, style = MaterialTheme.typography.bodyMedium)
                     }

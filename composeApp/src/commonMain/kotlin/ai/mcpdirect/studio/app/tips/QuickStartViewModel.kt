@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.tips
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.mcpkey.MCPKeyNameError
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.MCPServerConfig
@@ -51,6 +52,19 @@ class QuickStartViewModel: ViewModel() {
         private set
     fun selectAccessKey(accessKey: AIPortToolAccessKey?){
         currentAccessKey = accessKey
+    }
+    fun generateMCPdirectKey(
+        keyName:String,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolAccessKey>) -> Unit
+    ) {
+        viewModelScope.launch {
+            AccessKeyRepository.generateAccessKey(keyName){
+                if(it.successful()) it.data?.let { data->
+                    currentAccessKey = data
+                }
+                onResponse(it)
+            }
+        }
     }
     fun selectedAccessKey(accessKey: AIPortToolAccessKey): Boolean{
         return currentAccessKey?.id == accessKey.id

@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Added Tips dialog to Home screen and enhanced window controls
+
+### Details
+- Added Tips dialog functionality to Home screen with lightbulb icon
+- Implemented FullControlDialog composable for displaying Tips in a modal
+- Updated navigation from Tips screen to return to Home screen instead of Tips
+- Enhanced window controls in main.kt with minimize, maximize, and close functionality
+- Added Swing utilities for window state management (minimize, maximize, close)
+- Implemented dynamic padding and shadow elevation for window states
+- Added maximize toggle functionality that adjusts window styling accordingly
+- Improved window close button to properly exit the application
+- Added DialogProperties for proper dialog behavior and dismissal
+- Enhanced UI with rounded corner surface for the Tips dialog
+
+## [January 2, 2026]
+### Summary
 Enhanced Home screen UI with MCPDirect branding and improved navigation
 
 ### Details

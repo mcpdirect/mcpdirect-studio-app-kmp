@@ -60,7 +60,10 @@ object AccessKeyRepository {
             }
         }
     }
-    suspend fun generateAccessKey(keyName:String) {
+    suspend fun generateAccessKey(
+        keyName:String,
+        onResponse: ((resp: AIPortServiceResponse<AIPortToolAccessKey>) -> Unit)?=null
+    ) {
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().generateToolAccessKey(keyName){
@@ -76,6 +79,7 @@ object AccessKeyRepository {
                 generalViewModel.loaded(
                     "Generate MCPdirect Access Key\"$keyName\"",it.code,it.message
                 )
+                onResponse?.invoke(it)
             }
         }
     }
