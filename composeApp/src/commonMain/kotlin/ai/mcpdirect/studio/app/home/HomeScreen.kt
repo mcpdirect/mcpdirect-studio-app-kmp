@@ -65,11 +65,11 @@ fun HomeScreen(){
             }
 
             Spacer(Modifier.height(32.dp))
-            MyStudios(viewModel, Modifier)
+            MyStudios(viewModel)
             Spacer(Modifier.height(32.dp))
-            MCPDirectKeys(viewModel,Modifier)
+            MCPDirectKeys(viewModel)
             Spacer(Modifier.height(32.dp))
-            MyTeams(viewModel,Modifier)
+            MyTeams(viewModel)
             Spacer(Modifier.weight(1f))
             Row(
                 Modifier.padding(top = 32.dp),
@@ -318,9 +318,13 @@ fun HomeScreen(){
         )
     }
 
-    if(showTipsDialog) FullControlDialog { showTipsDialog = false }
+    if(showTipsDialog||viewModel.showTips?:false) FullControlDialog {
+        showTipsDialog = false
+        viewModel.showTips = false
+    }
     if(generalViewModel.previousScreen!=null){
         showTipsDialog = false
+        viewModel.showTips = false
     }
 }
 

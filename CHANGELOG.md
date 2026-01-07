@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced MCPDirect key generation UI and repository functionality
+
+### Details
+- Enhanced MCPDirect key generation UI with improved form validation
+- Added real-time validation for key name length (max 20 characters)
+- Implemented generate key functionality with success/error handling
+- Added toggle between key list and generate form in QuickStart screen
+- Updated AccessKeyRepository to support response callbacks for key generation
+- Fixed background color from FAFAFA to pure white (FFFFFF)
+- Enabled grantToolPermissions functionality that was previously commented out
+- Improved endpoint URL handling by removing trailing slashes
+- Added MCPKeyNameError import to QuickStartViewModel
+- Enhanced UI with proper error messaging and validation feedback
+
+## [January 2, 2026]
+### Summary
 Added Tips dialog to Home screen and enhanced window controls
 
 ### Details

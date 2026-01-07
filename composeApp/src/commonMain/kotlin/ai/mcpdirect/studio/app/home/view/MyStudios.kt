@@ -37,7 +37,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun MyStudios(
     viewModel: HomeViewModel,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ){
     val toolAgents by viewModel.toolAgents.collectAsState()
     LaunchedEffect(viewModel) {
@@ -45,7 +45,7 @@ fun MyStudios(
     }
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
-    Column(modifier.padding(start=16.dp).hoverable(interactionSource)) {
+    Column(modifier.padding(start=8.dp).hoverable(interactionSource)) {
         Row(
             modifier = Modifier.height(48.dp),
             verticalAlignment = Alignment.CenterVertically,

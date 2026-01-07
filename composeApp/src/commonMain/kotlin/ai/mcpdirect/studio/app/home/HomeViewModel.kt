@@ -8,6 +8,9 @@ import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.time.TimeMark
 
 class HomeViewModel: ViewModel() {
     val localToolAgent = StudioRepository.localToolAgent
@@ -49,9 +53,16 @@ class HomeViewModel: ViewModel() {
             started = SharingStarted.WhileSubscribed(5000), // 按需启动
             initialValue = emptyList()
         )
+    val loadToolMakers : StateFlow<Boolean> = ToolRepository.loadToolMakers
+    var showTips by mutableStateOf<Boolean?>(null)
     fun refreshToolMakers(force:Boolean=false){
         viewModelScope.launch {
-            ToolRepository.loadToolMakers(force)
+            if(ToolRepository.loadToolMakers.value){
+                showTips = false
+            }
+            ToolRepository.loadToolMakers(force){
+                if(showTips==null) showTips = ToolRepository.toolMakers.value.isEmpty()
+            }
         }
     }
     val teams: StateFlow<List<AIPortTeam>> = TeamRepository.teams

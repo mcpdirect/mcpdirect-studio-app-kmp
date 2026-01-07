@@ -48,7 +48,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun MyTeams(
     viewModel: HomeViewModel,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ){
     val teams by viewModel.teams.collectAsState()
     LaunchedEffect(viewModel) {
@@ -56,7 +56,7 @@ fun MyTeams(
     }
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
-    Column(modifier.padding(start=16.dp).hoverable(interactionSource)) {
+    Column(modifier.padding(start=8.dp).hoverable(interactionSource)) {
         Row(
             modifier = Modifier.height(48.dp),
             verticalAlignment = Alignment.CenterVertically,

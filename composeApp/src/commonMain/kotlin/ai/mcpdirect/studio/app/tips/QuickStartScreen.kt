@@ -668,6 +668,10 @@ fun AIAgentConfigOptionView(
             items(configs) { option ->
 
                 ElevatedCard{
+                    var endpoint = AppInfo.MCPDIRECT_GATEWAY_ENDPOINT
+                    if(endpoint.endsWith("/")){
+                        endpoint = endpoint.substring(0, endpoint.length - 1)
+                    }
                     Row(
                         Modifier.padding(start = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -677,9 +681,9 @@ fun AIAgentConfigOptionView(
                         option.deeplink?.let { deeplink ->
                             TextButton(onClick = {
                                 uriHandler.openUri(deeplink.deeplink(
-                                    accessKey.name,
+                                    accessKey.name.replace(" ","_"),
                                     accessKeyCredential,
-                                    AppInfo.MCPDIRECT_GATEWAY_ENDPOINT
+                                    endpoint
                                     ))
                             }){
                                 deeplink.icon?.let { icon ->
@@ -697,10 +701,6 @@ fun AIAgentConfigOptionView(
                     }
                     HorizontalDivider()
                     SelectionContainer(Modifier.padding(16.dp)) {
-                        var endpoint = AppInfo.MCPDIRECT_GATEWAY_ENDPOINT
-                        if(endpoint.endsWith("/")){
-                            endpoint = endpoint.substring(0, endpoint.length - 1)
-                        }
                         val config = option.config
                             .replace($$"${MCPDIRECT_KEY_NAME}",accessKey.name)
                             .replace($$"${MCPDIRECT_URL}", endpoint)

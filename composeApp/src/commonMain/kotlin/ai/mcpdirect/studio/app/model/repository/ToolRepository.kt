@@ -21,6 +21,8 @@ object ToolRepository {
     private var _makerLastUpdate:Long = 0L
     private val _toolMakers = MutableStateFlow<Map<Long, AIPortToolMaker>>(emptyMap())
     val toolMakers: StateFlow<Map<Long, AIPortToolMaker>> = _toolMakers
+    private val _loadToolMakers = MutableStateFlow(false)
+    val loadToolMakers: StateFlow<Boolean> = _loadToolMakers
 
     private var _templateLastQuery:TimeMark? = null
     private var _templateLastUpdate:Long = 0L
@@ -120,7 +122,10 @@ object ToolRepository {
         }
     }
 
-    suspend fun loadToolMakers(force: Boolean=false){
+    suspend fun loadToolMakers(
+        force: Boolean=false,
+        onResponse: ((resp: AIPortServiceResponse<List<AIPortToolMaker>>) -> Unit)?=null
+    ){
         loadMutex.withLock {
             val now = TimeSource.Monotonic.markNow()
             if(force||_makerLastQuery==null||_makerLastQuery!!.elapsedNow()>_duration) {
@@ -141,8 +146,10 @@ object ToolRepository {
                             }
                         }
                         _makerLastQuery = now
+                        if(!_loadToolMakers.value) _loadToolMakers.value = true
                     }
                     generalViewModel.loaded("Load Tool Makers",it.code,it.message)
+                    onResponse?.invoke(it)
                 }
             }
         }
