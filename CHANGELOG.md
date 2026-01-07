@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Improved MCP server catalog UI and key generation workflow
+
+### Details
+- Updated MCP server catalog toggle functionality with improved UI flow
+- Modified ConnectMCPView to default to installed servers view instead of catalog
+- Enhanced catalog toggle behavior with improved action buttons
+- Improved GenerateMCPdirectKeyView UI with better key list and generation flow
+- Added conditional rendering for key generation and key list views
+- Updated QuickStart screen UI components with improved layout and navigation
+- Enhanced StudioActionBar functionality in catalog views
+- Improved access key selection workflow in key generation UI
+- Fixed currentToolAgent assignment logic in ConnectMCPView
+- Enhanced UI consistency with proper conditional rendering
+
+## [January 2, 2026]
+### Summary
 Enhanced Home screen with Tips dialog automation and UI improvements
 
 ### Details

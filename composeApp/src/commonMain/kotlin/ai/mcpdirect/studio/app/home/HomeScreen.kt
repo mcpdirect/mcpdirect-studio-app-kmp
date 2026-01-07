@@ -63,14 +63,15 @@ fun HomeScreen(){
                     )
                 }
             }
-
-            Spacer(Modifier.height(32.dp))
-            MyStudios(viewModel)
-            Spacer(Modifier.height(32.dp))
-            MCPDirectKeys(viewModel)
-            Spacer(Modifier.height(32.dp))
-            MyTeams(viewModel)
-            Spacer(Modifier.weight(1f))
+            Column(Modifier.weight(1f)) {
+                Spacer(Modifier.height(16.dp))
+                MyStudios(viewModel)
+                Spacer(Modifier.height(16.dp))
+                MCPDirectKeys(viewModel)
+                Spacer(Modifier.height(16.dp))
+                MyTeams(viewModel)
+                Spacer(Modifier.height(16.dp))
+            }
             Row(
                 Modifier.padding(top = 32.dp),
                 verticalAlignment = Alignment.CenterVertically
