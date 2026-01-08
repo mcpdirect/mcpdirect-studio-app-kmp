@@ -2,6 +2,21 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced AI agent configuration with improved security and copy functionality
+
+### Details
+- Added 'type' property to HTTP and SSE configurations in QuickStartAIAgent
+- Enhanced File System MCP server configuration with input arguments
+- Improved security by truncating access key credential (removing first 4 characters)
+- Added copy to clipboard functionality for AI agent configurations
+- Enhanced configuration generation with improved variable substitution
+- Updated access key name sanitization in configuration generation
+- Improved endpoint URL handling by removing trailing slashes
+- Enhanced UI with better configuration display and copy functionality
+- Updated AIAgentConfigOptionView with improved configuration workflow
+
+## [January 2, 2026]
+### Summary
 Improved Home screen layout with enhanced spacing and structure
 
 ### Details

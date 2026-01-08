@@ -144,13 +144,7 @@ fun HomeScreen(){
             MCPServers(viewModel,Modifier.weight(1f))
         }
         Column(Modifier.width(300.dp).padding(top = 16.dp, bottom = 16.dp, end = 16.dp)){
-            Row {
-                Text(
-                    "Quick start",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(8.dp)
-                )
-                Spacer(Modifier.weight(1f))
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(
                     onClick = { showTipsDialog = true }
                 ) {
@@ -159,6 +153,12 @@ fun HomeScreen(){
                         contentDescription = ""
                     )
                 }
+//                Spacer(Modifier.width(8.dp))
+                Text(
+                    "Quick start",
+                    style = MaterialTheme.typography.titleLarge,
+//                    modifier = Modifier.padding(8.dp)
+                )
             }
             HorizontalDivider()
             Row(
