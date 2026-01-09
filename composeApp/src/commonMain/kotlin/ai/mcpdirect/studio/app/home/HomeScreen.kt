@@ -6,10 +6,10 @@ import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.auth.PasswordChangeState
 import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.generalViewModel
-import ai.mcpdirect.studio.app.home.view.MCPDirectKeys
-import ai.mcpdirect.studio.app.home.view.MCPServers
-import ai.mcpdirect.studio.app.home.view.MyStudios
-import ai.mcpdirect.studio.app.home.view.MyTeams
+import ai.mcpdirect.studio.app.home.view.MCPDirectKeysView
+import ai.mcpdirect.studio.app.home.view.MCPServersView
+import ai.mcpdirect.studio.app.home.view.MyStudiosView
+import ai.mcpdirect.studio.app.home.view.MyTeamsView
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.setting.settingsViewModel
@@ -65,11 +65,11 @@ fun HomeScreen(){
             }
             Column(Modifier.weight(1f)) {
                 Spacer(Modifier.height(16.dp))
-                MyStudios(viewModel)
+                MyStudiosView(viewModel)
                 Spacer(Modifier.height(16.dp))
-                MCPDirectKeys(viewModel)
+                MCPDirectKeysView(viewModel)
                 Spacer(Modifier.height(16.dp))
-                MyTeams(viewModel)
+                MyTeamsView(viewModel)
                 Spacer(Modifier.height(16.dp))
             }
             Row(
@@ -140,8 +140,8 @@ fun HomeScreen(){
                 }
             }
         }
-        ElevatedCard (Modifier.weight(1f).fillMaxHeight().padding(16.dp)){
-            MCPServers(viewModel,Modifier.weight(1f))
+        Card (Modifier.weight(1f).fillMaxHeight().padding(16.dp)){
+            MCPServersView(viewModel,Modifier.weight(1f))
         }
         Column(Modifier.width(300.dp).padding(top = 16.dp, bottom = 16.dp, end = 16.dp)){
             Row(verticalAlignment = Alignment.CenterVertically) {

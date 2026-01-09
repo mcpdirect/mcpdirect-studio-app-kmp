@@ -52,6 +52,7 @@ package ai.mcpdirect.mcpdirectstudioapp
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.agent.MyStudioScreen
+import ai.mcpdirect.studio.app.agent.ToolAgentScreen
 import ai.mcpdirect.studio.app.auth.*
 import ai.mcpdirect.studio.app.compose.Carousel
 import ai.mcpdirect.studio.app.compose.CarouselSlide
@@ -85,6 +86,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
@@ -133,8 +135,8 @@ fun main() = application {
 //            tonalElevation = 8.dp,
                 shadowElevation = shadowElevation
             ) {
-                println(MaterialTheme.colorScheme.background.value.toHexString())
-                WindowDraggableArea(modifier = Modifier.fillMaxSize()) {
+//                println(MaterialTheme.colorScheme.background.value.toHexString())
+//                WindowDraggableArea(modifier = Modifier.fillMaxSize()) {
                     Scaffold (
                         snackbarHost = { SnackbarHost(generalViewModel.snackbarHostState){ data ->
                             var containerColor = SnackbarDefaults.color
@@ -198,7 +200,6 @@ fun main() = application {
                             )
                         }
                     ){ paddingValues ->
-                        println(paddingValues)
                         if(authViewModel.uiState == UIState.Success) {
                             when (val screen = generalViewModel.currentScreen) {
                                 Screen.Home -> {
@@ -226,12 +227,19 @@ fun main() = application {
                                 is Screen.ToolPermission -> {
                                     ToolPermissionScreen(screen.accessKey)
                                 }
-                                is Screen.MyStudio -> MyStudioScreen(
-                                    screen.toolAgent,
-                                    screen.toolMaker,
-                                    screen.dialog,
-                                    paddingValues
-                                )
+                                is Screen.MyStudio -> {
+//                                    MyStudioScreen(
+//                                        screen.toolAgent,
+//                                        screen.toolMaker,
+//                                        screen.dialog,
+//                                        paddingValues
+//                                    )
+                                    ToolAgentScreen(
+                                        screen.toolAgent,
+                                        screen.toolMaker,
+                                        paddingValues
+                                    )
+                                }
                                 is Screen.MCPTeam -> {
                                     MCPTeamScreen(screen.dialog,paddingValues)
                                 }
@@ -309,54 +317,52 @@ fun main() = application {
                                 }
                             }
                         }
+                }
+            }
+            WindowDraggableArea(modifier = Modifier.fillMaxWidth().height(64.dp).padding(padding)) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(Modifier.weight(1f))
+                    IconButton(
+                        onClick = {
+                            SwingUtilities.invokeLater {
+                                (window as? Frame)?.extendedState = Frame.ICONIFIED
+                            }
+                        },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(painterResource(Res.drawable.check_indeterminate_small),contentDescription = "")
                     }
-//                    Box(modifier = Modifier.fillMaxSize()){
 
-                        Row(modifier = Modifier.fillMaxSize()) {
-                            Spacer(Modifier.weight(1f))
-                            IconButton(
-                                onClick = {
-                                    SwingUtilities.invokeLater {
-                                        (window as? Frame)?.extendedState = Frame.ICONIFIED
-                                    }
-                                },
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(painterResource(Res.drawable.check_indeterminate_small),contentDescription = "")
+                    IconButton(
+                        onClick = {
+                            SwingUtilities.invokeLater {
+                                if(!maximize){
+                                    padding = 0.dp
+                                    shadowElevation = 0.dp
+                                    (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
+                                }else{
+                                    padding = 16.dp
+                                    shadowElevation = 8.dp
+                                    (window as? Frame)?.extendedState = Frame.NORMAL
+                                }
+                                maximize = !maximize
                             }
+                        },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            painterResource(Res.drawable.check_box_outline_blank),
+                            contentDescription = "",
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
 
-                            IconButton(
-                                onClick = {
-                                    SwingUtilities.invokeLater {
-                                        if(!maximize){
-                                            padding = 0.dp
-                                            shadowElevation = 0.dp
-                                            (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
-                                        }else{
-                                            padding = 16.dp
-                                            shadowElevation = 8.dp
-                                            (window as? Frame)?.extendedState = Frame.NORMAL
-                                        }
-                                        maximize = !maximize
-                                    }
-                                },
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(
-                                    painterResource(Res.drawable.check_box_outline_blank),
-                                    contentDescription = "",
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-
-                            IconButton(
-                                onClick = { exitApplication() },
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(painterResource(Res.drawable.close_small),contentDescription = "")
-                            }
-                        }
-//                    }
+                    IconButton(
+                        onClick = { exitApplication() },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(painterResource(Res.drawable.close_small),contentDescription = "")
+                    }
                 }
             }
         }

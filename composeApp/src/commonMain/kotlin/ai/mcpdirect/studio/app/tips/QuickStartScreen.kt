@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -136,7 +137,8 @@ enum class ConnectMCPViewAction {
 @Composable
 fun ConnectMCPView(
     modifier: Modifier,
-    viewModel: QuickStartViewModel
+    viewModel: QuickStartViewModel,
+    showCatalog: Boolean = true
 ){
     val toolAgents by viewModel.toolAgents.collectAsState()
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
@@ -144,222 +146,261 @@ fun ConnectMCPView(
     val currentToolMaker by viewModel.currentToolMaker.collectAsState()
     val toolMakers by viewModel.toolMakers.collectAsState()
     var action by remember { mutableStateOf(ConnectMCPViewAction.MAIN) }
-    var catalog by remember { mutableStateOf(false) }
+    var catalog by remember { mutableStateOf(showCatalog) }
     var currentMCPTemplate by remember { mutableStateOf(AIPortMCPServer()) }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)){
-    OutlinedCard(Modifier.fillMaxHeight().weight(1f)) {
-        if(!catalog&&toolMakers.isNotEmpty()) {
-            StudioActionBar (
-                "Installed MCP servers",
-            ){
-                TextButton(
-                    modifier = Modifier.height(32.dp),
-                    contentPadding = PaddingValues(8.dp,0.dp),
-                    onClick = {
+        Column(Modifier.weight(1f))  {
+            OutlinedCard(Modifier.weight(1f)) {
+//                if(!catalog&&toolMakers.isNotEmpty()) {
+                if(!catalog) {
+                    StudioActionBar (
+                        "Installed MCP servers",
+                    ){
+                        TextButton(
+                            modifier = Modifier.height(32.dp),
+                            contentPadding = PaddingValues(8.dp,0.dp),
+                            onClick = {
 //                viewModel.currentToolMaker(null)
-                        catalog = !catalog
-                    }) {
-                    Text(
-                        "MCP Catalog",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-            }
-            HorizontalDivider()
-            if (toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {
-                Icon(
-                    painterResource(Res.drawable.inbox_empty),
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp).padding(bottom = 16.dp)
-                )
-                Text("No MCP server installed.")
-                Text("Install one from MCP catalog.")
-            } else LazyColumn(Modifier.weight(1f)) {
-                items(toolMakers) { toolMaker ->
-                    StudioListItem(
-                        selected = currentToolMaker?.id == toolMaker.id,
-                        modifier = Modifier.clickable {
-                            action = ConnectMCPViewAction.MAIN
-                            viewModel.currentToolMaker(toolMaker)
-                        },
-                        headlineContent = { Text(toolMaker.name, style = MaterialTheme.typography.bodyMedium) },
-                        trailingContent = {
-                            if (toolMaker.status == STATUS_OFF) Icon(
-                                painterResource(Res.drawable.mobiledata_off),
-                                contentDescription = "Disconnect",
-                                Modifier.size(48.dp).padding(12.dp),
-                                tint = MaterialTheme.colorScheme.error
-                            ) else if (toolMaker.status == STATUS_WAITING) {
-                                CircularProgressIndicator(
-                                    Modifier.size(48.dp).padding(8.dp),
-                                )
-                            } else if (toolMaker.errorCode == ERROR) Icon(
-                                painterResource(Res.drawable.error),
-                                contentDescription = "Error",
-                                Modifier.size(48.dp).padding(12.dp),
-                                tint = MaterialTheme.colorScheme.error
-                            ) else {
-                                LaunchedEffect(toolMaker) {
-                                    viewModel.updateCurrentToolMaker(toolMaker)
-                                }
-                                Checkbox(
-                                    checked = viewModel.selectedToolMaker(toolMaker),
-                                    onCheckedChange = {
-                                        viewModel.selectToolMaker(it, toolMaker)
-                                    },
-                                )
-                            }
-                        },
-                        supportingContent = {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                when (toolMaker) {
-                                    is MCPServer -> {
-                                        if (toolMaker.transport == 0) {
-                                            Tag("STDIO")
-                                        } else if (toolMaker.transport == 1) {
-                                            Tag("SSE")
-                                        } else if (toolMaker.transport == 2) {
-                                            Tag("HTTP")
+                                catalog = !catalog
+                            }) {
+                            Text(
+                                "MCP Catalog",
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
+                    HorizontalDivider()
+                    if (toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {
+                        Icon(
+                            painterResource(Res.drawable.inbox_empty),
+                            contentDescription = null,
+                            modifier = Modifier.size(80.dp).padding(bottom = 16.dp)
+                        )
+                        Text("No MCP server installed.")
+                        Text("Install one from MCP catalog.")
+                    } else LazyColumn(Modifier.weight(1f)) {
+                        items(toolMakers) { toolMaker ->
+                            StudioListItem(
+                                selected = currentToolMaker?.id == toolMaker.id,
+                                modifier = Modifier.clickable {
+                                    action = ConnectMCPViewAction.MAIN
+                                    viewModel.currentToolMaker(toolMaker)
+                                },
+                                headlineContent = { Text(toolMaker.name, style = MaterialTheme.typography.bodyMedium) },
+                                trailingContent = {
+                                    if (toolMaker.status == STATUS_OFF) Icon(
+                                        painterResource(Res.drawable.mobiledata_off),
+                                        contentDescription = "Disconnect",
+                                        Modifier.size(48.dp).padding(12.dp),
+                                        tint = MaterialTheme.colorScheme.error
+                                    ) else if (toolMaker.status == STATUS_WAITING) {
+                                        CircularProgressIndicator(
+                                            Modifier.size(48.dp).padding(8.dp),
+                                        )
+                                    } else if (toolMaker.errorCode == ERROR) Icon(
+                                        painterResource(Res.drawable.error),
+                                        contentDescription = "Error",
+                                        Modifier.size(48.dp).padding(12.dp),
+                                        tint = MaterialTheme.colorScheme.error
+                                    ) else {
+                                        LaunchedEffect(toolMaker) {
+                                            viewModel.updateCurrentToolMaker(toolMaker)
+                                        }
+                                        Checkbox(
+                                            checked = viewModel.selectedToolMaker(toolMaker),
+                                            onCheckedChange = {
+                                                viewModel.selectToolMaker(it, toolMaker)
+                                            },
+                                        )
+                                    }
+                                },
+                                supportingContent = {
+                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        when (toolMaker) {
+                                            is MCPServer -> {
+                                                if (toolMaker.transport == 0) {
+                                                    Tag("STDIO")
+                                                } else if (toolMaker.transport == 1) {
+                                                    Tag("SSE")
+                                                } else if (toolMaker.transport == 2) {
+                                                    Tag("HTTP")
+                                                }
+                                            }
+
+                                            is OpenAPIServer -> {
+                                                Tag("OpenAPI")
+                                            }
                                         }
                                     }
+                                }
+                            )
+                        }
+                    }
+                }else{
+                    StudioActionBar (
+                        "MCP Catalog",
+                    ){
+//                        if(toolMakers.isNotEmpty())
+                        TextButton(
+                            modifier = Modifier.height(32.dp),
+                            contentPadding = PaddingValues(8.dp,0.dp),
+                            onClick = {
+//                viewModel.currentToolMaker(null)
+                                catalog = !catalog
+                            }) {
+                            Text(
+                                "Installed MCP servers",
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
+                    HorizontalDivider()
+                    LazyColumn(Modifier.weight(1f)){
+                        items(mcpServerCatalog) { mcpServer ->
+                            if (mcpServer.id <100) {
+                                when(mcpServer.id){
+                                    0L -> StudioListItem(
+                                        selected = currentMCPTemplate.id==mcpServer.id,
+                                        headlineContent = { Text("MCP Server") },
+                                        modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
+                                    )
+                                    1L -> StudioListItem(
+                                        selected = currentMCPTemplate.id==mcpServer.id,
+                                        headlineContent = { Text("OpenAPI") },
+                                        modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
+                                    )
+                                    -1L -> HorizontalDivider()
+                                }
+                            }else StudioListItem(
+                                selected = currentMCPTemplate.id==mcpServer.id,
+                                headlineContent = { Text(mcpServer.name) },
+                                modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
+                            )
+                        }
+                    }
+                }
+//                HorizontalDivider()
+//                Box(Modifier.fillMaxWidth().background(
+//                    color = MaterialTheme.colorScheme.secondaryContainer,
+//                )) {
+//                    Row(
+//                        modifier = Modifier.padding(8.dp),
+//                    ) {
+//                        Icon(
+//                            painterResource(Res.drawable.design_services), contentDescription = "",
+//                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+//                        )
+//                        Spacer(Modifier.size(8.dp))
+//                        Text(
+//                            if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name,
+//                            color = MaterialTheme.colorScheme.onSecondaryContainer, fontWeight = FontWeight.Bold,
+//                        )
+//                        Spacer(Modifier.weight(1f))
+//                        Icon(
+//                            painterResource(Res.drawable.more), contentDescription = "",
+//                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+//                        )
+//                    }
+//                }
+            }
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(
+//                colors = ButtonDefaults.outlinedButtonColors().copy(
+//                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+//                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+//                ),
+//                shape = ButtonDefaults.outlinedShape,
+                contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
+                onClick = {}
+            ) {
+                if (currentToolAgent.id == 0L && toolAgents.isNotEmpty()) {
+                    viewModel.currentToolAgent(toolAgents[0])
+                }
+                Icon(painterResource(Res.drawable.design_services), contentDescription = "",
+                    tint = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.size(8.dp))
+                Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name,
+                    color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold,)
+                Spacer(Modifier.weight(1f))
+                Icon(painterResource(Res.drawable.more), contentDescription = "",
+                    tint = MaterialTheme.colorScheme.primary)
+            }
+        }
 
-                                    is OpenAPIServer -> {
-                                        Tag("OpenAPI")
-                                    }
+        OutlinedCard(Modifier.weight(2f)) {
+            if(!catalog&&toolMakers.isNotEmpty()) {
+                currentToolMaker?.let { toolMaker ->
+                    when (action) {
+                        ConnectMCPViewAction.MAIN -> {
+                            MCPServerMainView(toolMaker, viewModel, Modifier.weight(2f)) {
+                                action = it
+                            }
+                        }
+
+                        ConnectMCPViewAction.CONFIG_MCP -> {
+                            ConfigMCPServerView(
+                                currentToolAgent, toolMaker as MCPServer, Modifier.weight(2f),
+                                onBack = { action = ConnectMCPViewAction.MAIN }
+                            ) { config, changed ->
+                                println(JSON.encodeToString(config))
+                                viewModel.modifyMCPServerConfig(
+                                    toolMaker, config.name,
+                                    config = if (changed) config else null
+                                ) { if (it.successful()) action = ConnectMCPViewAction.MAIN }
+                            }
+                        }
+
+                        ConnectMCPViewAction.CONFIG_MCP_TEMPLATE -> {
+
+                        }
+
+                        ConnectMCPViewAction.CONFIG_OPENAPI -> {
+                            var openAPIServerConfig by remember { mutableStateOf<OpenAPIServerConfig?>(null) }
+                            LaunchedEffect(toolMaker) {
+                                viewModel.getOpenAPIServerConfig(toolMaker) {
+                                    if (it.successful()) openAPIServerConfig = it.data
                                 }
                             }
-                        }
-                    )
-                }
-            }
-        }else{
-            StudioActionBar (
-                "MCP Catalog",
-            ){
-                if(toolMakers.isNotEmpty())TextButton(
-                    modifier = Modifier.height(32.dp),
-                    contentPadding = PaddingValues(8.dp,0.dp),
-                    onClick = {
-//                viewModel.currentToolMaker(null)
-                        catalog = !catalog
-                    }) {
-                    Text(
-                        "Installed MCP servers",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-            }
-            HorizontalDivider()
-            LazyColumn(Modifier.weight(1f)){
-                items(mcpServerCatalog) { mcpServer ->
-                    if (mcpServer.id <100) {
-                        when(mcpServer.id){
-                            0L -> StudioListItem(
-                                selected = currentMCPTemplate.id==mcpServer.id,
-                                headlineContent = { Text("MCP Server") },
-                                modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
-                            )
-                            1L -> StudioListItem(
-                                selected = currentMCPTemplate.id==mcpServer.id,
-                                headlineContent = { Text("OpenAPI") },
-                                modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
-                            )
-                            -1L -> HorizontalDivider()
-                        }
-                    }else StudioListItem(
-                        selected = currentMCPTemplate.id==mcpServer.id,
-                        headlineContent = { Text(mcpServer.name) },
-                        modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
-                    )
-                }
-            }
-        }
-        HorizontalDivider()
-        TextButton(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            onClick = {}
-        ) {
-            if (currentToolAgent.id == 0L && toolAgents.isNotEmpty()) {
-                viewModel.currentToolAgent(toolAgents[0])
-            }
-            Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name)
-            Spacer(Modifier.weight(1f))
-            Icon(painterResource(Res.drawable.more), contentDescription = "")
-        }
-    }
-    OutlinedCard(Modifier.weight(2f)) {
-        if(!catalog&&toolMakers.isNotEmpty()) {
-            currentToolMaker?.let { toolMaker ->
-                when (action) {
-                    ConnectMCPViewAction.MAIN -> {
-                        MCPServerMainView(toolMaker, viewModel, Modifier.weight(2f)) {
-                            action = it
-                        }
-                    }
-
-                    ConnectMCPViewAction.CONFIG_MCP -> {
-                        ConfigMCPServerView(
-                            currentToolAgent, toolMaker as MCPServer, Modifier.weight(2f),
-                            onBack = { action = ConnectMCPViewAction.MAIN }
-                        ) { config, changed ->
-                            println(JSON.encodeToString(config))
-                            viewModel.modifyMCPServerConfig(
-                                toolMaker, config.name,
-                                config = if (changed) config else null
-                            ) { if (it.successful()) action = ConnectMCPViewAction.MAIN }
-                        }
-                    }
-
-                    ConnectMCPViewAction.CONFIG_MCP_TEMPLATE -> {
-
-                    }
-
-                    ConnectMCPViewAction.CONFIG_OPENAPI -> {
-                        var openAPIServerConfig by remember { mutableStateOf<OpenAPIServerConfig?>(null) }
-                        LaunchedEffect(toolMaker) {
-                            viewModel.getOpenAPIServerConfig(toolMaker) {
-                                if (it.successful()) openAPIServerConfig = it.data
-                            }
-                        }
-                        openAPIServerConfig?.let { config ->
-                            ConfigOpenAPIServerView(
-                                toolMaker.name, currentToolAgent,config,
-                                onBack = { action = ConnectMCPViewAction.MAIN }
-                            ) {
+                            openAPIServerConfig?.let { config ->
+                                ConfigOpenAPIServerView(
+                                    toolMaker.name, currentToolAgent,config,
+                                    onBack = { action = ConnectMCPViewAction.MAIN }
+                                ) {
 //                                viewModel.modifyMCPServerConfig()
+                                }
+                            } ?: StudioBoard(modifier) {
+                                CircularProgressIndicator()
+                                Text("${toolMaker.name} config loading")
                             }
-                        } ?: StudioBoard(modifier) {
-                            CircularProgressIndicator()
-                            Text("${toolMaker.name} config loading")
+                        }
+                    }
+
+                }
+            } else {
+                fun installMCPServer(config: MCPServerConfig){
+                    viewModel.installMCPServer(config){
+                        if(it.successful()) it.data?.let { data ->
+                            viewModel.currentToolMaker(data)
+                            viewModel.selectToolMaker(true,data)
+                            catalog = false
                         }
                     }
                 }
-
-            }
-        } else {
-            fun installMCPServer(config: MCPServerConfig){
-                viewModel.installMCPServer(config){
-                    if(it.successful()) it.data?.let { data ->
-                        viewModel.currentToolMaker(data)
-                        viewModel.selectToolMaker(true,data)
-                        catalog = false
+                when(currentMCPTemplate.id){
+                    0L -> ConfigMCPServerView(currentToolAgent,modifier = Modifier.weight(2f)){ config,changed ->
+                        installMCPServer(config)
                     }
-                }
-            }
-            when(currentMCPTemplate.id){
-                0L -> ConfigMCPServerView(currentToolAgent,modifier = Modifier.weight(2f)){ config,changed ->
-                    installMCPServer(config)
-                }
-                1L -> ConfigOpenAPIServerView(modifier = Modifier.weight(2f)){ yaml ->
+                    1L -> ConfigOpenAPIServerView(modifier = Modifier.weight(2f)){ yaml ->
 
-                }
-                else -> ConfigMCPServerView(currentToolAgent,currentMCPTemplate,Modifier.weight(2f)){ config ->
-                    installMCPServer(config)
+                    }
+                    else -> ConfigMCPServerView(currentToolAgent,currentMCPTemplate,Modifier.weight(2f)){ config ->
+                        installMCPServer(config)
+                    }
                 }
             }
         }
     }
-} }
+}
 
 @Composable
 fun MCPServerMainView(

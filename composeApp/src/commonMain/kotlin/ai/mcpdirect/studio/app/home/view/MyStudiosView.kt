@@ -2,12 +2,9 @@ package ai.mcpdirect.studio.app.home.view
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
-import ai.mcpdirect.studio.app.compose.Tag
-import ai.mcpdirect.studio.app.dashboard.DashboardViewModel
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import ai.mcpdirect.studio.app.model.repository.UserRepository
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -28,14 +25,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
-import mcpdirectstudioapp.composeapp.generated.resources.cloud_off
 import mcpdirectstudioapp.composeapp.generated.resources.design_services
-import mcpdirectstudioapp.composeapp.generated.resources.plug_connect
-import mcpdirectstudioapp.composeapp.generated.resources.refresh
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun MyStudios(
+fun MyStudiosView(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ){
