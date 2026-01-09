@@ -1,18 +1,16 @@
-package ai.mcpdirect.studio.app.home.view
+package ai.mcpdirect.studio.app.home.widget
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_ON
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
@@ -22,7 +20,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.setting_config
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun MCPServersView(
+fun MCPServersWidget(
     viewModel: HomeViewModel,
     modifier: Modifier
 ){

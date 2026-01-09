@@ -59,6 +59,7 @@ import ai.mcpdirect.studio.app.compose.CarouselSlide
 import ai.mcpdirect.studio.app.dashboard.DashboardScreen
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeScreen
+import ai.mcpdirect.studio.app.key.MCPdirectKeysScreen
 import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.setting.SettingsScreen
@@ -214,9 +215,13 @@ fun main() = application {
                                 Screen.ToolDevelopment -> {}
                                 Screen.ConnectMCP -> {}
                                 is Screen.MCPAccessKey -> {
-                                    MCPAccessKeyScreen(
+//                                    MCPAccessKeyScreen(
+//                                        screen.accessKey,
+//                                        screen.dialog,
+//                                        paddingValues
+//                                    )
+                                    MCPdirectKeysScreen(
                                         screen.accessKey,
-                                        screen.dialog,
                                         paddingValues
                                     )
                                 }

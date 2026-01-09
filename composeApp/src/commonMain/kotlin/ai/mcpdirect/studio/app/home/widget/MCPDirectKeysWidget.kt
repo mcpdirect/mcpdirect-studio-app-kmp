@@ -1,4 +1,4 @@
-package ai.mcpdirect.studio.app.home.view
+package ai.mcpdirect.studio.app.home.widget
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
@@ -32,17 +32,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
-import mcpdirectstudioapp.composeapp.generated.resources.group
+import mcpdirectstudioapp.composeapp.generated.resources.key
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun MyTeamsView(
+fun MCPDirectKeysWidget(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ){
-    val teams by viewModel.teams.collectAsState()
+    val accessKeys by viewModel.accessKeys.collectAsState()
     LaunchedEffect(viewModel) {
-        viewModel.refreshTeams()
+        viewModel.refreshAccessKeys()
     }
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
@@ -53,16 +53,16 @@ fun MyTeamsView(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
-                painterResource(Res.drawable.group),
+                painterResource(Res.drawable.key),
                 ""
             )
-            Text("My Teams (${teams.size})", fontWeight = FontWeight.Bold)
+            Text("MCPdirect Keys (${accessKeys.size})", fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1.0f))
-            if(isHovered)IconButton(
+            if(isHovered) IconButton(
                 onClick = {
                     generalViewModel.currentScreen(
-                        Screen.MCPTeam(),
-                        "My Team",
+                        Screen.MCPAccessKey(),
+                        "MCPdirect Keys",
                         Screen.Home
                     )
                 }
@@ -73,21 +73,21 @@ fun MyTeamsView(
                 )
             }
         }
-        if (teams.isNotEmpty()) {
+        if (accessKeys.isNotEmpty()) {
             LazyColumn {
-                items(teams) { team ->
+                items(accessKeys) { accessKey ->
                     TextButton(
                         modifier = Modifier.height(32.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         onClick = {
                             generalViewModel.currentScreen(
-                                Screen.MCPTeam(),
-                                "My Team",
+                                Screen.MCPAccessKey(accessKey),
+                                "MCPdirect Keys",
                                 Screen.Home
                             )
                         },
 //                        border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor)
-                    ) {Text(team.name)}
+                    ) {Text(accessKey.name)}
                 }
             }
         } else if (getPlatform().type == 0) Column(
@@ -95,7 +95,7 @@ fun MyTeamsView(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Please create a team to start")
+            Text("Please create a MCPdirect access key to start")
         }
     }
 }

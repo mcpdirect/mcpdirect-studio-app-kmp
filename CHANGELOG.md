@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced ToolAgentScreen with MCPdirect key management and dialog improvements
+
+### Details
+- Implemented MCPdirect key management functionality in ToolAgentScreen
+- Added Grant to MCPdirect Keys dialog with GenerateMCPdirectKeyView
+- Enhanced BlankDialog composable with title and improved layout
+- Updated Home screen to use BlankDialog instead of FullControlDialog for Tips
+- Improved UI with better dialog management and navigation
+- Added MCPdirectKeysScreen for key management functionality
+- Enhanced MCPServersView with improved switch toggle functionality
+- Updated MyStudiosView with improved navigation to individual studios
+- Enhanced GenerateMCPdirectKeyView with optional modifier parameter
+- Improved dialog dismissal behavior and UI consistency
+
+## [January 2, 2026]
+### Summary
 Refactored Home screen views and implemented ToolAgentScreen
 
 ### Details
