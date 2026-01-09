@@ -37,9 +37,10 @@ fun MyStudiosView(
     LaunchedEffect(viewModel) {
         viewModel.refreshToolAgents()
     }
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsState()
-    Column(modifier.padding(start=8.dp).hoverable(interactionSource)) {
+//    val interactionSource = remember { MutableInteractionSource() }
+//    val isHovered by interactionSource.collectIsHoveredAsState()
+//    Column(modifier.padding(start=8.dp).hoverable(interactionSource)) {
+    Column(modifier.padding(start=8.dp)) {
         Row(
             modifier = Modifier.height(48.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -50,21 +51,21 @@ fun MyStudiosView(
                 ""
             )
             Text("My Studios (${toolAgents.size - 1})", fontWeight = FontWeight.Bold)
-            Spacer(Modifier.weight(1.0f))
-            if(isHovered)IconButton(
-                onClick = {
-                    generalViewModel.currentScreen(
-                        Screen.MyStudio(),
-                        "My Studios",
-                        Screen.Home
-                    )
-                }
-            ) {
-                Icon(
-                    painterResource(Res.drawable.add),
-                    contentDescription = ""
-                )
-            }
+//            Spacer(Modifier.weight(1.0f))
+//            if(isHovered)IconButton(
+//                onClick = {
+//                    generalViewModel.currentScreen(
+//                        Screen.MyStudio(),
+//                        "My Studios",
+//                        Screen.Home
+//                    )
+//                }
+//            ) {
+//                Icon(
+//                    painterResource(Res.drawable.add),
+//                    contentDescription = ""
+//                )
+//            }
         }
 //        HorizontalDivider()
         if (toolAgents.size > 1) {
@@ -77,7 +78,7 @@ fun MyStudiosView(
                             contentPadding = PaddingValues(horizontal = 16.dp),
                             onClick = {
                                 generalViewModel.currentScreen(
-                                    Screen.MyStudio(),
+                                    Screen.MyStudio(it),
                                     "My Studios",
                                     Screen.Home
                                 )

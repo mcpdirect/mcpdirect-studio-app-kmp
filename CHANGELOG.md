@@ -2,6 +2,21 @@
 
 ## [January 2, 2026]
 ### Summary
+Refactored Home screen views and implemented ToolAgentScreen
+
+### Details
+- Renamed view components (MCPDirectKeys, MCPServers, MyStudios, MyTeams) with View suffix
+- Implemented new ToolAgentScreen for managing tool agents and makers
+- Updated Home screen to use renamed view components
+- Enhanced UI with improved navigation and component organization
+- Added new color scheme adjustments for better visual consistency
+- Updated ConnectMCPView with improved catalog functionality
+- Enhanced window management with draggable title bar area
+- Improved error container and outline colors for better UI consistency
+- Updated MyStudio navigation to use ToolAgentScreen instead of MyStudioScreen
+
+## [January 2, 2026]
+### Summary
 Enhanced Home screen UI with improved Quick start layout
 
 ### Details

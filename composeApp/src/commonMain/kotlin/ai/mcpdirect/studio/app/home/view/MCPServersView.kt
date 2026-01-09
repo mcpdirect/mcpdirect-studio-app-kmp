@@ -86,22 +86,22 @@ fun MCPServersView(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Spacer(Modifier.weight(1.0f))
-                            var checked by remember { mutableStateOf(toolMaker.status==STATUS_ON) }
-                            // 2. Wrap in a Box to control the actual layout size
-                            Box(
-                                modifier = Modifier
-                                    .size(width = 36.dp, height = 22.dp) // Manually adjusted size
-                                    .wrapContentSize(Alignment.Center)
-                            ) {
-                                Switch(
-                                    checked = checked,
-                                    onCheckedChange = {checked=it},
-                                    modifier = Modifier
-                                        .scale(0.6f)
-                                    // Remove default touch padding if it interferes with your layout
-                                    // (Optional, use with caution for accessibility)
-                                )
-                            }
+//                            var checked by remember { mutableStateOf(toolMaker.status==STATUS_ON) }
+//                            // 2. Wrap in a Box to control the actual layout size
+//                            Box(
+//                                modifier = Modifier
+//                                    .size(width = 36.dp, height = 22.dp) // Manually adjusted size
+//                                    .wrapContentSize(Alignment.Center)
+//                            ) {
+//                                Switch(
+//                                    checked = checked,
+//                                    onCheckedChange = {checked=it},
+//                                    modifier = Modifier
+//                                        .scale(0.6f)
+//                                    // Remove default touch padding if it interferes with your layout
+//                                    // (Optional, use with caution for accessibility)
+//                                )
+//                            }
                             IconButton(
                                 onClick = {
                                     generalViewModel.currentScreen(

@@ -319,9 +319,13 @@ fun HomeScreen(){
         )
     }
 
-    if(showTipsDialog||viewModel.showTips?:false) FullControlDialog {
-        showTipsDialog = false
-        viewModel.showTips = false
+    if(showTipsDialog||viewModel.showTips?:false) BlankDialog (
+        onDismiss = {
+            showTipsDialog = false
+            viewModel.showTips = false
+        }
+    ){
+        TipsScreen()
     }
     if(generalViewModel.previousScreen!=null){
         showTipsDialog = false
@@ -330,8 +334,11 @@ fun HomeScreen(){
 }
 
 @Composable
-fun FullControlDialog(onDismiss: () -> Unit) {
-
+fun BlankDialog(
+    title:String?=null,
+    onDismiss: () -> Unit,
+    content: @Composable ((PaddingValues) -> Unit)
+) {
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -353,8 +360,14 @@ fun FullControlDialog(onDismiss: () -> Unit) {
             color = Color.White
         ) {
             Box(Modifier.fillMaxSize()) {
-                TipsScreen()
-                Row{
+                content(PaddingValues(top=48.dp))
+                Row(
+                    Modifier.height(48.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    title?.let {
+                        Text(title, Modifier.padding(start=16.dp), style = MaterialTheme.typography.titleLarge)
+                    }
                     Spacer(Modifier.weight(1f))
                     IconButton(onClick = onDismiss){
                         Icon(painterResource(Res.drawable.close),contentDescription = null)

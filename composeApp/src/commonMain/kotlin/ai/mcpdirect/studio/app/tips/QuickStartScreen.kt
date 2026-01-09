@@ -533,7 +533,7 @@ fun MCPServerMainView(
 
 @Composable
 fun GenerateMCPdirectKeyView(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     viewModel: QuickStartViewModel
 ){
     val accessKeys by viewModel.accessKeys.collectAsState()
