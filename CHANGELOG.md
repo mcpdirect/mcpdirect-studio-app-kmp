@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Refactored components into widget and component modules with enhanced functionality
+
+### Details
+- Renamed view components to widgets (MCPDirectKeysWidget, MCPServersWidget, MyStudiosWidget, MyTeamsWidget)
+- Created new component modules for MCPdirect keys and MCP servers functionality
+- Implemented MCPdirectKeysComponent with key generation and selection functionality
+- Enhanced MCPServersComponent with search and filtering capabilities
+- Updated Home screen to use renamed widget components
+- Improved MCPAccessKey navigation to use MCPdirectKeysScreen
+- Enhanced UI with better component organization and modularity
+- Added MCPdirectKeysComponentViewModel and MCPServersComponentViewModel for state management
+- Improved key generation workflow with validation and error handling
+- Enhanced server component with multi-selection capabilities
+
+## [January 2, 2026]
+### Summary
 Enhanced ToolAgentScreen with MCPdirect key management and dialog improvements
 
 ### Details
