@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced key management with improved UI components and server candidate selection
+
+### Details
+- Renamed MCPdirectKeysScreen to MCPdirectKeyScreen for consistency
+- Implemented MCPdirectKeyScreenViewModel for key management state handling
+- Added MCPServerCandidatesView for selecting MCP servers for permissions
+- Enhanced tool permission management with improved filtering and search
+- Added encrypted_off SVG icon for security-related UI elements
+- Improved StudioActionBar layout with better arrangement of elements
+- Enhanced Tag component with improved styling and clickable behavior
+- Added tooltip functionality to tool permission view for better UX
+- Improved UI layout with better spacing and component organization
+- Enhanced MCP server selection with search and filtering capabilities
+
+## [January 2, 2026]
+### Summary
 Enhanced tool permission management with search and expand/collapse functionality
 
 ### Details

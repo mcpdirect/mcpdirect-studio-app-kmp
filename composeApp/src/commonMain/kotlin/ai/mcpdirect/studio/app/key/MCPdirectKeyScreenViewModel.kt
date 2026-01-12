@@ -21,17 +21,17 @@ import kotlinx.coroutines.launch
 import kotlin.collections.set
 
 class MCPdirectKeyScreenViewModel: ViewModel() {
-    val toolMakerFilter = MutableStateFlow("")
     val toolMakerCandidateFilter = MutableStateFlow("")
+    val toolMakerFilter = MutableStateFlow("")
     var accessKey by mutableStateOf<AIPortToolAccessKey?>(null)
         private set
     private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
     val toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
-    private val _toolMarkerIds = MutableStateFlow(mutableSetOf<Long>())
-    val toolMarkers : StateFlow<List<AIPortToolMaker>> = combine(
+    private val _toolMarkerCandidateIds = MutableStateFlow(mutableSetOf<Long>())
+    val toolMarkerCandidates : StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
-        _toolMarkerIds,
-        toolMakerFilter
+        _toolMarkerCandidateIds,
+        toolMakerCandidateFilter
     ){ makers,ids,filter ->
         makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase()))&&it.id in ids }.toList()
     }.stateIn(
@@ -39,9 +39,9 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    val toolMarkerCandidates : StateFlow<List<AIPortToolMaker>> = combine(
+    val toolMarkers : StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
-        _toolMarkerIds,
+        _toolMarkerCandidateIds,
         toolMakerFilter
     ){ makers,ids,filter ->
         makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase()))&& it.id !in ids }.toList()
@@ -55,7 +55,7 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
             it.forEach {
                 _toolPermissions[it.toolId]=it
                 toolPermissions[it.toolId]= it.copy()
-                _toolMarkerIds.update { set->
+                _toolMarkerCandidateIds.update { set->
                     set.toMutableSet().apply { add(it.makerId) }
                 }
             }
@@ -66,7 +66,7 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         if(key!=null&&key.id>Int.MAX_VALUE) {
             _toolPermissions.clear()
             toolPermissions.clear()
-            _toolMarkerIds.update { set->
+            _toolMarkerCandidateIds.update { set->
                 set.toMutableSet().apply { clear() }
             }
             viewModelScope.launch {
@@ -82,10 +82,20 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
 
     fun resetAllPermissions(){
         toolPermissions.clear()
-        _toolMarkerIds.value.clear()
+        _toolMarkerCandidateIds.value.clear()
         for(p in _toolPermissions.values){
             toolPermissions[p.toolId] = p.copy()
-            _toolMarkerIds.value.add(p.makerId)
+            _toolMarkerCandidateIds.value.add(p.makerId)
+        }
+    }
+    fun nominate(toolMaker: AIPortToolMaker) {
+        _toolMarkerCandidateIds.update { set->
+            set.toMutableSet().apply { add(toolMaker.id) }
+        }
+    }
+    fun cancelNomination(toolMaker: AIPortToolMaker) {
+        _toolMarkerCandidateIds.update { set->
+            set.toMutableSet().apply { remove(toolMaker.id) }
         }
     }
 }

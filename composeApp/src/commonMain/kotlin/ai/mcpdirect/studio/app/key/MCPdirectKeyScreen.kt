@@ -4,14 +4,11 @@ import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.key.component.MCPdirectKeysComponent
-import ai.mcpdirect.studio.app.key.view.MCPServerCandidateView
-import ai.mcpdirect.studio.app.key.view.MCPServerToolPermissionView
-import ai.mcpdirect.studio.app.key.view.MCPdirectKeyToolPermissionView
+import ai.mcpdirect.studio.app.key.view.ToolMakerPermissionView
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,8 +50,8 @@ fun MCPdirectKeyScreen(
     paddingValues: PaddingValues = PaddingValues(),
 ){
     val viewModel by remember {mutableStateOf(MCPdirectKeyScreenViewModel())}
-    val toolMakers by viewModel.toolMarkers.collectAsState()
-    val toolMakerCandidates by viewModel.toolMarkerCandidates.collectAsState()
+    val toolMakers by viewModel.toolMarkerCandidates.collectAsState()
+    val toolMakerCandidates by viewModel.toolMarkers.collectAsState()
 //    val accessKeysViewModel by remember {mutableStateOf(MCPdirectKeysComponentViewModel())}
 //    val toolPermissionsViewModel by remember {mutableStateOf(MCPdirectKeyToolPermissionViewModel())}
 //    val mcpServersViewModel by remember { mutableStateOf(MCPServersComponentViewModel()) }
@@ -93,20 +89,20 @@ fun MCPdirectKeyScreen(
                         ).clip(ButtonDefaults.shape),
                         verticalAlignment = Alignment.CenterVertically,
                     ){
-                        var value by remember { mutableStateOf("") }
+                        val value by viewModel.toolMakerCandidateFilter.collectAsState()
                         Icon(painterResource(Res.drawable.search), contentDescription = null,
                             Modifier.padding(12.dp))
                         BasicTextField(
                             modifier=Modifier.weight(1f).padding(end = 4.dp),
                             value = value,
                             onValueChange = {
-                                value = it
-                                viewModel.toolMakerFilter.value = it
+//                                value = it
+                                viewModel.toolMakerCandidateFilter.value = it
                             },
                         )
                         if(value.isNotEmpty()) IconButton(onClick = {
-                            value=""
-                            viewModel.toolMakerFilter.value = ""
+//                            value=""
+                            viewModel.toolMakerCandidateFilter.value = ""
                         }){
                             Icon(painterResource(Res.drawable.close), contentDescription = null)
                         }
@@ -114,7 +110,9 @@ fun MCPdirectKeyScreen(
                 }
                 LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(toolMakers){ toolMaker->
-                        MCPServerToolPermissionView(toolMaker)
+                        ToolMakerPermissionView(
+                            toolMaker,viewModel.toolPermissions
+                        )
                     }
                 }
 //                MCPdirectKeyToolPermissionView(key, Modifier.padding(horizontal = 16.dp))
@@ -133,19 +131,19 @@ fun MCPdirectKeyScreen(
                     ).clip(ButtonDefaults.shape),
                     verticalAlignment = Alignment.CenterVertically,
                 ){
-                    var value by remember { mutableStateOf("") }
+                    val value by viewModel.toolMakerFilter.collectAsState()
                     Icon(painterResource(Res.drawable.search), contentDescription = null,
                         Modifier.padding(12.dp))
                     BasicTextField(
                         modifier=Modifier.weight(1f).padding(end = 4.dp),
                         value = value,
                         onValueChange = {
-                            value = it
+//                            value = it
                             viewModel.toolMakerFilter.value = it
                         },
                     )
                     if(value.isNotEmpty()) IconButton(onClick = {
-                        value=""
+//                        value=""
                         viewModel.toolMakerFilter.value = ""
                     }){
                         Icon(painterResource(Res.drawable.close), contentDescription = null)
@@ -176,7 +174,7 @@ fun MCPdirectKeyScreen(
 //                                    else viewModel.unselectToolMaker(toolMaker)
 //                                },
 //                            )
-                                IconButton(onClick = {}){
+                                IconButton(onClick = {viewModel.nominate(toolMaker)}){
                                     Icon(painterResource(Res.drawable.shield_toggle), contentDescription = null)
                                 }
                             }
