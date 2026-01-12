@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced tool permission management with search and expand/collapse functionality
+
+### Details
+- Implemented MCPServerToolPermissionView with expand/collapse functionality
+- Added search capability to tool permission management
+- Enhanced MCPdirectKeyToolPermissionView with improved UI layout
+- Added MCPServerToolPermissionViewModel for server tool permission state management
+- Implemented expand/collapse icons (expand_all, collapse_all) for tool makers
+- Added search functionality with clear button in tool permission view
+- Enhanced UI with improved padding and layout in permission views
+- Added flow row layout for displaying tools in permission management
+- Improved component organization with better separation of concerns
+- Added badge indicator for local tool agent in permission views
+
+## [January 2, 2026]
+### Summary
 Enhanced key management with tool permissions and improved UI components
 
 ### Details

@@ -1,4 +1,4 @@
-package ai.mcpdirect.studio.app.mcp.component
+package ai.mcpdirect.studio.app.key.view
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
@@ -28,9 +28,10 @@ import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.close
 import mcpdirectstudioapp.composeapp.generated.resources.search
 import mcpdirectstudioapp.composeapp.generated.resources.search_off
+import mcpdirectstudioapp.composeapp.generated.resources.shield_toggle
 import org.jetbrains.compose.resources.painterResource
 
-class MCPServersComponentViewModel : ViewModel() {
+class MCPServerCandidatesViewModel : ViewModel() {
     val toolMakerFilter = MutableStateFlow("")
     val toolMakers: StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
@@ -56,12 +57,12 @@ class MCPServersComponentViewModel : ViewModel() {
 }
 
 @Composable
-fun MCPServersComponent(
-    multiSelectable: Boolean = false,
+fun MCPServerCandidateView(
+//    multiSelectable: Boolean = false,
 //    viewModel: MCPServersComponentViewModel,
     modifier: Modifier = Modifier
 ){
-    val viewModel by remember { mutableStateOf(MCPServersComponentViewModel()) }
+    val viewModel by remember { mutableStateOf(MCPServerCandidatesViewModel()) }
     val toolMakers by viewModel.toolMakers.collectAsState()
     Column(modifier = modifier) {
         StudioActionBar(
@@ -106,19 +107,22 @@ fun MCPServersComponent(
             LazyColumn {
                 items(toolMakers){ toolMaker ->
                     StudioListItem(
-                        selected = viewModel.selectedToolMaker(toolMaker),
-                        modifier = Modifier.clickable {
-                            viewModel.selectToolMaker(toolMaker,multiSelectable)
-                        },
+//                        selected = viewModel.selectedToolMaker(toolMaker),
+//                        modifier = Modifier.clickable {
+//                            viewModel.selectToolMaker(toolMaker,multiSelectable)
+//                        },
                         headlineContent = { Text(toolMaker.name, style = MaterialTheme.typography.bodyMedium) },
                         trailingContent = {
-                            if(multiSelectable)Checkbox(
-                                checked = viewModel.selectedToolMaker(toolMaker),
-                                onCheckedChange = { checked->
-                                    if(checked) viewModel.selectToolMaker(toolMaker,multiSelectable)
-                                    else viewModel.unselectToolMaker(toolMaker)
-                                },
-                            )
+//                            if(multiSelectable)Checkbox(
+//                                checked = viewModel.selectedToolMaker(toolMaker),
+//                                onCheckedChange = { checked->
+//                                    if(checked) viewModel.selectToolMaker(toolMaker,multiSelectable)
+//                                    else viewModel.unselectToolMaker(toolMaker)
+//                                },
+//                            )
+                            IconButton(onClick = {}){
+                                Icon(painterResource(Res.drawable.shield_toggle), contentDescription = null)
+                            }
                         }
                     )
                 }

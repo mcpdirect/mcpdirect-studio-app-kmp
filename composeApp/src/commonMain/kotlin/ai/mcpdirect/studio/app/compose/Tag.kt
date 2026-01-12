@@ -35,11 +35,6 @@ fun Tag(
                 backgroundColor,
                 ButtonDefaults.shape
             )
-//            .border(
-//                width = 1.dp,
-//                color = contentColor,
-//                shape = ButtonDefaults.shape
-//            )
             .clip(ButtonDefaults.shape)
             .clickable(onToggleChanged!=null) {
                 onToggleChanged?.invoke(!toggle)

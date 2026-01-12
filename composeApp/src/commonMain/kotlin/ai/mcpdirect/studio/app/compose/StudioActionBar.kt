@@ -1,7 +1,9 @@
 package ai.mcpdirect.studio.app.compose
 
+import ai.mcpdirect.studio.app.model.repository.ToolRepository.toolMaker
 import ai.mcpdirect.studio.app.theme.purple.PurpleTheme
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -22,8 +24,8 @@ fun StudioActionBar(
     navigationIcon: @Composable ((() -> Unit))? = null,
     actions: @Composable (RowScope.() -> Unit)? = null
 ){
-    val start = if(navigationIcon!=null) 4.dp else 8.dp
-    Row(Modifier.fillMaxWidth().height(48.dp).padding(start = start, end = 4.dp).fillMaxWidth(),
+//    val start = if(navigationIcon!=null) 4.dp else 8.dp
+    Row(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 8.dp).fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically) {
         navigationIcon?.invoke()
         title?.let {
@@ -31,7 +33,11 @@ fun StudioActionBar(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold)
         }
-        Spacer(Modifier.weight(1.0f))
-        actions?.let { it() }
+
+        actions?.let { Row(
+            Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+        ){it()} }
     }
 }

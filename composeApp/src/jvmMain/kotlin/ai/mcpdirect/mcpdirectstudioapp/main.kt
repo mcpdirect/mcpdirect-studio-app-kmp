@@ -51,7 +51,6 @@ package ai.mcpdirect.mcpdirectstudioapp
 
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.UIState
-import ai.mcpdirect.studio.app.agent.MyStudioScreen
 import ai.mcpdirect.studio.app.agent.ToolAgentScreen
 import ai.mcpdirect.studio.app.auth.*
 import ai.mcpdirect.studio.app.compose.Carousel
@@ -59,9 +58,7 @@ import ai.mcpdirect.studio.app.compose.CarouselSlide
 import ai.mcpdirect.studio.app.dashboard.DashboardScreen
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeScreen
-import ai.mcpdirect.studio.app.key.MCPdirectKeysScreen
-import ai.mcpdirect.studio.app.mcpkey.MCPAccessKeyScreen
-import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.key.MCPdirectKeyScreen
 import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
@@ -73,10 +70,8 @@ import ai.mcpdirect.studio.app.tool.MCPToolsScreen
 import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -87,11 +82,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
@@ -99,7 +92,6 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import java.awt.Cursor
 import java.awt.Frame
 import javax.swing.SwingUtilities
@@ -220,7 +212,7 @@ fun main() = application {
 //                                        screen.dialog,
 //                                        paddingValues
 //                                    )
-                                    MCPdirectKeysScreen(
+                                    MCPdirectKeyScreen(
                                         screen.accessKey,
                                         paddingValues
                                     )
