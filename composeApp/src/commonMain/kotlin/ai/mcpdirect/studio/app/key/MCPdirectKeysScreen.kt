@@ -41,7 +41,7 @@ fun MCPdirectKeysScreen(
 ){
 //    val accessKeysViewModel by remember {mutableStateOf(MCPdirectKeysComponentViewModel())}
 //    val toolPermissionsViewModel by remember {mutableStateOf(MCPdirectKeyToolPermissionViewModel())}
-    val mcpServersViewModel by remember { mutableStateOf(MCPServersComponentViewModel()) }
+//    val mcpServersViewModel by remember { mutableStateOf(MCPServersComponentViewModel()) }
     var currentAccessKey by remember { mutableStateOf<AIPortToolAccessKey?>(null) }
 //    LaunchedEffect(currentAccessKey){
 //        toolPermissionsViewModel.accessKey(currentAccessKey)
@@ -67,11 +67,11 @@ fun MCPdirectKeysScreen(
                         Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)
                     }
                 }
-                MCPdirectKeyToolPermissionView(key)
+                MCPdirectKeyToolPermissionView(key, Modifier.padding(horizontal = 16.dp))
             }
         }
-        OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-            MCPServersComponent(true, viewModel = mcpServersViewModel)
-        }
+//        OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
+//            MCPServersComponent(true, viewModel = mcpServersViewModel)
+//        }
     }
 }

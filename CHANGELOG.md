@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced key management with tool permissions and improved UI components
+
+### Details
+- Implemented MCPdirectKeyToolPermissionView for managing tool permissions
+- Enhanced MCPdirectKeysScreen with tool permission management functionality
+- Added MCPdirectKeyToolPermissionViewModel for permission state management
+- Updated MCPdirectKeysComponent with callback for access key changes
+- Enhanced UI with improved component organization and navigation
+- Added StudioActionBar and IconButton for tool permission management
+- Improved access key selection workflow with callback handling
+- Enhanced key generation with proper state updates after creation
+- Improved component modularity with better separation of concerns
+- Enhanced permission loading with proper state management
+
+## [January 2, 2026]
+### Summary
 Refactored components into widget and component modules with enhanced functionality
 
 ### Details
