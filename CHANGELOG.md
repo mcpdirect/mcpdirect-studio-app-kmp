@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced permission management with improved tool selection and state handling
+
+### Details
+- Enhanced MCPdirectKeyScreenViewModel with improved permission state management
+- Added virtual tool permission handling with separate counters
+- Enhanced ToolMakerPermissionView with callback for permission changes
+- Improved permission selection with accurate status tracking
+- Enhanced UI with better permission count display in headers
+- Added permit function for managing tool permissions
+- Improved state management for tool and virtual tool permissions
+- Enhanced permission saving functionality with change detection
+- Improved UI with better visual feedback for permission states
+- Enhanced tool selection with accurate status indicators
+
+## [January 2, 2026]
+### Summary
 Enhanced tool permission UI with improved tool selection and counts
 
 ### Details

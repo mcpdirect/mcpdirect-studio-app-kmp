@@ -164,7 +164,10 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
                 permission.makerId = tool.makerId
                 permission.agentId = tool.agentId
                 permission.accessKeyId = accessKey.id
-                toolPermissions[permission.toolId]=permission
+//                toolPermissions[permission.toolId]=permission
+                toolPermissions.toMutableMap().apply {
+                    put(permission.toolId,permission)
+                }
             }
         }
     }
@@ -220,7 +223,10 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
                         permission.makerId = tool.makerId
                         permission.agentId = tool.agentId
                         permission.accessKeyId = accessKey.id
-                        toolPermissions[permission.toolId] = permission
+//                toolPermissions[permission.toolId]=permission
+                        toolPermissions.toMutableMap().apply {
+                            put(permission.toolId,permission)
+                        }
                         toolPermissionCount++
                     }
                 }

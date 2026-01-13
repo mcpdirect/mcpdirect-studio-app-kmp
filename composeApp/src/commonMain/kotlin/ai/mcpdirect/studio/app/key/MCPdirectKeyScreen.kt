@@ -2,9 +2,9 @@ package ai.mcpdirect.studio.app.key
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
-import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.key.component.MCPdirectKeysComponent
 import ai.mcpdirect.studio.app.key.view.ToolMakerPermissionView
+import ai.mcpdirect.studio.app.key.view.ToolMakerPermissionViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +33,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +43,6 @@ import mcpdirectstudioapp.composeapp.generated.resources.move_left
 import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 import mcpdirectstudioapp.composeapp.generated.resources.search
 import mcpdirectstudioapp.composeapp.generated.resources.search_off
-import mcpdirectstudioapp.composeapp.generated.resources.shield_toggle
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -53,6 +51,7 @@ fun MCPdirectKeyScreen(
     paddingValues: PaddingValues = PaddingValues(),
 ){
     val viewModel by remember {mutableStateOf(MCPdirectKeyScreenViewModel())}
+    val toolPermissionViewModels = remember { mutableMapOf<Long, ToolMakerPermissionViewModel>() }
     val toolMakers by viewModel.toolMarkerCandidates.collectAsState()
     val toolMakerCandidates by viewModel.toolMarkers.collectAsState()
 //    val accessKeysViewModel by remember {mutableStateOf(MCPdirectKeysComponentViewModel())}
@@ -78,7 +77,7 @@ fun MCPdirectKeyScreen(
         Card(Modifier.weight(2f).fillMaxHeight()) {
             viewModel.accessKey?.let { key ->
                 StudioActionBar(
-                    "Tool Permissions (${viewModel.toolPermissionCount})"
+                    "Tool Permissions (${viewModel.toolPermissionCount})/(${viewModel.toolPermissions.size})"
                 ){
                     IconButton(onClick = {}){
                         Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)
@@ -113,8 +112,15 @@ fun MCPdirectKeyScreen(
                 }
                 LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(toolMakers){ toolMaker->
+                        var toolPermissionViewModel = toolPermissionViewModels[toolMaker.id]
+                        if(toolPermissionViewModel == null) {
+                            toolPermissionViewModel = ToolMakerPermissionViewModel()
+                            toolPermissionViewModel.toolMaker(toolMaker)
+                            toolPermissionViewModel.checkedToolCount = viewModel.toolPermissions.values.count{it.status>0&&it.makerId == toolMaker.id}
+                            toolPermissionViewModels[toolMaker.id] = toolPermissionViewModel
+                        }
                         ToolMakerPermissionView(
-                            toolMaker,viewModel.toolPermissions
+                            toolMaker,viewModel.toolPermissions,toolPermissionViewModel
                         ){ permitted, tools ->
                             viewModel.permit(permitted, tools)
                         }

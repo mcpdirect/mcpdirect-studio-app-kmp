@@ -13,7 +13,6 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -39,6 +38,8 @@ class ToolMakerPermissionViewModel : ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+    var checkedTools = mutableStateSetOf<Long>()
+    var checkedToolCount by mutableStateOf(0)
     fun toolMaker(maker: AIPortToolMaker){
         toolMaker.value = maker
         viewModelScope.launch {
@@ -55,21 +56,22 @@ class ToolMakerPermissionViewModel : ViewModel() {
 fun ToolMakerPermissionView(
     toolMaker: AIPortToolMaker,
     toolPermissions: Map<Long,AIPortToolPermission>,
+    viewModel: ToolMakerPermissionViewModel,
     onPermissionsChange: (checked:Boolean,tools:List<AIPortTool>)->Unit,
 ){
-    val viewModel by rememberSaveable(toolMaker.id) { mutableStateOf(ToolMakerPermissionViewModel()) }
+//    val viewModel by rememberSaveable(toolMaker.id) { mutableStateOf(ToolMakerPermissionViewModel()) }
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
     val tools by viewModel.tools.collectAsState()
-    var checkedTools by remember { mutableStateOf(0) }
-    LaunchedEffect(toolMaker){
-        viewModel.toolMaker(toolMaker)
-    }
-    LaunchedEffect(toolPermissions) {
-        checkedTools = toolPermissions.values.count{it.status>0&&it.makerId == toolMaker.id}
-    }
+//    var checkedTools by remember { mutableStateOf(0) }
+//    LaunchedEffect(toolMaker){
+//        viewModel.toolMaker(toolMaker)
+//    }
+//    LaunchedEffect(toolPermissions) {
+//        viewModel.checkedTools = toolPermissions.values.count{it.status>0&&it.makerId == toolMaker.id}
+//    }
     OutlinedCard(Modifier.fillMaxWidth()) {
-        StudioActionBar("${toolMaker.name} ($checkedTools/${tools.size})", navigationIcon = {
-            Checkbox(checked = checkedTools>0,onCheckedChange = {}, Modifier.size(32.dp))
+        StudioActionBar("${toolMaker.name} (${viewModel.checkedToolCount}/${tools.size})", navigationIcon = {
+            Checkbox(checked = viewModel.checkedToolCount>0,onCheckedChange = {}, Modifier.size(32.dp))
         }) {
 //            Icon(painterResource(Res.drawable.shield_toggle),contentDescription = null)
             Spacer(Modifier.weight(1f))
@@ -88,7 +90,7 @@ fun ToolMakerPermissionView(
         ){
             tools.forEach { tool ->
                 val toolPermission = toolPermissions[tool.id]
-                var checked by remember { mutableStateOf(toolPermission?.status?.let { it>0 }?:false) }
+                var checked by remember { mutableStateOf(tool.id in viewModel.checkedTools || toolPermission?.status?.let { it>0 }?:false) }
                 val interactionSource = remember { MutableInteractionSource() }
                 val isHovered by interactionSource.collectIsHoveredAsState()
 //                OutlinedButton()
@@ -101,7 +103,13 @@ fun ToolMakerPermissionView(
 //                    elevation = if(checked) ButtonDefaults.text() else null,
                     onClick = {
                         checked=!checked
-                        if(checked) checkedTools++ else checkedTools--
+                        if(checked) {
+                            viewModel.checkedToolCount++
+                            viewModel.checkedTools.add(tool.id)
+                        } else {
+                            viewModel.checkedToolCount--
+                            viewModel.checkedTools.remove(tool.id)
+                        }
                         onPermissionsChange(checked,listOf(tool)) },
                     contentPadding = PaddingValues(0.dp),
                 ) {
