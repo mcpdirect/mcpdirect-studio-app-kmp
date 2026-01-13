@@ -1,9 +1,13 @@
 package ai.mcpdirect.studio.app.key
 
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
+import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -27,6 +31,14 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         private set
     private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
     val toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
+    var toolPermissionCount by mutableStateOf(0)
+        private set
+
+    private val _virtualToolPermissions = mutableStateMapOf<Long, AIPortVirtualToolPermission>()
+    val virtualToolPermissions = mutableStateMapOf<Long, AIPortVirtualToolPermission>()
+    var virtualToolPermissionCount by mutableStateOf(0)
+        private set
+
     private val _toolMarkerCandidateIds = MutableStateFlow(mutableSetOf<Long>())
     val toolMarkerCandidates : StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
@@ -50,13 +62,22 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    fun <T : AIPortToolPermission> onLoadToolPermissions(resp: AIPortServiceResponse<List<T>>) {
-        if (resp.successful()) resp.data?.let {
-            it.forEach {
-                _toolPermissions[it.toolId]=it
-                toolPermissions[it.toolId]= it.copy()
-                _toolMarkerCandidateIds.update { set->
-                    set.toMutableSet().apply { add(it.makerId) }
+    private fun <T : AIPortToolPermission> onLoadToolPermissions(resp: AIPortServiceResponse<List<T>>) {
+        if (resp.successful()) resp.data?.let { data->
+            data.forEach {
+                if(it.makerId>0) {
+                    if (it is AIPortVirtualToolPermission) {
+                        _virtualToolPermissions[it.toolId] = it
+                        virtualToolPermissions[it.toolId] = it.copy()
+                        if(it.status>0) virtualToolPermissionCount++
+                    } else {
+                        _toolPermissions[it.toolId] = it
+                        toolPermissions[it.toolId] = it.copy()
+                        if (it.status > 0) toolPermissionCount++
+                    }
+                    _toolMarkerCandidateIds.update { set ->
+                        set.toMutableSet().apply { add(it.makerId) }
+                    }
                 }
             }
         }
@@ -66,26 +87,21 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         if(key!=null&&key.id>Int.MAX_VALUE) {
             _toolPermissions.clear()
             toolPermissions.clear()
+            toolPermissionCount = 0
+            _virtualToolPermissions.clear()
+            virtualToolPermissions.clear()
+            virtualToolPermissionCount = 0
             _toolMarkerCandidateIds.update { set->
                 set.toMutableSet().apply { clear() }
             }
             viewModelScope.launch {
-                ToolRepository.loadToolPermissions(key) {
-                    onLoadToolPermissions(it)
+                ToolRepository.loadToolPermissions(key) { resp->
+                    onLoadToolPermissions(resp)
                 }
-                ToolRepository.loadVirtualToolPermissions(key) {
-                    onLoadToolPermissions(it)
+                ToolRepository.loadVirtualToolPermissions(key) { resp->
+                    onLoadToolPermissions(resp)
                 }
             }
-        }
-    }
-
-    fun resetAllPermissions(){
-        toolPermissions.clear()
-        _toolMarkerCandidateIds.value.clear()
-        for(p in _toolPermissions.values){
-            toolPermissions[p.toolId] = p.copy()
-            _toolMarkerCandidateIds.value.add(p.makerId)
         }
     }
     fun nominate(toolMaker: AIPortToolMaker) {
@@ -96,6 +112,192 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
     fun cancelNomination(toolMaker: AIPortToolMaker) {
         _toolMarkerCandidateIds.update { set->
             set.toMutableSet().apply { remove(toolMaker.id) }
+        }
+    }
+
+    fun selectTool(selected: Boolean, tool: AIPortVirtualTool){
+        accessKey?.let { accessKey ->
+            var permission = virtualToolPermissions.remove(tool.toolId)
+            if(permission!=null){
+                if(permission.status==Short.MAX_VALUE.toInt()){
+//                virtualToolPermissions.remove(tool.toolId)
+                }else {
+                    if (selected) {
+                        permission.status = 1
+                    } else {
+                        permission.status = 0
+                    }
+                    virtualToolPermissions[permission.originalToolId]=permission
+                }
+            }else if(selected) {
+                permission = AIPortVirtualToolPermission()
+                permission.toolId = tool.id
+                permission.originalToolId = tool.toolId
+                permission.status = Short.MAX_VALUE.toInt()
+                permission.makerId = tool.makerId
+                permission.agentId = 0
+                permission.accessKeyId = accessKey.id
+                virtualToolPermissions[permission.originalToolId]=permission
+            }
+        }
+    }
+
+    fun selectTool(selected: Boolean, tool: AIPortTool){
+//        var permission = toolPermissions[tool.id]
+        accessKey?.let { accessKey ->
+            var permission =  toolPermissions.remove(tool.id)
+            if(permission!=null){
+                if(permission.status==Short.MAX_VALUE.toInt()){
+//                toolPermissions.remove(tool.id)
+                }else {
+                    if (selected) {
+                        permission.status = 1
+                    } else {
+                        permission.status = 0
+                    }
+                    toolPermissions[permission.toolId]=permission
+                }
+            } else if(selected) {
+                permission = AIPortToolPermission()
+                permission.toolId = tool.id
+                permission.status = Short.MAX_VALUE.toInt()
+                permission.makerId = tool.makerId
+                permission.agentId = tool.agentId
+                permission.accessKeyId = accessKey.id
+                toolPermissions[permission.toolId]=permission
+            }
+        }
+    }
+    fun permit(permitted: Boolean, tools: List<AIPortTool>){
+//        var permission = toolPermissions[tool.id]
+        accessKey?.let { accessKey ->
+            tools.forEach { tool ->
+                if(tool is AIPortVirtualTool){
+                    var permission = virtualToolPermissions.remove(tool.toolId)
+                    if(permission!=null){
+                        if(permission.status==Short.MAX_VALUE.toInt()){
+                            virtualToolPermissionCount--
+                        }else {
+                            if (permitted) {
+                                permission.status = 1
+                                virtualToolPermissionCount++
+                            } else {
+                                permission.status = 0
+                                virtualToolPermissionCount--
+                            }
+                            virtualToolPermissions[permission.originalToolId]=permission
+                        }
+                    }else if(permitted) {
+                        permission = AIPortVirtualToolPermission()
+                        permission.toolId = tool.id
+                        permission.originalToolId = tool.toolId
+                        permission.status = Short.MAX_VALUE.toInt()
+                        permission.makerId = tool.makerId
+                        permission.agentId = 0
+                        permission.accessKeyId = accessKey.id
+                        virtualToolPermissions[permission.originalToolId]=permission
+                        virtualToolPermissionCount++
+                    }
+                }else {
+                    var permission = toolPermissions.remove(tool.id)
+                    if (permission != null) {
+                        if (permission.status == Short.MAX_VALUE.toInt()) {
+                            toolPermissionCount--
+                        } else {
+                            if (permitted) {
+                                permission.status = 1
+                                toolPermissionCount++
+                            } else {
+                                permission.status = 0
+                                toolPermissionCount--
+                            }
+                            toolPermissions[permission.toolId] = permission
+                        }
+                    } else if (permitted) {
+                        permission = AIPortToolPermission()
+                        permission.toolId = tool.id
+                        permission.status = Short.MAX_VALUE.toInt()
+                        permission.makerId = tool.makerId
+                        permission.agentId = tool.agentId
+                        permission.accessKeyId = accessKey.id
+                        toolPermissions[permission.toolId] = permission
+                        toolPermissionCount++
+                    }
+                }
+            }
+        }
+    }
+
+    fun resetPermissions(toolMaker: AIPortToolMaker){
+        if(toolMaker.type==0){
+            for(p in virtualToolPermissions.values){
+                if(p.makerId==toolMaker.id){
+                    virtualToolPermissions.remove(p.originalToolId)
+                }
+            }
+            for(p in _virtualToolPermissions.values){
+                if(p.makerId==toolMaker.id) {
+                    virtualToolPermissions[p.originalToolId] = p.copy()
+                }
+            }
+        }else{
+            for(p in toolPermissions.values){
+                if(p.makerId==toolMaker.id){
+                    toolPermissions.remove(p.toolId)
+                }
+            }
+            for(p in _toolPermissions.values){
+                if(p.makerId==toolMaker.id) {
+                    toolPermissions[p.toolId] = p.copy()
+                }
+            }
+        }
+    }
+    fun resetAllPermissions(){
+        toolPermissions.clear()
+        virtualToolPermissions.clear()
+        _toolMarkerCandidateIds.value.clear()
+        for(p in _toolPermissions.values){
+            toolPermissions[p.toolId] = p.copy()
+            _toolMarkerCandidateIds.value.add(p.makerId)
+        }
+        for(p in _virtualToolPermissions.values){
+            virtualToolPermissions[p.toolId] = p.copy()
+            _toolMarkerCandidateIds.value.add(p.makerId)
+        }
+    }
+    fun permissionsChanged():Boolean{
+        if(virtualToolPermissions.size!=_virtualToolPermissions.size||
+            toolPermissions.size!=_toolPermissions.size){
+            return true;
+        }
+        for(v in toolPermissions.values){
+            val p = _toolPermissions[v.toolId]
+            if(p==null||p.status!=v.status){
+                return true;
+            }
+        }
+        for(v in virtualToolPermissions.values){
+            val p = _virtualToolPermissions[v.originalToolId]
+            if(p==null||p.status!=v.status){
+                return true;
+            }
+        }
+        return false
+    }
+    fun savePermissions(){
+        if(permissionsChanged()) {
+            viewModelScope.launch {
+                getPlatform().grantToolPermission(
+                    toolPermissions.values.toList(),
+                    virtualToolPermissions.values.toList()
+                ){(code, message, data) ->
+//                    if(code==0&&data!=null){
+//                        mcpAccessKeyViewModel.toolPermissionMakerSummary.clear()
+//                        mcpAccessKeyViewModel.toolPermissionMakerSummary.addAll(data)
+//                    }
+                }
+            }
         }
     }
 }

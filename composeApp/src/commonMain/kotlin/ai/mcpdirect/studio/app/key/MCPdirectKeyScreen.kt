@@ -78,7 +78,7 @@ fun MCPdirectKeyScreen(
         Card(Modifier.weight(2f).fillMaxHeight()) {
             viewModel.accessKey?.let { key ->
                 StudioActionBar(
-                    "Tool Permissions"
+                    "Tool Permissions (${viewModel.toolPermissionCount})"
                 ){
                     IconButton(onClick = {}){
                         Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)
@@ -115,7 +115,9 @@ fun MCPdirectKeyScreen(
                     items(toolMakers){ toolMaker->
                         ToolMakerPermissionView(
                             toolMaker,viewModel.toolPermissions
-                        )
+                        ){ permitted, tools ->
+                            viewModel.permit(permitted, tools)
+                        }
                     }
                 }
 //                MCPdirectKeyToolPermissionView(key, Modifier.padding(horizontal = 16.dp))

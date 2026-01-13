@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced tool permission UI with improved tool selection and counts
+
+### Details
+- Enhanced ToolMakerPermissionView with tool count display in header
+- Improved checkbox selection with accurate checked state based on permissions
+- Enhanced UI with better visual feedback for selected tools
+- Improved button styling with outlined borders for unselected tools
+- Enhanced tool permission handling with accurate count display
+- Improved UI consistency with better component organization
+- Enhanced visual feedback for tool selection states
+- Improved permission management with better state tracking
+- Enhanced UI with better visual distinction between selected and unselected tools
+- Improved tool maker permission view with better layout and organization
+
+## [January 2, 2026]
+### Summary
 Enhanced UI with improved nomination workflow and tool permission handling
 
 ### Details

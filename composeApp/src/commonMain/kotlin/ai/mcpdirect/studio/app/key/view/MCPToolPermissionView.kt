@@ -1,65 +1,27 @@
 package ai.mcpdirect.studio.app.key.view
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
-import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
-import androidx.compose.foundation.background
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Badge
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TooltipDefaults
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import mcpdirectstudioapp.composeapp.generated.resources.Res
-import mcpdirectstudioapp.composeapp.generated.resources.close
-import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
-import mcpdirectstudioapp.composeapp.generated.resources.description
-import mcpdirectstudioapp.composeapp.generated.resources.expand_all
-import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
-import mcpdirectstudioapp.composeapp.generated.resources.search
-import mcpdirectstudioapp.composeapp.generated.resources.shield_toggle
+import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
 class ToolMakerPermissionViewModel : ViewModel() {
@@ -80,7 +42,7 @@ class ToolMakerPermissionViewModel : ViewModel() {
     fun toolMaker(maker: AIPortToolMaker){
         toolMaker.value = maker
         viewModelScope.launch {
-            if(maker.agentId>0) ToolRepository.loadTools(maker.userId,maker)
+            if(maker.type>0) ToolRepository.loadTools(maker.userId,maker)
             else ToolRepository.loadVirtualTools(maker.userId,maker)
             StudioRepository.toolAgent(maker.agentId){
                 if(it.successful()) it.data?.let { toolAgent = it }
@@ -92,7 +54,8 @@ class ToolMakerPermissionViewModel : ViewModel() {
 @Composable
 fun ToolMakerPermissionView(
     toolMaker: AIPortToolMaker,
-    toolPermissions: Map<Long,AIPortToolPermission>
+    toolPermissions: Map<Long,AIPortToolPermission>,
+    onPermissionsChange: (checked:Boolean,tools:List<AIPortTool>)->Unit,
 ){
     val viewModel by rememberSaveable(toolMaker.id) { mutableStateOf(ToolMakerPermissionViewModel()) }
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
@@ -102,7 +65,7 @@ fun ToolMakerPermissionView(
         viewModel.toolMaker(toolMaker)
     }
     LaunchedEffect(toolPermissions) {
-        checkedTools = toolPermissions.values.count{it.makerId == toolMaker.id}
+        checkedTools = toolPermissions.values.count{it.status>0&&it.makerId == toolMaker.id}
     }
     OutlinedCard(Modifier.fillMaxWidth()) {
         StudioActionBar("${toolMaker.name} ($checkedTools/${tools.size})", navigationIcon = {
@@ -124,7 +87,8 @@ fun ToolMakerPermissionView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ){
             tools.forEach { tool ->
-                var checked by remember { mutableStateOf(toolPermissions.containsKey(tool.id)) }
+                val toolPermission = toolPermissions[tool.id]
+                var checked by remember { mutableStateOf(toolPermission?.status?.let { it>0 }?:false) }
                 val interactionSource = remember { MutableInteractionSource() }
                 val isHovered by interactionSource.collectIsHoveredAsState()
 //                OutlinedButton()
@@ -135,7 +99,10 @@ fun ToolMakerPermissionView(
                     colors = if(checked) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors(),
                     border = ButtonDefaults.outlinedButtonBorder(!checked),
 //                    elevation = if(checked) ButtonDefaults.text() else null,
-                    onClick = {checked=!checked},
+                    onClick = {
+                        checked=!checked
+                        if(checked) checkedTools++ else checkedTools--
+                        onPermissionsChange(checked,listOf(tool)) },
                     contentPadding = PaddingValues(0.dp),
                 ) {
                     Box(contentAlignment = Alignment.CenterEnd) {
