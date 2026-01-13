@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.close
+import mcpdirectstudioapp.composeapp.generated.resources.move_left
 import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 import mcpdirectstudioapp.composeapp.generated.resources.search
 import mcpdirectstudioapp.composeapp.generated.resources.search_off
@@ -158,27 +161,38 @@ fun MCPdirectKeyScreen(
                 )
                 Text("No MCP server found.")
             } else {
-                LazyColumn {
+                LazyColumn(Modifier.padding(start=16.dp,end=16.dp)) {
                     items(toolMakerCandidates){ toolMaker ->
-                        StudioListItem(
-//                        selected = viewModel.selectedToolMaker(toolMaker),
-//                        modifier = Modifier.clickable {
-//                            viewModel.selectToolMaker(toolMaker,multiSelectable)
-//                        },
-                            headlineContent = { Text(toolMaker.name, style = MaterialTheme.typography.bodyMedium) },
-                            trailingContent = {
-//                            if(multiSelectable)Checkbox(
-//                                checked = viewModel.selectedToolMaker(toolMaker),
-//                                onCheckedChange = { checked->
-//                                    if(checked) viewModel.selectToolMaker(toolMaker,multiSelectable)
-//                                    else viewModel.unselectToolMaker(toolMaker)
-//                                },
-//                            )
-                                IconButton(onClick = {viewModel.nominate(toolMaker)}){
-                                    Icon(painterResource(Res.drawable.shield_toggle), contentDescription = null)
-                                }
-                            }
-                        )
+                        TextButton(onClick = {viewModel.nominate(toolMaker)},
+                            contentPadding = PaddingValues(8.dp),
+                            ){
+//                            IconButton(onClick = {viewModel.nominate(toolMaker)}){
+                                Icon(painterResource(Res.drawable.move_left),
+                                    contentDescription = null, Modifier.size(24.dp))
+//                            }
+                            Spacer(Modifier.size(8.dp))
+                            Text(toolMaker.name)
+                        }
+//                        StudioListItem(
+////                        selected = viewModel.selectedToolMaker(toolMaker),
+////                        modifier = Modifier.clickable {
+////                            viewModel.selectToolMaker(toolMaker,multiSelectable)
+////                        },
+//                            headlineContent = { Text(toolMaker.name, style = MaterialTheme.typography.bodyMedium) },
+//                            leadingContent = {
+////                            if(multiSelectable)Checkbox(
+////                                checked = viewModel.selectedToolMaker(toolMaker),
+////                                onCheckedChange = { checked->
+////                                    if(checked) viewModel.selectToolMaker(toolMaker,multiSelectable)
+////                                    else viewModel.unselectToolMaker(toolMaker)
+////                                },
+////                            )
+//                                IconButton(onClick = {viewModel.nominate(toolMaker)}){
+//                                    Icon(painterResource(Res.drawable.move_left),
+//                                        contentDescription = null, Modifier.size(24.dp))
+//                                }
+//                            }
+//                        )
                     }
                 }
             }

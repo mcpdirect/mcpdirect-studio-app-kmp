@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced tool permission management with nomination functionality and improved UI
+
+### Details
+- Implemented nomination functionality for tool makers in key management
+- Enhanced ToolMakerPermissionView with improved permission handling
+- Added functionality to nominate and cancel nominations for tool makers
+- Improved filtering and search capabilities for tool maker candidates
+- Enhanced UI with better component organization and layout
+- Improved state management for tool permissions and candidates
+- Added ToolMakerPermissionViewModel for better permission state handling
+- Enhanced MCPdirectKeyScreen with improved data flow and filtering
+- Improved UI consistency with better spacing and component sizing
+- Enhanced tool selection with improved hover and click behavior
+
+## [January 2, 2026]
+### Summary
 Enhanced key management with improved UI components and server candidate selection
 
 ### Details

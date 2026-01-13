@@ -36,14 +36,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -120,16 +123,20 @@ fun ToolMakerPermissionView(
                 var checked by remember { mutableStateOf(toolPermissions.containsKey(tool.id)) }
                 val interactionSource = remember { MutableInteractionSource() }
                 val isHovered by interactionSource.collectIsHoveredAsState()
+//                OutlinedButton()
+//                TextButton()
                 Button(
                     modifier = Modifier.height(28.dp).hoverable(interactionSource),
-                    shape = if(checked) ButtonDefaults.shape else ButtonDefaults.textShape,
+//                    shape = if(checked) ButtonDefaults.outlinedShape else ButtonDefaults.textShape,
                     colors = if(checked) ButtonDefaults.buttonColors() else ButtonDefaults.textButtonColors(),
-                    elevation = if(checked) ButtonDefaults.buttonElevation() else null,
+//                    border = ButtonDefaults.outlinedButtonBorder(checked),
+//                    elevation = if(checked) ButtonDefaults.text() else null,
                     onClick = {checked=!checked},
                     contentPadding = PaddingValues(0.dp),
                 ) {
                     Box(contentAlignment = Alignment.CenterEnd) {
-                        Text(tool.name, Modifier.padding(horizontal = 8.dp))
+                        Text(tool.name, Modifier.padding(horizontal = 8.dp),
+                            fontWeight = if(checked)FontWeight.Bold else null)
                         if (isHovered) {
                             val colors = TooltipDefaults.richTooltipColors()
                             IconButton(
