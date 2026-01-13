@@ -216,15 +216,31 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
     }
     fun resetAllPermissions(){
         toolPermissions.clear()
+        toolPermissionCount = 0
         virtualToolPermissions.clear()
-        _toolMarkerCandidateIds.value.clear()
+        virtualToolPermissionCount = 0
+        _toolMarkerCandidateIds.update { set->
+            set.toMutableSet().apply {
+                clear()
+            }
+        }
         for(p in _toolPermissions.values){
             toolPermissions[p.toolId] = p.copy()
-            _toolMarkerCandidateIds.value.add(p.makerId)
+            if (p.status > 0) {
+                toolPermissionCount++
+                _toolMarkerCandidateIds.update { set ->
+                    set.toMutableSet().apply { add(p.makerId) }
+                }
+            }
         }
         for(p in _virtualToolPermissions.values){
             virtualToolPermissions[p.toolId] = p.copy()
-            _toolMarkerCandidateIds.value.add(p.makerId)
+            if (p.status > 0) {
+                virtualToolPermissionCount++
+                _toolMarkerCandidateIds.update { set ->
+                    set.toMutableSet().apply { add(p.makerId) }
+                }
+            }
         }
     }
     fun permissionsChanged():Boolean{

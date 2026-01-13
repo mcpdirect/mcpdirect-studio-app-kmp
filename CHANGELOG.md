@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced UI with improved tool maker selection and state synchronization
+
+### Details
+- Enhanced MCPdirectKeyScreen with improved state synchronization for tool maker selection
+- Added LaunchedEffect for proper state updates in tool maker selection
+- Improved tool maker candidate ID flow with proper state management
+- Enhanced UI with better state synchronization for tool maker selection
+- Added toolMarkerCandidateIds state flow for better state management
+- Improved permission loading with proper candidate ID updates
+- Enhanced UI with better state synchronization for tool maker selection
+- Improved tool maker selection with accurate state initialization
+- Enhanced permission management with proper state synchronization
+- Improved UI with better component state management
+
+## [January 2, 2026]
+### Summary
 Enhanced UI with improved tool maker selection and permission management
 
 ### Details

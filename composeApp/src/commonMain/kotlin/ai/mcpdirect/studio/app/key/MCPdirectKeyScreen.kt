@@ -83,7 +83,10 @@ fun MCPdirectKeyScreen(
                 StudioActionBar(
                     "Tool Permissions (${viewModel.toolPermissionCount})"
                 ){
-                    IconButton(onClick = {}){
+                    IconButton(onClick = {
+                        toolPermissionViewModels.clear()
+                        viewModel.resetAllPermissions()
+                    }){
                         Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)
                     }
                 }
