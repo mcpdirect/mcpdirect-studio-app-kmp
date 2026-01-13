@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Renamed ToolMakerPermissionView to GrantToolPermissionView with improved naming consistency
+
+### Details
+- Renamed ToolMakerPermissionView to GrantToolPermissionView for better naming consistency
+- Updated MCPdirectKeyScreen to use GrantToolPermissionView instead of ToolMakerPermissionView
+- Renamed ToolMakerPermissionViewModel to GrantToolPermissionViewModel for consistency
+- Updated imports and references to use new component names
+- Improved naming consistency across the permission management components
+- Enhanced UI with better component organization and naming
+- Improved code maintainability with consistent naming conventions
+- Updated view model references to use new naming convention
+- Enhanced component organization with better naming consistency
+- Improved code readability with consistent naming patterns
+
+## [January 2, 2026]
+### Summary
 Enhanced permission management with improved tool maker and virtual tool handling
 
 ### Details

@@ -140,13 +140,13 @@ fun MCPdirectKeyScreen(
                                 grantViewModel = GrantToolPermissionViewModel()
                                 grantViewModel.toolMaker(toolMaker)
                                 if(toolMaker.type==0){
-                                    grantViewModel.checkedTools(viewModel.virtualToolPermissions)
-                                    grantViewModel.checkedToolCount = viewModel.virtualToolPermissions.values.count {
+                                    grantViewModel.selectTools(viewModel.virtualToolPermissions)
+                                    grantViewModel.selectedToolCount = viewModel.virtualToolPermissions.values.count {
                                         it.status > 0 && it.makerId == toolMaker.id
                                     }
                                 }else {
-                                    grantViewModel.checkedTools(viewModel.toolPermissions)
-                                    grantViewModel.checkedToolCount = viewModel.toolPermissions.values.count {
+                                    grantViewModel.selectTools(viewModel.toolPermissions)
+                                    grantViewModel.selectedToolCount = viewModel.toolPermissions.values.count {
                                         it.status > 0 && it.makerId == toolMaker.id
                                     }
                                 }
@@ -157,8 +157,8 @@ fun MCPdirectKeyScreen(
                                 grantViewModel,
                                 {
                                     viewModel.resetPermissions(toolMaker)
-                                    if(toolMaker.type==0) grantViewModel.checkedTools(viewModel.virtualToolPermissions)
-                                    else grantViewModel.checkedTools(viewModel.toolPermissions)
+                                    if(toolMaker.type==0) grantViewModel.selectTools(viewModel.virtualToolPermissions)
+                                    else grantViewModel.selectTools(viewModel.toolPermissions)
                                 }
                             ){ permitted, tools ->
                                 viewModel.permit(permitted, tools)

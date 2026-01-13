@@ -44,27 +44,27 @@ class GrantToolPermissionViewModel : ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    var checkedTools = MutableStateFlow<Map<Long,Boolean>>(emptyMap())
-    var checkedToolCount by mutableStateOf(0)
-    fun checkedTools(
+    var selectedTools = MutableStateFlow<Map<Long,Boolean>>(emptyMap())
+    var selectedToolCount by mutableStateOf(0)
+    fun selectTools(
         toolPermissions: Map<Long,AIPortToolPermission>
     ){
         toolMaker.value?.let { toolMaker->
-            checkedTools.update { map->
+            selectedTools.update { map->
                 map.toMutableMap().apply {
                     clear()
                 }
             }
-            checkedToolCount = 0
+            selectedToolCount = 0
             toolPermissions.values.forEach {
                 if(it.makerId == toolMaker.id&&it.status>0) {
-                    checkedTools.update { map->
+                    selectedTools.update { map->
                         map.toMutableMap().apply {
                             if(it is AIPortVirtualToolPermission) put(it.originalToolId,true)
                             else put(it.toolId,true)
                         }
                     }
-                    checkedToolCount++
+                    selectedToolCount++
                 }
             }
         }
@@ -91,14 +91,14 @@ fun GrantToolPermissionView(
     val toolMaker by viewModel.toolMaker.collectAsState()
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
     val tools by viewModel.tools.collectAsState()
-    val checkedTools by viewModel.checkedTools.collectAsState()
+    val selectedTools by viewModel.selectedTools.collectAsState()
     OutlinedCard(Modifier.fillMaxWidth()) {
-        StudioActionBar("${toolMaker?.name} (${viewModel.checkedToolCount}/${tools.size})", navigationIcon = {
-            Checkbox(checked = viewModel.checkedToolCount>0,onCheckedChange = {
-                if(it) viewModel.checkedToolCount = tools.size
-                else viewModel.checkedToolCount = 0
+        StudioActionBar("${toolMaker?.name} (${viewModel.selectedToolCount}/${tools.size})", navigationIcon = {
+            Checkbox(checked = viewModel.selectedToolCount>0,onCheckedChange = {
+                if(it) viewModel.selectedToolCount = tools.size
+                else viewModel.selectedToolCount = 0
                 tools.forEach { tool ->
-                    viewModel.checkedTools.update { map ->
+                    viewModel.selectedTools.update { map ->
                         map.toMutableMap().apply {
                             put(tool.id, it)
                         }
@@ -123,7 +123,7 @@ fun GrantToolPermissionView(
         ){
             tools.forEach { tool ->
                 val toolId = if(tool is AIPortVirtualTool) tool.toolId else tool.id
-                var checked = checkedTools[toolId]?:false
+                var checked = selectedTools[toolId]?:false
                 val interactionSource = remember { MutableInteractionSource() }
                 val isHovered by interactionSource.collectIsHoveredAsState()
                 Button(
@@ -133,11 +133,11 @@ fun GrantToolPermissionView(
                     onClick = {
                         checked=!checked
                         if(checked) {
-                            viewModel.checkedToolCount++
+                            viewModel.selectedToolCount++
                         } else {
-                            viewModel.checkedToolCount--
+                            viewModel.selectedToolCount--
                         }
-                        viewModel.checkedTools.update { map ->
+                        viewModel.selectedTools.update { map ->
                             map.toMutableMap().apply {
                                 put(toolId, checked)
                             }
