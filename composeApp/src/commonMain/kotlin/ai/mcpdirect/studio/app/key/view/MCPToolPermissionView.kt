@@ -97,12 +97,16 @@ fun ToolMakerPermissionView(
     val viewModel by rememberSaveable(toolMaker.id) { mutableStateOf(ToolMakerPermissionViewModel()) }
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
     val tools by viewModel.tools.collectAsState()
+    var checkedTools by remember { mutableStateOf(0) }
     LaunchedEffect(toolMaker){
         viewModel.toolMaker(toolMaker)
     }
+    LaunchedEffect(toolPermissions) {
+        checkedTools = toolPermissions.values.count{it.makerId == toolMaker.id}
+    }
     OutlinedCard(Modifier.fillMaxWidth()) {
-        StudioActionBar(toolMaker.name, navigationIcon = {
-            Checkbox(checked = false,onCheckedChange = {}, Modifier.size(32.dp))
+        StudioActionBar("${toolMaker.name} ($checkedTools/${tools.size})", navigationIcon = {
+            Checkbox(checked = checkedTools>0,onCheckedChange = {}, Modifier.size(32.dp))
         }) {
 //            Icon(painterResource(Res.drawable.shield_toggle),contentDescription = null)
             Spacer(Modifier.weight(1f))
@@ -128,15 +132,14 @@ fun ToolMakerPermissionView(
                 Button(
                     modifier = Modifier.height(28.dp).hoverable(interactionSource),
 //                    shape = if(checked) ButtonDefaults.outlinedShape else ButtonDefaults.textShape,
-                    colors = if(checked) ButtonDefaults.buttonColors() else ButtonDefaults.textButtonColors(),
-//                    border = ButtonDefaults.outlinedButtonBorder(checked),
+                    colors = if(checked) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors(),
+                    border = ButtonDefaults.outlinedButtonBorder(!checked),
 //                    elevation = if(checked) ButtonDefaults.text() else null,
                     onClick = {checked=!checked},
                     contentPadding = PaddingValues(0.dp),
                 ) {
                     Box(contentAlignment = Alignment.CenterEnd) {
-                        Text(tool.name, Modifier.padding(horizontal = 8.dp),
-                            fontWeight = if(checked)FontWeight.Bold else null)
+                        Text(tool.name, Modifier.padding(horizontal = 8.dp))
                         if (isHovered) {
                             val colors = TooltipDefaults.richTooltipColors()
                             IconButton(
