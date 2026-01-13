@@ -77,7 +77,7 @@ fun MCPdirectKeyScreen(
         Card(Modifier.weight(2f).fillMaxHeight()) {
             viewModel.accessKey?.let { key ->
                 StudioActionBar(
-                    "Tool Permissions (${viewModel.toolPermissionCount})/(${viewModel.toolPermissions.size})"
+                    "Tool Permissions (${viewModel.toolPermissionCount})"
                 ){
                     IconButton(onClick = {}){
                         Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)

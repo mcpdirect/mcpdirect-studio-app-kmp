@@ -38,7 +38,7 @@ class ToolMakerPermissionViewModel : ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    var checkedTools = mutableStateSetOf<Long>()
+    var checkedTools = mutableStateMapOf<Long,Boolean>()
     var checkedToolCount by mutableStateOf(0)
     fun toolMaker(maker: AIPortToolMaker){
         toolMaker.value = maker
@@ -89,8 +89,12 @@ fun ToolMakerPermissionView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ){
             tools.forEach { tool ->
-                val toolPermission = toolPermissions[tool.id]
-                var checked by remember { mutableStateOf(tool.id in viewModel.checkedTools || toolPermission?.status?.let { it>0 }?:false) }
+                var checkedTool = viewModel.checkedTools[tool.id]
+                if(checkedTool==null){
+                    checkedTool = toolPermissions[tool.id]?.status?.let { it>0 }?:false
+                    viewModel.checkedTools[tool.id] = checkedTool
+                }
+                var checked by remember { mutableStateOf(checkedTool) }
                 val interactionSource = remember { MutableInteractionSource() }
                 val isHovered by interactionSource.collectIsHoveredAsState()
 //                OutlinedButton()
@@ -105,10 +109,10 @@ fun ToolMakerPermissionView(
                         checked=!checked
                         if(checked) {
                             viewModel.checkedToolCount++
-                            viewModel.checkedTools.add(tool.id)
+                            viewModel.checkedTools[tool.id] = true
                         } else {
                             viewModel.checkedToolCount--
-                            viewModel.checkedTools.remove(tool.id)
+                            viewModel.checkedTools[tool.id] = false
                         }
                         onPermissionsChange(checked,listOf(tool)) },
                     contentPadding = PaddingValues(0.dp),

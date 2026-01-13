@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced permission management with improved view models and state handling
+
+### Details
+- Enhanced MCPdirectKeyScreen with improved ToolMakerPermissionViewModel management
+- Added separate ToolMakerPermissionViewModel for each tool maker
+- Improved permission count display with total/selected counts
+- Enhanced ToolMakerPermissionView with improved state management
+- Added checkedTools state set for better permission tracking
+- Improved UI with better permission state indicators
+- Enhanced permission handling with improved state synchronization
+- Added mutableMap for managing multiple view models
+- Improved permission selection with accurate state tracking
+- Enhanced UI with better visual feedback for permission states
+
+## [January 2, 2026]
+### Summary
 Enhanced permission management with improved tool selection and state handling
 
 ### Details
