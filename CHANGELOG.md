@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced UI with improved tool maker selection and permission management
+
+### Details
+- Enhanced MCPdirectKeyScreen with improved tool maker selection using checkboxes
+- Added StudioListItem for better tool maker selection UI
+- Improved nomination and cancellation workflow with proper state management
+- Enhanced UI with better visual feedback for tool maker selection
+- Added toolMarkerCandidate function for checking nomination status
+- Improved permission management with accurate count updates
+- Enhanced tool maker candidate filtering with improved logic
+- Added proper state management for tool maker nomination
+- Improved UI with better component organization and layout
+- Enhanced permission handling with accurate status updates
+
+## [January 2, 2026]
+### Summary
 Enhanced permission management with improved state tracking and UI consistency
 
 ### Details

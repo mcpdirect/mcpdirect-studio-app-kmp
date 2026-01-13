@@ -40,6 +40,7 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         private set
 
     private val _toolMarkerCandidateIds = MutableStateFlow(mutableSetOf<Long>())
+    val toolMarkerCandidateIds: StateFlow<Set<Long>> = _toolMarkerCandidateIds
     fun toolMarkerCandidate(toolMaker: AIPortToolMaker): Boolean{
         return toolMaker.id in _toolMarkerCandidateIds.value
     }
@@ -72,14 +73,21 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
                     if (it is AIPortVirtualToolPermission) {
                         _virtualToolPermissions[it.toolId] = it
                         virtualToolPermissions[it.toolId] = it.copy()
-                        if(it.status>0) virtualToolPermissionCount++
+                        if(it.status>0) {
+                            virtualToolPermissionCount++
+                            _toolMarkerCandidateIds.update { set ->
+                                set.toMutableSet().apply { add(it.makerId) }
+                            }
+                        }
                     } else {
                         _toolPermissions[it.toolId] = it
                         toolPermissions[it.toolId] = it.copy()
-                        if (it.status > 0) toolPermissionCount++
-                    }
-                    _toolMarkerCandidateIds.update { set ->
-                        set.toMutableSet().apply { add(it.makerId) }
+                        if (it.status > 0) {
+                            toolPermissionCount++
+                            _toolMarkerCandidateIds.update { set ->
+                                set.toMutableSet().apply { add(it.makerId) }
+                            }
+                        }
                     }
                 }
             }

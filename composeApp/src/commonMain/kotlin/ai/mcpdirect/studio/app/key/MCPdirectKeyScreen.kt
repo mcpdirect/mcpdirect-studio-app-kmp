@@ -31,6 +31,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -172,19 +173,13 @@ fun MCPdirectKeyScreen(
                 )
                 Text("No MCP server found.")
             } else {
+                val ids by viewModel.toolMarkerCandidateIds.collectAsState()
                 LazyColumn(Modifier.padding(start=16.dp,end=16.dp)) {
                     items(toolMakerCandidates){ toolMaker ->
-//                        TextButton(onClick = {viewModel.nominate(toolMaker)},
-//                            contentPadding = PaddingValues(8.dp),
-//                            ){
-////                            IconButton(onClick = {viewModel.nominate(toolMaker)}){
-//                                Icon(painterResource(Res.drawable.move_left),
-//                                    contentDescription = null, Modifier.size(24.dp))
-////                            }
-//                            Spacer(Modifier.size(8.dp))
-//                            Text(toolMaker.name)
-//                        }
-                        var checked by remember{ mutableStateOf(viewModel.toolMarkerCandidate(toolMaker)) }
+                        var checked by remember{ mutableStateOf(false) }
+                        LaunchedEffect(ids){
+                            checked = toolMaker.id in ids
+                        }
                         StudioListItem(
 //                        selected = viewModel.selectedToolMaker(toolMaker),
 //                        modifier = Modifier.clickable {
