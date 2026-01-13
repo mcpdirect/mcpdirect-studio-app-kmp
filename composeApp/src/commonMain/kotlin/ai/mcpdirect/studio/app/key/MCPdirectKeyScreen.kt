@@ -33,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,7 +46,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.close
-import mcpdirectstudioapp.composeapp.generated.resources.move_left
+import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
+import mcpdirectstudioapp.composeapp.generated.resources.expand_all
 import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 import mcpdirectstudioapp.composeapp.generated.resources.search
 import mcpdirectstudioapp.composeapp.generated.resources.search_off
@@ -59,7 +59,7 @@ fun MCPdirectKeyScreen(
     paddingValues: PaddingValues = PaddingValues(),
 ){
     val viewModel by remember {mutableStateOf(MCPdirectKeyScreenViewModel())}
-    val toolPermissionViewModels = remember { mutableMapOf<Long, ToolMakerPermissionViewModel>() }
+    val grantViewModels = remember { mutableMapOf<Long, ToolMakerPermissionViewModel>() }
     val toolMakers by viewModel.toolMarkerCandidates.collectAsState()
     val toolMakerCandidates by viewModel.toolMarkers.collectAsState()
 //    val accessKeysViewModel by remember {mutableStateOf(MCPdirectKeysComponentViewModel())}
@@ -86,13 +86,24 @@ fun MCPdirectKeyScreen(
             Card(Modifier.weight(1f)) {
                 viewModel.accessKey?.let { key ->
                     StudioActionBar(
-                        "Tool Permissions (${viewModel.toolPermissionCount})"
+                        "Tool Permissions (${viewModel.toolPermissionCount+viewModel.virtualToolPermissionCount})"
                     ){
                         IconButton(onClick = {
-                            toolPermissionViewModels.clear()
+                            grantViewModels.clear()
                             viewModel.resetAllPermissions()
                         }){
                             Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)
+                        }
+                        IconButton(
+                            onClick = {
+                                viewModel.expanded = !viewModel.expanded
+                                grantViewModels.values.forEach {
+                                  it.expanded = viewModel.expanded
+                                } },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            val icon = if(viewModel.expanded) Res.drawable.collapse_all else Res.drawable.expand_all
+                            Icon(painterResource(icon),contentDescription = null, Modifier.size(20.dp))
                         }
                     }
                     Box(modifier = Modifier.padding(16.dp)){
@@ -124,20 +135,30 @@ fun MCPdirectKeyScreen(
                     }
                     LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(toolMakers){ toolMaker->
-                            var toolPermissionViewModel = toolPermissionViewModels[toolMaker.id]
-                            if(toolPermissionViewModel == null) {
-                                toolPermissionViewModel = ToolMakerPermissionViewModel()
-                                toolPermissionViewModel.toolMaker(toolMaker)
-                                toolPermissionViewModel.checkedTools(viewModel.toolPermissions)
-                                toolPermissionViewModel.checkedToolCount = viewModel.toolPermissions.values.count{it.status>0&&it.makerId == toolMaker.id}
-                                toolPermissionViewModels[toolMaker.id] = toolPermissionViewModel
+                            var grantViewModel = grantViewModels[toolMaker.id]
+                            if(grantViewModel == null) {
+                                grantViewModel = ToolMakerPermissionViewModel()
+                                grantViewModel.toolMaker(toolMaker)
+                                if(toolMaker.type==0){
+                                    grantViewModel.checkedTools(viewModel.virtualToolPermissions)
+                                    grantViewModel.checkedToolCount = viewModel.virtualToolPermissions.values.count {
+                                        it.status > 0 && it.makerId == toolMaker.id
+                                    }
+                                }else {
+                                    grantViewModel.checkedTools(viewModel.toolPermissions)
+                                    grantViewModel.checkedToolCount = viewModel.toolPermissions.values.count {
+                                        it.status > 0 && it.makerId == toolMaker.id
+                                    }
+                                }
+                                grantViewModels[toolMaker.id] = grantViewModel
                             }
                             ToolMakerPermissionView(
 //                            toolMaker,
-                                toolPermissionViewModel,
+                                grantViewModel,
                                 {
                                     viewModel.resetPermissions(toolMaker)
-                                    toolPermissionViewModel.checkedTools(viewModel.toolPermissions)
+                                    if(toolMaker.type==0) grantViewModel.checkedTools(viewModel.virtualToolPermissions)
+                                    else grantViewModel.checkedTools(viewModel.toolPermissions)
                                 }
                             ){ permitted, tools ->
                                 viewModel.permit(permitted, tools)
@@ -213,7 +234,7 @@ fun MCPdirectKeyScreen(
                                     checked = it
                                     if(checked) viewModel.nominate(toolMaker)
                                     else {
-                                        val v = toolPermissionViewModels.remove(toolMaker.id)
+                                        val v = grantViewModels.remove(toolMaker.id)
                                         if(v!=null){
                                             viewModel.permit(false,v.tools.value)
                                         }

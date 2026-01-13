@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlin.collections.set
 
 class MCPdirectKeyScreenViewModel: ViewModel() {
+    var expanded by mutableStateOf(false)
     val toolMakerCandidateFilter = MutableStateFlow("")
     val toolMakerFilter = MutableStateFlow("")
     var accessKey by mutableStateOf<AIPortToolAccessKey?>(null)
@@ -71,8 +72,8 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
             data.forEach {
                 if(it.makerId>0) {
                     if (it is AIPortVirtualToolPermission) {
-                        _virtualToolPermissions[it.toolId] = it
-                        virtualToolPermissions[it.toolId] = it.copy()
+                        _virtualToolPermissions[it.originalToolId]=it
+                        virtualToolPermissions[it.originalToolId] = it.copy()
                         if(it.status>0) {
                             virtualToolPermissionCount++
                             _toolMarkerCandidateIds.update { set ->

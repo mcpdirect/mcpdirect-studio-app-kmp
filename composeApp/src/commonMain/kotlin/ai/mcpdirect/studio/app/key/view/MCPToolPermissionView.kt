@@ -5,6 +5,8 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
+import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import androidx.compose.foundation.hoverable
@@ -29,9 +31,13 @@ class ToolMakerPermissionViewModel : ViewModel() {
     val toolMaker = MutableStateFlow<AIPortToolMaker?>(null)
     val tools : StateFlow<List<AIPortTool>> = combine(
         ToolRepository.tools,
+        ToolRepository.virtualTools,
         toolMaker
-    ){ tools,maker ->
-        if(maker!=null)tools.values.filter { it.makerId == maker.id }.toList()
+    ){ tools,vtools,maker ->
+        if(maker!=null) {
+            if(maker.type==0) vtools.values.filter { it.makerId == maker.id }.toList()
+            else tools.values.filter { it.makerId == maker.id }.toList()
+        }
         else emptyList()
     }.stateIn(
         scope = viewModelScope,
@@ -54,7 +60,8 @@ class ToolMakerPermissionViewModel : ViewModel() {
                 if(it.makerId == toolMaker.id&&it.status>0) {
                     checkedTools.update { map->
                         map.toMutableMap().apply {
-                            put(it.toolId,true)
+                            if(it is AIPortVirtualToolPermission) put(it.originalToolId,true)
+                            else put(it.toolId,true)
                         }
                     }
                     checkedToolCount++
@@ -115,7 +122,8 @@ fun ToolMakerPermissionView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ){
             tools.forEach { tool ->
-                var checked = checkedTools[tool.id]?:false
+                val toolId = if(tool is AIPortVirtualTool) tool.toolId else tool.id
+                var checked = checkedTools[toolId]?:false
                 val interactionSource = remember { MutableInteractionSource() }
                 val isHovered by interactionSource.collectIsHoveredAsState()
                 Button(
@@ -131,7 +139,7 @@ fun ToolMakerPermissionView(
                         }
                         viewModel.checkedTools.update { map ->
                             map.toMutableMap().apply {
-                                put(tool.id, checked)
+                                put(toolId, checked)
                             }
                         }
                         onPermissionsChange(checked,listOf(tool)) },
