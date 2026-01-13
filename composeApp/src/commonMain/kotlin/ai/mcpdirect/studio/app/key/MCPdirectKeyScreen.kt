@@ -4,8 +4,8 @@ import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.key.component.MCPdirectKeysComponent
-import ai.mcpdirect.studio.app.key.view.ToolMakerPermissionView
-import ai.mcpdirect.studio.app.key.view.ToolMakerPermissionViewModel
+import ai.mcpdirect.studio.app.key.view.GrantToolPermissionView
+import ai.mcpdirect.studio.app.key.view.GrantToolPermissionViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +59,7 @@ fun MCPdirectKeyScreen(
     paddingValues: PaddingValues = PaddingValues(),
 ){
     val viewModel by remember {mutableStateOf(MCPdirectKeyScreenViewModel())}
-    val grantViewModels = remember { mutableMapOf<Long, ToolMakerPermissionViewModel>() }
+    val grantViewModels = remember { mutableMapOf<Long, GrantToolPermissionViewModel>() }
     val toolMakers by viewModel.toolMarkerCandidates.collectAsState()
     val toolMakerCandidates by viewModel.toolMarkers.collectAsState()
 //    val accessKeysViewModel by remember {mutableStateOf(MCPdirectKeysComponentViewModel())}
@@ -137,7 +137,7 @@ fun MCPdirectKeyScreen(
                         items(toolMakers){ toolMaker->
                             var grantViewModel = grantViewModels[toolMaker.id]
                             if(grantViewModel == null) {
-                                grantViewModel = ToolMakerPermissionViewModel()
+                                grantViewModel = GrantToolPermissionViewModel()
                                 grantViewModel.toolMaker(toolMaker)
                                 if(toolMaker.type==0){
                                     grantViewModel.checkedTools(viewModel.virtualToolPermissions)
@@ -152,7 +152,7 @@ fun MCPdirectKeyScreen(
                                 }
                                 grantViewModels[toolMaker.id] = grantViewModel
                             }
-                            ToolMakerPermissionView(
+                            GrantToolPermissionView(
 //                            toolMaker,
                                 grantViewModel,
                                 {

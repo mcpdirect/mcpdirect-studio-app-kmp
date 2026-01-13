@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced permission management with improved tool maker and virtual tool handling
+
+### Details
+- Enhanced MCPdirectKeyScreen with improved tool maker and virtual tool permission handling
+- Added expand/collapse functionality for tool maker permission views
+- Improved UI with better permission count display for tool and virtual tool permissions
+- Enhanced ToolMakerPermissionView with proper handling for virtual tools
+- Added proper state management for tool maker and virtual tool permissions
+- Improved UI with better component organization and layout
+- Enhanced permission management with accurate state updates for virtual tools
+- Added proper state synchronization for tool maker and virtual tool permissions
+- Improved UI with better visual feedback for tool maker and virtual tool permissions
+- Enhanced permission handling with accurate status updates for virtual tools
+
+## [January 2, 2026]
+### Summary
 Enhanced tool maker permission management with improved checkbox functionality
 
 ### Details

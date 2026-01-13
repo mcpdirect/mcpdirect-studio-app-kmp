@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
-class ToolMakerPermissionViewModel : ViewModel() {
+class GrantToolPermissionViewModel : ViewModel() {
     var expanded by mutableStateOf(false)
     var toolAgent by mutableStateOf<AIPortToolAgent?>(null)
     val toolMaker = MutableStateFlow<AIPortToolMaker?>(null)
@@ -82,9 +82,9 @@ class ToolMakerPermissionViewModel : ViewModel() {
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ToolMakerPermissionView(
+fun GrantToolPermissionView(
 //    toolMaker: AIPortToolMaker,
-    viewModel: ToolMakerPermissionViewModel,
+    viewModel: GrantToolPermissionViewModel,
     onReset:()-> Unit,
     onPermissionsChange: (checked:Boolean,tools:List<AIPortTool>)->Unit,
 ){
