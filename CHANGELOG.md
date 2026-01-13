@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced reset functionality and permission management with improved state handling
+
+### Details
+- Enhanced reset functionality with proper view model clearing in MCPdirectKeyScreen
+- Improved resetAllPermissions function with accurate permission count updates
+- Enhanced permission management with proper state restoration
+- Added proper state handling for tool and virtual tool permissions
+- Improved reset functionality with accurate candidate ID updates
+- Enhanced UI with better reset button functionality
+- Added proper permission count management during reset operations
+- Improved state management with accurate permission restoration
+- Enhanced permission handling with proper state synchronization
+- Improved reset functionality with better view model management
+
+## [January 2, 2026]
+### Summary
 Enhanced UI with improved tool maker selection and state synchronization
 
 ### Details

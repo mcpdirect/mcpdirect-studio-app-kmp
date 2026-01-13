@@ -123,11 +123,16 @@ fun MCPdirectKeyScreen(
                         if(toolPermissionViewModel == null) {
                             toolPermissionViewModel = ToolMakerPermissionViewModel()
                             toolPermissionViewModel.toolMaker(toolMaker)
+                            toolPermissionViewModel.checkedTools(viewModel.toolPermissions)
                             toolPermissionViewModel.checkedToolCount = viewModel.toolPermissions.values.count{it.status>0&&it.makerId == toolMaker.id}
                             toolPermissionViewModels[toolMaker.id] = toolPermissionViewModel
                         }
                         ToolMakerPermissionView(
-                            toolMaker,viewModel.toolPermissions,toolPermissionViewModel
+                            toolMaker,toolPermissionViewModel,
+                            {
+                                viewModel.resetPermissions(toolMaker)
+                                toolPermissionViewModel.checkedTools(viewModel.toolPermissions)
+                            }
                         ){ permitted, tools ->
                             viewModel.permit(permitted, tools)
                         }

@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
+import kotlin.collections.set
 
 class ToolMakerPermissionViewModel : ViewModel() {
     var expanded by mutableStateOf(false)
@@ -38,8 +39,30 @@ class ToolMakerPermissionViewModel : ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    var checkedTools = mutableStateMapOf<Long,Boolean>()
+    var checkedTools = MutableStateFlow<Map<Long,Boolean>>(emptyMap())
     var checkedToolCount by mutableStateOf(0)
+    fun checkedTools(
+        toolPermissions: Map<Long,AIPortToolPermission>
+    ){
+        toolMaker.value?.let { toolMaker->
+            checkedTools.update { map->
+                map.toMutableMap().apply {
+                    clear()
+                }
+            }
+            checkedToolCount = 0
+            toolPermissions.values.forEach {
+                if(it.makerId == toolMaker.id&&it.status>0) {
+                    checkedTools.update { map->
+                        map.toMutableMap().apply {
+                            put(it.toolId,true)
+                        }
+                    }
+                    checkedToolCount++
+                }
+            }
+        }
+    }
     fun toolMaker(maker: AIPortToolMaker){
         toolMaker.value = maker
         viewModelScope.launch {
@@ -55,13 +78,15 @@ class ToolMakerPermissionViewModel : ViewModel() {
 @Composable
 fun ToolMakerPermissionView(
     toolMaker: AIPortToolMaker,
-    toolPermissions: Map<Long,AIPortToolPermission>,
+//    toolPermissions: Map<Long,AIPortToolPermission>,
     viewModel: ToolMakerPermissionViewModel,
+    onReset:()-> Unit,
     onPermissionsChange: (checked:Boolean,tools:List<AIPortTool>)->Unit,
 ){
 //    val viewModel by rememberSaveable(toolMaker.id) { mutableStateOf(ToolMakerPermissionViewModel()) }
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
     val tools by viewModel.tools.collectAsState()
+    val checkedTools by viewModel.checkedTools.collectAsState()
 //    var checkedTools by remember { mutableStateOf(0) }
 //    LaunchedEffect(toolMaker){
 //        viewModel.toolMaker(toolMaker)
@@ -75,7 +100,7 @@ fun ToolMakerPermissionView(
         }) {
 //            Icon(painterResource(Res.drawable.shield_toggle),contentDescription = null)
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = {}){
+            IconButton(onClick = {onReset()}){
                 Icon(painterResource(Res.drawable.reset_settings),contentDescription = null, Modifier.size(20.dp))
             }
             IconButton(onClick = { viewModel.expanded = !viewModel.expanded },modifier = Modifier.size(32.dp)) {
@@ -89,12 +114,15 @@ fun ToolMakerPermissionView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ){
             tools.forEach { tool ->
-                var checkedTool = viewModel.checkedTools[tool.id]
-                if(checkedTool==null){
-                    checkedTool = toolPermissions[tool.id]?.status?.let { it>0 }?:false
-                    viewModel.checkedTools[tool.id] = checkedTool
-                }
-                var checked by remember { mutableStateOf(checkedTool) }
+//                var checkedTool = viewModel.checkedTools[tool.id]
+//                if(checkedTool==null){
+//                    checkedTool = false
+//                    viewModel.checkedTools[tool.id] = false
+////                    checkedTool = toolPermissions[tool.id]?.status?.let { it>0 }?:false
+////                    viewModel.checkedTools[tool.id] = checkedTool
+//                }
+//                var checked by remember { mutableStateOf(checkedTool) }
+                var checked = checkedTools[tool.id]?:false
                 val interactionSource = remember { MutableInteractionSource() }
                 val isHovered by interactionSource.collectIsHoveredAsState()
 //                OutlinedButton()
@@ -109,10 +137,13 @@ fun ToolMakerPermissionView(
                         checked=!checked
                         if(checked) {
                             viewModel.checkedToolCount++
-                            viewModel.checkedTools[tool.id] = true
                         } else {
                             viewModel.checkedToolCount--
-                            viewModel.checkedTools[tool.id] = false
+                        }
+                        viewModel.checkedTools.update { map ->
+                            map.toMutableMap().apply {
+                                put(tool.id, checked)
+                            }
                         }
                         onPermissionsChange(checked,listOf(tool)) },
                     contentPadding = PaddingValues(0.dp),

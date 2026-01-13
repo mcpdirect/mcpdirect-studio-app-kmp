@@ -194,22 +194,34 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
             for(p in virtualToolPermissions.values){
                 if(p.makerId==toolMaker.id){
                     virtualToolPermissions.remove(p.originalToolId)
+                    if(p.status>0){
+                        virtualToolPermissionCount--
+                    }
                 }
             }
             for(p in _virtualToolPermissions.values){
                 if(p.makerId==toolMaker.id) {
                     virtualToolPermissions[p.originalToolId] = p.copy()
+                    if(p.status>0){
+                        virtualToolPermissionCount++
+                    }
                 }
             }
         }else{
             for(p in toolPermissions.values){
                 if(p.makerId==toolMaker.id){
                     toolPermissions.remove(p.toolId)
+                    if(p.status>0){
+                        toolPermissionCount--
+                    }
                 }
             }
             for(p in _toolPermissions.values){
                 if(p.makerId==toolMaker.id) {
                     toolPermissions[p.toolId] = p.copy()
+                    if(p.status>0){
+                        toolPermissionCount++
+                    }
                 }
             }
         }
