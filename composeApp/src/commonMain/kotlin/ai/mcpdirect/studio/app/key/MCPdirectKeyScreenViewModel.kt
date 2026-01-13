@@ -119,6 +119,7 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         _toolMarkerCandidateIds.update { set->
             set.toMutableSet().apply { add(toolMaker.id) }
         }
+        resetPermissions(toolMaker)
     }
     fun cancelNomination(toolMaker: AIPortToolMaker) {
         _toolMarkerCandidateIds.update { set->

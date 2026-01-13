@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
-import kotlin.collections.set
 
 class ToolMakerPermissionViewModel : ViewModel() {
     var expanded by mutableStateOf(false)
@@ -77,28 +76,19 @@ class ToolMakerPermissionViewModel : ViewModel() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolMakerPermissionView(
-    toolMaker: AIPortToolMaker,
-//    toolPermissions: Map<Long,AIPortToolPermission>,
+//    toolMaker: AIPortToolMaker,
     viewModel: ToolMakerPermissionViewModel,
     onReset:()-> Unit,
     onPermissionsChange: (checked:Boolean,tools:List<AIPortTool>)->Unit,
 ){
-//    val viewModel by rememberSaveable(toolMaker.id) { mutableStateOf(ToolMakerPermissionViewModel()) }
+    val toolMaker by viewModel.toolMaker.collectAsState()
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
     val tools by viewModel.tools.collectAsState()
     val checkedTools by viewModel.checkedTools.collectAsState()
-//    var checkedTools by remember { mutableStateOf(0) }
-//    LaunchedEffect(toolMaker){
-//        viewModel.toolMaker(toolMaker)
-//    }
-//    LaunchedEffect(toolPermissions) {
-//        viewModel.checkedTools = toolPermissions.values.count{it.status>0&&it.makerId == toolMaker.id}
-//    }
     OutlinedCard(Modifier.fillMaxWidth()) {
-        StudioActionBar("${toolMaker.name} (${viewModel.checkedToolCount}/${tools.size})", navigationIcon = {
+        StudioActionBar("${toolMaker?.name} (${viewModel.checkedToolCount}/${tools.size})", navigationIcon = {
             Checkbox(checked = viewModel.checkedToolCount>0,onCheckedChange = {}, Modifier.size(32.dp))
         }) {
-//            Icon(painterResource(Res.drawable.shield_toggle),contentDescription = null)
             Spacer(Modifier.weight(1f))
             IconButton(onClick = {onReset()}){
                 Icon(painterResource(Res.drawable.reset_settings),contentDescription = null, Modifier.size(20.dp))
@@ -114,25 +104,13 @@ fun ToolMakerPermissionView(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ){
             tools.forEach { tool ->
-//                var checkedTool = viewModel.checkedTools[tool.id]
-//                if(checkedTool==null){
-//                    checkedTool = false
-//                    viewModel.checkedTools[tool.id] = false
-////                    checkedTool = toolPermissions[tool.id]?.status?.let { it>0 }?:false
-////                    viewModel.checkedTools[tool.id] = checkedTool
-//                }
-//                var checked by remember { mutableStateOf(checkedTool) }
                 var checked = checkedTools[tool.id]?:false
                 val interactionSource = remember { MutableInteractionSource() }
                 val isHovered by interactionSource.collectIsHoveredAsState()
-//                OutlinedButton()
-//                TextButton()
                 Button(
                     modifier = Modifier.height(28.dp).hoverable(interactionSource),
-//                    shape = if(checked) ButtonDefaults.outlinedShape else ButtonDefaults.textShape,
                     colors = if(checked) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors(),
                     border = ButtonDefaults.outlinedButtonBorder(!checked),
-//                    elevation = if(checked) ButtonDefaults.text() else null,
                     onClick = {
                         checked=!checked
                         if(checked) {
@@ -182,113 +160,3 @@ fun ToolMakerPermissionView(
         }
     }
 }
-//class MCPdirectKeyToolPermissionViewModel : ViewModel() {
-//    val toolMakerFilter = MutableStateFlow("")
-//    var accessKey by mutableStateOf<AIPortToolAccessKey?>(null)
-//        private set
-//    private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
-//    val toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
-//    private val _toolMarkerIds = MutableStateFlow(mutableSetOf<Long>())
-//    val toolMarkers : StateFlow<List<AIPortToolMaker>> = combine(
-//        ToolRepository.toolMakers,
-//        _toolMarkerIds,
-//                toolMakerFilter
-//        ){ makers,ids,filter ->
-//        makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase()))&&it.id in ids }.toList()
-//    }.stateIn(
-//        scope = viewModelScope,
-//        started = SharingStarted.WhileSubscribed(5000),
-//        initialValue = emptyList()
-//    )
-////    val toolMarkers : StateFlow<List<AIPortToolMaker>> = combine(
-////        ToolRepository.toolMakers,
-////        toolMakerFilter
-////    ){ makers,filter ->
-////        makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase()))}.toList()
-////    }.stateIn(
-////        scope = viewModelScope,
-////        started = SharingStarted.WhileSubscribed(5000),
-////        initialValue = emptyList()
-////    )
-//    fun <T : AIPortToolPermission> onLoadToolPermissions(resp: AIPortServiceResponse<List<T>>) {
-//        if (resp.successful()) resp.data?.let {
-//            it.forEach {
-//                _toolPermissions[it.toolId]=it
-//                toolPermissions[it.toolId]= it.copy()
-//                _toolMarkerIds.update { set->
-//                    set.toMutableSet().apply { add(it.makerId) }
-//                }
-//            }
-//        }
-//    }
-//    fun accessKey(key: AIPortToolAccessKey?){
-//        accessKey = key
-//        if(key!=null&&key.id>Int.MAX_VALUE) {
-//            _toolPermissions.clear()
-//            toolPermissions.clear()
-//            _toolMarkerIds.update { set->
-//                set.toMutableSet().apply { clear() }
-//            }
-//            viewModelScope.launch {
-//                ToolRepository.loadToolPermissions(key) {
-//                    onLoadToolPermissions(it)
-//                }
-//                ToolRepository.loadVirtualToolPermissions(key) {
-//                    onLoadToolPermissions(it)
-//                }
-//            }
-//        }
-//    }
-//
-//    fun resetAllPermissions(){
-//        toolPermissions.clear()
-//        _toolMarkerIds.value.clear()
-//        for(p in _toolPermissions.values){
-//            toolPermissions[p.toolId] = p.copy()
-//            _toolMarkerIds.value.add(p.makerId)
-//        }
-//    }
-//}
-//@Composable
-//fun MCPdirectKeyToolPermissionView(
-//    accessKey: AIPortToolAccessKey,
-//    modifier: Modifier = Modifier
-//){
-//    val viewModel by remember {mutableStateOf(MCPdirectKeyToolPermissionViewModel())}
-//    val toolMakers by viewModel.toolMarkers.collectAsState()
-//    LaunchedEffect(accessKey){
-//        viewModel.accessKey(accessKey)
-//    }
-//    Box(modifier = Modifier.padding(16.dp)){
-//        Row(
-//            Modifier.background(
-//                MaterialTheme.colorScheme.surfaceContainerHigh,
-//                ButtonDefaults.shape
-//            ).clip(ButtonDefaults.shape),
-//            verticalAlignment = Alignment.CenterVertically,
-//        ){
-//            var value by remember { mutableStateOf("") }
-//            Icon(painterResource(Res.drawable.search), contentDescription = null,
-//                Modifier.padding(12.dp))
-//            BasicTextField(
-//                modifier=Modifier.weight(1f).padding(end = 4.dp),
-//                value = value,
-//                onValueChange = {
-//                    value = it
-//                    viewModel.toolMakerFilter.value = it
-//                },
-//            )
-//            if(value.isNotEmpty()) IconButton(onClick = {
-//                value=""
-//                viewModel.toolMakerFilter.value = ""
-//            }){
-//                Icon(painterResource(Res.drawable.close), contentDescription = null)
-//            }
-//        }
-//    }
-//    LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-//        items(toolMakers){ toolMaker->
-//            ToolMakerPermissionView(toolMaker)
-//        }
-//    }
-//}

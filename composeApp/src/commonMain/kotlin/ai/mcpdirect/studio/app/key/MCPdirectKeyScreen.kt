@@ -10,16 +10,20 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
@@ -78,69 +82,77 @@ fun MCPdirectKeyScreen(
                 viewModel.accessKey(it)
             }
         }
-        Card(Modifier.weight(2f).fillMaxHeight()) {
-            viewModel.accessKey?.let { key ->
-                StudioActionBar(
-                    "Tool Permissions (${viewModel.toolPermissionCount})"
-                ){
-                    IconButton(onClick = {
-                        toolPermissionViewModels.clear()
-                        viewModel.resetAllPermissions()
-                    }){
-                        Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)
-                    }
-                }
-                Box(modifier = Modifier.padding(16.dp)){
-                    Row(
-                        Modifier.background(
-                            MaterialTheme.colorScheme.surfaceContainerHigh,
-                            ButtonDefaults.shape
-                        ).clip(ButtonDefaults.shape),
-                        verticalAlignment = Alignment.CenterVertically,
+        Column(Modifier.weight(2f)) {
+            Card(Modifier.weight(1f)) {
+                viewModel.accessKey?.let { key ->
+                    StudioActionBar(
+                        "Tool Permissions (${viewModel.toolPermissionCount})"
                     ){
-                        val value by viewModel.toolMakerCandidateFilter.collectAsState()
-                        Icon(painterResource(Res.drawable.search), contentDescription = null,
-                            Modifier.padding(12.dp))
-                        BasicTextField(
-                            modifier=Modifier.weight(1f).padding(end = 4.dp),
-                            value = value,
-                            onValueChange = {
-//                                value = it
-                                viewModel.toolMakerCandidateFilter.value = it
-                            },
-                        )
-                        if(value.isNotEmpty()) IconButton(onClick = {
-//                            value=""
-                            viewModel.toolMakerCandidateFilter.value = ""
+                        IconButton(onClick = {
+                            toolPermissionViewModels.clear()
+                            viewModel.resetAllPermissions()
                         }){
-                            Icon(painterResource(Res.drawable.close), contentDescription = null)
+                            Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)
                         }
                     }
-                }
-                LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(toolMakers){ toolMaker->
-                        var toolPermissionViewModel = toolPermissionViewModels[toolMaker.id]
-                        if(toolPermissionViewModel == null) {
-                            toolPermissionViewModel = ToolMakerPermissionViewModel()
-                            toolPermissionViewModel.toolMaker(toolMaker)
-                            toolPermissionViewModel.checkedTools(viewModel.toolPermissions)
-                            toolPermissionViewModel.checkedToolCount = viewModel.toolPermissions.values.count{it.status>0&&it.makerId == toolMaker.id}
-                            toolPermissionViewModels[toolMaker.id] = toolPermissionViewModel
-                        }
-                        ToolMakerPermissionView(
-                            toolMaker,toolPermissionViewModel,
-                            {
-                                viewModel.resetPermissions(toolMaker)
-                                toolPermissionViewModel.checkedTools(viewModel.toolPermissions)
+                    Box(modifier = Modifier.padding(16.dp)){
+                        Row(
+                            Modifier.background(
+                                MaterialTheme.colorScheme.surfaceContainerHigh,
+                                ButtonDefaults.shape
+                            ).clip(ButtonDefaults.shape),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ){
+                            val value by viewModel.toolMakerCandidateFilter.collectAsState()
+                            Icon(painterResource(Res.drawable.search), contentDescription = null,
+                                Modifier.padding(12.dp))
+                            BasicTextField(
+                                modifier=Modifier.weight(1f).padding(end = 4.dp),
+                                value = value,
+                                onValueChange = {
+//                                value = it
+                                    viewModel.toolMakerCandidateFilter.value = it
+                                },
+                            )
+                            if(value.isNotEmpty()) IconButton(onClick = {
+//                            value=""
+                                viewModel.toolMakerCandidateFilter.value = ""
+                            }){
+                                Icon(painterResource(Res.drawable.close), contentDescription = null)
                             }
-                        ){ permitted, tools ->
-                            viewModel.permit(permitted, tools)
                         }
                     }
-                }
+                    LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(toolMakers){ toolMaker->
+                            var toolPermissionViewModel = toolPermissionViewModels[toolMaker.id]
+                            if(toolPermissionViewModel == null) {
+                                toolPermissionViewModel = ToolMakerPermissionViewModel()
+                                toolPermissionViewModel.toolMaker(toolMaker)
+                                toolPermissionViewModel.checkedTools(viewModel.toolPermissions)
+                                toolPermissionViewModel.checkedToolCount = viewModel.toolPermissions.values.count{it.status>0&&it.makerId == toolMaker.id}
+                                toolPermissionViewModels[toolMaker.id] = toolPermissionViewModel
+                            }
+                            ToolMakerPermissionView(
+//                            toolMaker,
+                                toolPermissionViewModel,
+                                {
+                                    viewModel.resetPermissions(toolMaker)
+                                    toolPermissionViewModel.checkedTools(viewModel.toolPermissions)
+                                }
+                            ){ permitted, tools ->
+                                viewModel.permit(permitted, tools)
+                            }
+                        }
+                    }
 //                MCPdirectKeyToolPermissionView(key, Modifier.padding(horizontal = 16.dp))
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = { viewModel.savePermissions() }, Modifier.fillMaxWidth()){
+                Text("Grant")
             }
         }
+
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
             StudioActionBar(
                 title = "MCP Servers",

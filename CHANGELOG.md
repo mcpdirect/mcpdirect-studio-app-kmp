@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced permission management with improved reset functionality and state handling
+
+### Details
+- Enhanced ToolMakerPermissionViewModel with improved state management using MutableStateFlow
+- Improved reset functionality with proper permission count updates for individual tool makers
+- Enhanced permission management with accurate state restoration for tool makers
+- Added proper state handling for tool and virtual tool permissions during reset operations
+- Improved UI with better reset button functionality for individual tool makers
+- Enhanced checkedTools management with proper state flow updates
+- Improved permission handling with accurate status updates during reset operations
+- Added proper state synchronization for tool maker permissions
+- Enhanced UI with better component state management during reset operations
+- Improved permission management with accurate count updates
+
+## [January 2, 2026]
+### Summary
 Enhanced reset functionality and permission management with improved state handling
 
 ### Details
