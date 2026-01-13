@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced permission management with improved tool selection and state handling
+
+### Details
+- Enhanced GrantToolPermissionViewModel with improved tool selection state management
+- Renamed checkedTools to selectedTools for better naming consistency
+- Updated MCPdirectKeyScreen to use selectTools instead of checkedTools
+- Improved UI with better tool selection state handling
+- Enhanced permission management with accurate state updates for tool selection
+- Added proper state synchronization for tool selection operations
+- Improved UI with better visual feedback for tool selection states
+- Enhanced permission handling with accurate status updates for tool selection
+- Added proper state management for tool selection operations
+- Improved UI with better component state management for tool selection
+
+## [January 2, 2026]
+### Summary
 Renamed ToolMakerPermissionView to GrantToolPermissionView with improved naming consistency
 
 ### Details

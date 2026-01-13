@@ -221,13 +221,11 @@ fun MCPdirectKeyScreen(
                         LaunchedEffect(ids){
                             checked = toolMaker.id in ids
                         }
-                        StudioListItem(
-//                        selected = viewModel.selectedToolMaker(toolMaker),
-//                        modifier = Modifier.clickable {
-//                            viewModel.selectToolMaker(toolMaker,multiSelectable)
-//                        },
-                            headlineContent = { Text(toolMaker.name, style = MaterialTheme.typography.bodyMedium) },
-                            leadingContent = {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             Checkbox(
                                 checked = checked,
                                 onCheckedChange = {
@@ -242,12 +240,35 @@ fun MCPdirectKeyScreen(
                                     }
                                 },
                             )
-//                                IconButton(onClick = {viewModel.nominate(toolMaker)}){
-//                                    Icon(painterResource(Res.drawable.move_left),
-//                                        contentDescription = null, Modifier.size(24.dp))
-//                                }
-                            }
-                        )
+                            Text(toolMaker.name)
+                        }
+//                        StudioListItem(
+////                        selected = viewModel.selectedToolMaker(toolMaker),
+////                        modifier = Modifier.clickable {
+////                            viewModel.selectToolMaker(toolMaker,multiSelectable)
+////                        },
+//                            headlineContent = { Text(toolMaker.name, style = MaterialTheme.typography.bodyMedium) },
+//                            leadingContent = {
+//                            Checkbox(
+//                                checked = checked,
+//                                onCheckedChange = {
+//                                    checked = it
+//                                    if(checked) viewModel.nominate(toolMaker)
+//                                    else {
+//                                        val v = grantViewModels.remove(toolMaker.id)
+//                                        if(v!=null){
+//                                            viewModel.permit(false,v.tools.value)
+//                                        }
+//                                        viewModel.cancelNomination(toolMaker)
+//                                    }
+//                                },
+//                            )
+////                                IconButton(onClick = {viewModel.nominate(toolMaker)}){
+////                                    Icon(painterResource(Res.drawable.move_left),
+////                                        contentDescription = null, Modifier.size(24.dp))
+////                                }
+//                            }
+//                        )
                     }
                 }
             }
