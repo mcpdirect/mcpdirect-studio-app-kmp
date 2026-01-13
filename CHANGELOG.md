@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced UI with improved layout and grant functionality
+
+### Details
+- Enhanced MCPdirectKeyScreen with improved layout using Column for better organization
+- Added Grant button to MCPdirectKeyScreen for granting permissions
+- Improved UI with better component organization and spacing
+- Enhanced ToolMakerPermissionView with improved state management
+- Added proper state handling for tool maker permissions
+- Improved UI with better visual feedback for permission states
+- Enhanced permission management with accurate state restoration
+- Added proper state synchronization for tool maker permissions
+- Improved UI with better component state management
+- Enhanced permission handling with accurate status updates
+
+## [January 2, 2026]
+### Summary
 Enhanced permission management with improved reset functionality and state handling
 
 ### Details

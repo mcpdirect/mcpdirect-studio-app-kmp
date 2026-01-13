@@ -87,7 +87,18 @@ fun ToolMakerPermissionView(
     val checkedTools by viewModel.checkedTools.collectAsState()
     OutlinedCard(Modifier.fillMaxWidth()) {
         StudioActionBar("${toolMaker?.name} (${viewModel.checkedToolCount}/${tools.size})", navigationIcon = {
-            Checkbox(checked = viewModel.checkedToolCount>0,onCheckedChange = {}, Modifier.size(32.dp))
+            Checkbox(checked = viewModel.checkedToolCount>0,onCheckedChange = {
+                if(it) viewModel.checkedToolCount = tools.size
+                else viewModel.checkedToolCount = 0
+                tools.forEach { tool ->
+                    viewModel.checkedTools.update { map ->
+                        map.toMutableMap().apply {
+                            put(tool.id, it)
+                        }
+                    }
+                }
+                onPermissionsChange(it,tools)
+            }, Modifier.size(32.dp))
         }) {
             Spacer(Modifier.weight(1f))
             IconButton(onClick = {onReset()}){
