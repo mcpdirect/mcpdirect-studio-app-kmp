@@ -40,6 +40,9 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         private set
 
     private val _toolMarkerCandidateIds = MutableStateFlow(mutableSetOf<Long>())
+    fun toolMarkerCandidate(toolMaker: AIPortToolMaker): Boolean{
+        return toolMaker.id in _toolMarkerCandidateIds.value
+    }
     val toolMarkerCandidates : StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
         _toolMarkerCandidateIds,
@@ -56,7 +59,7 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         _toolMarkerCandidateIds,
         toolMakerFilter
     ){ makers,ids,filter ->
-        makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase()))&& it.id !in ids }.toList()
+        makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase())) }.toList()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -115,62 +118,6 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         }
     }
 
-    fun selectTool(selected: Boolean, tool: AIPortVirtualTool){
-        accessKey?.let { accessKey ->
-            var permission = virtualToolPermissions.remove(tool.toolId)
-            if(permission!=null){
-                if(permission.status==Short.MAX_VALUE.toInt()){
-//                virtualToolPermissions.remove(tool.toolId)
-                }else {
-                    if (selected) {
-                        permission.status = 1
-                    } else {
-                        permission.status = 0
-                    }
-                    virtualToolPermissions[permission.originalToolId]=permission
-                }
-            }else if(selected) {
-                permission = AIPortVirtualToolPermission()
-                permission.toolId = tool.id
-                permission.originalToolId = tool.toolId
-                permission.status = Short.MAX_VALUE.toInt()
-                permission.makerId = tool.makerId
-                permission.agentId = 0
-                permission.accessKeyId = accessKey.id
-                virtualToolPermissions[permission.originalToolId]=permission
-            }
-        }
-    }
-
-    fun selectTool(selected: Boolean, tool: AIPortTool){
-//        var permission = toolPermissions[tool.id]
-        accessKey?.let { accessKey ->
-            var permission =  toolPermissions.remove(tool.id)
-            if(permission!=null){
-                if(permission.status==Short.MAX_VALUE.toInt()){
-//                toolPermissions.remove(tool.id)
-                }else {
-                    if (selected) {
-                        permission.status = 1
-                    } else {
-                        permission.status = 0
-                    }
-                    toolPermissions[permission.toolId]=permission
-                }
-            } else if(selected) {
-                permission = AIPortToolPermission()
-                permission.toolId = tool.id
-                permission.status = Short.MAX_VALUE.toInt()
-                permission.makerId = tool.makerId
-                permission.agentId = tool.agentId
-                permission.accessKeyId = accessKey.id
-//                toolPermissions[permission.toolId]=permission
-                toolPermissions.toMutableMap().apply {
-                    put(permission.toolId,permission)
-                }
-            }
-        }
-    }
     fun permit(permitted: Boolean, tools: List<AIPortTool>){
 //        var permission = toolPermissions[tool.id]
         accessKey?.let { accessKey ->
@@ -205,12 +152,12 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
                     var permission = toolPermissions.remove(tool.id)
                     if (permission != null) {
                         if (permission.status == Short.MAX_VALUE.toInt()) {
-                            toolPermissionCount--
+                            if(!permitted) toolPermissionCount--
                         } else {
-                            if (permitted) {
+                            if (permitted&&permission.status==0) {
                                 permission.status = 1
                                 toolPermissionCount++
-                            } else {
+                            } else if(!permitted&&permission.status==1) {
                                 permission.status = 0
                                 toolPermissionCount--
                             }
@@ -223,10 +170,10 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
                         permission.makerId = tool.makerId
                         permission.agentId = tool.agentId
                         permission.accessKeyId = accessKey.id
-//                toolPermissions[permission.toolId]=permission
-                        toolPermissions.toMutableMap().apply {
-                            put(permission.toolId,permission)
-                        }
+                        toolPermissions[permission.toolId]=permission
+//                        toolPermissions.toMutableMap().apply {
+//                            put(permission.toolId,permission)
+//                        }
                         toolPermissionCount++
                     }
                 }
