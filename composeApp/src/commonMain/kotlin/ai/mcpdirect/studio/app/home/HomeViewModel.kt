@@ -47,13 +47,19 @@ class HomeViewModel: ViewModel() {
         }
     }
     val toolMakers: StateFlow<List<AIPortToolMaker>> = ToolRepository.toolMakers
-        .map { it.values.toList() }      // 转为 List
+        .map { it.values.filter { it.type>0 }.toList() }      // 转为 List
         .stateIn(
             scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
             started = SharingStarted.WhileSubscribed(5000), // 按需启动
             initialValue = emptyList()
         )
-    val loadToolMakers : StateFlow<Boolean> = ToolRepository.loadToolMakers
+    val virtualToolMakers: StateFlow<List<AIPortToolMaker>> = ToolRepository.toolMakers
+        .map { it.values.filter { it.type==0 }.toList() }      // 转为 List
+        .stateIn(
+            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
+            started = SharingStarted.WhileSubscribed(5000), // 按需启动
+            initialValue = emptyList()
+        )
     var showTips by mutableStateOf<Boolean?>(null)
     fun refreshToolMakers(force:Boolean=false){
         viewModelScope.launch {

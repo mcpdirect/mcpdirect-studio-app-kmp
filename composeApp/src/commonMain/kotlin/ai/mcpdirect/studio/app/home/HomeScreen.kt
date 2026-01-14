@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.home.widget.MCPDirectKeysWidget
 import ai.mcpdirect.studio.app.home.widget.MCPServersWidget
 import ai.mcpdirect.studio.app.home.widget.MyStudiosWidget
 import ai.mcpdirect.studio.app.home.widget.MyTeamsView
+import ai.mcpdirect.studio.app.home.widget.VirtualMCPWidget
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.setting.settingsViewModel
@@ -140,8 +141,14 @@ fun HomeScreen(){
                 }
             }
         }
-        Card (Modifier.weight(1f).fillMaxHeight().padding(16.dp)){
-            MCPServersWidget(viewModel,Modifier.weight(1f))
+        Column(Modifier.weight(1f)) {
+            Card (Modifier.weight(2f).fillMaxHeight().padding(start = 16.dp,top = 16.dp,end = 16.dp)) {
+                MCPServersWidget(viewModel,Modifier.weight(2f))
+            }
+            Spacer(Modifier.height(8.dp))
+            Card (Modifier.weight(1f).fillMaxHeight().padding(start = 16.dp, bottom = 16.dp,end = 16.dp)){
+                VirtualMCPWidget(viewModel,Modifier.weight(1f))
+            }
         }
         Column(Modifier.width(300.dp).padding(top = 16.dp, bottom = 16.dp, end = 16.dp)){
             Row(verticalAlignment = Alignment.CenterVertically) {

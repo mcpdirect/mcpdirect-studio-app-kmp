@@ -282,7 +282,8 @@ fun ConnectMCPView(
                 onClick = {}
             ) {
                 if (currentToolAgent.id < 1L && toolAgents.isNotEmpty()) {
-                    viewModel.currentToolAgent(toolAgents[0])
+                    if(localToolAgent.id>0L) viewModel.currentToolAgent(localToolAgent)
+                    else viewModel.currentToolAgent(toolAgents[0])
                 }
                 Icon(painterResource(Res.drawable.design_services), contentDescription = "",
                     tint = MaterialTheme.colorScheme.primary)
