@@ -154,4 +154,23 @@ class VirtualMCPScreenViewModel: ViewModel() {
             }
         }
     }
+    fun saveVirtualTools(){
+        currentToolMaker?.let { toolMaker ->
+            val tools = mutableMapOf<Long, AIPortVirtualTool>()
+            tools.putAll(virtualTools)
+            _virtualTools.values.forEach { tool ->
+                val newTool = tools[tool.toolId]
+                if(newTool!=null&&newTool.status==tool.status){
+                    tools.remove(tool.toolId)
+                }
+            }
+            if(tools.isNotEmpty()){
+                viewModelScope.launch {
+                    ToolRepository.modifyVirtualTools(toolMaker,tools.values.toList()){
+                        if(it.successful()) it.data?.let { currentToolMaker(toolMaker) }
+                    }
+                }
+            }
+        }
+    }
 }

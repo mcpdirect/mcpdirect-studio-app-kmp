@@ -1,5 +1,7 @@
 package ai.mcpdirect.studio.app.virtualmcp.view
 
+import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.collections.set
 
 class VirtualToolMakersViewModel : ViewModel() {
     val toolMakerFilter = MutableStateFlow("")
@@ -58,6 +61,16 @@ class VirtualToolMakersViewModel : ViewModel() {
 //    }
     fun selectedToolMaker(toolMaker: AIPortToolMaker): Boolean{
         return currentToolMaker?.id == toolMaker.id
+    }
+    fun createVirtualToolMaker(
+        name:String,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit
+    ){
+        viewModelScope.launch {
+            ToolRepository.createVirtualToolMaker(name,listOf()){
+                onResponse(it)
+            }
+        }
     }
 }
 @Composable
@@ -130,10 +143,9 @@ fun VirtualToolMakersView(
                 value = name,
                 onValueChange = { text ->
                     nameError = text.isBlank() || text.length>20
-                    if(text.isBlank()) name = ""
-                    else name = text
+                    name = text.ifBlank { "" }
                 },
-                label = { Text("MCPdirect Key Name") },
+                label = { Text("Virtual MCP Name") },
                 isError = nameError,
                 supportingText = {
                     Text("Name must not be empty and should have at most 20 characters")
@@ -143,16 +155,15 @@ fun VirtualToolMakersView(
                 enabled = !nameError,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 onClick = {
-//                    viewModel.generateMCPdirectKey(name){
-//                        showGenerateKeyView = !it.successful()
-//                        if(!showGenerateKeyView) it.data?.let { data->
-//                            viewModel.selectAccessKey(data)
-//                            onAccessKeyChange(data)
-//                        }
-//                    }
+                    viewModel.createVirtualToolMaker(name){
+                        if(it.successful()) it.data?.let {
+                            viewModel.currentToolMaker(it)
+                            onToolMakerChange(it)
+                        }
+                    }
                 },
             ){
-                Text("Generate")
+                Text("Create")
             }
         }
     }

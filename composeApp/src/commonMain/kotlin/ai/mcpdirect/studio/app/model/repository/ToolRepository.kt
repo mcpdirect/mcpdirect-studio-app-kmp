@@ -2,12 +2,15 @@ package ai.mcpdirect.studio.app.model.repository
 
 import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.aitool.*
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration.Companion.seconds
@@ -172,6 +175,40 @@ object ToolRepository {
     }
     fun toolMaker(toolMakerId: Long): AIPortToolMaker? {
         return _toolMakers.value[toolMakerId]
+    }
+    suspend fun createVirtualToolMaker(
+        name:String,tags:List<String>?,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit
+    ){
+        loadMutex.withLock {
+            getPlatform().createToolMaker(
+                AIPortToolMaker.TYPE_VIRTUAL, name,
+                tags?.joinToString()){
+                if(it.successful()) it.data?.let { toolMaker ->
+                    toolMaker(toolMaker)
+                }
+                onResponse(it)
+            }
+        }
+    }
+    suspend fun modifyVirtualTools(
+        toolMaker: AIPortToolMaker,tools:List<AIPortVirtualTool>,
+        onResponse: (resp: AIPortServiceResponse<List<AIPortVirtualTool>>) -> Unit
+    ) {
+        loadMutex.withLock {
+            getPlatform().modifyVirtualTools(toolMaker.id,tools){
+                if(it.successful()) it.data?.let { data ->
+                    _virtualTools.update { map ->
+                        map.toMutableMap().apply {
+                            for (tool in data) {
+                                put(tool.id, tool)
+                            }
+                        }
+                    }
+                }
+                onResponse(it)
+            }
+        }
     }
 //    suspend fun createMCPServerByTemplate(
 //        toolAgentId:Long,template: AIPortToolMakerTemplate, mcpServerName:String,

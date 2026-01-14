@@ -99,7 +99,9 @@ fun VirtualMCPScreen(
                 }
             }
             Spacer(Modifier.height(8.dp))
-            Button(onClick = { }, Modifier.fillMaxWidth()) {
+            Button(onClick = {
+                viewModel.saveVirtualTools()
+            }, Modifier.fillMaxWidth()) {
                 Text("Save")
             }
         }

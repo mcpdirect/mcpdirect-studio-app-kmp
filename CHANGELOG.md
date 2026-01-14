@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced Virtual MCP functionality with improved tool management and state handling
+
+### Details
+- Enhanced VirtualMCPScreenViewModel with improved tool selection state management
+- Added proper state handling for virtual tool selection and deselection
+- Improved UI with better tool permission management in virtual MCP screens
+- Enhanced VirtualMCPScreen with accurate tool selection workflow
+- Added proper state synchronization for virtual tool permissions
+- Improved UI with better reset functionality for virtual tools
+- Enhanced tool maker nomination with improved state management
+- Added proper permission handling for virtual tools with accurate status updates
+- Improved UI with better component state management for virtual tools
+- Enhanced tool selection workflow with accurate state updates
+
+## [January 2, 2026]
+### Summary
 Enhanced Virtual MCP functionality with new screens and improved component architecture
 
 ### Details
