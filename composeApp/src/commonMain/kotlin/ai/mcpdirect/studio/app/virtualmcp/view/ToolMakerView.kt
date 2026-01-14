@@ -81,7 +81,7 @@ class ToolMakerViewModel : ViewModel() {
 fun ToolMakerView(
     viewModel: ToolMakerViewModel,
     onReset:()-> Unit,
-    onPermissionsChange: (checked:Boolean,tools:List<AIPortTool>)->Unit,
+    onSelectedToolChange: (checked:Boolean, tools:List<AIPortTool>)->Unit,
 ){
     val toolMaker by viewModel.toolMaker.collectAsState()
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
@@ -99,7 +99,7 @@ fun ToolMakerView(
                         }
                     }
                 }
-                onPermissionsChange(it,tools)
+                onSelectedToolChange(it,tools)
             }, Modifier.size(32.dp))
         }) {
             Spacer(Modifier.weight(1f))
@@ -137,7 +137,7 @@ fun ToolMakerView(
                                 put(toolId, checked)
                             }
                         }
-                        onPermissionsChange(checked,listOf(tool)) },
+                        onSelectedToolChange(checked,listOf(tool)) },
                     contentPadding = PaddingValues(0.dp),
                 ) {
                     Box(contentAlignment = Alignment.CenterEnd) {
@@ -159,7 +159,6 @@ fun ToolMakerView(
                             }
                         }
                     }
-
                 }
 
             }

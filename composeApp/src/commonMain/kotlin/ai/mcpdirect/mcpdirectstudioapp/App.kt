@@ -41,10 +41,8 @@ import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_tips_one_url
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_tips_openapi
 import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_tips_share_tools
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-@Preview
 fun App(
     darkTheme: Boolean = isSystemInDarkTheme(),
     typography: Typography? = null,
