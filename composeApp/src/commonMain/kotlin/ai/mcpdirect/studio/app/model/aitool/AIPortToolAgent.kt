@@ -14,9 +14,13 @@ class AIPortToolAgent {
     var name: String = ""
     var tags: String = ""
     var status: Int = 0
-    constructor()
+    constructor(){
+        id = -1
+        status = -1
+    }
     
-    constructor(name: String,status: Int) {
+    constructor(id:Long,name: String,status: Int) {
+        this.id = id
         this.name = name
         this.status = status
     }

@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced UI with improved tool maker nomination workflow
+
+### Details
+- Enhanced MCPdirectKeyScreen with improved tool maker nomination workflow
+- Updated tool maker nomination UI with better component organization
+- Improved UI with better visual feedback for tool maker nomination
+- Enhanced tool maker selection with improved layout and arrangement
+- Added proper state management for tool maker nomination workflow
+- Improved UI with better component organization and layout
+- Enhanced nomination workflow with better visual feedback
+- Improved tool maker selection with accurate state handling
+- Enhanced UI with better visual feedback for nomination states
+- Improved component organization with better layout arrangement
+
+## [January 2, 2026]
+### Summary
 Enhanced permission management with improved tool selection and state handling
 
 ### Details

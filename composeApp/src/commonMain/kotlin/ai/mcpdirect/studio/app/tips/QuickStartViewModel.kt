@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlin.collections.set
 
 class QuickStartViewModel: ViewModel() {
-    private val _currentToolAgent = MutableStateFlow(AIPortToolAgent("",-1))
+    private val _currentToolAgent = MutableStateFlow(AIPortToolAgent())
     val currentToolAgent: StateFlow<AIPortToolAgent> = _currentToolAgent
     fun currentToolAgent(agent:AIPortToolAgent){
         _currentToolAgent.value = agent
@@ -74,7 +74,7 @@ class QuickStartViewModel: ViewModel() {
         _currentToolAgent,
         UserRepository.me,
     ) { servers, agent, me ->
-        servers.values.filter { server -> agent.id!=0L && server.agentId == agent.id && server.userId == me.id }.toList()
+        servers.values.filter { server -> agent.id > 0L && server.agentId == agent.id && server.userId == me.id }.toList()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

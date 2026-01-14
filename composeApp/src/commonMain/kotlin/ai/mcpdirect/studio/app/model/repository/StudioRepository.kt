@@ -19,7 +19,7 @@ import kotlin.time.TimeSource
 object StudioRepository {
     private val loadMutex = Mutex()
     private val _duration = 5.seconds
-    private val _virtualToolAgent = AIPortToolAgent("Virtual MCP",1)
+    private val _virtualToolAgent = AIPortToolAgent(0,"Virtual MCP",1)
     private val _localToolAgent = MutableStateFlow(AIPortToolAgent())
     val localToolAgent: StateFlow<AIPortToolAgent> = _localToolAgent
     fun localToolAgent(agent: AIPortToolAgent){
@@ -31,7 +31,7 @@ object StudioRepository {
         }
     }
     private var _toolAgentLastQuery:TimeMark? = null
-    private val _toolAgents = MutableStateFlow<Map<Long, AIPortToolAgent>>(mapOf(
+    private val _toolAgents = MutableStateFlow(mapOf(
         0L to _virtualToolAgent
     ))
     val toolAgents: StateFlow<Map<Long, AIPortToolAgent>> = _toolAgents

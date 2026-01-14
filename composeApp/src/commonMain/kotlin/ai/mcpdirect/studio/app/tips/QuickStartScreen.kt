@@ -151,7 +151,6 @@ fun ConnectMCPView(
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)){
         Column(Modifier.weight(1f))  {
             OutlinedCard(Modifier.weight(1f)) {
-//                if(!catalog&&toolMakers.isNotEmpty()) {
                 if(!catalog) {
                     StudioActionBar (
                         "Installed MCP servers",
@@ -160,7 +159,6 @@ fun ConnectMCPView(
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(8.dp,0.dp),
                             onClick = {
-//                viewModel.currentToolMaker(null)
                                 catalog = !catalog
                             }) {
                             Text(
@@ -240,12 +238,10 @@ fun ConnectMCPView(
                     StudioActionBar (
                         "MCP Catalog",
                     ){
-//                        if(toolMakers.isNotEmpty())
                         TextButton(
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(8.dp,0.dp),
                             onClick = {
-//                viewModel.currentToolMaker(null)
                                 catalog = !catalog
                             }) {
                             Text(
@@ -279,41 +275,13 @@ fun ConnectMCPView(
                         }
                     }
                 }
-//                HorizontalDivider()
-//                Box(Modifier.fillMaxWidth().background(
-//                    color = MaterialTheme.colorScheme.secondaryContainer,
-//                )) {
-//                    Row(
-//                        modifier = Modifier.padding(8.dp),
-//                    ) {
-//                        Icon(
-//                            painterResource(Res.drawable.design_services), contentDescription = "",
-//                            tint = MaterialTheme.colorScheme.onSecondaryContainer
-//                        )
-//                        Spacer(Modifier.size(8.dp))
-//                        Text(
-//                            if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name,
-//                            color = MaterialTheme.colorScheme.onSecondaryContainer, fontWeight = FontWeight.Bold,
-//                        )
-//                        Spacer(Modifier.weight(1f))
-//                        Icon(
-//                            painterResource(Res.drawable.more), contentDescription = "",
-//                            tint = MaterialTheme.colorScheme.onSecondaryContainer
-//                        )
-//                    }
-//                }
             }
             Spacer(Modifier.height(8.dp))
             OutlinedButton(
-//                colors = ButtonDefaults.outlinedButtonColors().copy(
-//                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-//                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-//                ),
-//                shape = ButtonDefaults.outlinedShape,
                 contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
                 onClick = {}
             ) {
-                if (currentToolAgent.id == 0L && toolAgents.isNotEmpty()) {
+                if (currentToolAgent.id < 1L && toolAgents.isNotEmpty()) {
                     viewModel.currentToolAgent(toolAgents[0])
                 }
                 Icon(painterResource(Res.drawable.design_services), contentDescription = "",

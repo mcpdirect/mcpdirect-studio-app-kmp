@@ -67,7 +67,7 @@ fun MyStudiosWidget(
             val localToolAgent by viewModel.localToolAgent.collectAsState()
             LazyColumn {
                 items(toolAgents) {
-                    if (it.id != 0L && UserRepository.me(it.userId)) {
+                    if (it.id > 0L && UserRepository.me(it.userId)) {
                         TextButton(
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -78,8 +78,6 @@ fun MyStudiosWidget(
                                     Screen.Home
                                 )
                             },
-//                            border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor),
-//                            elevation = ButtonDefaults.elevatedButtonElevation(1.dp)
                         ) {
                             Text(
                                 it.name, softWrap = false,
@@ -87,32 +85,7 @@ fun MyStudiosWidget(
                             )
                             if (it.id == localToolAgent.id) Badge(Modifier.padding(start=8.dp)) { Text("This device") }
                         }
-
                     }
-//                    if (it.id != 0L && UserRepository.me(it.userId)) ListItem(
-////                        modifier = Modifier.clickable(
-////                            enabled = it.status == AIPortToolMaker.STATUS_ON
-////                        ) {
-////                            generalViewModel.currentScreen(Screen.MyStudio(it))
-////                        },
-//                        headlineContent = {
-//                            Text(
-//                                it.name, softWrap = false,
-//                                overflow = TextOverflow.MiddleEllipsis
-//                            )
-//                        },
-//                        supportingContent = {
-//                            if (it.id == localToolAgent.id)
-//                                Tag("This device")
-//                        },
-//                        trailingContent = {
-//                            if (it.status == 0) Icon(
-//                                painterResource(Res.drawable.cloud_off),
-//                                contentDescription = "Offline",
-//                                tint = MaterialTheme.colorScheme.error
-//                            )
-//                        },
-//                    )
                 }
             }
         } else if (getPlatform().type == 0) Column(
