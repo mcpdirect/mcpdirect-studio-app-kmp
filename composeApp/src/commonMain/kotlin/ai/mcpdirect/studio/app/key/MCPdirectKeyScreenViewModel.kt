@@ -27,7 +27,7 @@ import kotlin.collections.set
 class MCPdirectKeyScreenViewModel: ViewModel() {
     var expanded by mutableStateOf(false)
     val toolMakerCandidateFilter = MutableStateFlow("")
-    val toolMakerFilter = MutableStateFlow("")
+//    val toolMakerFilter = MutableStateFlow("")
     var accessKey by mutableStateOf<AIPortToolAccessKey?>(null)
         private set
     private val _toolPermissions = mutableStateMapOf<Long, AIPortToolPermission>()
@@ -42,9 +42,9 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
 
     private val _toolMarkerCandidateIds = MutableStateFlow(mutableSetOf<Long>())
     val toolMarkerCandidateIds: StateFlow<Set<Long>> = _toolMarkerCandidateIds
-    fun toolMarkerCandidate(toolMaker: AIPortToolMaker): Boolean{
-        return toolMaker.id in _toolMarkerCandidateIds.value
-    }
+//    fun toolMarkerCandidate(toolMaker: AIPortToolMaker): Boolean{
+//        return toolMaker.id in _toolMarkerCandidateIds.value
+//    }
     val toolMarkerCandidates : StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
         _toolMarkerCandidateIds,
@@ -56,16 +56,16 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    val toolMarkers : StateFlow<List<AIPortToolMaker>> = combine(
-        ToolRepository.toolMakers,
-        toolMakerFilter
-    ){ makers,filter ->
-        makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase())) }.toList()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+//    val toolMarkers : StateFlow<List<AIPortToolMaker>> = combine(
+//        ToolRepository.toolMakers,
+//        toolMakerFilter
+//    ){ makers,filter ->
+//        makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase())) }.toList()
+//    }.stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(5000),
+//        initialValue = emptyList()
+//    )
     private fun <T : AIPortToolPermission> onLoadToolPermissions(resp: AIPortServiceResponse<List<T>>) {
         if (resp.successful()) resp.data?.let { data->
             data.forEach {

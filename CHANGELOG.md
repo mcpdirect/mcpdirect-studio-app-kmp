@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced MCP server selection with improved component architecture
+
+### Details
+- Enhanced MCPServersComponent with improved selection functionality
+- Added proper state management for MCP server selection
+- Improved UI with better component organization in MCP server selection
+- Enhanced MCPdirectKeyScreen with improved MCP server selection workflow
+- Added proper state synchronization for MCP server selection
+- Improved UI with better visual feedback for MCP server selection states
+- Enhanced component architecture with better separation of concerns
+- Added proper event handling for MCP server selection changes
+- Improved UI with better component state management for server selection
+- Enhanced selection workflow with accurate state updates
+
+## [January 2, 2026]
+### Summary
 Enhanced UI with StudioSearchbar component and improved filtering functionality
 
 ### Details

@@ -276,8 +276,22 @@ object ToolRepository {
             }
         }
     }
-
-    suspend fun loadVirtualTools(userId:Long=0, toolMaker: AIPortToolMaker, force:Boolean=false) {
+    private fun respondLoadVirtualTools(makerId:Long):AIPortServiceResponse<List<AIPortVirtualTool>>{
+        val tools = mutableListOf<AIPortVirtualTool>()
+        _virtualTools.value.values.forEach {
+            if(it.makerId==makerId) {
+                tools.add(it)
+            }
+        }
+        val respData = AIPortServiceResponse<List<AIPortVirtualTool>>()
+        respData.code = 0;
+        respData.data = tools
+        return respData
+    }
+    suspend fun loadVirtualTools(
+        toolMaker: AIPortToolMaker, force:Boolean=false,
+        onResponse: ((resp: AIPortServiceResponse<List<AIPortVirtualTool>>) -> Unit)?=null
+    ) {
         val makerId = toolMaker.id
         loadMutex.withLock {
             val now = TimeSource.Monotonic.markNow()
@@ -285,7 +299,7 @@ object ToolRepository {
             if(lastQuery==null|| (force&&lastQuery.elapsedNow()>_duration)) {
                 generalViewModel.loading()
                 getPlatform().queryVirtualTools(
-                    userId = userId,
+//                    userId = userId,
                     makerId = makerId,
                     lastUpdated = if(lastQuery==null) 0L else currentMilliseconds()
                 ) {
@@ -298,9 +312,15 @@ object ToolRepository {
                             }
                         }
                         _virtualToolLastQueries[makerId] = now
-                    }
+                        onResponse?.let {
+                            it(respondLoadVirtualTools(makerId))
+                        }
+                    } else if(onResponse!=null) onResponse(it)
                     generalViewModel.loaded("Load Virtual Tools of #${toolMaker.name}",it.code,it.message)
+
                 }
+            }else onResponse?.let {
+                it(respondLoadVirtualTools(makerId))
             }
         }
     }

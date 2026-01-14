@@ -56,7 +56,7 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
         val dialog: MCPKeyDialog = MCPKeyDialog.None
     ):Screen(Res.string.mcp_keys,Res.drawable.key)
 
-    object VirtualMCP : Screen(
+    data class VirtualMCP(val toolMaker: AIPortToolMaker?=null) : Screen(
         Res.string.virtual_mcp,
         Res.drawable.design_services)
     object VirtualMCPToolConfig : Screen(

@@ -21,6 +21,7 @@ import ai.mcpdirect.studio.app.tips.QuickStartScreen
 import ai.mcpdirect.studio.app.tips.TipsScreen
 import ai.mcpdirect.studio.app.tool.MCPToolsScreen
 import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
+import ai.mcpdirect.studio.app.virtualmcp.VirtualMCPScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -106,8 +107,9 @@ fun App(
                         is Screen.MCPTeamToolMakerTemplate -> {
                             MCPTeamToolMakerTemplateScreen(screen.team)
                         }
-                        Screen.VirtualMCP -> {
-                            VirtualMakerScreen()
+                        is Screen.VirtualMCP -> {
+//                            VirtualMakerScreen()
+                            VirtualMCPScreen(screen.toolMaker)
                         }
                         Screen.VirtualMCPToolConfig -> {
                             VirtualMakerToolConfigScreen()

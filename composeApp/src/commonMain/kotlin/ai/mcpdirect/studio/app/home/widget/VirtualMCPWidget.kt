@@ -49,7 +49,7 @@ fun VirtualMCPWidget(
             IconButton(
                 onClick = {
                     generalViewModel.currentScreen(
-                        Screen.MyStudio(),
+                        Screen.VirtualMCP(),
                         "Create Virtual MCP",
                         Screen.Home
                     )
@@ -87,12 +87,17 @@ fun VirtualMCPWidget(
                                 Spacer(Modifier.weight(1.0f))
                                 IconButton(
                                     onClick = {
+                                        generalViewModel.currentScreen(
+                                            Screen.VirtualMCP(toolMaker),
+                                            "Virtual MCP",
+                                            Screen.Home
+                                        )
                                     },
                                     modifier = Modifier.size(32.dp)
                                 ) {
                                     Icon(
                                         painterResource(Res.drawable.setting_config),
-                                        "Create Virtual MCP",
+                                        "Virtual MCP",
                                         modifier = Modifier.size(16.dp),
                                     )
                                 }

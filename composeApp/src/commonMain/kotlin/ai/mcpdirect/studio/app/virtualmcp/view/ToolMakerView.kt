@@ -1,12 +1,10 @@
-package ai.mcpdirect.studio.app.key.view
+package ai.mcpdirect.studio.app.virtualmcp.view
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolPermission
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
-import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualToolPermission
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import androidx.compose.foundation.hoverable
@@ -25,18 +23,16 @@ import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
-class GrantToolPermissionViewModel : ViewModel() {
-    var expanded by mutableStateOf(false)
+class ToolMakerViewModel : ViewModel() {
     var toolAgent by mutableStateOf<AIPortToolAgent?>(null)
+    var expanded by mutableStateOf(false)
     val toolMaker = MutableStateFlow<AIPortToolMaker?>(null)
     val tools : StateFlow<List<AIPortTool>> = combine(
         ToolRepository.tools,
-        ToolRepository.virtualTools,
         toolMaker
-    ){ tools,vtools,maker ->
+    ){ tools,maker ->
         if(maker!=null) {
-            if(maker.type==0) vtools.values.filter { it.makerId == maker.id }.toList()
-            else tools.values.filter { it.makerId == maker.id }.toList()
+            tools.values.filter { it.makerId == maker.id }.toList()
         }
         else emptyList()
     }.stateIn(
@@ -47,7 +43,7 @@ class GrantToolPermissionViewModel : ViewModel() {
     var selectedTools = MutableStateFlow<Map<Long,Boolean>>(emptyMap())
     var selectedToolCount by mutableStateOf(0)
     fun selectTools(
-        toolPermissions: Map<Long,AIPortToolPermission>
+        virtualTools: Map<Long, AIPortVirtualTool>
     ){
         toolMaker.value?.let { toolMaker->
             selectedTools.update { map->
@@ -56,12 +52,11 @@ class GrantToolPermissionViewModel : ViewModel() {
                 }
             }
             selectedToolCount = 0
-            toolPermissions.values.forEach {
-                if(it.makerId == toolMaker.id&&it.status>0) {
+            virtualTools.values.forEach {
+                if(it.originalMakerId == toolMaker.id&&it.status>0) {
                     selectedTools.update { map->
                         map.toMutableMap().apply {
-                            if(it is AIPortVirtualToolPermission) put(it.originalToolId,true)
-                            else put(it.toolId,true)
+                            put(it.toolId,true)
                         }
                     }
                     selectedToolCount++
@@ -70,21 +65,21 @@ class GrantToolPermissionViewModel : ViewModel() {
         }
     }
     fun toolMaker(maker: AIPortToolMaker){
-        toolMaker.value = maker
-        viewModelScope.launch {
-            if(maker.type>0) ToolRepository.loadTools(maker.userId,maker)
-            else ToolRepository.loadVirtualTools(maker)
-            StudioRepository.toolAgent(maker.agentId){
-                if(it.successful()) it.data?.let { toolAgent = it }
+        if(maker.type>0) {
+            toolMaker.value = maker
+            viewModelScope.launch {
+                ToolRepository.loadTools(maker.userId, maker)
+                StudioRepository.toolAgent(maker.agentId){
+                    if(it.successful()) it.data?.let { toolAgent = it }
+                }
             }
         }
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GrantToolPermissionView(
-//    toolMaker: AIPortToolMaker,
-    viewModel: GrantToolPermissionViewModel,
+fun ToolMakerView(
+    viewModel: ToolMakerViewModel,
     onReset:()-> Unit,
     onPermissionsChange: (checked:Boolean,tools:List<AIPortTool>)->Unit,
 ){

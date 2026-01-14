@@ -25,9 +25,9 @@ class MCPServersComponentViewModel : ViewModel() {
     val toolMakers: StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
         toolMakerFilter
-    ) { makers, toolMakerFilter ->
-        makers.values.filter { maker-> toolMakerFilter.isEmpty()||maker.name.lowercase().contains(toolMakerFilter.lowercase()) }.toList()
-    }.stateIn(
+    ) { makers, toolMakerFilter -> makers.values.filter { maker->
+        toolMakerFilter.isEmpty()||maker.name.lowercase().contains(toolMakerFilter.lowercase())
+    }.toList() }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()

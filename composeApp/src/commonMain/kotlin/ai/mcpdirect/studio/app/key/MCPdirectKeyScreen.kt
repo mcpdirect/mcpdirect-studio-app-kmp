@@ -1,7 +1,6 @@
 package ai.mcpdirect.studio.app.key
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
-import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioSearchbar
 import ai.mcpdirect.studio.app.key.component.MCPdirectKeysComponent
 import ai.mcpdirect.studio.app.key.view.GrantToolPermissionView
@@ -13,10 +12,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import mcpdirectstudioapp.composeapp.generated.resources.*
+import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
+import mcpdirectstudioapp.composeapp.generated.resources.expand_all
+import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -27,7 +28,7 @@ fun MCPdirectKeyScreen(
     val viewModel by remember {mutableStateOf(MCPdirectKeyScreenViewModel())}
     val grantViewModels = remember { mutableMapOf<Long, GrantToolPermissionViewModel>() }
     val toolMakerCandidates by viewModel.toolMarkerCandidates.collectAsState()
-    val toolMakers by viewModel.toolMarkers.collectAsState()
+//    val toolMakers by viewModel.toolMarkers.collectAsState()
     val ids by viewModel.toolMarkerCandidateIds.collectAsState()
     Row(Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),) {
@@ -74,14 +75,14 @@ fun MCPdirectKeyScreen(
                                 grantViewModel.toolMaker(toolMaker)
                                 if(toolMaker.type==0){
                                     grantViewModel.selectTools(viewModel.virtualToolPermissions)
-                                    grantViewModel.selectedToolCount = viewModel.virtualToolPermissions.values.count {
-                                        it.status > 0 && it.makerId == toolMaker.id
-                                    }
+//                                    grantViewModel.selectedToolCount = viewModel.virtualToolPermissions.values.count {
+//                                        it.status > 0 && it.makerId == toolMaker.id
+//                                    }
                                 }else {
                                     grantViewModel.selectTools(viewModel.toolPermissions)
-                                    grantViewModel.selectedToolCount = viewModel.toolPermissions.values.count {
-                                        it.status > 0 && it.makerId == toolMaker.id
-                                    }
+//                                    grantViewModel.selectedToolCount = viewModel.toolPermissions.values.count {
+//                                        it.status > 0 && it.makerId == toolMaker.id
+//                                    }
                                 }
                                 grantViewModels[toolMaker.id] = grantViewModel
                             }

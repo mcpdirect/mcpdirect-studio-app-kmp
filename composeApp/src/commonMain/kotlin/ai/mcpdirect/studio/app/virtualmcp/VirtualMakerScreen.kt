@@ -326,7 +326,7 @@ private fun MakerDetailView(
                 onClick = { generalViewModel.currentScreen(
                     Screen.VirtualMCPToolConfig,
                     "Tool Config for ${maker.name}",
-                    Screen.VirtualMCP) }
+                    Screen.VirtualMCP()) }
             )
             TooltipIconButton(
                 Res.drawable.restart_alt,
