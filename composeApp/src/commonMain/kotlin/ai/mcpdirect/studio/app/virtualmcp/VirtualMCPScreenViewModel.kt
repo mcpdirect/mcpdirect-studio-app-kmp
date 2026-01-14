@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.virtualmcp
 
+import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_VIRTUAL
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlin.collections.set
 
 class VirtualMCPScreenViewModel: ViewModel() {
     var expanded by mutableStateOf(false)
@@ -78,11 +80,78 @@ class VirtualMCPScreenViewModel: ViewModel() {
         _toolMarkerCandidateIds.update { set->
             set.toMutableSet().apply { add(toolMaker.id) }
         }
-//        resetPermissions(toolMaker)
+        resetTools(toolMaker)
     }
     fun cancelNomination(toolMaker: AIPortToolMaker) {
         _toolMarkerCandidateIds.update { set->
             set.toMutableSet().apply { remove(toolMaker.id) }
+        }
+    }
+    fun selectTools(selected: Boolean, tools: List<AIPortTool>){
+        currentToolMaker?.let { toolMaker ->
+            tools.forEach { tool ->
+                var virtualTool = virtualTools.remove(tool.id)
+                if(virtualTool!=null){
+                    if(virtualTool.status==Short.MAX_VALUE.toInt()){
+                        if(selected) virtualTools[virtualTool.toolId]=virtualTool
+                        else virtualToolCount--
+                    }else {
+                        if (selected) {
+                            virtualTool.status = 1
+                            virtualToolCount++
+                        } else {
+                            virtualTool.status = 0
+                            virtualToolCount--
+                        }
+                        virtualTools[virtualTool.toolId]=virtualTool
+                    }
+                }else if(selected) {
+                    virtualTool = AIPortVirtualTool()
+                    virtualTool.toolId = tool.id
+                    virtualTool.status = Short.MAX_VALUE.toInt()
+                    virtualTool.makerId = toolMaker.id
+                    virtualTool.originalMakerId = tool.makerId
+                    virtualTool.agentId = 0
+                    virtualTools[virtualTool.toolId]=virtualTool
+                    virtualToolCount++
+                }
+            }
+        }
+    }
+    fun resetTools(toolMaker: AIPortToolMaker){
+        for(p in virtualTools.values){
+            if(p.originalMakerId==toolMaker.id){
+                virtualTools.remove(p.toolId)
+                if(p.status>0){
+                    virtualToolCount--
+                }
+            }
+        }
+        for(p in _virtualTools.values){
+            if(p.originalMakerId==toolMaker.id) {
+                virtualTools[p.toolId] = p.copy()
+                if(p.status>0){
+                    virtualToolCount++
+                }
+            }
+        }
+    }
+    fun resetAllTools(){
+        virtualTools.clear()
+        virtualToolCount = 0
+        _toolMarkerCandidateIds.update { set->
+            set.toMutableSet().apply {
+                clear()
+            }
+        }
+        for(p in _virtualTools.values){
+            virtualTools[p.toolId] = p.copy()
+            if (p.status > 0) {
+                virtualToolCount++
+                _toolMarkerCandidateIds.update { set ->
+                    set.toMutableSet().apply { add(p.originalMakerId) }
+                }
+            }
         }
     }
 }

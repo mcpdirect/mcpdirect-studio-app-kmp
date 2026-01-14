@@ -53,7 +53,7 @@ fun VirtualMCPScreen(
                     ){
                         IconButton(onClick = {
                             grantViewModels.clear()
-//                            viewModel.resetAllPermissions()
+                            viewModel.resetAllTools()
                         }){
                             Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)
                         }
@@ -87,12 +87,12 @@ fun VirtualMCPScreen(
                             ToolMakerView(
                                 grantViewModel,
                                 {
-//                                    viewModel.resetPermissions(toolMaker)
+                                    viewModel.resetTools(toolMaker)
                                     if(toolMaker.type==0) grantViewModel.selectTools(viewModel.virtualTools)
                                     else grantViewModel.selectTools(viewModel.virtualTools)
                                 }
                             ){ permitted, tools ->
-//                                viewModel.permit(permitted, tools)
+                                viewModel.selectTools(permitted, tools)
                             }
                         }
                     }
@@ -113,7 +113,7 @@ fun VirtualMCPScreen(
                 else {
                     val v = grantViewModels.remove(toolMaker.id)
                     if(v!=null){
-//                        viewModel.permit(false,v.tools.value)
+                        viewModel.selectTools(false,v.tools.value)
                     }
                     viewModel.cancelNomination(toolMaker)
                 }

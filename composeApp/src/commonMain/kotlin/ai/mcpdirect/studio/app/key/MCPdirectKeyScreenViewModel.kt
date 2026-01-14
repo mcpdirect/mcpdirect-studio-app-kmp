@@ -135,7 +135,8 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
                     var permission = virtualToolPermissions.remove(tool.toolId)
                     if(permission!=null){
                         if(permission.status==Short.MAX_VALUE.toInt()){
-                            virtualToolPermissionCount--
+                            if(permitted) virtualToolPermissions[permission.originalToolId]=permission
+                            else virtualToolPermissionCount--
                         }else {
                             if (permitted) {
                                 permission.status = 1
@@ -161,7 +162,8 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
                     var permission = toolPermissions.remove(tool.id)
                     if (permission != null) {
                         if (permission.status == Short.MAX_VALUE.toInt()) {
-                            if(!permitted) toolPermissionCount--
+                            if(permitted) toolPermissions[permission.toolId] = permission
+                            else toolPermissionCount--
                         } else {
                             if (permitted&&permission.status==0) {
                                 permission.status = 1

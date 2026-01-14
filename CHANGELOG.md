@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced Virtual MCP functionality with new screens and improved component architecture
+
+### Details
+- Added VirtualMCPScreen for managing virtual MCP servers
+- Enhanced VirtualMCPWidget with improved navigation and functionality
+- Added VirtualToolMakersView for managing virtual tool makers
+- Improved UI with better component organization in virtual MCP management
+- Enhanced tool maker filtering with separate virtual tool makers
+- Added proper state management for virtual tool makers
+- Improved UI with better navigation between virtual MCP components
+- Enhanced component architecture with better separation of concerns
+- Added proper event handling for virtual tool maker selection
+- Improved UI with better visual feedback for virtual MCP states
+
+## [January 2, 2026]
+### Summary
 Enhanced MCP server selection with improved component architecture
 
 ### Details
