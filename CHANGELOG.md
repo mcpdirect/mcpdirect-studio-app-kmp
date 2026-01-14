@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced UI with StudioSearchbar component and improved filtering functionality
+
+### Details
+- Added StudioSearchbar component for consistent search functionality
+- Enhanced MCPServersWidget with search filtering capability
+- Improved VirtualMCPWidget with search filtering functionality
+- Enhanced HomeViewModel with tool maker filtering state management
+- Added proper state handling for tool maker and virtual tool maker filtering
+- Improved UI with better search bar integration in permission management
+- Enhanced MCPdirectKeyScreen with improved filtering and search functionality
+- Added proper state synchronization for search filters
+- Improved UI with better component organization and search integration
+- Enhanced permission management with accurate search filtering
+
+## [January 2, 2026]
+### Summary
 Enhanced Home screen with Virtual MCP widget and improved UI components
 
 ### Details

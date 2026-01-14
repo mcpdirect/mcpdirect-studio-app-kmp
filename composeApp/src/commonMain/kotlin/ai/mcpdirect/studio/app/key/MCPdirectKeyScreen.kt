@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.compose.StudioSearchbar
 import ai.mcpdirect.studio.app.key.component.MCPdirectKeysComponent
 import ai.mcpdirect.studio.app.key.view.GrantToolPermissionView
 import ai.mcpdirect.studio.app.key.view.GrantToolPermissionViewModel
+import ai.mcpdirect.studio.app.mcp.component.MCPServersComponent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,9 +26,9 @@ fun MCPdirectKeyScreen(
 ){
     val viewModel by remember {mutableStateOf(MCPdirectKeyScreenViewModel())}
     val grantViewModels = remember { mutableMapOf<Long, GrantToolPermissionViewModel>() }
-    val toolMakers by viewModel.toolMarkerCandidates.collectAsState()
-    val toolMakerCandidates by viewModel.toolMarkers.collectAsState()
-
+    val toolMakerCandidates by viewModel.toolMarkerCandidates.collectAsState()
+    val toolMakers by viewModel.toolMarkers.collectAsState()
+    val ids by viewModel.toolMarkerCandidateIds.collectAsState()
     Row(Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),) {
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
@@ -66,7 +67,7 @@ fun MCPdirectKeyScreen(
                         viewModel.toolMakerCandidateFilter.value = it
                     }
                     LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(toolMakers){ toolMaker->
+                        items(toolMakerCandidates){ toolMaker->
                             var grantViewModel = grantViewModels[toolMaker.id]
                             if(grantViewModel == null) {
                                 grantViewModel = GrantToolPermissionViewModel()
@@ -103,54 +104,66 @@ fun MCPdirectKeyScreen(
                 Text("Grant")
             }
         }
-
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-            StudioActionBar(
-                title = "MCP Servers",
-            )
-            HorizontalDivider()
-            StudioSearchbar(modifier = Modifier.padding(16.dp)) {
-                viewModel.toolMakerFilter.value = it
-            }
-            if(toolMakerCandidates.isEmpty()) StudioBoard(Modifier.weight(1f)) {
-                Icon(
-                    painterResource(Res.drawable.search_off),
-                    contentDescription = null,
-                    modifier = Modifier.size(80.dp).padding(bottom = 16.dp)
-                )
-                Text("No MCP server found.")
-            } else {
-                val ids by viewModel.toolMarkerCandidateIds.collectAsState()
-                LazyColumn(Modifier.padding(start=16.dp,end=16.dp)) {
-                    items(toolMakerCandidates){ toolMaker ->
-                        var checked by remember{ mutableStateOf(false) }
-                        LaunchedEffect(ids){
-                            checked = toolMaker.id in ids
-                        }
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Checkbox(
-                                checked = checked,
-                                onCheckedChange = {
-                                    checked = it
-                                    if(checked) viewModel.nominate(toolMaker)
-                                    else {
-                                        val v = grantViewModels.remove(toolMaker.id)
-                                        if(v!=null){
-                                            viewModel.permit(false,v.tools.value)
-                                        }
-                                        viewModel.cancelNomination(toolMaker)
-                                    }
-                                },
-                            )
-                            Text(toolMaker.name)
-                        }
+            MCPServersComponent(selectedMCPServers = ids, modifier = Modifier.fillMaxHeight())
+            { selected, toolMaker ->
+                if(selected) viewModel.nominate(toolMaker)
+                else {
+                    val v = grantViewModels.remove(toolMaker.id)
+                    if(v!=null){
+                        viewModel.permit(false,v.tools.value)
                     }
+                    viewModel.cancelNomination(toolMaker)
                 }
             }
         }
+//        OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
+//            StudioActionBar(
+//                title = "MCP Servers",
+//            )
+//            HorizontalDivider()
+//            StudioSearchbar(modifier = Modifier.padding(16.dp)) {
+//                viewModel.toolMakerFilter.value = it
+//            }
+//            if(toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {
+//                Icon(
+//                    painterResource(Res.drawable.search_off),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(80.dp).padding(bottom = 16.dp)
+//                )
+//                Text("No MCP server found.")
+//            } else {
+//                val ids by viewModel.toolMarkerCandidateIds.collectAsState()
+//                LazyColumn(Modifier.padding(start=16.dp,end=16.dp)) {
+//                    items(toolMakers){ toolMaker ->
+//                        var checked by remember{ mutableStateOf(false) }
+//                        LaunchedEffect(ids){
+//                            checked = toolMaker.id in ids
+//                        }
+//                        Row(
+//                            Modifier.fillMaxWidth(),
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+//                        ) {
+//                            Checkbox(
+//                                checked = checked,
+//                                onCheckedChange = {
+//                                    checked = it
+//                                    if(checked) viewModel.nominate(toolMaker)
+//                                    else {
+//                                        val v = grantViewModels.remove(toolMaker.id)
+//                                        if(v!=null){
+//                                            viewModel.permit(false,v.tools.value)
+//                                        }
+//                                        viewModel.cancelNomination(toolMaker)
+//                                    }
+//                                },
+//                            )
+//                            Text(toolMaker.name)
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }
