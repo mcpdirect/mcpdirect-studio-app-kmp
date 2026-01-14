@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.home.widget
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.compose.StudioSearchbar
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
@@ -60,10 +61,13 @@ fun MCPServersWidget(
                 )
             }
         }
+        StudioSearchbar(modifier=Modifier.padding(end=11.dp)) {
+            viewModel.toolMakerFilter.value = it
+        }
         if (toolMakers.isNotEmpty()) {
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).padding(top = 8.dp)) {
                 FlowRow(
-                    Modifier.verticalScroll(scrollState).padding(end = 11.dp),
+                    Modifier.verticalScroll(scrollState).padding( end = 11.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     maxItemsInEachRow = 2

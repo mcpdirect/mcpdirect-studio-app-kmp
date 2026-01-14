@@ -58,9 +58,8 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
     )
     val toolMarkers : StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
-        _toolMarkerCandidateIds,
         toolMakerFilter
-    ){ makers,ids,filter ->
+    ){ makers,filter ->
         makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase())) }.toList()
     }.stateIn(
         scope = viewModelScope,

@@ -2,11 +2,16 @@ package ai.mcpdirect.studio.app.home.widget
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.compose.StudioSearchbar
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,10 +31,11 @@ fun VirtualMCPWidget(
     modifier: Modifier
 ){
     val toolMakers by viewModel.virtualToolMakers.collectAsState()
+    val scrollState = rememberScrollState()
     LaunchedEffect(viewModel) {
         viewModel.refreshToolMakers(true)
     }
-    Column(modifier.padding(start =16.dp,end = 16.dp,bottom = 16.dp)) {
+    Column(modifier.padding(start =16.dp,end = 5.dp,bottom = 16.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -55,41 +61,51 @@ fun VirtualMCPWidget(
                 )
             }
         }
+        StudioSearchbar(modifier=Modifier.padding(end=11.dp)) {
+            viewModel.virtualToolMakerFilter.value = it
+        }
         if (toolMakers.isNotEmpty()) {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                maxItemsInEachRow = 2
-            ) {
-                toolMakers.forEach { toolMaker ->
-                    OutlinedCard(Modifier.weight(1f).height(80.dp)) {
-                        Row(
-                            Modifier.padding(horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                toolMaker.name,
-                                modifier = Modifier.padding(8.dp),
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Spacer(Modifier.weight(1.0f))
-                            IconButton(
-                                onClick = {
-                                },
-                                modifier = Modifier.size(32.dp)
+            Box(Modifier.weight(1f).padding(top = 8.dp)) {
+                FlowRow(
+                    Modifier.verticalScroll(scrollState).padding( end = 11.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    maxItemsInEachRow = 2
+                ) {
+                    toolMakers.forEach { toolMaker ->
+                        OutlinedCard(Modifier.weight(1f).height(80.dp)) {
+                            Row(
+                                Modifier.padding(horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Icon(
-                                    painterResource(Res.drawable.setting_config),
-                                    "Create Virtual MCP",
-                                    modifier = Modifier.size(16.dp),
+                                Text(
+                                    toolMaker.name,
+                                    modifier = Modifier.padding(8.dp),
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.bodyMedium
                                 )
+                                Spacer(Modifier.weight(1.0f))
+                                IconButton(
+                                    onClick = {
+                                    },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        painterResource(Res.drawable.setting_config),
+                                        "Create Virtual MCP",
+                                        modifier = Modifier.size(16.dp),
+                                    )
+                                }
                             }
+
                         }
 
                     }
-
                 }
+                VerticalScrollbar(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    adapter = rememberScrollbarAdapter(scrollState = scrollState)
+                )
             }
         } else if (getPlatform().type == 0) Column(
             Modifier.fillMaxSize(),

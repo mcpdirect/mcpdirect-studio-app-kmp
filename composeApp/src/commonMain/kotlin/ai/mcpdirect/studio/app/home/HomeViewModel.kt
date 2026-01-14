@@ -13,8 +13,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -46,20 +48,28 @@ class HomeViewModel: ViewModel() {
             AccessKeyRepository.loadAccessKeys(force)
         }
     }
-    val toolMakers: StateFlow<List<AIPortToolMaker>> = ToolRepository.toolMakers
-        .map { it.values.filter { it.type>0 }.toList() }      // 转为 List
-        .stateIn(
-            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
-            started = SharingStarted.WhileSubscribed(5000), // 按需启动
-            initialValue = emptyList()
-        )
-    val virtualToolMakers: StateFlow<List<AIPortToolMaker>> = ToolRepository.toolMakers
-        .map { it.values.filter { it.type==0 }.toList() }      // 转为 List
-        .stateIn(
-            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
-            started = SharingStarted.WhileSubscribed(5000), // 按需启动
-            initialValue = emptyList()
-        )
+    val toolMakerFilter = MutableStateFlow("")
+    val toolMakers: StateFlow<List<AIPortToolMaker>> = combine(
+        ToolRepository.toolMakers,
+        toolMakerFilter
+    ){ makers,filter ->
+        makers.values.filter { it.type>0&&(filter.isEmpty()||it.name.lowercase().contains(filter.lowercase())) }.toList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+    val virtualToolMakerFilter = MutableStateFlow("")
+    val virtualToolMakers: StateFlow<List<AIPortToolMaker>> = combine(
+        ToolRepository.toolMakers,
+        virtualToolMakerFilter
+    ){ makers,filter ->
+        makers.values.filter { it.type==0&&(filter.isEmpty()||it.name.lowercase().contains(filter.lowercase())) }.toList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
     var showTips by mutableStateOf<Boolean?>(null)
     fun refreshToolMakers(force:Boolean=false){
         viewModelScope.launch {

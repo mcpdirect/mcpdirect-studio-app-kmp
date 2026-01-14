@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced Home screen with Virtual MCP widget and improved UI components
+
+### Details
+- Enhanced HomeScreen with Virtual MCP widget alongside MCP servers
+- Added VirtualMCPWidget for managing virtual MCP servers
+- Improved UI with better component organization and layout
+- Enhanced MCPServersWidget with scrollable content and improved layout
+- Added virtual-machine SVG icon for virtual MCP servers
+- Improved tool maker filtering with separate virtual tool makers
+- Enhanced UI with better spacing and component arrangement
+- Added proper state management for virtual tool makers
+- Improved UI with better visual feedback for MCP server states
+- Enhanced component organization with better layout arrangement
+
+## [January 2, 2026]
+### Summary
 Enhanced tool agent management with improved initialization and state handling
 
 ### Details
