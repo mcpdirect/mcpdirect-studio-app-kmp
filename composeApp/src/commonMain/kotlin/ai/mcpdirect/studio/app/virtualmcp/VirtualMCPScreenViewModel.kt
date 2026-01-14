@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.virtualmcp
 
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_VIRTUAL
@@ -167,10 +168,15 @@ class VirtualMCPScreenViewModel: ViewModel() {
             if(tools.isNotEmpty()){
                 viewModelScope.launch {
                     ToolRepository.modifyVirtualTools(toolMaker,tools.values.toList()){
-                        if(it.successful()) it.data?.let { currentToolMaker(toolMaker) }
+                        if(it.successful()) it.data?.let {
+                            currentToolMaker(toolMaker)
+                            generalViewModel.showSnackbar("${toolMaker.name} update successfully")
+                        } else {
+                            generalViewModel.showSnackbar("${toolMaker.name} update failed","Error",true)
+                        }
                     }
                 }
-            }
+            }else generalViewModel.showSnackbar("No change in ${toolMaker.name}")
         }
     }
 }
