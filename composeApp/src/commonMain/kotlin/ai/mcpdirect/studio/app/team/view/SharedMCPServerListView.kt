@@ -163,7 +163,12 @@ fun SharedMCPServerListView(
             }
             LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(toolMakers){ toolMaker->
-                    SharedMCPServerView(toolMaker,expanded,Modifier.fillMaxWidth())
+                    SharedMCPServerView(
+                        toolMaker,
+                        expanded,
+                        if(editable) toolMaker.id in sharedToolMakers else null,
+                        Modifier.fillMaxWidth()
+                    )
                 }
 //                items(sharedToolMakers){ toolMaker->
 //                    SharedMCPServerView(toolMaker,expanded,Modifier.fillMaxWidth())

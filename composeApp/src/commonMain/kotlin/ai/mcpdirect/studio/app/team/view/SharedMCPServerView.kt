@@ -63,6 +63,7 @@ class SharedMCPServerViewModel : ViewModel() {
 fun SharedMCPServerView(
     toolMaker: AIPortToolMaker,
     expanded: Boolean = false,
+    selectable: Boolean? = null,
     modifier: Modifier,
 ){
     val viewModel by remember { mutableStateOf(SharedMCPServerViewModel()) }
@@ -75,9 +76,20 @@ fun SharedMCPServerView(
 //    val toolMaker by viewModel.toolMaker.collectAsState()
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
     val tools by viewModel.tools.collectAsState()
+
 //    toolMaker?.let { toolMaker ->
         OutlinedCard(modifier) {
-            StudioActionBar("${toolMaker.name} (${tools.size})") {
+            StudioActionBar(
+                "${toolMaker.name} (${tools.size})",
+                navigationIcon = {
+                    selectable?.let {
+                        var checked by remember { mutableStateOf(selectable) }
+                        Checkbox(checked = checked,onCheckedChange = {
+                            checked = it
+                        }, Modifier.size(32.dp))
+                    }
+                }
+            ) {
                 IconButton(onClick = { viewModel.expanded = !viewModel.expanded }, modifier = Modifier.size(32.dp)) {
                     val icon = if (viewModel.expanded) Res.drawable.collapse_all else Res.drawable.expand_all
                     Icon(painterResource(icon), contentDescription = null, Modifier.size(20.dp))
