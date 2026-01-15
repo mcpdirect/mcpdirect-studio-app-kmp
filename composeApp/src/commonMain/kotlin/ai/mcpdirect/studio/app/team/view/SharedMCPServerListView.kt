@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -93,8 +94,10 @@ class SharedMCPServerListViewModel: ViewModel() {
         toolMakerFilter,
         editable
     ) { makers,sharedToolMakers, toolMakerFilter,editable -> makers.values.filter { maker->
-        if(editable) toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true)
-        else maker.id in sharedToolMakers && (toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true))
+        if(editable)
+            UserRepository.me(maker.userId)&&(toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true))
+        else
+            maker.id in sharedToolMakers && (toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true))
     }.sortedBy { it.name } }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
