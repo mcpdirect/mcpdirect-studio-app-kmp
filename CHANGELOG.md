@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced MCP server component with improved user filtering and access control
+
+### Details
+- Enhanced MCPServersComponent with improved filtering based on user ownership
+- Added showMyMCPServerOnly parameter for user-specific server filtering
+- Improved UI with better access control in MCP server component
+- Enhanced MCP server filtering with accurate user identification checks
+- Added UserRepository import for user access validation in MCP server component
+- Improved UI with better visual feedback for user-specific server filtering
+- Enhanced MCP server management with accurate user-based filtering
+- Added proper state handling for user-specific server access
+- Improved filtering logic with conditional rendering based on user ownership
+- Enhanced component organization with better user access control in MCP server views
+
+## [January 2, 2026]
+### Summary
 Enhanced Home screen with improved virtual tool maker filtering and user access control
 
 ### Details

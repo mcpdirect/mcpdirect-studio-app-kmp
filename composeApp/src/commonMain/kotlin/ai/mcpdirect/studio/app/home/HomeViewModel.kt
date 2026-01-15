@@ -54,7 +54,7 @@ class HomeViewModel: ViewModel() {
         ToolRepository.toolMakers,
         toolMakerFilter
     ){ makers,filter ->
-        makers.values.filter { it.type>0&&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true)) }.toList()
+        makers.values.filter { it.type>0&& UserRepository.me(it.userId) &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true)) }.toList()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
