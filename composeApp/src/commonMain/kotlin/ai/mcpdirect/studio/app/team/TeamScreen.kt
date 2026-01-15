@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.team.view.SharedMCPServerListView
 import ai.mcpdirect.studio.app.team.view.SharedMCPServerView
 import ai.mcpdirect.studio.app.team.view.TeamListView
+import ai.mcpdirect.studio.app.team.view.TeamMemberView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -55,16 +56,8 @@ fun TeamScreen(
             }
         }
         Column(Modifier.weight(2f)) {
-            viewModel.currentTeam?.let {
-                SharedMCPServerListView(it,Modifier.weight(2f).fillMaxWidth())
-            }?: Card(Modifier.weight(2f).fillMaxWidth()) {
-                Text("Shared MCP Servers", modifier = Modifier.padding(horizontal = 8.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold)
-            }
+            SharedMCPServerListView(viewModel.currentTeam,Modifier.weight(2f).fillMaxWidth())
         }
-        OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-
-        }
+        TeamMemberView(viewModel.currentTeam,Modifier.weight(1f).fillMaxHeight())
     }
 }

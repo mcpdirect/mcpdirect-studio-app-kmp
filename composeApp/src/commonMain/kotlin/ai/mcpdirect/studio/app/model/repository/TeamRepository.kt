@@ -146,13 +146,15 @@ object TeamRepository {
     fun teamToolMaker(teamId: Long,makerId:Long): AIPortTeamToolMaker?{
         return _teamToolMakers.value[TeamKey(teamId,makerId)]
     }
-    suspend fun loadTeamMembers(team: AIPortTeam,
-                                onResponse: (code: Int, message: String?, data: List<AIPortTeamMember>?) -> Unit){
+    suspend fun loadTeamMembers(
+        team: AIPortTeam,
+        onResponse: (resp: AIPortServiceResponse<List<AIPortTeamMember>>) -> Unit
+    ){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().queryTeamMembers(team.id){
                 generalViewModel.loaded("Load Team Member of #${team.name}",it.code,it.message)
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }
@@ -190,12 +192,12 @@ object TeamRepository {
         }
     }
     suspend fun inviteTeamMember(team: AIPortTeam,account:String?,
-                                 onResponse: (code:Int,message:String?,data: AIPortTeamMember?) -> Unit){
+                                 onResponse: (AIPortServiceResponse<AIPortTeamMember>) -> Unit){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().inviteTeamMember(team.id,account){
                 generalViewModel.loaded("Invite Team Member for #${team.name}",it.code,it.message)
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }

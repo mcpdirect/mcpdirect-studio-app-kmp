@@ -126,7 +126,7 @@ fun TeamListView(
                     nameError = text.isBlank() || text.length>20
                     name = text.ifBlank { "" }
                 },
-                label = { Text("Virtual MCP Name") },
+                label = { Text("Team Name") },
                 isError = nameError,
                 supportingText = {
                     Text("Name must not be empty and should have at most 20 characters")

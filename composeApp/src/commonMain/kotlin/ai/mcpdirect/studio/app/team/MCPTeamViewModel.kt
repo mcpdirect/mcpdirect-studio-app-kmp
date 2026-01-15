@@ -200,7 +200,9 @@ class MCPTeamViewModel : ViewModel(){
             TeamRepository.modifyTeam(_mcpTeam.value,name,status,onResponse)
         }
     }
-    fun inviteMCPTeamMember(account:String?,onResponse: (code:Int,message:String?,data: AIPortTeamMember?) -> Unit){
+    fun inviteMCPTeamMember(
+        account:String?,
+        onResponse: (code:Int,message:String?,data: AIPortTeamMember?) -> Unit){
         viewModelScope.launch {
 //            getPlatform().inviteTeamMember(it.id,account){
 //                    (code, message, data) ->
@@ -210,7 +212,7 @@ class MCPTeamViewModel : ViewModel(){
 //                onResponse(code,message)
 //            }
             TeamRepository.inviteTeamMember(_mcpTeam.value,account){
-                code, message, data ->
+                (code, message, data) ->
                 if(code==0&&data!=null){
                     _mcpTeamMembers[data.memberId]=data
                 }
@@ -230,7 +232,7 @@ class MCPTeamViewModel : ViewModel(){
 //                }
 //            }
             TeamRepository.loadTeamMembers(team){
-                    code, message, data ->
+                    (code, message, data) ->
                 if(code==0&&data!=null){
                     data.forEach {
                         _mcpTeamMembers[it.memberId]=it
