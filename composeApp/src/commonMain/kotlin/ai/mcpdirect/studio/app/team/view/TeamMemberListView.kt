@@ -82,6 +82,8 @@ fun TeamMemberView(
     }
     OutlinedCard(modifier) {
         currentTeam?.let { team ->
+            val myId = UserRepository.me.value.id
+            val teamOwner = UserRepository.me(team.ownerId)
             if(invite){
                 StudioActionBar("Invite Member"){
                     TextButton(
@@ -129,10 +131,8 @@ fun TeamMemberView(
                     Text("Invite")
                 }
             }else {
-                val myId = UserRepository.me.value.id
-                val teamOwner = UserRepository.me(team.ownerId)
                 StudioActionBar("Team Members (${viewModel.teamMembers.size})") {
-                    IconButton(
+                    if(teamOwner)IconButton(
                         onClick = { invite = true },
                         modifier = Modifier.size(32.dp)
                     ) {
