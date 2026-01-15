@@ -62,7 +62,7 @@ fun MyTeamsView(
                 onClick = {
                     generalViewModel.currentScreen(
                         Screen.MCPTeam(),
-                        "My Team",
+                        "My Teams",
                         Screen.Home
                     )
                 }
@@ -81,8 +81,8 @@ fun MyTeamsView(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         onClick = {
                             generalViewModel.currentScreen(
-                                Screen.MCPTeam(),
-                                "My Team",
+                                Screen.MCPTeam(team),
+                                "My Teams",
                                 Screen.Home
                             )
                         },

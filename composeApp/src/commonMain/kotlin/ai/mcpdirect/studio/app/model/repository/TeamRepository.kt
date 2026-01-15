@@ -3,6 +3,7 @@ package ai.mcpdirect.studio.app.model.repository
 import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
@@ -155,7 +156,7 @@ object TeamRepository {
             }
         }
     }
-    suspend fun createTeam(teamName:String,onResponse: (code:Int,message:String?,data: AIPortTeam?) -> Unit) {
+    suspend fun createTeam(teamName:String,onResponse: (AIPortServiceResponse<AIPortTeam>) -> Unit) {
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().createTeam(teamName){
@@ -167,7 +168,7 @@ object TeamRepository {
                     }
                 }
                 generalViewModel.loaded("Create Team of #${teamName}",it.code,it.message)
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }

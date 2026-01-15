@@ -34,6 +34,7 @@ sealed class Screen(open val title: StringResource, open val icon: DrawableResou
 //        Res.drawable.groups)
 
     data class MCPTeam(
+        val team: AIPortTeam?=null,
         val dialog: MCPTeamDialog = MCPTeamDialog.None
     ) : Screen(Res.string.mcp_team,
         Res.drawable.groups)

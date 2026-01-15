@@ -63,6 +63,7 @@ import ai.mcpdirect.studio.app.setting.SettingsScreen
 import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerTemplateScreen
+import ai.mcpdirect.studio.app.team.TeamScreen
 import ai.mcpdirect.studio.app.theme.AppTheme
 import ai.mcpdirect.studio.app.tips.QuickStartScreen
 import ai.mcpdirect.studio.app.tips.TipsScreen
@@ -239,7 +240,8 @@ fun main() = application {
                                     )
                                 }
                                 is Screen.MCPTeam -> {
-                                    MCPTeamScreen(screen.dialog,paddingValues)
+//                                    MCPTeamScreen(screen.dialog,paddingValues)
+                                    TeamScreen(screen.team,paddingValues)
                                 }
                                 is Screen.MCPTeamToolMaker -> {
                                     MCPTeamToolMakerScreen(screen.team)

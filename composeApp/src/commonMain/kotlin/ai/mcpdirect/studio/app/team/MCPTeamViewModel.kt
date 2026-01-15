@@ -183,7 +183,9 @@ class MCPTeamViewModel : ViewModel(){
 //                }
 //                onResponse(code,message)
 //            }
-            TeamRepository.createTeam(mcpTeamName,onResponse)
+            TeamRepository.createTeam(mcpTeamName){
+                onResponse(it.code,it.message,it.data)
+            }
         }
     }
     fun modifyMCPTeam(name:String?,status:Int?,onResponse: (code:Int,message:String?,data: AIPortTeam?) -> Unit){

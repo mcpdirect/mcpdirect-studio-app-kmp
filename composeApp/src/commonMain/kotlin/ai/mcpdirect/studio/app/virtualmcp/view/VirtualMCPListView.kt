@@ -1,14 +1,10 @@
 package ai.mcpdirect.studio.app.virtualmcp.view
 
-import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
-import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_VIRTUAL
-import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,15 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlin.collections.set
 
-class VirtualToolMakersViewModel : ViewModel() {
+class VirtualMCPListViewModel : ViewModel() {
     val toolMakerFilter = MutableStateFlow("")
     val toolMakers : StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
@@ -46,19 +37,6 @@ class VirtualToolMakersViewModel : ViewModel() {
     fun currentToolMaker(toolMaker: AIPortToolMaker?){
         currentToolMaker = toolMaker
     }
-//    fun generateMCPdirectKey(
-//        keyName:String,
-//        onResponse: (resp: AIPortServiceResponse<AIPortToolAccessKey>) -> Unit
-//    ) {
-//        viewModelScope.launch {
-//            AccessKeyRepository.generateAccessKey(keyName){
-//                if(it.successful()) it.data?.let { data->
-//                    currentAccessKey = data
-//                }
-//                onResponse(it)
-//            }
-//        }
-//    }
     fun selectedToolMaker(toolMaker: AIPortToolMaker): Boolean{
         return currentToolMaker?.id == toolMaker.id
     }
@@ -74,13 +52,13 @@ class VirtualToolMakersViewModel : ViewModel() {
     }
 }
 @Composable
-fun VirtualToolMakersView(
+fun VirtualMCPListView(
     toolMaker: AIPortToolMaker?=null,
     showKeyGeneration: Boolean = false,
     modifier: Modifier = Modifier,
     onToolMakerChange:(toolMaker:AIPortToolMaker)->Unit
 ){
-    val viewModel by remember {mutableStateOf(VirtualToolMakersViewModel())}
+    val viewModel by remember {mutableStateOf(VirtualMCPListViewModel())}
     val toolMakers by viewModel.toolMakers.collectAsState()
     var showGenerateKeyView by remember { mutableStateOf(showKeyGeneration) }
     LaunchedEffect(toolMaker){

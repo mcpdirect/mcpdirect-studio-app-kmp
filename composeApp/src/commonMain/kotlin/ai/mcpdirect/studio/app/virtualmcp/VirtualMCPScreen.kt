@@ -6,7 +6,7 @@ import ai.mcpdirect.studio.app.mcp.component.MCPServersComponent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.virtualmcp.view.ToolMakerView
 import ai.mcpdirect.studio.app.virtualmcp.view.ToolMakerViewModel
-import ai.mcpdirect.studio.app.virtualmcp.view.VirtualToolMakersView
+import ai.mcpdirect.studio.app.virtualmcp.view.VirtualMCPListView
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,7 +41,7 @@ fun VirtualMCPScreen(
     Row(Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),) {
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-            VirtualToolMakersView(toolMaker,toolMaker==null){
+            VirtualMCPListView(toolMaker,toolMaker==null){
                 viewModel.currentToolMaker(it)
             }
         }

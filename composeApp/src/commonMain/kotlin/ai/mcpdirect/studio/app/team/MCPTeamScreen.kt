@@ -32,8 +32,6 @@ import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MCPTeamScreen(

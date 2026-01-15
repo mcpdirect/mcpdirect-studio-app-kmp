@@ -81,8 +81,7 @@ class CreateMCPTeamShortcut : Shortcut {
         Wizard(
             wizardSteps,
             onFinish = {
-                generalViewModel.currentScreen(Screen.MCPTeam(
-                    MCPTeamDialog.CreateTeam))
+                generalViewModel.currentScreen(Screen.MCPTeam(dialog = MCPTeamDialog.CreateTeam))
             }
         )
     }
