@@ -5,6 +5,7 @@ import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioSearchbar
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -32,29 +33,11 @@ class MCPServersComponentViewModel : ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-//    private val _selectedToolMakers = MutableStateFlow(mutableSetOf<Long>())
-//    val selectedToolMakers: StateFlow<Set<Long>> = _selectedToolMakers
-//    fun selectToolMakers(toolMakers: Set<Long>) {
-//        _selectedToolMakers.update { set->
-//            set.toMutableSet().apply {
-//                clear()
-//                addAll(toolMakers)
-//            }
-//        }
-//    }
-//    fun selectToolMaker(selected:Boolean,toolMaker: AIPortToolMaker) {
-//        _selectedToolMakers.update { set->
-//            set.toMutableSet().apply {
-//                if(selected)add(toolMaker.id)
-//                else remove(toolMaker.id)
-//            }
-//        }
-//    }
 }
 
 @Composable
 fun MCPServersComponent(
-//    viewModel: MCPServersComponentViewModel,
+    showMyMCPServerOnly:Boolean=false,
     showVirtualMCP: Boolean = true,
     selectedMCPServers: Set<Long> = setOf(),
     modifier: Modifier = Modifier,
@@ -81,7 +64,7 @@ fun MCPServersComponent(
         } else {
             LazyColumn(Modifier.padding(start=16.dp,end=16.dp)) {
                 items(toolMakers){ toolMaker ->
-                    if(showVirtualMCP||toolMaker.type>0) Row(
+                    if((!showMyMCPServerOnly|| UserRepository.me(toolMaker.userId))&&(showVirtualMCP||toolMaker.type>0)) Row(
                         Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)

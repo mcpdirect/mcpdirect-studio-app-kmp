@@ -107,6 +107,7 @@ fun VirtualMCPScreen(
         }
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
             MCPServersComponent(
+                showMyMCPServerOnly = true,
                 showVirtualMCP = false,
                 selectedMCPServers = ids,
                 modifier = Modifier.fillMaxHeight()
