@@ -36,7 +36,7 @@ class GrantToolPermissionViewModel : ViewModel() {
     ){ tools,vtools,maker ->
         if(maker!=null) {
             if(maker.type==0) vtools.values.filter { it.makerId == maker.id }.toList()
-            else tools.values.filter { it.makerId == maker.id }.toList()
+            else tools.values.filter { it.makerId == maker.id }.sortedBy { it.name }
         }
         else emptyList()
     }.stateIn(

@@ -37,7 +37,9 @@ class MCPServerCandidatesViewModel : ViewModel() {
         ToolRepository.toolMakers,
         toolMakerFilter
     ) { makers, toolMakerFilter ->
-        makers.values.filter { maker-> toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true) }.toList()
+        makers.values.filter {
+            maker-> toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true)
+        }.sortedBy { it.name }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

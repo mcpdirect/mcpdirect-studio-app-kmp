@@ -51,7 +51,9 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         _toolMarkerCandidateIds,
         toolMakerCandidateFilter
     ){ makers,ids,filter ->
-        makers.values.filter { (filter.isEmpty()||it.name.contains(filter,ignoreCase = true))&&it.id in ids }.toList()
+        makers.values.filter {
+            (filter.isEmpty()||it.name.contains(filter,ignoreCase = true))&&it.id in ids
+        }.sortedBy { it.name }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

@@ -40,7 +40,7 @@ class VirtualMCPScreenViewModel: ViewModel() {
         toolMakerCandidateFilter
     ){ makers,ids,filter -> makers.values.filter {
         (filter.isEmpty()||it.name.contains(filter,ignoreCase = true))&&it.id in ids
-    }.toList() }.stateIn(
+    }.sortedBy { it.name } }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()

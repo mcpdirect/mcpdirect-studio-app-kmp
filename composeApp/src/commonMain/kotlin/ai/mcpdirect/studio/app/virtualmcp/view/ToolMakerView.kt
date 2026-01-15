@@ -32,7 +32,7 @@ class ToolMakerViewModel : ViewModel() {
         toolMaker
     ){ tools,maker ->
         if(maker!=null) {
-            tools.values.filter { it.makerId == maker.id }.toList()
+            tools.values.filter { it.makerId == maker.id }.sortedBy { it.name }
         }
         else emptyList()
     }.stateIn(

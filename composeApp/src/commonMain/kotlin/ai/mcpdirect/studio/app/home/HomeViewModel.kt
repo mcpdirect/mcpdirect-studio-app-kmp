@@ -26,7 +26,7 @@ import kotlin.time.TimeMark
 class HomeViewModel: ViewModel() {
     val localToolAgent = StudioRepository.localToolAgent
     val toolAgents: StateFlow<List<AIPortToolAgent>> = StudioRepository.toolAgents
-        .map { it.values.toList() }      // 转为 List
+        .map { it.values.sortedBy { it.name } }      // 转为 List
         .stateIn(
             scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
             started = SharingStarted.WhileSubscribed(5000), // 按需启动
@@ -38,7 +38,7 @@ class HomeViewModel: ViewModel() {
         }
     }
     val accessKeys: StateFlow<List<AIPortToolAccessKey>> = AccessKeyRepository.accessKeys
-        .map { it.values.toList() }      // 转为 List
+        .map { it.values.sortedBy { it.name } }      // 转为 List
         .stateIn(
             scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
             started = SharingStarted.WhileSubscribed(5000), // 按需启动
@@ -54,7 +54,9 @@ class HomeViewModel: ViewModel() {
         ToolRepository.toolMakers,
         toolMakerFilter
     ){ makers,filter ->
-        makers.values.filter { it.type>0&& UserRepository.me(it.userId) &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true)) }.toList()
+        makers.values.filter {
+            it.type>0&& UserRepository.me(it.userId) &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true))
+        }.sortedBy { it.name }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -65,7 +67,9 @@ class HomeViewModel: ViewModel() {
         ToolRepository.toolMakers,
         virtualToolMakerFilter
     ){ makers,filter ->
-        makers.values.filter { it.type==0&& UserRepository.me(it.userId) &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true)) }.toList()
+        makers.values.filter {
+            it.type==0&& UserRepository.me(it.userId) &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true))
+        }.sortedBy { it.name }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

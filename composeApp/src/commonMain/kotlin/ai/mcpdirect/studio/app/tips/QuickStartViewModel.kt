@@ -35,14 +35,14 @@ class QuickStartViewModel: ViewModel() {
         _currentToolAgent.value = agent
     }
     val toolAgents: StateFlow<List<AIPortToolAgent>> = StudioRepository.toolAgents
-        .map { it.values.filter { it.id!=0L }.toList() }      // 转为 List
+        .map { it.values.filter { it.id!=0L }.sortedBy { it.name } }      // 转为 List
         .stateIn(
             scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
             started = SharingStarted.WhileSubscribed(5000), // 按需启动
             initialValue = emptyList()
         )
     val accessKeys: StateFlow<List<AIPortToolAccessKey>> = AccessKeyRepository.accessKeys
-        .map { it.values.toList() }      // 转为 List
+        .map { it.values.sortedBy { it.name } }      // 转为 List
         .stateIn(
             scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
             started = SharingStarted.WhileSubscribed(5000), // 按需启动
@@ -74,7 +74,9 @@ class QuickStartViewModel: ViewModel() {
         _currentToolAgent,
         UserRepository.me,
     ) { servers, agent, me ->
-        servers.values.filter { server -> agent.id > 0L && server.agentId == agent.id && server.userId == me.id }.toList()
+        servers.values.filter {
+            server -> agent.id > 0L && server.agentId == agent.id && server.userId == me.id
+        }.sortedBy { it.name }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

@@ -26,7 +26,7 @@ class VirtualMCPListViewModel : ViewModel() {
         toolMakerFilter
     ){ makers,filter -> makers.values.filter {
         it.type==TYPE_VIRTUAL&&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true))
-    }.toList() }.stateIn(
+    }.sortedBy { it.name } }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
