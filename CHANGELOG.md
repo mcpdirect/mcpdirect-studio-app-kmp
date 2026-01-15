@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced shared MCP server management with improved virtual tool handling
+
+### Details
+- Enhanced SharedMCPServerView with improved virtual tool handling
+- Added proper type checking for virtual vs regular tool makers
+- Improved UI with better import organization in shared server view
+- Enhanced tool loading with separate handling for virtual and regular tools
+- Added proper state management for virtual tool makers in shared server view
+- Improved UI with better component organization in shared server management
+- Enhanced tool maker filtering with accurate type-based selection
+- Added proper loading mechanism for virtual tools in shared server view
+- Improved UI with better visual feedback for virtual tool states
+- Enhanced shared server management with accurate tool type handling
+
+## [January 2, 2026]
+### Summary
 Enhanced team management with new TeamScreen and improved UI components
 
 ### Details

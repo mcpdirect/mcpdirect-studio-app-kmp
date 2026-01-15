@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
+import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
 import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 import org.jetbrains.compose.resources.painterResource
@@ -103,6 +104,12 @@ fun SharedMCPServerListView(
             StudioActionBar(
                 "Shared MCP Servers (${sharedToolMakers.size}) with ${team.name ?: ""}"
             ){
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier.size(32.dp)
+                ){
+                    Icon(painterResource(Res.drawable.edit),contentDescription = null, Modifier.size(20.dp))
+                }
                 IconButton(
                     onClick = {expanded=!expanded},
                     modifier = Modifier.size(32.dp)

@@ -320,7 +320,9 @@ fun main() = application {
                         }
                 }
             }
-            WindowDraggableArea(modifier = Modifier.fillMaxWidth().height(64.dp).padding(padding)) {
+            WindowDraggableArea(modifier = Modifier.fillMaxWidth().height(
+                if(maximize) 32.dp else 64.dp
+            ).padding(padding)) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Spacer(Modifier.weight(1f))
                     IconButton(
