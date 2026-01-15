@@ -39,7 +39,7 @@ class VirtualMCPScreenViewModel: ViewModel() {
         _toolMarkerCandidateIds,
         toolMakerCandidateFilter
     ){ makers,ids,filter -> makers.values.filter {
-        (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase()))&&it.id in ids
+        (filter.isEmpty()||it.name.contains(filter,ignoreCase = true))&&it.id in ids
     }.toList() }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

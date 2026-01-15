@@ -3,6 +3,7 @@ package ai.mcpdirect.studio.app.team.view
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioSearchbar
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
+import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
@@ -32,15 +33,17 @@ import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
 import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
 import org.jetbrains.compose.resources.painterResource
+import kotlin.collections.set
 
 class SharedMCPServerListViewModel: ViewModel() {
     val currentTeam = MutableStateFlow<AIPortTeam?>(null)
-    private val _ttms: StateFlow<List<Long>> = combine(
+    val teamToolMakers = mutableMapOf<Long, AIPortTeamToolMaker>()
+    val sharedToolMakers: StateFlow<List<Long>> = combine(
         TeamRepository.teamToolMakers,
         currentTeam
     ) { teamToolMakers, team ->
         if(team!=null) teamToolMakers.values
-            .filter { maker -> maker.teamId == team.id }
+            .filter { maker -> maker.status>0&&maker.teamId == team.id }
             .map{it.toolMakerId}
             .toList()
         else emptyList()
@@ -49,54 +52,34 @@ class SharedMCPServerListViewModel: ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    private val _ttmts: StateFlow<List<Long>> = combine(
-        TeamRepository.teamToolMakerTemplates,
-        currentTeam
-    ) { teamToolMakerTemplates, team ->
-        if(team!=null) teamToolMakerTemplates.values
-            .filter { template -> template.teamId == team.id }
-            .map{it.toolMakerTemplateId}
-            .toList()
-        else emptyList()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-//    private val _sharedToolMakerCandidateIds = MutableStateFlow(mutableSetOf<Long>())
-//    val sharedToolMakerCandidateIds: StateFlow<Set<Long>> = _sharedToolMakerCandidateIds
-//    val sharedToolMakers: StateFlow<List<AIPortToolMaker>> = combine(
-//        ToolRepository.toolMakers,
-//        _ttms,
-//        _ttmts
-//    ) { toolMakers, ttms,templates ->
-//        toolMakers.values.filter { maker ->
-//            val yes = maker.id in ttms||maker.templateId in templates
-//            if(yes) _sharedToolMakerCandidateIds.update { set->
-//                set.toMutableSet().apply {
-//                    add(maker.id)
-//                }
-//            }
-//            yes
-//        }.toList()
+//    private val _ttmts: StateFlow<List<Long>> = combine(
+//        TeamRepository.teamToolMakerTemplates,
+//        currentTeam
+//    ) { teamToolMakerTemplates, team ->
+//        if(team!=null) teamToolMakerTemplates.values
+//            .filter { template -> template.status>0&&template.teamId == team.id }
+//            .map{it.toolMakerTemplateId}
+//            .toList()
+//        else emptyList()
 //    }.stateIn(
 //        scope = viewModelScope,
 //        started = SharingStarted.WhileSubscribed(5000),
 //        initialValue = emptyList()
 //    )
-    val sharedToolMakers: StateFlow<List<Long>> = combine(
-        ToolRepository.toolMakers,
-        _ttms,
-        _ttmts
-    ) { toolMakers, ttms,templates ->
-        toolMakers.values.filter { maker ->
-            maker.id in ttms||maker.templateId in templates
-        }.map { it.id }.toList()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+//    val teamToolMakers = mutableMapOf<Long, AIPortTeamToolMaker>()
+//    val sharedToolMakers: StateFlow<List<Long>> = combine(
+//        ToolRepository.toolMakers,
+//        _ttms,
+////        _ttmts
+//    ) { toolMakers, ttms /*,templates*/ ->
+//        toolMakers.values.filter { maker ->
+//            maker.id in ttms //||maker.templateId in templates
+//        }.map { it.id }.toList()
+//    }.stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(5000),
+//        initialValue = emptyList()
+//    )
     val editable = MutableStateFlow(false)
     val toolMakerFilter = MutableStateFlow("")
     val toolMakers: StateFlow<List<AIPortToolMaker>> = combine(
@@ -107,11 +90,31 @@ class SharedMCPServerListViewModel: ViewModel() {
     ) { makers,sharedToolMakers, toolMakerFilter,editable -> makers.values.filter { maker->
         if(editable) toolMakerFilter.isEmpty()||maker.name.lowercase().contains(toolMakerFilter.lowercase())
         else maker.id in sharedToolMakers && (toolMakerFilter.isEmpty()||maker.name.lowercase().contains(toolMakerFilter.lowercase()))
-    }.toList() }.stateIn(
+    }.sortedBy { it.name } }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+    fun selectToolMaker(selected: Boolean, toolMaker: AIPortToolMaker){
+        var t = teamToolMakers.remove(toolMaker.id)
+        if(t!=null){
+            if(t.status==Short.MAX_VALUE.toInt()){
+                if(selected) teamToolMakers[t.toolMakerId]=t
+            }else {
+                if (selected) {
+                    t.status = 1
+                } else {
+                    t.status = 0
+                }
+                teamToolMakers[t.toolMakerId]=t
+            }
+        }else if(selected) {
+            t = AIPortTeamToolMaker()
+                .toolMakerId(toolMaker.id)
+                .status(Short.MAX_VALUE.toInt())
+            teamToolMakers[t.toolMakerId]=t
+        }
+    }
 }
 @Composable
 fun SharedMCPServerListView(
@@ -168,7 +171,9 @@ fun SharedMCPServerListView(
                         expanded,
                         if(editable) toolMaker.id in sharedToolMakers else null,
                         Modifier.fillMaxWidth()
-                    )
+                    ){ selected->
+                        if(selected) viewModel.sharedToolMakers
+                    }
                 }
 //                items(sharedToolMakers){ toolMaker->
 //                    SharedMCPServerView(toolMaker,expanded,Modifier.fillMaxWidth())

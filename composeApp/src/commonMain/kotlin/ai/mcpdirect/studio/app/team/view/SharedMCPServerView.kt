@@ -63,8 +63,9 @@ class SharedMCPServerViewModel : ViewModel() {
 fun SharedMCPServerView(
     toolMaker: AIPortToolMaker,
     expanded: Boolean = false,
-    selectable: Boolean? = null,
+    selected: Boolean? = null,
     modifier: Modifier,
+    onSelectedChange: ((Boolean)->Unit)? = null
 ){
     val viewModel by remember { mutableStateOf(SharedMCPServerViewModel()) }
     LaunchedEffect(toolMaker){
@@ -82,10 +83,11 @@ fun SharedMCPServerView(
             StudioActionBar(
                 "${toolMaker.name} (${tools.size})",
                 navigationIcon = {
-                    selectable?.let {
-                        var checked by remember { mutableStateOf(selectable) }
+                    selected?.let {
+                        var checked by remember { mutableStateOf(selected) }
                         Checkbox(checked = checked,onCheckedChange = {
                             checked = it
+                            onSelectedChange?.invoke(it)
                         }, Modifier.size(32.dp))
                     }
                 }
