@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced shared MCP server management with improved editing and filtering functionality
+
+### Details
+- Enhanced SharedMCPServerListView with improved editing functionality and state management
+- Added editable mode toggle to shared MCP server list view for better UI interaction
+- Improved UI with better component organization in shared server list view
+- Enhanced SharedMCPServerListViewModel with proper state handling for editing modes
+- Added proper filtering functionality for tool makers in shared server views
+- Improved UI with better search functionality in shared server management
+- Enhanced shared server management with accurate tool maker selection
+- Added proper state synchronization for shared server editing operations
+- Improved UI with better visual feedback for editing states in shared servers
+- Enhanced component organization with better layout arrangement in shared server views
+
+## [January 2, 2026]
+### Summary
 Enhanced shared MCP server UI with edit functionality and improved window management
 
 ### Details
