@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced team management with new TeamScreen and improved UI components
+
+### Details
+- Added new TeamScreen for comprehensive team management
+- Enhanced MCPTeamScreen navigation to use new TeamScreen implementation
+- Improved UI with better component organization in team management
+- Enhanced TeamListView with owner identification and improved display
+- Added SharedMCPServerListView for managing shared MCP servers with teams
+- Improved UI with better visual feedback for team member roles
+- Enhanced team management with proper state handling for team selection
+- Added proper navigation between team management components
+- Improved UI with better component state management for team views
+- Enhanced team management workflow with accurate state updates
+
+## [January 2, 2026]
+### Summary
 Enhanced Home screen UI with improved layout and Quick Start section
 
 ### Details

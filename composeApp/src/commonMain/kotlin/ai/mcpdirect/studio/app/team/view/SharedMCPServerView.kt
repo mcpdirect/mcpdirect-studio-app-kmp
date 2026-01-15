@@ -4,6 +4,7 @@ import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_VIRTUAL
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
@@ -11,53 +12,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Badge
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
 import mcpdirectstudioapp.composeapp.generated.resources.description
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
-import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 import org.jetbrains.compose.resources.painterResource
 
 class SharedMCPServerViewModel : ViewModel() {
@@ -66,10 +34,12 @@ class SharedMCPServerViewModel : ViewModel() {
     val toolMaker = MutableStateFlow<AIPortToolMaker?>(null)
     val tools : StateFlow<List<AIPortTool>> = combine(
         ToolRepository.tools,
+        ToolRepository.virtualTools,
         toolMaker
-    ){ tools,maker ->
+    ){ tools,vtools,maker ->
         if(maker!=null) {
-            tools.values.filter { it.makerId == maker.id }.toList()
+            if(maker.type==0) vtools.values.filter { it.makerId == maker.id }.toList()
+            else tools.values.filter { it.makerId == maker.id }.toList()
         }
         else emptyList()
     }.stateIn(
@@ -81,7 +51,8 @@ class SharedMCPServerViewModel : ViewModel() {
     fun toolMaker(maker: AIPortToolMaker){
         toolMaker.value = maker
         viewModelScope.launch {
-            ToolRepository.loadTools(maker.userId, maker)
+            if(maker.type==TYPE_VIRTUAL) ToolRepository.loadVirtualTools(toolMaker=maker)
+            else ToolRepository.loadTools(toolMaker=maker)
             StudioRepository.toolAgent(maker.agentId){
                 if(it.successful()) it.data?.let { toolAgent = it }
             }
