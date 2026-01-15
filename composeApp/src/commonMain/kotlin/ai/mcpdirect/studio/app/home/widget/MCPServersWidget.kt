@@ -5,8 +5,10 @@ import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.StudioSearchbar
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
+import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -20,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
+import mcpdirectstudioapp.composeapp.generated.resources.design_services
+import mcpdirectstudioapp.composeapp.generated.resources.person
 import mcpdirectstudioapp.composeapp.generated.resources.plug_connect
 import mcpdirectstudioapp.composeapp.generated.resources.setting_config
 import org.jetbrains.compose.resources.painterResource
@@ -74,10 +78,16 @@ fun MCPServersWidget(
                 ) {
                     toolMakers.forEach { toolMaker ->
                         var toolAgent by remember { mutableStateOf(AIPortToolAgent()) }
+                        var user by remember { mutableStateOf<AIPortUser?>(null) }
                         LaunchedEffect(toolMaker) {
                             StudioRepository.toolAgent(toolMaker.agentId) {
                                 if (it.successful()) it.data?.let { data ->
                                     toolAgent = data
+                                }
+                            }
+                            UserRepository.user(toolMaker.userId){
+                                if (it.successful()) it.data?.let { data ->
+                                    user = data
                                 }
                             }
                         }
@@ -113,13 +123,26 @@ fun MCPServersWidget(
                             Spacer(Modifier.weight(1.0f))
                             HorizontalDivider()
                             Row(
+                                Modifier.padding(start=8.dp),
                                 verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text(
-                                    if (toolAgent.id == localToolAgent.id) "This Device" else toolAgent.name,
-                                    modifier = Modifier.padding(8.dp),
-                                    style = MaterialTheme.typography.bodySmall
-                                )
+                                user?.let { user ->
+                                    if(UserRepository.me(user)) {
+                                        Icon(painterResource(Res.drawable.design_services), contentDescription = null, Modifier.size(20.dp))
+                                        Text(
+                                            toolAgent.name,
+                                            modifier = Modifier.padding(vertical = 8.dp),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                        if (toolAgent.id == localToolAgent.id) Badge { Text("This device") }
+                                    }else {
+                                        Icon(painterResource(Res.drawable.person), contentDescription = null, Modifier.size(20.dp))
+                                        Text(user.name,
+                                            modifier = Modifier.padding(vertical = 8.dp),
+                                            style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }
                             }
                         }
                     }

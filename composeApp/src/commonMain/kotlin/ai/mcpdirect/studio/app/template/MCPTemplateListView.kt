@@ -68,7 +68,7 @@ fun MCPTemplateListView(
                     toolAgent = it.data
                 }
                 UserRepository.user(template.userId){
-                        code, message, data ->
+                        (code, message, data) ->
                     if(code==0&&data!=null) {
                         user = data;
                     }

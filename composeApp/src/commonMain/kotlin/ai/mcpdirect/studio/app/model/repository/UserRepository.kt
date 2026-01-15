@@ -31,8 +31,10 @@ object UserRepository {
     fun me(userId: Long):Boolean{
         return userId>Int.MAX_VALUE&&userId==_me.value.id
     }
-    suspend fun user(userId:Long,
-                     onResponse: (code: Int, message: String?, user: AIPortUser?) -> Unit) {
+    suspend fun user(
+        userId:Long,
+        onResponse: (AIPortServiceResponse<AIPortUser>) -> Unit
+    ) {
         val user = _users.value[userId];
         if(user==null)loadMutex.withLock {
             // 此块内代码会排队执行
@@ -45,10 +47,10 @@ object UserRepository {
                         }
                     }
                 }
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }else{
-            onResponse(0,null,user)
+            onResponse(AIPortServiceResponse(0,null,user))
         }
     }
     suspend fun login(

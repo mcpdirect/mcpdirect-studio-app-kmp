@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced shared MCP server management with improved filtering and user access control
+
+### Details
+- Enhanced SharedMCPServerListViewModel with improved filtering based on user ownership
+- Added proper access control to ensure users only see their own tool makers in editable mode
+- Improved UI with better filtering functionality in shared server list view
+- Enhanced tool maker filtering with accurate user identification checks
+- Added UserRepository import for user access validation in shared server views
+- Improved UI with better visual feedback for user-specific tool maker filtering
+- Enhanced shared server management with accurate user-based filtering
+- Added proper state handling for user-specific tool maker access
+- Improved filtering logic with case-insensitive name matching
+- Enhanced component organization with better user access control in shared server views
+
+## [January 2, 2026]
+### Summary
 Enhanced team member management with improved UI and access control
 
 ### Details

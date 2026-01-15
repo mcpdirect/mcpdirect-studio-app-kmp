@@ -681,7 +681,7 @@ fun ToolMakerItem(
     var user by remember { mutableStateOf<AIPortUser?>(null) }
     LaunchedEffect(null){
         if(!me&&toolMaker.userId>Int.MAX_VALUE)UserRepository.user(toolMaker.userId){
-                code, message, data ->
+                (code, message, data) ->
             if(code== AIPortServiceResponse.SERVICE_SUCCESSFUL&&data!=null){
                 user = data
             }

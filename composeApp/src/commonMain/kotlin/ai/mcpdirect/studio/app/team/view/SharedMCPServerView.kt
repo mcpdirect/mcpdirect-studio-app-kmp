@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.team.view
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
+import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
@@ -8,6 +9,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_VIRTU
 import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,10 +27,14 @@ import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
 import mcpdirectstudioapp.composeapp.generated.resources.description
+import mcpdirectstudioapp.composeapp.generated.resources.design_services
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
+import mcpdirectstudioapp.composeapp.generated.resources.info
+import mcpdirectstudioapp.composeapp.generated.resources.person
 import org.jetbrains.compose.resources.painterResource
 
 class SharedMCPServerViewModel : ViewModel() {
+    var user by mutableStateOf<AIPortUser?>(null)
     var toolAgent by mutableStateOf<AIPortToolAgent?>(null)
     var expanded by mutableStateOf(false)
     val toolMaker = MutableStateFlow<AIPortToolMaker?>(null)
@@ -55,6 +61,9 @@ class SharedMCPServerViewModel : ViewModel() {
             else ToolRepository.loadTools(maker.userId,toolMaker=maker)
             StudioRepository.toolAgent(maker.agentId){
                 if(it.successful()) it.data?.let { toolAgent = it }
+            }
+            UserRepository.user(maker.userId){
+                if(it.successful()) it.data?.let { user = it }
             }
         }
     }
@@ -135,12 +144,23 @@ fun SharedMCPServerView(
             }
             HorizontalDivider()
             Row(
-                Modifier.padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                Modifier.padding(start = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                viewModel.toolAgent?.let {
-                    Text(it.name)
-                    if (it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) { Text("This device") }
+                viewModel.user?.let { user ->
+                    if(UserRepository.me(user)) viewModel.toolAgent?.let {
+                        Icon(painterResource(Res.drawable.design_services), contentDescription = null, Modifier.size(20.dp))
+                        Text(it.name,
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            style = MaterialTheme.typography.bodySmall)
+                        if (it.id == localToolAgent.id) Badge { Text("This device") }
+                    }else {
+                        Icon(painterResource(Res.drawable.person), contentDescription = null, Modifier.size(20.dp))
+                        Text(user.name,
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
 //        }
