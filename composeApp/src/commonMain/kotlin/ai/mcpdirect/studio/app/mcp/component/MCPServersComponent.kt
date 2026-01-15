@@ -26,7 +26,7 @@ class MCPServersComponentViewModel : ViewModel() {
         ToolRepository.toolMakers,
         toolMakerFilter
     ) { makers, toolMakerFilter -> makers.values.filter { maker->
-        toolMakerFilter.isEmpty()||maker.name.lowercase().contains(toolMakerFilter.lowercase())
+        toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true)
     }.toList() }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

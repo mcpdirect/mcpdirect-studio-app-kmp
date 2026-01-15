@@ -25,7 +25,7 @@ class TeamListViewModel : ViewModel() {
         TeamRepository.teams,
         teamFilter
     ) { teams,filter-> teams.values.filter {
-        filter.isEmpty()||it.name.lowercase().contains(filter.lowercase())
+        filter.isEmpty()||it.name.contains(filter,ignoreCase = true)
     }.toList() }.stateIn(
         scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
         started = SharingStarted.WhileSubscribed(5000), // 按需启动

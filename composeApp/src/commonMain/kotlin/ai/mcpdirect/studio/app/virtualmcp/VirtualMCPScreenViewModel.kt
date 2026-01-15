@@ -26,7 +26,7 @@ class VirtualMCPScreenViewModel: ViewModel() {
 //        ToolRepository.toolMakers,
 //        toolMakerFilter
 //    ){ makers,filter -> makers.values.filter {
-//        it.type==TYPE_VIRTUAL&&(filter.isEmpty()||it.name.lowercase().contains(filter.lowercase()))
+//        it.type==TYPE_VIRTUAL&&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true))
 //    }.toList() }.stateIn(
 //        scope = viewModelScope,
 //        started = SharingStarted.WhileSubscribed(5000),

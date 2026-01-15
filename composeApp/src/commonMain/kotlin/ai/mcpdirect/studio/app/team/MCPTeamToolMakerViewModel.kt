@@ -164,8 +164,8 @@ class MCPTeamToolMakerViewModel: ViewModel() {
             viewModelScope.launch {
                 TeamRepository.modifyTeamToolMakers(
                     team, teamToolMakers.values.toList()
-                ){ code, message, data ->
-                    onResponse(code,message)
+                ){
+                    onResponse(it.code,it.message)
                 }
 //                getPlatform().modifyTeamToolMakers(
 //                    team, teamToolMakers.values.toList()

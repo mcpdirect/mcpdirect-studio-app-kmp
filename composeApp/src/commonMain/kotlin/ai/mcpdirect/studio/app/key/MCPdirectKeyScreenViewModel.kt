@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.key
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
@@ -50,7 +51,7 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
         _toolMarkerCandidateIds,
         toolMakerCandidateFilter
     ){ makers,ids,filter ->
-        makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase()))&&it.id in ids }.toList()
+        makers.values.filter { (filter.isEmpty()||it.name.contains(filter,ignoreCase = true))&&it.id in ids }.toList()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -60,7 +61,7 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
 //        ToolRepository.toolMakers,
 //        toolMakerFilter
 //    ){ makers,filter ->
-//        makers.values.filter { (filter.isEmpty()||it.name.lowercase().contains(filter.lowercase())) }.toList()
+//        makers.values.filter { (filter.isEmpty()||it.name.contains(filter,ignoreCase = true)) }.toList()
 //    }.stateIn(
 //        scope = viewModelScope,
 //        started = SharingStarted.WhileSubscribed(5000),
@@ -284,12 +285,12 @@ class MCPdirectKeyScreenViewModel: ViewModel() {
                     toolPermissions.values.toList(),
                     virtualToolPermissions.values.toList()
                 ){(code, message, data) ->
-//                    if(code==0&&data!=null){
-//                        mcpAccessKeyViewModel.toolPermissionMakerSummary.clear()
-//                        mcpAccessKeyViewModel.toolPermissionMakerSummary.addAll(data)
-//                    }
+                    if(code==0) {
+                        accessKey(accessKey)
+                        generalViewModel.showSnackbar("${accessKey?.name} update successfully")
+                    }
                 }
             }
-        }
+        } else generalViewModel.showSnackbar("No change in ${accessKey?.name}")
     }
 }

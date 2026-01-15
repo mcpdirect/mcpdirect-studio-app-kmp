@@ -241,7 +241,7 @@ object TeamRepository {
 
     suspend fun modifyTeamToolMakers(
         team: AIPortTeam, teamToolMakers: List<AIPortTeamToolMaker>,
-        onResponse:(code:Int, message:String?,data:List<AIPortTeamToolMaker>?)-> Unit){
+        onResponse:(resp: AIPortServiceResponse<List<AIPortTeamToolMaker>>) -> Unit){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().modifyTeamToolMakers(
@@ -257,7 +257,7 @@ object TeamRepository {
                     }
                 }
                 generalViewModel.loaded("Modify Team Toolmakers for #${team.name}",it.code,it.message)
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }

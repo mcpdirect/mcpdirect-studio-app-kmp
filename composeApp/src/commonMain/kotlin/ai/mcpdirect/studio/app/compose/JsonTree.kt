@@ -268,8 +268,8 @@ class JsonTreeParser {
     private fun filterNode(node: JsonTreeNode, query: String): List<JsonTreeNode> {
         val matches = mutableListOf<JsonTreeNode>()
 
-        if (node.key.lowercase().contains(query) ||
-            node.value.toString().lowercase().contains(query)) {
+        if (node.key.contains(query,ignoreCase = true) ||
+            node.value.toString().contains(query,ignoreCase = true)) {
             matches.add(node)
         }
 

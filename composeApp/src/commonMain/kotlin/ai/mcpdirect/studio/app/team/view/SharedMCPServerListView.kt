@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.team.view
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioSearchbar
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.close
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
@@ -34,16 +36,19 @@ import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
 import org.jetbrains.compose.resources.painterResource
 import kotlin.collections.set
+import kotlin.collections.toList
 
 class SharedMCPServerListViewModel: ViewModel() {
     val currentTeam = MutableStateFlow<AIPortTeam?>(null)
-    val teamToolMakers = mutableMapOf<Long, AIPortTeamToolMaker>()
+    val teamToolMakerCandidates = mutableStateMapOf<Long, AIPortTeamToolMaker>()
     val sharedToolMakers: StateFlow<List<Long>> = combine(
         TeamRepository.teamToolMakers,
         currentTeam
     ) { teamToolMakers, team ->
         if(team!=null) teamToolMakers.values
-            .filter { maker -> maker.status>0&&maker.teamId == team.id }
+            .filter { maker ->
+                maker.status>0&&maker.teamId == team.id
+            }
             .map{it.toolMakerId}
             .toList()
         else emptyList()
@@ -88,31 +93,47 @@ class SharedMCPServerListViewModel: ViewModel() {
         toolMakerFilter,
         editable
     ) { makers,sharedToolMakers, toolMakerFilter,editable -> makers.values.filter { maker->
-        if(editable) toolMakerFilter.isEmpty()||maker.name.lowercase().contains(toolMakerFilter.lowercase())
-        else maker.id in sharedToolMakers && (toolMakerFilter.isEmpty()||maker.name.lowercase().contains(toolMakerFilter.lowercase()))
+        if(editable) toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true)
+        else maker.id in sharedToolMakers && (toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true))
     }.sortedBy { it.name } }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
     fun selectToolMaker(selected: Boolean, toolMaker: AIPortToolMaker){
-        var t = teamToolMakers.remove(toolMaker.id)
-        if(t!=null){
-            if(t.status==Short.MAX_VALUE.toInt()){
-                if(selected) teamToolMakers[t.toolMakerId]=t
-            }else {
-                if (selected) {
-                    t.status = 1
-                } else {
-                    t.status = 0
-                }
-                teamToolMakers[t.toolMakerId]=t
+        teamToolMakerCandidates.remove(toolMaker.id)
+        if(toolMaker.id in sharedToolMakers.value){
+            if(!selected) {
+                teamToolMakerCandidates[toolMaker.id] =
+                    AIPortTeamToolMaker()
+                    .toolMakerId(toolMaker.id)
+                    .status(0)
             }
-        }else if(selected) {
-            t = AIPortTeamToolMaker()
-                .toolMakerId(toolMaker.id)
-                .status(Short.MAX_VALUE.toInt())
-            teamToolMakers[t.toolMakerId]=t
+        } else if(selected) {
+            teamToolMakerCandidates[toolMaker.id] =
+                AIPortTeamToolMaker()
+                    .toolMakerId(toolMaker.id)
+                    .status(Short.MAX_VALUE.toInt())
+        }
+    }
+
+    fun saveTeamToolMakers(){
+        currentTeam.value?.let{ team->
+            if(teamToolMakerCandidates.isNotEmpty()) {
+                viewModelScope.launch {
+                    TeamRepository.modifyTeamToolMakers(
+                        team, teamToolMakerCandidates.values.toList()
+                    ){
+                        if(it.successful()) it.data?.let {
+                            editable.value = false
+                            teamToolMakerCandidates.clear()
+                            generalViewModel.showSnackbar("${team.name} update successfully")
+                        } else {
+                            generalViewModel.showSnackbar("${team.name} update failed","Error",true)
+                        }
+                    }
+                }
+            } else generalViewModel.showSnackbar("No change in ${team.name}")
         }
     }
 }
@@ -130,6 +151,7 @@ fun SharedMCPServerListView(
     var expanded by remember { mutableStateOf(false) }
     LaunchedEffect(team) {
         viewModel.currentTeam.value=team
+        viewModel.teamToolMakerCandidates.clear()
         if(team!=null)TeamRepository.loadTeamToolMakers(team)
     }
     Card(modifier = modifier) {
@@ -160,7 +182,7 @@ fun SharedMCPServerListView(
                 Spacer(Modifier.size(8.dp))
                 if(editable) Button(
                     modifier = Modifier.height(40.dp),
-                    onClick = {}){
+                    onClick = { viewModel.saveTeamToolMakers() }){
                     Text("Save")
                 }
             }
@@ -172,12 +194,9 @@ fun SharedMCPServerListView(
                         if(editable) toolMaker.id in sharedToolMakers else null,
                         Modifier.fillMaxWidth()
                     ){ selected->
-                        if(selected) viewModel.sharedToolMakers
+                        viewModel.selectToolMaker(selected,toolMaker)
                     }
                 }
-//                items(sharedToolMakers){ toolMaker->
-//                    SharedMCPServerView(toolMaker,expanded,Modifier.fillMaxWidth())
-//                }
             }
         }?:StudioActionBar("Shared MCP Servers")
     }

@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced shared MCP server management with improved selection and state handling
+
+### Details
+- Enhanced SharedMCPServerListView with improved tool maker selection functionality
+- Added proper state management for editable/shared tool maker selection
+- Improved UI with better component organization in shared server list view
+- Enhanced SharedMCPServerListViewModel with accurate tool maker filtering
+- Added proper selection handling for tool makers in editable mode
+- Improved UI with better visual feedback for tool maker selection states
+- Enhanced shared server management with accurate tool maker identification
+- Added proper state synchronization for tool maker selection operations
+- Improved UI with better component state management for tool maker selection
+- Enhanced tool maker selection workflow with accurate state updates
+
+## [January 2, 2026]
+### Summary
 Enhanced shared MCP server management with improved editing workflow and UI components
 
 ### Details
