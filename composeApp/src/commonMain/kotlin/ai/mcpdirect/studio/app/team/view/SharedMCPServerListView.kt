@@ -6,10 +6,7 @@ import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
-import ai.mcpdirect.studio.app.virtualmcp.view.ToolMakerView
-import ai.mcpdirect.studio.app.virtualmcp.view.ToolMakerViewModel
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,32 +15,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
 import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
-import mcpdirectstudioapp.composeapp.generated.resources.reset_settings
 import org.jetbrains.compose.resources.painterResource
-import kotlin.collections.set
 
 class SharedMCPServerListViewModel: ViewModel() {
-
     val currentTeam = MutableStateFlow<AIPortTeam?>(null)
     private val _ttms: StateFlow<List<Long>> = combine(
         TeamRepository.teamToolMakers,
@@ -73,14 +57,34 @@ class SharedMCPServerListViewModel: ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    val toolMakerCandidateFilter = MutableStateFlow("")
+    private val _sharedToolMakerCandidateIds = MutableStateFlow(mutableSetOf<Long>())
+    val sharedToolMakerCandidateIds: StateFlow<Set<Long>> = _sharedToolMakerCandidateIds
     val sharedToolMakers: StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
         _ttms,
         _ttmts
     ) { toolMakers, ttms,templates ->
-        toolMakers.values.filter { maker -> maker.id in ttms||maker.templateId in templates }.toList()
+        toolMakers.values.filter { maker ->
+            val yes = maker.id in ttms||maker.templateId in templates
+            if(yes) _sharedToolMakerCandidateIds.update { set->
+                set.toMutableSet().apply {
+                    add(maker.id)
+                }
+            }
+            yes
+        }.toList()
     }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+    val toolMakerFilter = MutableStateFlow("")
+    val toolMakers: StateFlow<List<AIPortToolMaker>> = combine(
+        ToolRepository.toolMakers,
+        toolMakerFilter
+    ) { makers, toolMakerFilter -> makers.values.filter { maker->
+        toolMakerFilter.isEmpty()||maker.name.lowercase().contains(toolMakerFilter.lowercase())
+    }.toList() }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
@@ -94,7 +98,10 @@ fun SharedMCPServerListView(
     val viewModel by remember { mutableStateOf(SharedMCPServerListViewModel()) }
     val currentTeam by viewModel.currentTeam.collectAsState()
     val sharedToolMakers  by viewModel.sharedToolMakers.collectAsState()
+    val ids by viewModel.sharedToolMakerCandidateIds.collectAsState()
+    val toolMakers by viewModel.toolMakers.collectAsState()
     var expanded by remember { mutableStateOf(false) }
+    var editable by remember { mutableStateOf(false) }
     LaunchedEffect(team) {
         viewModel.currentTeam.value=team
         if(team!=null)TeamRepository.loadTeamToolMakers(team)
@@ -105,7 +112,7 @@ fun SharedMCPServerListView(
                 "Shared MCP Servers (${sharedToolMakers.size}) with ${team.name ?: ""}"
             ){
                 IconButton(
-                    onClick = {},
+                    onClick = { editable = !editable },
                     modifier = Modifier.size(32.dp)
                 ){
                     Icon(painterResource(Res.drawable.edit),contentDescription = null, Modifier.size(20.dp))
@@ -119,10 +126,12 @@ fun SharedMCPServerListView(
                 }
             }
             StudioSearchbar(modifier = Modifier.padding(16.dp)) {
-                viewModel.toolMakerCandidateFilter.value = it
+                viewModel.toolMakerFilter.value = it
             }
             LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(sharedToolMakers){ toolMaker->
+                if(editable) items(toolMakers){ toolMaker->
+                    SharedMCPServerView(toolMaker,expanded,Modifier.fillMaxWidth())
+                } else items(sharedToolMakers){ toolMaker->
                     SharedMCPServerView(toolMaker,expanded,Modifier.fillMaxWidth())
                 }
             }

@@ -52,7 +52,7 @@ class SharedMCPServerViewModel : ViewModel() {
         toolMaker.value = maker
         viewModelScope.launch {
             if(maker.type==TYPE_VIRTUAL) ToolRepository.loadVirtualTools(toolMaker=maker)
-            else ToolRepository.loadTools(toolMaker=maker)
+            else ToolRepository.loadTools(maker.userId,toolMaker=maker)
             StudioRepository.toolAgent(maker.agentId){
                 if(it.successful()) it.data?.let { toolAgent = it }
             }
@@ -72,57 +72,63 @@ fun SharedMCPServerView(
     LaunchedEffect(expanded) {
         viewModel.expanded = expanded
     }
-    val toolMaker by viewModel.toolMaker.collectAsState()
+//    val toolMaker by viewModel.toolMaker.collectAsState()
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
     val tools by viewModel.tools.collectAsState()
-    OutlinedCard(modifier) {
-        StudioActionBar("${toolMaker?.name} (${tools.size})") {
-            IconButton(onClick = { viewModel.expanded = !viewModel.expanded },modifier = Modifier.size(32.dp)) {
-                val icon = if(viewModel.expanded) Res.drawable.collapse_all else Res.drawable.expand_all
-                Icon(painterResource(icon),contentDescription = null, Modifier.size(20.dp))
+//    toolMaker?.let { toolMaker ->
+        OutlinedCard(modifier) {
+            StudioActionBar("${toolMaker.name} (${tools.size})") {
+                IconButton(onClick = { viewModel.expanded = !viewModel.expanded }, modifier = Modifier.size(32.dp)) {
+                    val icon = if (viewModel.expanded) Res.drawable.collapse_all else Res.drawable.expand_all
+                    Icon(painterResource(icon), contentDescription = null, Modifier.size(20.dp))
+                }
             }
-        }
-        if(viewModel.expanded)FlowRow(
-            Modifier.padding(start = 16.dp,end = 16.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ){
-            tools.forEach { tool ->
-                val toolId = if(tool is AIPortVirtualTool) tool.toolId else tool.id
-                val interactionSource = remember { MutableInteractionSource() }
-                val isHovered by interactionSource.collectIsHoveredAsState()
-                OutlinedButton(
-                    modifier = Modifier.height(28.dp).hoverable(interactionSource),
-                    onClick = {
-                    },
-                    contentPadding = PaddingValues(0.dp),
-                ) {
-                    Box(contentAlignment = Alignment.CenterEnd) {
-                        Text(tool.name, Modifier.padding(horizontal = 8.dp))
-                        if (isHovered) {
-                            Box(Modifier.size(28.dp).background(
-                                color = MaterialTheme.colorScheme.surfaceContainer,
-                                shape = MaterialTheme.shapes.large
-                            ), contentAlignment = Alignment.Center){
-                                Icon(
-                                    painterResource(Res.drawable.description),
-                                    contentDescription = null,
-                                    Modifier.size(20.dp)
-                                )
+            if (viewModel.expanded) FlowRow(
+                Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                tools.forEach { tool ->
+                    val toolId = if (tool is AIPortVirtualTool) tool.toolId else tool.id
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isHovered by interactionSource.collectIsHoveredAsState()
+                    OutlinedButton(
+                        modifier = Modifier.height(28.dp).hoverable(interactionSource),
+                        onClick = {
+                        },
+                        contentPadding = PaddingValues(0.dp),
+                    ) {
+                        Box(contentAlignment = Alignment.CenterEnd) {
+                            Text(tool.name, Modifier.padding(horizontal = 8.dp))
+                            if (isHovered) {
+                                Box(
+                                    Modifier.size(28.dp).background(
+                                        color = MaterialTheme.colorScheme.surfaceContainer,
+                                        shape = MaterialTheme.shapes.large
+                                    ), contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        painterResource(Res.drawable.description),
+                                        contentDescription = null,
+                                        Modifier.size(20.dp)
+                                    )
+                                }
                             }
                         }
                     }
-                }
 
+                }
             }
-        }
-        HorizontalDivider()
-        Row(Modifier.padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            viewModel.toolAgent?.let {
-                Text(it.name)
-                if (it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) { Text("This device") }
+            HorizontalDivider()
+            Row(
+                Modifier.padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                viewModel.toolAgent?.let {
+                    Text(it.name)
+                    if (it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) { Text("This device") }
+                }
             }
-        }
+//        }
     }
 }
