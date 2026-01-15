@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced shared MCP server UI with edit functionality and improved window management
+
+### Details
+- Enhanced SharedMCPServerListView with edit button functionality
+- Added edit icon to shared MCP server list view for better UI
+- Improved UI with better component organization in shared server list view
+- Enhanced window management with dynamic height based on maximize state
+- Added proper state handling for window maximize functionality
+- Improved UI with better visual feedback for window state changes
+- Enhanced shared server management with edit functionality
+- Added proper icon resources for edit functionality in shared server view
+- Improved UI with better component arrangement in shared server list view
+- Enhanced window management with accurate height adjustment for maximized state
+
+## [January 2, 2026]
+### Summary
 Enhanced shared MCP server management with improved virtual tool handling
 
 ### Details
