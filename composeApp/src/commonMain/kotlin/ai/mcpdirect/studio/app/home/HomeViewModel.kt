@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -64,7 +65,7 @@ class HomeViewModel: ViewModel() {
         ToolRepository.toolMakers,
         virtualToolMakerFilter
     ){ makers,filter ->
-        makers.values.filter { it.type==0&&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true)) }.toList()
+        makers.values.filter { it.type==0&& UserRepository.me(it.userId) &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true)) }.toList()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),

@@ -2,6 +2,22 @@
 
 ## [January 2, 2026]
 ### Summary
+Enhanced UI with improved user identification and display in server views
+
+### Details
+- Enhanced MCPServersWidget with improved user identification for tool makers
+- Added proper user information display in MCP server list view
+- Improved UI with better visual differentiation between local and remote users
+- Enhanced SharedMCPServerView with accurate user identification and display
+- Added proper state management for user information in shared server views
+- Improved UI with better icons for local vs remote users in server views
+- Enhanced user management with accurate identification in server components
+- Added proper user information loading in server view components
+- Improved UI with better visual feedback for user identification in server views
+- Enhanced component organization with better user information display in server views
+
+## [January 2, 2026]
+### Summary
 Enhanced shared MCP server management with improved filtering and user access control
 
 ### Details
