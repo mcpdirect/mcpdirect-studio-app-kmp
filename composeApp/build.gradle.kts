@@ -12,7 +12,14 @@ plugins {
 //    rootProject.file("version.properties").inputStream().use { load(it) }
 //}
 //val appVersion = properties.getProperty("version", "dev")
+val appId = 20030531
+println("APP_ID=$appId")
+val appPackage = "ai.mcpdirect.mcpdirectstudioapp"
+println("APP_PACKAGE=$appPackage")
 val appVersion = "2.3.0"
+println("APP_VERSION=$appVersion")
+val appRelease = 20261016
+println("APP_RELEASE=$appRelease")
 val generatedSrcDirPath = "generated/compose/srcGenerator"
 val mcpdirectGatewayEndpoint = System.getenv("AI_MCPDIRECT_GATEWAY_ENDPOINT")?:"http://localhost:8088/"
 println("AI_MCPDIRECT_GATEWAY_ENDPOINT=$mcpdirectGatewayEndpoint")
@@ -69,6 +76,8 @@ kotlin {
                 outputFile.writeText("""
                     package ai.mcpdirect.mcpdirectstudioapp
                     object AppInfo {
+                        const val APP_ID = "$appId"
+                        const val APP_RELEASE = "$appRelease"
                         const val APP_VERSION = "$appVersion"
                         const val MCPDIRECT_GATEWAY_ENDPOINT = "$mcpdirectGatewayEndpoint"
                         const val MCPDIRECT_HSTP_WEBPORT = "$mcpdirectHSTPWebport"
