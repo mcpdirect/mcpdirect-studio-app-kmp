@@ -99,18 +99,19 @@ fun MCPdirectKeysComponent(
                     }
                 }
             } else {
-                StudioActionBar("Generate New Key"){
-                    if(accessKeys.isNotEmpty())TextButton(
-                        modifier = Modifier.height(32.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp),
-                        onClick = { showGenerateKeyView = false }
-                    ) {
-                        Text(
-                            "MCPdirect Keys",
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                    }
-                }
+                StudioActionBar("Generate New Key")
+//                {
+//                    if(accessKeys.isNotEmpty())TextButton(
+//                        modifier = Modifier.height(32.dp),
+//                        contentPadding = PaddingValues(horizontal = 8.dp),
+//                        onClick = { showGenerateKeyView = false }
+//                    ) {
+//                        Text(
+//                            "MCPdirect Keys",
+//                            style = MaterialTheme.typography.bodySmall,
+//                        )
+//                    }
+//                }
                 HorizontalDivider()
                 var name by remember { mutableStateOf("") }
                 var nameError by remember { mutableStateOf(true) }
@@ -128,7 +129,10 @@ fun MCPdirectKeysComponent(
                         Text("Name must not be empty and should have at most 20 characters")
                     },
                 )
-                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     TextButton(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         onClick = {

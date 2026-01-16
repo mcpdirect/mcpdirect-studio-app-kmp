@@ -18,6 +18,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
+import mcpdirectstudioapp.composeapp.generated.resources.arrow_forward
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
 import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_left
@@ -58,8 +60,12 @@ fun MCPdirectKeyScreen(
                             contentPadding = PaddingValues(horizontal = 8.dp),
                             onClick = { showAIAgent = false }
                         ) {
-                            Icon(painterResource(Res.drawable.keyboard_arrow_left),
-                                contentDescription = null)
+                            Icon(
+                                painterResource(Res.drawable.arrow_back),
+                                contentDescription = null,
+                                Modifier.size(20.dp)
+                            )
+                            Spacer(Modifier.width(4.dp))
                             Text(
                                 "Grant tool permissions",
                                 style = MaterialTheme.typography.bodySmall,
@@ -88,8 +94,12 @@ fun MCPdirectKeyScreen(
                                 "Integrate with AI Agents",
                                 style = MaterialTheme.typography.bodySmall,
                             )
-                            Icon(painterResource(Res.drawable.keyboard_arrow_right),
-                                contentDescription = null)
+                            Spacer(Modifier.width(4.dp))
+                            Icon(painterResource(
+                                Res.drawable.arrow_forward),
+                                contentDescription = null,
+                                Modifier.size(20.dp)
+                            )
                         }
 //                        IconButton(onClick = {
 //                            grantViewModels.clear()

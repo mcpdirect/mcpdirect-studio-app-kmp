@@ -43,10 +43,7 @@ val generalStreamableHTTPConfig = $$"""
   "mcpServers": {
     "${MCPDIRECT_KEY_NAME}": {
       "type": "http",
-      "url": "${MCPDIRECT_URL}/mcp",
-      "headers": {
-        "Authorization": "Bearer ${MCPDIRECT_KEY}"
-      }      
+      "url": "${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp"
     }
   }
 }""".trimIndent()
@@ -78,23 +75,11 @@ val claudeCodeConfigs = listOf(
     AIAgentConfig(
         "Add HTTP server with Claude CLI",
         $$"""
-claude mcp add --transport http ${MCPDIRECT_KEY_NAME} "${MCPDIRECT_URL}/mcp" \
-  --header "Authorization: Bearer ${MCPDIRECT_KEY}"""".trimIndent()
+claude mcp add --transport http ${MCPDIRECT_KEY_NAME} "${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp"""".trimIndent()
     ),
     AIAgentConfig(
         "Add HTTP server in .mcp.json",
-        $$"""
-{
-  "mcpServers": {
-    "${MCPDIRECT_KEY_NAME}": {
-      "type": "http",
-      "url": "${MCPDIRECT_URL}/mcp",
-      "headers": {
-        "Authorization": "Bearer ${MCPDIRECT_KEY}"
-      }      
-    }
-  }
-}""".trimIndent()
+        generalStreamableHTTPConfig
     ),
 )
 
@@ -123,7 +108,7 @@ val cursorConfigs = listOf(
             "Add to Cursor",
             "mcp_install_dark",
             $$"cursor://anysphere.cursor-deeplink/mcp/install?name=${MCPDIRECT_KEY_NAME}&config=${MCPDIRECT_CONFIG}",
-            $$"{\"url\": \"${MCPDIRECT_URL}/mcp\",\"headers\": {\"Authorization\": \"Bearer ${MCPDIRECT_KEY}\"}}"
+            $$"{\"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"}"
         )
     ),
 )
