@@ -2,24 +2,28 @@
 
 ## [January 15, 2026]
 ### Summary
-Enhanced UI components and improved AI agent configuration
+Enhanced app version model and improved macOS window controls
 
 ### Details
-- Added arrow_forward.svg icon resource for improved UI navigation
-- Updated MCPdirectKeyScreen with new arrow icons for AI agent navigation
-- Enhanced UI with proper spacing and sizing for navigation icons
-- Improved MCPdirectKeysComponent with layout adjustments for generate key view
-- Updated QuickStartAIAgent configurations with simplified URL patterns
-- Removed redundant authorization headers from HTTP configurations
-- Enhanced Claude CLI configuration with streamlined URL format
-- Improved Cursor integration with updated deep link configuration
-- Added proper modifier for fillMaxWidth in key generation view
-- Updated StudioActionBar in key generation view with simplified layout
-- Enhanced UI consistency with proper icon sizing and spacing
-- Improved accessibility with better content descriptions for icons
-- Updated MCP server URL patterns for simplified authentication
-- Enhanced configuration templates with cleaner formatting
-- Improved Claude and Cursor integration with updated URL structures
+- Added AIPortAppVersion model with platform and architecture constants
+- Updated build configuration with app package ID and version code
+- Enhanced main.kt with OS detection function for platform-specific behavior
+- Improved window controls for macOS with traffic light-style buttons
+- Added macOS-specific window styling with rounded corners
+- Enhanced window management with platform-appropriate UI elements
+- Added platform constants for Windows, Linux, and macOS
+- Improved window maximize/minimize/close functionality
+- Added proper imports for UI components and platform detection
+- Enhanced window styling with conditional shape based on OS
+- Added circle-shaped window controls for macOS compatibility
+- Improved window control layout with platform-specific arrangements
+- Added proper color definitions for macOS traffic light buttons
+- Enhanced exitApplication functionality with proper click handling
+- Updated AppInfo object with APP_VERSION_CODE constant
+- Added architecture constants to AIPortAppVersion model
+- Improved platform detection with proper OS name matching
+- Enhanced UI with proper modifiers and styling for window controls
+- Added background and clipping modifiers for window control styling
 
 ## [January 2, 2026]
 ### Summary

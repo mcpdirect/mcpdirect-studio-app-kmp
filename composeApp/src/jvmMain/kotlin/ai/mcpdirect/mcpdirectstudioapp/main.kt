@@ -10,8 +10,9 @@ import ai.mcpdirect.studio.app.dashboard.DashboardScreen
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeScreen
 import ai.mcpdirect.studio.app.key.MCPdirectKeyScreen
+import ai.mcpdirect.studio.app.model.aitool.AIPortAppVersion
+import ai.mcpdirect.studio.app.model.aitool.AIPortAppVersion.Companion.PLATFORM_MACOS
 import ai.mcpdirect.studio.app.setting.SettingsScreen
-import ai.mcpdirect.studio.app.team.MCPTeamScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerScreen
 import ai.mcpdirect.studio.app.team.MCPTeamToolMakerTemplateScreen
 import ai.mcpdirect.studio.app.team.TeamScreen
@@ -21,20 +22,21 @@ import ai.mcpdirect.studio.app.tips.TipsScreen
 import ai.mcpdirect.studio.app.tool.MCPToolsScreen
 import ai.mcpdirect.studio.app.tool.ToolPermissionScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMCPScreen
-import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerScreen
 import ai.mcpdirect.studio.app.virtualmcp.VirtualMakerToolConfigScreen
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
@@ -49,6 +51,17 @@ import java.awt.Cursor
 import java.awt.Frame
 import javax.swing.SwingUtilities
 
+fun os(): Int {
+    return System.getProperty("os.name").lowercase().let { osName ->
+        when {
+            osName.contains("win") -> AIPortAppVersion.PLATFORM_WINDOWS
+            osName.contains("nix") || osName.contains("nux") -> AIPortAppVersion.PLATFORM_LINUX
+            osName.contains("mac") -> AIPortAppVersion.PLATFORM_MACOS
+            else -> 0
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 fun main() = application {
     val windowState = rememberWindowState(
@@ -56,7 +69,7 @@ fun main() = application {
         height = 960.dp,
         position = WindowPosition(Alignment.Center)
     )
-
+    val os = os()
     val version = AppInfo.APP_VERSION
     // undecorated = true removes the OS chrome
     // transparent = true allows us to control the corner radius
@@ -76,7 +89,8 @@ fun main() = application {
             Surface(
                 modifier = Modifier.fillMaxSize().padding(padding),
                 color = MaterialTheme.colorScheme.background,
-                shadowElevation = shadowElevation
+                shadowElevation = shadowElevation,
+                shape = if(os==PLATFORM_MACOS) MaterialTheme.shapes.medium else RectangleShape
             ) {
                 Scaffold (
                     snackbarHost = { SnackbarHost(generalViewModel.snackbarHostState){ data ->
@@ -270,47 +284,99 @@ fun main() = application {
                 if(maximize) 32.dp else 64.dp
             ).padding(padding)) {
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Spacer(Modifier.weight(1f))
-                    IconButton(
-                        onClick = {
-                            SwingUtilities.invokeLater {
-                                (window as? Frame)?.extendedState = Frame.ICONIFIED
-                            }
-                        },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(painterResource(Res.drawable.check_indeterminate_small),contentDescription = "")
-                    }
-
-                    IconButton(
-                        onClick = {
-                            SwingUtilities.invokeLater {
-                                if(!maximize){
-                                    padding = 0.dp
-                                    shadowElevation = 0.dp
-                                    (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
-                                }else{
-                                    padding = 16.dp
-                                    shadowElevation = 8.dp
-                                    (window as? Frame)?.extendedState = Frame.NORMAL
+                    if(os==PLATFORM_MACOS){
+                        Box(
+                            modifier = Modifier
+                                .size(12.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    color = Color(0xFFF96057)
+                                )
+                                .clickable{
+                                    exitApplication()
                                 }
-                                maximize = !maximize
-                            }
-                        },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            painterResource(Res.drawable.check_box_outline_blank),
-                            contentDescription = "",
-                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(12.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    color = if(maximize) Color.Gray else Color(0xFFF8BC31)
+                                )
+                                .clickable(!maximize){
+                                    SwingUtilities.invokeLater {
+                                        (window as? Frame)?.extendedState = Frame.ICONIFIED
+                                    }
+                                }
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(12.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    color = Color(0xFF44C748)
+                                )
+                                .clickable{
+                                    SwingUtilities.invokeLater {
+                                        if (!maximize) {
+                                            padding = 0.dp
+                                            shadowElevation = 0.dp
+                                            (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
+                                        } else {
+                                            padding = 16.dp
+                                            shadowElevation = 8.dp
+                                            (window as? Frame)?.extendedState = Frame.NORMAL
+                                        }
+                                        maximize = !maximize
+                                    }
+                                }
                         )
                     }
+                    Spacer(Modifier.weight(1f))
+                    if(os!=PLATFORM_MACOS) {
+                        IconButton(
+                            onClick = {
+                                SwingUtilities.invokeLater {
+                                    (window as? Frame)?.extendedState = Frame.ICONIFIED
+                                }
+                            },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(painterResource(Res.drawable.check_indeterminate_small), contentDescription = "")
+                        }
 
-                    IconButton(
-                        onClick = { exitApplication() },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(painterResource(Res.drawable.close_small),contentDescription = "")
+                        IconButton(
+                            onClick = {
+                                SwingUtilities.invokeLater {
+                                    if (!maximize) {
+                                        padding = 0.dp
+                                        shadowElevation = 0.dp
+                                        (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
+                                    } else {
+                                        padding = 16.dp
+                                        shadowElevation = 8.dp
+                                        (window as? Frame)?.extendedState = Frame.NORMAL
+                                    }
+                                    maximize = !maximize
+                                }
+                            },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                painterResource(Res.drawable.check_box_outline_blank),
+                                contentDescription = "",
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = { exitApplication() },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(painterResource(Res.drawable.close_small), contentDescription = "")
+                        }
                     }
                 }
             }
