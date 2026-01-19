@@ -40,7 +40,7 @@ fun HomeScreen(){
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var showTipsDialog by remember { mutableStateOf(false) }
     Row{
-        Column(Modifier.width(300.dp).padding(top = 16.dp, bottom = 16.dp, start = 16.dp)){
+        Column(Modifier.width(300.dp).padding(top = 32.dp, bottom = 16.dp, start = 16.dp)){
             Row{
                 Image(
                     painter = painterResource(Res.drawable.mcpdirect_logo_48),
@@ -65,9 +65,16 @@ fun HomeScreen(){
                 }
             }
             Column(Modifier.weight(1f)) {
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        "Quick start",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    FilledTonalIconButton(
                         onClick = { showTipsDialog = true }
                     ) {
                         Icon(
@@ -75,12 +82,6 @@ fun HomeScreen(){
                             contentDescription = ""
                         )
                     }
-//                Spacer(Modifier.width(8.dp))
-                    Text(
-                        "Quick start",
-                        style = MaterialTheme.typography.titleLarge,
-//                    modifier = Modifier.padding(8.dp)
-                    )
                 }
                 HorizontalDivider()
                 Row(

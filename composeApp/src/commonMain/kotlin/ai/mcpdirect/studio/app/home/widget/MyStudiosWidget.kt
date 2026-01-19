@@ -65,7 +65,7 @@ fun MyStudiosWidget(
 //        HorizontalDivider()
         if (toolAgents.size > 1) {
             val localToolAgent by viewModel.localToolAgent.collectAsState()
-            LazyColumn {
+            LazyColumn{
                 items(toolAgents) {
                     if (it.id > 0L && UserRepository.me(it.userId)) {
                         TextButton(
@@ -79,11 +79,23 @@ fun MyStudiosWidget(
                                 )
                             },
                         ) {
-                            Text(
-                                it.name, softWrap = false,
-                                overflow = TextOverflow.MiddleEllipsis
-                            )
-                            if (it.id == localToolAgent.id) Badge(Modifier.padding(start=8.dp)) { Text("This device") }
+                            Row(Modifier.fillMaxWidth()) {
+                                BadgedBox(
+                                    badge = {
+                                        if (it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
+                                            Text(
+                                                "This device",
+                                                style = MaterialTheme.typography.labelSmall,
+                                            )
+                                        }
+                                    }
+                                ) {
+                                    Text(
+                                        it.name, softWrap = false,
+                                        overflow = TextOverflow.MiddleEllipsis
+                                    )
+                                }
+                            }
                         }
                     }
                 }

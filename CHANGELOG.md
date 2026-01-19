@@ -1,5 +1,29 @@
 # Changelog
 
+## [January 19, 2026]
+### Summary
+Added macOS-style window controls and improved UI layout
+
+### Details
+- Added macOS-style close, minimize, and maximize button vector drawables
+- Implemented platform-specific window controls with proper styling
+- Enhanced main window with macOS-specific window properties
+- Improved Home screen layout with better spacing and alignment
+- Added macOS traffic light-style window controls with hover effects
+- Enhanced widget layouts with fillMaxWidth for better responsiveness
+- Improved window management with platform-appropriate UI elements
+- Added proper imports for UI components and platform detection
+- Enhanced window styling with conditional shape based on OS
+- Added circle-shaped window controls for macOS compatibility
+- Improved window control layout with platform-specific arrangements
+- Added proper color definitions for macOS traffic light buttons
+- Enhanced exitApplication functionality with proper click handling
+- Updated AppInfo object with APP_VERSION_CODE constant
+- Added architecture constants to AIPortAppVersion model
+- Improved platform detection with proper OS name matching
+- Enhanced UI with proper modifiers and styling for window controls
+- Added background and clipping modifiers for window control styling
+
 ## [January 15, 2026]
 ### Summary
 Enhanced app version model and improved macOS window controls
