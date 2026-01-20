@@ -2,6 +2,15 @@
 
 ## [January 20, 2026]
 ### Summary
+Removed unnecessary shape properties in UI components
+
+### Details
+- Removed shape property from OutlinedTextField in ConfigMCPServerDialog
+- Removed shape property from input fields in ConfigMCPServerDialog
+- Cleaned up unused shape configurations in UI components
+
+## [January 20, 2026]
+### Summary
 Improved UI layout and padding in MCP server configuration screens
 
 ### Details

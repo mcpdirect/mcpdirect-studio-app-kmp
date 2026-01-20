@@ -891,7 +891,7 @@ fun ConfigMCPServerView(
                                     supportingText = {
                                         Text("${input.key} must not be empty")
                                     },
-                                    shape = ButtonDefaults.shape
+//                                    shape = ButtonDefaults.shape
                                 )
                             }
                         }
@@ -929,7 +929,7 @@ fun ConfigMCPServerView(
             supportingText = {
                 Text("Name must not be empty and length < 21")
             },
-            shape = CardDefaults.shape,
+//            shape = CardDefaults.shape,
             singleLine = true
         )
         val enabled = !isNameError&&!isInputsError&&!isInputEnvError
