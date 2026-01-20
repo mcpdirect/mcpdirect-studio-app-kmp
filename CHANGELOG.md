@@ -2,6 +2,18 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced loading indicator and improved top bar implementation
+
+### Details
+- Added loading progress indicator to the top bar in main application window
+- Modified GeneralViewModel to handle loading states with proper float values
+- Updated loading function to accept float parameter with default value
+- Improved top bar layout with proper padding and positioning
+- Enhanced UI with LinearProgressIndicator for better user feedback during loading states
+- Refined loading process state management in GeneralViewModel
+
+## [January 20, 2026]
+### Summary
 Removed unnecessary shape properties in UI components
 
 ### Details

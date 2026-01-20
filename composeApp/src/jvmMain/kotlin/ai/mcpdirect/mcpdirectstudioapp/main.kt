@@ -145,38 +145,50 @@ fun main() = application {
                         )
                     } },
                     topBar = {
-                        if(generalViewModel.previousScreen!=null) TopAppBar(
-                            navigationIcon = {
-                                Row(verticalAlignment = Alignment.CenterVertically){
-                                    IconButton(
-                                        onClick = {
-                                            generalViewModel.currentScreen(generalViewModel.previousScreen!!)
+                        if(generalViewModel.previousScreen!=null) {
+                            TopAppBar(
+                                navigationIcon = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        IconButton(
+                                            onClick = {
+                                                generalViewModel.currentScreen(generalViewModel.previousScreen!!)
+                                            }
+                                        ) {
+                                            Icon(
+                                                painterResource(Res.drawable.arrow_back),
+                                                contentDescription = ""
+                                            )
                                         }
-                                    ) {
-                                        Icon(
-                                            painterResource(Res.drawable.arrow_back),
-                                            contentDescription = ""
-                                        )
                                     }
-                                }
-                            },
-                            title = { generalViewModel.currentScreenTitle?.let {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ){
-                                    Icon(
-                                        painterResource(generalViewModel.currentScreen.icon),
-                                        contentDescription = it
-                                    )
-                                    Text(it)
-                                }
+                                },
+                                title = {
+                                    generalViewModel.currentScreenTitle?.let {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
+                                            Icon(
+                                                painterResource(generalViewModel.currentScreen.icon),
+                                                contentDescription = it
+                                            )
+                                            Text(it)
+                                        }
 
-                            } },
-                            actions = {
-                                generalViewModel.topBarActions()
+                                    }
+                                },
+                                actions = {
+                                    generalViewModel.topBarActions()
+                                }
+                            )
+                            Row(Modifier.padding(top = 62.dp)) {
+                                val process = generalViewModel.loadingProcess
+                                if(process==0f) LinearProgressIndicator(Modifier.height(2.dp).fillMaxWidth())
+                                else if(process<1.0f) LinearProgressIndicator({ process }, Modifier.height(2.dp).fillMaxWidth())
+//                                generalViewModel.loadingProcess?.let {
+//                                    LinearProgressIndicator({ it }, Modifier.height(2.dp).fillMaxWidth())
+//                                }?: LinearProgressIndicator(Modifier.height(2.dp).fillMaxWidth())
                             }
-                        )
+                        }
                     }
                 ){ paddingValues ->
                     if(authViewModel.uiState == UIState.Success) {

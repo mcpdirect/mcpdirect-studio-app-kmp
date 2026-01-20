@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 
 val generalViewModel = GeneralViewModel()
 class GeneralViewModel() : ViewModel() {
-    var loadingProcess by mutableStateOf<Float?>(1.0f)
-    fun loading(process: Float?=null){
+    var loadingProcess by mutableStateOf(1.0f)
+    fun loading(process: Float=0f){
         loadingProcess = process
     }
 
