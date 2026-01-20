@@ -465,9 +465,9 @@ fun ConfigMCPServerView(
                 Text("Paste from JSON")
             }
         }
-        HorizontalDivider()
+//        HorizontalDivider()
         Column(
-            Modifier.verticalScroll(formScrollState).padding(horizontal = 16.dp,vertical = 8.dp),
+            Modifier.verticalScroll(formScrollState).padding(start = 16.dp,end = 8.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Row(
@@ -784,9 +784,9 @@ fun ConfigMCPServerView(
         StudioActionBar(mcpServer.name) {
             mcpServer.command?.let { InstallRTMView(toolAgent,it) }
         }
-        HorizontalDivider()
+//        HorizontalDivider()
         Column(
-            Modifier.weight(1f).padding(horizontal = 16.dp, vertical = 16.dp).verticalScroll(formScrollState),
+            Modifier.weight(1f).padding(start = 16.dp, end = 16.dp, bottom = 16.dp).verticalScroll(formScrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             val type = when(mcpServer.transport){
@@ -800,7 +800,7 @@ fun ConfigMCPServerView(
             val bold = FontWeight.Bold
 
             Card{Column(
-                Modifier.fillMaxWidth().padding(16.dp),
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){

@@ -2,6 +2,19 @@
 
 ## [January 20, 2026]
 ### Summary
+Improved UI layout and padding in MCP server configuration screens
+
+### Details
+- Updated padding in ConfigMCPServerDialog for better spacing and layout
+- Replaced some HorizontalDivider elements with commented-out alternatives
+- Changed OutlinedCard to Card in QuickStartScreen for different styling
+- Updated padding in MCPServerMainView for improved content spacing
+- Modified Card to OutlinedCard in tool view for consistent styling
+- Adjusted padding values in various UI components for better responsive design
+- Removed unnecessary container and content color specifications in tab rows
+
+## [January 20, 2026]
+### Summary
 Implemented StudioOutlinedCard component and enhanced MCP server configuration UI
 
 ### Details

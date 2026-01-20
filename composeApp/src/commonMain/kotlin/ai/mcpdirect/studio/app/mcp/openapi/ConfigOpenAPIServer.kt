@@ -179,7 +179,7 @@ fun ConfigOpenAPIServerView(
                     contentDescription = "Edit",modifier= Modifier.size(24.dp))
             }
         }
-        HorizontalDivider(Modifier.padding(bottom = 16.dp))
+//        HorizontalDivider(Modifier.padding(bottom = 16.dp))
         if(serverDoc!=null){
             if(serverDoc.doc!=null) yaml = serverDoc.doc!!
             serverDoc.paths?.let { paths->

@@ -301,7 +301,7 @@ fun ConnectMCPView(
 //            }
 //        }
 
-        OutlinedCard(Modifier.weight(2f)) {
+        Card(Modifier.weight(2f)) {
             if(!catalog&&toolMakers.isNotEmpty()) {
                 currentToolMaker?.let { toolMaker ->
                     when (action) {
@@ -538,7 +538,7 @@ fun MCPServerMainView(
                 )
             }
         }
-        HorizontalDivider()
+//        HorizontalDivider()
         if(toolMaker.errorCode!=0){
             Text(toolMaker.errorMessage,Modifier.padding(horizontal = 8.dp) , color = MaterialTheme.colorScheme.error)
         } else {
@@ -563,13 +563,13 @@ fun MCPServerMainView(
             }
             currentTool?.let { tool ->
                 var tabIndex by remember { mutableStateOf(0) }
-                Card(modifier = Modifier.fillMaxSize().padding(16.dp)){
+                OutlinedCard(modifier = Modifier.fillMaxSize().padding(start=16.dp,end=16.dp, bottom = 16.dp)) {
                     StudioActionBar(tool.name) {
                         SecondaryTabRow(
                             tabIndex,
                             Modifier.width(300.dp),
-                            containerColor = CardDefaults.cardColors().containerColor,
-                            contentColor = CardDefaults.cardColors().contentColor,
+//                            containerColor = CardDefaults.cardColors().containerColor,
+//                            contentColor = CardDefaults.cardColors().contentColor,
                         ){
                             Tab(tabIndex==0, onClick = {tabIndex = 0}, text = {Text("Description")})
                             Tab(tabIndex==1, onClick = {tabIndex = 1}, text = {Text("Input Schema")})
@@ -589,7 +589,7 @@ fun MCPServerMainView(
                 Column (
                     modifier = Modifier
                         .verticalScroll(scrollState)
-                        .padding(16.dp) // Add padding to prevent content from going under the scrollbar
+                        .padding(start = 16.dp,end=16.dp, bottom = 16.dp) // Add padding to prevent content from going under the scrollbar
                 )  {
                     FlowRow(
                         Modifier.fillMaxWidth(),
