@@ -324,11 +324,16 @@ interface Platform {
 //            onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
 //        }
 //    }
-    fun modifyOpenAPIServerForStudio(studioId:String, serverId:Long,
-                                 serverName:String?=null,serverStatus:Int?=null,
-                                 serverConfig:OpenAPIServerConfig?=null,
-                                 onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit){
-        httpRequest("studio.console@$studioId/openapi_server/modify",
+
+    fun modifyOpenAPIServerForStudio(
+        studioId:String, serverId:Long,
+        serverName:String?=null,serverStatus:Int?=null,
+        serverConfig:OpenAPIServerConfig?=null,
+        onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit
+    ){
+        if(serverName == null && serverStatus == null && serverConfig==null){
+            onResponse(AIPortServiceResponse())
+        }else httpRequest("studio.console@$studioId/openapi_server/modify",
             mapOf(
                 "openapiServerId" to JsonPrimitive(serverId),
                 "openapiServerName" to JsonPrimitive(serverName),
@@ -338,6 +343,7 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<OpenAPIServer>>(it))
         }
     }
+
     fun queryOpenAPIServersFromStudio(studioId:String, onResponse: (resp: AIPortServiceResponse<List<OpenAPIServer>>) -> Unit){
         httpRequest("studio.console@$studioId/openapi_server/query", mapOf()) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<OpenAPIServer>>>(it))

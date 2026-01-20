@@ -612,7 +612,7 @@ class MyStudioViewModel(): ViewModel() {
 
     fun connectOpenAPIServerToStudio(
         config: OpenAPIServerConfig,
-        onResponse: ((code: Int, message: String?, toolMaker: AIPortToolMaker?) -> Unit)?=null){
+        onResponse: ((resp: AIPortServiceResponse<OpenAPIServer>) -> Unit)?=null){
         viewModelScope.launch {
             StudioRepository.connectOpenAPIServerToStudio(_toolAgent.value,config,onResponse)
         }

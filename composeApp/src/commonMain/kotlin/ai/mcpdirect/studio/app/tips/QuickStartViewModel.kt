@@ -218,6 +218,34 @@ class QuickStartViewModel: ViewModel() {
         currentToolAgent.value, config, onResponse
     ) } }
 
+    fun installOpenAPIServer(
+        config:OpenAPIServerConfig,
+        onResponse: (resp: AIPortServiceResponse<OpenAPIServer>) -> Unit
+    ){
+        viewModelScope.launch {
+            StudioRepository.connectOpenAPIServerToStudio(
+                currentToolAgent.value,config,onResponse
+            )
+        }
+    }
+    fun modifyOpenAPIServerConfig(
+        server: OpenAPIServer,name:String?=null,status:Int?=null,config: OpenAPIServerConfig?=null,
+        onResponse: (resp:AIPortServiceResponse<OpenAPIServer>)->Unit
+    ){
+        viewModelScope.launch {
+            StudioRepository.modifyOpenAPIServerForStudio(
+                currentToolAgent.value,
+                server,name,status,config
+            ){
+                if(it.successful()) it.data?.let{ data ->
+                    currentToolMaker.value?.let{
+                        if(it.id==data.id) currentToolMaker(data)
+                    }
+                }
+                onResponse(it)
+            }
+        }
+    }
     fun getOpenAPIServerConfig(
         maker: AIPortToolMaker,
         onResponse: (resp: AIPortServiceResponse<OpenAPIServerConfig>) -> Unit

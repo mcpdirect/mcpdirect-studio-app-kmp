@@ -282,21 +282,21 @@ object StudioRepository {
     }
     suspend fun modifyMCPServerForStudio(
         toolAgent: AIPortToolAgent,
-        mcpServer: MCPServer,
+        server: MCPServer,
         serverName: String? = null,
         serverStatus: Int? = null,
         serverConfig: MCPServerConfig? = null,
         onResponse: ((resp: AIPortServiceResponse<MCPServer>) -> Unit)? = null
     ){
         val studioId = toolAgent.engineId
-        val mcpServerId = mcpServer.id
+        val serverId = server.id
         if(serverName == null && serverStatus == null && serverConfig==null){
             onResponse?.invoke(AIPortServiceResponse())
         }
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().modifyMCPServerForStudio(
-                studioId, mcpServerId, serverName,serverStatus, serverConfig
+                studioId, serverId, serverName,serverStatus, serverConfig
             ){
                 if(it.code==0) it.data?.let { server ->
                     _mcpServers.update { map ->
@@ -311,7 +311,36 @@ object StudioRepository {
                     }
                 }
                 generalViewModel.loaded(
-                    "Modify config of MCP Server #${mcpServer.name} in Studio #${toolAgent.name}",it.code,it.message
+                    "Modify config of MCP Server #${server.name} in Studio #${toolAgent.name}",it.code,it.message
+                )
+//                onResponse(it.code,it.message,it.data)
+                onResponse?.let{ response->
+                    response(it)
+                }
+            }
+        }
+    }
+    suspend fun modifyOpenAPIServerForStudio(
+        toolAgent: AIPortToolAgent,
+        server: OpenAPIServer,
+        serverName: String? = null,
+        serverStatus: Int? = null,
+        serverConfig: OpenAPIServerConfig? = null,
+        onResponse: ((resp: AIPortServiceResponse<OpenAPIServer>) -> Unit)? = null
+    ){
+        val studioId = toolAgent.engineId
+        val serverId = server.id
+        if(serverName == null && serverStatus == null && serverConfig==null){
+            onResponse?.invoke(AIPortServiceResponse())
+        }
+        loadMutex.withLock {
+            generalViewModel.loading()
+            getPlatform().modifyOpenAPIServerForStudio(
+                studioId, serverId, serverName,serverStatus, serverConfig
+            ){
+                updateOpenAPIServers(server,it)
+                generalViewModel.loaded(
+                    "Modify config of OpenAPI Server #${server.name} in Studio #${toolAgent.name}",it.code,it.message
                 )
 //                onResponse(it.code,it.message,it.data)
                 onResponse?.let{ response->
@@ -373,6 +402,11 @@ object StudioRepository {
                     if(server.id!=toolMaker.id){
                         remove(toolMaker.id)
                     }
+                }
+            }
+            _toolMakers.update { map ->
+                map.toMutableMap().apply {
+                    put(server.id, server)
                 }
             }
         }
@@ -544,7 +578,7 @@ object StudioRepository {
 
     suspend fun connectOpenAPIServerToStudio(
         toolAgent: AIPortToolAgent, config: OpenAPIServerConfig,
-        onResponse: ((code: Int, message: String?, toolMaker: AIPortToolMaker?) -> Unit)?=null){
+        onResponse: ((resp: AIPortServiceResponse<OpenAPIServer>) -> Unit)?=null){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().connectOpenAPIServerToStudio(toolAgent.engineId,config){
@@ -559,7 +593,7 @@ object StudioRepository {
                     "Connect OpenAPI Server #${config.name} to Studio #${toolAgent.name}",it.code,it.message
                 )
                 if(onResponse!=null){
-                    onResponse(it.code,it.message,it.data)
+                    onResponse(it)
                 }
             }
         }

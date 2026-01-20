@@ -3,6 +3,7 @@ package ai.mcpdirect.studio.app.tips
 import ai.mcpdirect.mcpdirectstudioapp.AppInfo
 import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.agent.ToolProviderType
 import ai.mcpdirect.studio.app.compose.*
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
 import ai.mcpdirect.studio.app.mcp.openapi.ConfigOpenAPIServerView
@@ -316,7 +317,6 @@ fun ConnectMCPView(
                                 currentToolAgent, toolMaker as MCPServer, Modifier.weight(2f),
                                 onBack = { action = ConnectMCPViewAction.MAIN }
                             ) { config, changed ->
-                                println(JSON.encodeToString(config))
                                 viewModel.modifyMCPServerConfig(
                                     toolMaker, config.name,
                                     config = if (changed) config else null
@@ -329,22 +329,28 @@ fun ConnectMCPView(
                         }
 
                         ConnectMCPViewAction.CONFIG_OPENAPI -> {
-                            var openAPIServerConfig by remember { mutableStateOf<OpenAPIServerConfig?>(null) }
-                            LaunchedEffect(toolMaker) {
-                                viewModel.getOpenAPIServerConfig(toolMaker) {
-                                    if (it.successful()) openAPIServerConfig = it.data
+                            if(toolMaker is OpenAPIServer) {
+                                var openAPIServerConfig by remember { mutableStateOf<OpenAPIServerConfig?>(null) }
+                                LaunchedEffect(toolMaker) {
+                                    viewModel.getOpenAPIServerConfig(toolMaker) {
+                                        if (it.successful()) openAPIServerConfig = it.data
+                                    }
                                 }
-                            }
-                            openAPIServerConfig?.let { config ->
-                                ConfigOpenAPIServerView(
-                                    toolMaker.name, currentToolAgent,config,
-                                    onBack = { action = ConnectMCPViewAction.MAIN }
-                                ) {
-//                                viewModel.modifyMCPServerConfig()
+                                openAPIServerConfig?.let { config ->
+                                    ConfigOpenAPIServerView(
+                                        toolMaker.name, currentToolAgent, config,
+                                        onBack = { action = ConnectMCPViewAction.MAIN }
+                                    ) {
+                                        viewModel.modifyOpenAPIServerConfig(
+                                            toolMaker, null, null, it
+                                        ) {
+                                            if (it.successful()) action = ConnectMCPViewAction.MAIN
+                                        }
+                                    }
+                                } ?: StudioBoard(modifier) {
+                                    CircularProgressIndicator()
+                                    Text("${toolMaker.name} config loading")
                                 }
-                            } ?: StudioBoard(modifier) {
-                                CircularProgressIndicator()
-                                Text("${toolMaker.name} config loading")
                             }
                         }
                     }
@@ -364,8 +370,14 @@ fun ConnectMCPView(
                     0L -> ConfigMCPServerView(currentToolAgent,modifier = Modifier.weight(2f)){ config,changed ->
                         installMCPServer(config)
                     }
-                    1L -> ConfigOpenAPIServerView(modifier = Modifier.weight(2f)){ yaml ->
-
+                    1L -> ConfigOpenAPIServerView(toolAgent = currentToolAgent, modifier = Modifier.weight(2f)){ config ->
+                        viewModel.installOpenAPIServer(config){
+                            if(it.successful()) it.data?.let { data ->
+                                viewModel.currentToolMaker(data)
+                                viewModel.selectToolMaker(true,data)
+                                catalog = false
+                            }
+                        }
                     }
                     else -> ConfigMCPServerView(currentToolAgent,currentMCPTemplate,Modifier.weight(2f)){ config ->
                         installMCPServer(config)
