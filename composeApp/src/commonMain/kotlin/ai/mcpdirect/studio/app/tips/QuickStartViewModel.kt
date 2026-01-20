@@ -33,6 +33,9 @@ class QuickStartViewModel: ViewModel() {
     val currentToolAgent: StateFlow<AIPortToolAgent> = _currentToolAgent
     fun currentToolAgent(agent:AIPortToolAgent){
         _currentToolAgent.value = agent
+        viewModelScope.launch {
+            StudioRepository.queryToolMakersFromStudio(agent,true)
+        }
     }
     val toolAgents: StateFlow<List<AIPortToolAgent>> = StudioRepository.toolAgents
         .map { it.values.filter { it.id!=0L }.sortedBy { it.name } }      // 转为 List

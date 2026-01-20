@@ -26,6 +26,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -35,6 +38,7 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -140,8 +144,8 @@ fun ConnectMCPView(
     viewModel: QuickStartViewModel,
     showCatalog: Boolean = true
 ){
-    val toolAgents by viewModel.toolAgents.collectAsState()
-    val localToolAgent by StudioRepository.localToolAgent.collectAsState()
+//    val toolAgents by viewModel.toolAgents.collectAsState()
+//    val localToolAgent by StudioRepository.localToolAgent.collectAsState()
     val currentToolAgent by viewModel.currentToolAgent.collectAsState()
     val currentToolMaker by viewModel.currentToolMaker.collectAsState()
     val toolMakers by viewModel.toolMakers.collectAsState()
@@ -149,7 +153,7 @@ fun ConnectMCPView(
     var catalog by remember { mutableStateOf(showCatalog) }
     var currentMCPTemplate by remember { mutableStateOf(AIPortMCPServer()) }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)){
-        Column(Modifier.weight(1f))  {
+//        Column(Modifier.weight(1f))  {
             OutlinedCard(Modifier.weight(1f)) {
                 if(!catalog) {
                     StudioActionBar (
@@ -168,6 +172,7 @@ fun ConnectMCPView(
                         }
                     }
                     HorizontalDivider()
+                    ToolAgentSelectionMenu(viewModel, Modifier.padding(16.dp,8.dp))
                     if (toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {
                         Icon(
                             painterResource(Res.drawable.inbox_empty),
@@ -276,25 +281,25 @@ fun ConnectMCPView(
                     }
                 }
             }
-            Spacer(Modifier.height(8.dp))
-            OutlinedButton(
-                contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
-                onClick = {}
-            ) {
-                if (currentToolAgent.id < 1L && toolAgents.isNotEmpty()) {
-                    if(localToolAgent.id>0L) viewModel.currentToolAgent(localToolAgent)
-                    else viewModel.currentToolAgent(toolAgents[0])
-                }
-                Icon(painterResource(Res.drawable.design_services), contentDescription = "",
-                    tint = MaterialTheme.colorScheme.primary)
-                Spacer(Modifier.size(8.dp))
-                Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name,
-                    color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold,)
-                Spacer(Modifier.weight(1f))
-                Icon(painterResource(Res.drawable.more), contentDescription = "",
-                    tint = MaterialTheme.colorScheme.primary)
-            }
-        }
+//            Spacer(Modifier.height(8.dp))
+//            OutlinedButton(
+//                contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
+//                onClick = {}
+//            ) {
+//                if (currentToolAgent.id < 1L && toolAgents.isNotEmpty()) {
+//                    if(localToolAgent.id>0L) viewModel.currentToolAgent(localToolAgent)
+//                    else viewModel.currentToolAgent(toolAgents[0])
+//                }
+//                Icon(painterResource(Res.drawable.design_services), contentDescription = "",
+//                    tint = MaterialTheme.colorScheme.primary)
+//                Spacer(Modifier.size(8.dp))
+//                Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name,
+//                    color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold,)
+//                Spacer(Modifier.weight(1f))
+//                Icon(painterResource(Res.drawable.more), contentDescription = "",
+//                    tint = MaterialTheme.colorScheme.primary)
+//            }
+//        }
 
         OutlinedCard(Modifier.weight(2f)) {
             if(!catalog&&toolMakers.isNotEmpty()) {
@@ -370,6 +375,122 @@ fun ConnectMCPView(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ToolAgentSelectionMenu(
+    viewModel: QuickStartViewModel,
+    modifier: Modifier = Modifier,
+) {
+    val toolAgents by viewModel.toolAgents.collectAsState()
+    val localToolAgent by StudioRepository.localToolAgent.collectAsState()
+    val currentToolAgent by viewModel.currentToolAgent.collectAsState()
+    LaunchedEffect(null){
+        if (currentToolAgent.id < 1L && toolAgents.isNotEmpty()) {
+            if(localToolAgent.id>0L) viewModel.currentToolAgent(localToolAgent)
+            else viewModel.currentToolAgent(toolAgents[0])
+        }
+    }
+    if(toolAgents.isNotEmpty()){
+        var expanded by remember { mutableStateOf(false) }
+//        val textFieldState = rememberTextFieldState(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name)
+        var checkedIndex: Int? by remember { mutableStateOf(null) }
+        ExposedDropdownMenuBox(
+            expanded = expanded, onExpandedChange = { expanded = it },
+            modifier = modifier,
+        ) {
+//            TextField(
+//                // The `menuAnchor` modifier must be passed to the text field to handle
+//                // expanding/collapsing the menu on click. A read-only text field has
+//                // the anchor type `PrimaryNotEditable`.
+//                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+//                state = textFieldState,
+//                readOnly = true,
+//                lineLimits = TextFieldLineLimits.SingleLine,
+//                label = { Text("Label") },
+//                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+//                colors = ExposedDropdownMenuDefaults.textFieldColors(),
+//            )
+            OutlinedButton(
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+                onClick = {
+                    expanded = !expanded
+                }
+            ) {
+//                if (currentToolAgent.id < 1L && toolAgents.isNotEmpty()) {
+//                    if(localToolAgent.id>0L) viewModel.currentToolAgent(localToolAgent)
+//                    else viewModel.currentToolAgent(toolAgents[0])
+//                }
+                Icon(painterResource(Res.drawable.design_services), contentDescription = "")
+                Spacer(Modifier.size(8.dp))
+                BadgedBox(
+                    badge = {
+                        if (currentToolAgent.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
+                            Text(
+                                "This device",
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+                ) {
+                    Text(
+                        currentToolAgent.name, softWrap = false,
+                        overflow = TextOverflow.MiddleEllipsis
+                    )
+                }
+//                Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name,
+//                     fontWeight = FontWeight.Bold,)
+                Spacer(Modifier.weight(1f))
+                Icon(painterResource(Res.drawable.more), contentDescription = "")
+            }
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+//            containerColor = MenuDefaults.groupStandardContainerColor,
+//            shape = MenuDefaults.standaloneGroupShape,
+            ) {
+//                val optionCount = options.size
+                toolAgents.forEachIndexed { index, option ->
+                    DropdownMenuItem(
+//                    shapes = MenuDefaults.itemShape(index, optionCount),
+                        text = {
+                            BadgedBox(
+                                badge = {
+                                    if (option.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
+                                        Text(
+                                            "This device",
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                    }
+                                }
+                            ) {
+                                Text(
+                                    option.name, softWrap = false,
+                                    overflow = TextOverflow.MiddleEllipsis
+                                )
+                            }
+//                            Text(option.name, style = MaterialTheme.typography.bodyLarge)
+                            },
+//                    selected = index == checkedIndex,
+                        onClick = {
+//                            textFieldState.setTextAndPlaceCursorAtEnd(option.name)
+                            checkedIndex = index
+                            expanded = false
+                            viewModel.currentToolAgent(option)
+                        },
+                    leadingIcon = {
+                        if(checkedIndex == index)
+                        Icon(painterResource(Res.drawable.check), contentDescription = null)
+                                  },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                }
+            }
+        }
+    }
+
+}
+
 
 @Composable
 fun MCPServerMainView(

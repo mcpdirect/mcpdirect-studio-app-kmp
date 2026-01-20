@@ -1,5 +1,21 @@
 # Changelog
 
+## [January 20, 2026]
+### Summary
+Implemented ToolAgent selection menu with dropdown functionality
+
+### Details
+- Added ToolAgentSelectionMenu composable with dropdown functionality for selecting tool agents
+- Implemented ExposedDropdownMenuBox for tool agent selection UI
+- Added BadgedBox to indicate "This device" for local tool agent
+- Enhanced QuickStartScreen with improved tool agent selection interface
+- Modified QuickStartViewModel to trigger tool maker queries when current tool agent changes
+- Added proper imports for text input and UI components
+- Commented out legacy tool agent selection code in ConnectMCPView
+- Implemented proper state handling for tool agent selection dropdown
+- Added icons and styling for improved UX in tool agent selection
+- Enhanced accessibility with proper content descriptions and labels
+
 ## [January 19, 2026]
 ### Summary
 Added macOS-style window controls and improved UI layout
