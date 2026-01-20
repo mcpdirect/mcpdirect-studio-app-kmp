@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.mcp
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.compose.StudioActionBar
+import ai.mcpdirect.studio.app.compose.StudioOutlinedCard
 import ai.mcpdirect.studio.app.compose.Tag
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.MCPServer
@@ -24,17 +25,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Label
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -73,11 +83,13 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
+import mcpdirectstudioapp.composeapp.generated.resources.check
 import mcpdirectstudioapp.composeapp.generated.resources.delete
 import mcpdirectstudioapp.composeapp.generated.resources.http
 import mcpdirectstudioapp.composeapp.generated.resources.label
 import mcpdirectstudioapp.composeapp.generated.resources.link
 import mcpdirectstudioapp.composeapp.generated.resources.parameter
+import mcpdirectstudioapp.composeapp.generated.resources.swap_vert
 import mcpdirectstudioapp.composeapp.generated.resources.symbol_parameter
 import mcpdirectstudioapp.composeapp.generated.resources.terminal
 import org.jetbrains.compose.resources.painterResource
@@ -290,6 +302,7 @@ fun InstallRTMView(toolAgent: AIPortToolAgent,command: String){
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfigMCPServerView(
     toolAgent: AIPortToolAgent,
@@ -474,39 +487,87 @@ fun ConfigMCPServerView(
                     supportingText = {
                         Text("Name must not be empty and length < 21")
                     },
-                    trailingIcon = {
-                        SingleChoiceSegmentedButtonRow(
-                            Modifier.padding(8.dp).pointerHoverIcon(PointerIcon.Default)
-                        ) {
-                            SegmentedButton(
-                                selected = transport == 0,
-                                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
-                                modifier = Modifier.height(32.dp),
-                                contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
-                                onClick = { onTypeChange(0) }) {
-                                Text("stdio", style = MaterialTheme.typography.bodyMedium)
-                            }
-                            SegmentedButton(
-                                selected = transport == 1,
-                                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
-                                modifier = Modifier.height(32.dp),
-                                contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
-                                onClick = { onTypeChange(1) }) {
-                                Text("sse", style = MaterialTheme.typography.bodyMedium)
-                            }
-                            SegmentedButton(
-                                selected = transport == 2,
-                                shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
-                                modifier = Modifier.height(32.dp),
-                                contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
-                                onClick = { onTypeChange(2) }) {
-                                Text("http", style = MaterialTheme.typography.bodyMedium)
-                            }
-                        }
-                    }
+//                    trailingIcon = {
+//                        SingleChoiceSegmentedButtonRow(
+//                            Modifier.padding(8.dp).pointerHoverIcon(PointerIcon.Default)
+//                        ) {
+//                            SegmentedButton(
+//                                selected = transport == 0,
+//                                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+//                                modifier = Modifier.height(32.dp),
+//                                contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
+//                                onClick = { onTypeChange(0) }) {
+//                                Text("stdio", style = MaterialTheme.typography.bodyMedium)
+//                            }
+//                            SegmentedButton(
+//                                selected = transport == 1,
+//                                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+//                                modifier = Modifier.height(32.dp),
+//                                contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
+//                                onClick = { onTypeChange(1) }) {
+//                                Text("sse", style = MaterialTheme.typography.bodyMedium)
+//                            }
+//                            SegmentedButton(
+//                                selected = transport == 2,
+//                                shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+//                                modifier = Modifier.height(32.dp),
+//                                contentPadding = PaddingValues(start = 8.dp, end = 16.dp),
+//                                onClick = { onTypeChange(2) }) {
+//                                Text("http", style = MaterialTheme.typography.bodyMedium)
+//                            }
+//                        }
+//                    }
                 )
             }
-
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Icon(
+                    modifier = Modifier.padding(top = 16.dp).size(24.dp),
+                    painter = painterResource(Res.drawable.swap_vert),
+                    contentDescription = null
+                )
+                val options: List<String> = listOf(
+                    "Standard Input/Output (stdio)",
+                    "Server-Sent Event (sse)",
+                    "Streamable HTTP (streamableHttp)"
+                )
+                var expanded by remember { mutableStateOf(false) }
+                val textFieldState = rememberTextFieldState(options[transport])
+//                var checkedIndex: Int? by remember { mutableStateOf(null) }
+                ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
+                    OutlinedTextField(
+                        // The `menuAnchor` modifier must be passed to the text field to handle
+                        // expanding/collapsing the menu on click. A read-only text field has
+                        // the anchor type `PrimaryNotEditable`.
+                        modifier = Modifier.fillMaxWidth().pointerHoverIcon(PointerIcon.Default,true).menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                        state = textFieldState,
+                        readOnly = true,
+                        lineLimits = TextFieldLineLimits.SingleLine,
+                        label = { Text("Transport") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        val optionCount = options.size
+                        options.forEachIndexed { index, option ->
+                            DropdownMenuItem(
+                                text = { Text(option, style = MaterialTheme.typography.bodyLarge) },
+                                onClick = {
+                                    expanded = false
+                                    textFieldState.setTextAndPlaceCursorAtEnd(option)
+                                    onTypeChange(index)
+                                },
+                                leadingIcon = { if(transport==index)
+                                    Icon(painterResource(Res.drawable.check), contentDescription = null) },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
+                    }
+                }
+            }
             if (transport == 0) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),

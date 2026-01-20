@@ -2,6 +2,21 @@
 
 ## [January 20, 2026]
 ### Summary
+Implemented StudioOutlinedCard component and enhanced MCP server configuration UI
+
+### Details
+- Created new StudioOutlinedCard composable with floating label functionality
+- Added swap_vert.svg icon resource for UI enhancements
+- Enhanced ConfigMCPServerDialog with improved transport type selection using dropdown menu
+- Replaced segmented buttons with ExposedDropdownMenu for transport selection
+- Added proper imports for dropdown menu components and text input functionality
+- Implemented StudioOutlinedCard in MCP server configuration UI
+- Added check and swap_vert drawable resources for improved UI elements
+- Enhanced accessibility with proper content descriptions and labels
+- Improved UI layout with better arrangement of transport type selection options
+
+## [January 20, 2026]
+### Summary
 Implemented ToolAgent selection menu with dropdown functionality
 
 ### Details
