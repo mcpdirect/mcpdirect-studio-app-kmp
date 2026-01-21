@@ -2,6 +2,19 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced AI agent list with search functionality and improved LM Studio integration
+
+### Details
+- Added search functionality to AIAgentListComponent with StudioSearchbar
+- Implemented filtering for AI agents based on search input
+- Added vertical scrollbar to AI agent list for better navigation
+- Enhanced UI with proper padding and alignment in AI agent list
+- Added LM Studio configuration path to the AI agent integration guide
+- Improved layout with Box wrapper and LazyColumn state management
+- Enhanced user experience with searchable AI agent list
+
+## [January 20, 2026]
+### Summary
 Enhanced AI agent integration guide and improved UI components
 
 ### Details

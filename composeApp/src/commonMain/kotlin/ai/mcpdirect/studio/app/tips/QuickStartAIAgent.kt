@@ -169,7 +169,13 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
+        "paths": [
+          {
+            "os": "LM Studio",
+            "path": "Show Setting (right side) > Program > Install > Edit mcp.json"
+          }
+        ]        
       }
     ],
     "references": [
