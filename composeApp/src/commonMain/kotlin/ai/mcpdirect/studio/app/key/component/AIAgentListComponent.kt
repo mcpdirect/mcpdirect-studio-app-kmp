@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AIAgentListComponent(
-    modifier: Modifier,
+    modifier: Modifier= Modifier,
     onAIAgentChange:(aiAgent:AIAgent)->Unit
 ){
     var aiAgents by remember {mutableStateOf<List<AIAgent>>(emptyList())}

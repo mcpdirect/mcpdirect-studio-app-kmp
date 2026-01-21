@@ -2,6 +2,19 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced AI agent integration with general transport options and UI improvements
+
+### Details
+- Added general transport options (SSE and Streamable HTTP) to AI agent integration guide
+- Updated template variable syntax in AI agent configurations from ${'$'}{VAR} to ${VAR}
+- Enhanced AIAgentListComponent with default modifier parameter
+- Refactored ConfigAIAgentView to use AIAgentListComponent and AIAgentGuideComponent
+- Added Done button to QuickStartScreen for completing the setup process
+- Improved UI organization in AI agent configuration view
+- Enhanced code modularity by using dedicated components for AI agent guidance
+
+## [January 20, 2026]
+### Summary
 Refactored home screen with QuickstartWidget and enhanced tool agent functionality
 
 ### Details

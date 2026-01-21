@@ -3,8 +3,12 @@ package ai.mcpdirect.studio.app.tips
 import ai.mcpdirect.mcpdirectstudioapp.AppInfo
 import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.agent.ToolProviderType
 import ai.mcpdirect.studio.app.compose.*
+import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.key.component.AIAgentGuideComponent
+import ai.mcpdirect.studio.app.key.component.AIAgentListComponent
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
 import ai.mcpdirect.studio.app.mcp.openapi.ConfigOpenAPIServerView
 import ai.mcpdirect.studio.app.model.MCPServer
@@ -124,6 +128,16 @@ fun QuickStartScreen(
                         }
                     ){
                         Text("Next")
+                    }
+                }
+                2 -> {
+                    Button(
+                        modifier = Modifier.padding(start = 8.dp),
+                        onClick = {
+                            generalViewModel.currentScreen(Screen.Home)
+                        }
+                    ){
+                        Text("Done")
                     }
                 }
             }
@@ -776,34 +790,50 @@ fun GenerateMCPdirectKeyView(
 fun ConfigAIAgentView(
     modifier: Modifier,
     viewModel: QuickStartViewModel
-){ OutlinedCard(modifier) {
+){
     var aiAgent by remember { mutableStateOf<AIAgent?>(null) }
-    Row {
-        LazyColumn(Modifier.weight(1f)) {
-            items(aiAgents) {
-                if(aiAgent==null){
-                    aiAgent = it
-                }
-                StudioListItem(
-                    modifier = Modifier.clickable {
-                        aiAgent = it
-                    },
-                    selected = it == aiAgent,
-                    headlineContent = { Text(it.name) }
+    Row(modifier) {
+//        LazyColumn(Modifier.weight(1f)) {
+//            items(aiAgents) {
+//                if(aiAgent==null){
+//                    aiAgent = it
+//                }
+//                StudioListItem(
+//                    modifier = Modifier.clickable {
+//                        aiAgent = it
+//                    },
+//                    selected = it == aiAgent,
+//                    headlineContent = { Text(it.name) }
+//                )
+//            }
+//        }
+        OutlinedCard(Modifier.weight(1f))  {
+            AIAgentListComponent{
+                aiAgent = it
+            }
+        }
+        Spacer(Modifier.width(8.dp))
+//        aiAgent?.let { aiAgent ->
+//            VerticalDivider()
+//            AIAgentConfigOptionView(
+//                viewModel.currentAccessKey!!,
+//                modifier = Modifier.weight(2f),
+//                configs = aiAgent.configs,
+//                aiAgent.references
+//            )
+//        }
+        Card(Modifier.weight(2f).fillMaxHeight()) {
+            if(viewModel.currentAccessKey!=null&&aiAgent!=null) {
+//                VerticalDivider()
+                AIAgentGuideComponent(
+                    viewModel.currentAccessKey!!,
+                    aiAgent!!,
+
                 )
             }
         }
-        aiAgent?.let { aiAgent ->
-            VerticalDivider()
-            AIAgentConfigOptionView(
-                viewModel.currentAccessKey!!,
-                modifier = Modifier.weight(2f),
-                configs = aiAgent.configs,
-                aiAgent.references
-            )
-        }
     }
-} }
+}
 
 @Composable
 fun AIAgentConfigOptionView(

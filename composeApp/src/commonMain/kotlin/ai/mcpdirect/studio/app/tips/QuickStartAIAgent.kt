@@ -4,18 +4,31 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServer
 import kotlinx.serialization.Serializable
 import kotlin.io.encoding.Base64
 
-val aiAgentIntegrationGuide="""
+val aiAgentIntegrationGuide=$$"""
 [
+  {
+    "name":"General",
+    "configs": [
+      {
+        "title": "SSE",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"sse\",\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/sse\"\n    }\n  }\n}"
+      },
+      {
+        "title": "Streamable HTTP",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+      }
+    ]
+  },
   {
     "name":"Claude Code",
     "configs": [
       {
         "title": "Add HTTP server with Claude CLI",
-        "config": "claude mcp add --transport http ${'$'}{MCPDIRECT_KEY_NAME} \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp"
+        "config": "claude mcp add --transport http ${MCPDIRECT_KEY_NAME} \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp"
       },
       {
         "title": "Add HTTP server in .mcp.json",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
       }
     ],
     "references": [
@@ -30,7 +43,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server to MCP Servers configuration",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n      \"type\": \"streamableHttp\"\n      }\n    }\n}",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\",\n      \"type\": \"streamableHttp\"\n      }\n    }\n}",
         "paths": [
           {
             "os": "Cline",
@@ -45,7 +58,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
         "paths": [
           {
             "os": "Copilot Coding Agent",
@@ -66,7 +79,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server to mcp-config.json",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
         "paths": [
           {
             "os": "Linux",
@@ -81,7 +94,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server in mcp.json",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
         "paths": [
           {
             "os":"macOS/Linux",
@@ -95,8 +108,8 @@ val aiAgentIntegrationGuide="""
         "deeplink": {
           "name": "Add to Cursor",
           "icon": "mcp_install_dark",
-          "deeplink": "cursor://anysphere.cursor-deeplink/mcp/install?name=${'$'}{MCPDIRECT_KEY_NAME}&config=${'$'}{MCPDIRECT_CONFIG}",
-          "config": "{\"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"}"
+          "deeplink": "cursor://anysphere.cursor-deeplink/mcp/install?name=${MCPDIRECT_KEY_NAME}&config=${MCPDIRECT_CONFIG}",
+          "config": "{\"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"}"
         }
       }
     ],
@@ -112,7 +125,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server in settings.json",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"httpUrl\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n      \"headers\": {\n        \"Accept\": \"application/json, text/event-stream\"\n      }\n    }\n  }\n}",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"httpUrl\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\",\n      \"headers\": {\n        \"Accept\": \"application/json, text/event-stream\"\n      }\n    }\n  }\n}",
         "paths": [
           {
             "os": "Linux",
@@ -133,7 +146,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"serverUrl\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n    }\n  }\n}"
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"serverUrl\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\",\n    }\n  }\n}"
       }
     ],
     "references": [
@@ -148,7 +161,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server in settings.json",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n      }\n    }\n}",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n      }\n    }\n}",
         "paths": [
           {
             "os": "JetBrains IDE",
@@ -169,7 +182,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
         "paths": [
           {
             "os": "LM Studio",
@@ -190,7 +203,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server in mcp.json",
-        "config": "[${'$'}{MCPDIRECT_KEY_NAME}]\nurl = \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\""
+        "config": "[${MCPDIRECT_KEY_NAME}]\nurl = \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\""
       }
     ],
     "references": [
@@ -205,7 +218,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server in opencode.json",
-        "config": "{\n  \"mcp\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"remote\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n      },\n      \"enabled\": true\n    }\n  }\n}",
+        "config": "{\n  \"mcp\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"remote\",\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n      },\n      \"enabled\": true\n    }\n  }\n}",
         "paths": [
           {
             "os": "Linux",
@@ -226,7 +239,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server in settings.json",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"httpUrl\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n      \"headers\": {\n        \"Accept\": \"application/json, text/event-stream\"\n      }\n    }\n  }\n}",
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"httpUrl\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\",\n      \"headers\": {\n        \"Accept\": \"application/json, text/event-stream\"\n      }\n    }\n  }\n}",
         "paths": [
           {
             "os": "Linux",
@@ -247,7 +260,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
       }
     ],
     "references": [
@@ -262,7 +275,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server",
-        "config": "{\n  \"servers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+        "config": "{\n  \"servers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
       }
     ],
     "references": [
@@ -277,7 +290,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server to .vscode/mcp.json in your project root",
-        "config": "{\n  \"servers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+        "config": "{\n  \"servers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
       }
     ],
     "references": [
@@ -292,7 +305,7 @@ val aiAgentIntegrationGuide="""
     "configs": [
       {
         "title": "Add HTTP server",
-        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"serverUrl\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n    }\n  }\n}"
+        "config": "{\n  \"mcpServers\": {\n    \"${MCPDIRECT_KEY_NAME}\": {\n      \"serverUrl\": \"${MCPDIRECT_URL}/${MCPDIRECT_KEY}/mcp\",\n    }\n  }\n}"
       }
     ],
     "references": [
