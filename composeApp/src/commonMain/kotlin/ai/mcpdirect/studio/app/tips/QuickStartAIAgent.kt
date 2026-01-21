@@ -1,10 +1,307 @@
 package ai.mcpdirect.studio.app.tips
 
 import ai.mcpdirect.studio.app.model.aitool.AIPortMCPServer
+import kotlinx.serialization.Serializable
 import kotlin.io.encoding.Base64
 
+val aiAgentIntegrationGuide="""
+[
+  {
+    "name":"Claude Code",
+    "configs": [
+      {
+        "title": "Add HTTP server with Claude CLI",
+        "config": "claude mcp add --transport http ${'$'}{MCPDIRECT_KEY_NAME} \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp"
+      },
+      {
+        "title": "Add HTTP server in .mcp.json",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+      }
+    ],
+    "references": [
+      {
+        "name": "Claude Code MCP Documentation",
+        "url": "https://code.claude.com/docs/en/mcp"
+      }
+    ]
+  },
+  {
+    "name": "Cline",
+    "configs": [
+      {
+        "title": "Add HTTP server to MCP Servers configuration",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n      \"type\": \"streamableHttp\"\n      }\n    }\n}",
+        "paths": [
+          {
+            "os": "Cline",
+            "path": "Hamburger menu icon > MCP Servers > Remote Servers > Edit Configuration"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name":"Copilot Coding Agent",
+    "configs": [
+      {
+        "title": "Add HTTP server",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
+        "paths": [
+          {
+            "os": "Copilot Coding Agent",
+            "path": "Repository > Settings > Copilot > Coding agent > MCP"
+          }
+        ]
+      }
+    ],
+    "references": [
+      {
+        "name": "Copilot Coding Agent Documentation",
+        "url": "https://docs.github.com/en/enterprise-cloud@latest/copilot/how-tos/agents/copilot-coding-agent/extending-copilot-coding-agent-with-mcp"
+      }
+    ]
+  },
+  {
+    "name":"Copilot CLI",
+    "configs": [
+      {
+        "title": "Add HTTP server to mcp-config.json",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
+        "paths": [
+          {
+            "os": "Linux",
+            "path": "~/.copilot/mcp-config.json"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Cursor",
+    "configs": [
+      {
+        "title": "Add HTTP server in mcp.json",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}",
+        "paths": [
+          {
+            "os":"macOS/Linux",
+            "path":"~/.cursor/mcp.json"
+          },
+          {
+            "os":"Windows",
+            "path":"%USERPROFILE%\\.cursor\\mcp.json"
+          }
+        ],
+        "deeplink": {
+          "name": "Add to Cursor",
+          "icon": "mcp_install_dark",
+          "deeplink": "cursor://anysphere.cursor-deeplink/mcp/install?name=${'$'}{MCPDIRECT_KEY_NAME}&config=${'$'}{MCPDIRECT_CONFIG}",
+          "config": "{\"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"}"
+        }
+      }
+    ],
+    "references": [
+      {
+        "name": "Cursor MCP Documentation",
+        "url": "https://cursor.com/docs/context/mcp"
+      }
+    ]
+  },
+  {
+    "name": "Gemini CLI",
+    "configs": [
+      {
+        "title": "Add HTTP server in settings.json",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"httpUrl\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n      \"headers\": {\n        \"Accept\": \"application/json, text/event-stream\"\n      }\n    }\n  }\n}",
+        "paths": [
+          {
+            "os": "Linux",
+            "path": "~/.gemini/settings.json"
+          }
+        ]
+      }
+    ],
+    "references": [
+      {
+        "name": "Gemini CLI MCP Configuration",
+        "url": "https://google-gemini.github.io/gemini-cli/docs/tools/mcp-server.html"
+      }
+    ]
+  },
+  {
+    "name": "Google Antigravity",
+    "configs": [
+      {
+        "title": "Add HTTP server",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"serverUrl\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n    }\n  }\n}"
+      }
+    ],
+    "references": [
+      {
+        "name": "Google Antigravity MCP Configuration",
+        "url": "https://antigravity.google/docs/mcp"
+      }
+    ]
+  },
+  {
+    "name": "JetBrains AI Assistant",
+    "configs": [
+      {
+        "title": "Add HTTP server in settings.json",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n      }\n    }\n}",
+        "paths": [
+          {
+            "os": "JetBrains IDE",
+            "path": "Settings > Tools > AI Assistant > Model Context Protocol (MCP)"
+          }
+        ]
+      }
+    ],
+    "references": [
+      {
+        "name": "JetBrains AI Assistant Documentation",
+        "url": "https://www.jetbrains.com/help/ai-assistant/configure-an-mcp-server.html"
+      }
+    ]
+  },
+  {
+    "name": "LM Studio",
+    "configs": [
+      {
+        "title": "Add HTTP server",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+      }
+    ],
+    "references": [
+      {
+        "name": "LM Studio MCP Documentation",
+        "url": "https://lmstudio.ai/blog/lmstudio-v0.3.17"
+      }
+    ]
+  },
+  {
+    "name": "OpenAI Codex",
+    "configs": [
+      {
+        "title": "Add HTTP server in mcp.json",
+        "config": "[${'$'}{MCPDIRECT_KEY_NAME}]\nurl = \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\""
+      }
+    ],
+    "references": [
+      {
+        "name": "OpenAI Codex Project",
+        "url": "https://github.com/openai/codex"
+      }
+    ]
+  },
+  {
+    "name": "OpenCode",
+    "configs": [
+      {
+        "title": "Add HTTP server in opencode.json",
+        "config": "{\n  \"mcp\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"remote\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n      },\n      \"enabled\": true\n    }\n  }\n}",
+        "paths": [
+          {
+            "os": "Linux",
+            "path": "~/.config/opencode/opencode.json"
+          }
+        ]
+      }
+    ],
+    "references": [
+      {
+        "name": "OpenCode MCP Documentation",
+        "url": "https://opencode.ai/docs/mcp-servers"
+      }
+    ]
+  },
+  {
+    "name": "Qwen Coder",
+    "configs": [
+      {
+        "title": "Add HTTP server in settings.json",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"httpUrl\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n      \"headers\": {\n        \"Accept\": \"application/json, text/event-stream\"\n      }\n    }\n  }\n}",
+        "paths": [
+          {
+            "os": "Linux",
+            "path": "~/.qwen/settings.json"
+          }
+        ]
+      }
+    ],
+    "references": [
+      {
+        "name": "Qwen Coder MCP Documentation",
+        "url": "https://qwenlm.github.io/qwen-code-docs/en/tools/mcp-server/#how-to-set-up-your-mcp-server"
+      }
+    ]
+  },
+  {
+    "name": "Trae",
+    "configs": [
+      {
+        "title": "Add HTTP server",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+      }
+    ],
+    "references": [
+      {
+        "name": "Trae MCP Documentation",
+        "url": "https://docs.trae.ai/ide/model-context-protocol?_lang=en"
+      }
+    ]
+  },
+  {
+    "name": "Visual Studio",
+    "configs": [
+      {
+        "title": "Add HTTP server",
+        "config": "{\n  \"servers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+      }
+    ],
+    "references": [
+      {
+        "name": "Visual Studio MCP Documentation",
+        "url": "https://learn.microsoft.com/visualstudio/ide/mcp-servers?view=vs-2022"
+      }
+    ]
+  },
+  {
+    "name": "VS Code",
+    "configs": [
+      {
+        "title": "Add HTTP server to .vscode/mcp.json in your project root",
+        "config": "{\n  \"servers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"type\": \"http\",\n      \"url\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\"\n    }\n  }\n}"
+      }
+    ],
+    "references": [
+      {
+        "name": "VS Code MCP Documentation",
+        "url": "https://code.visualstudio.com/docs/copilot/chat/mcp-servers"
+      }
+    ]
+  },
+  {
+    "name": "Windsurf",
+    "configs": [
+      {
+        "title": "Add HTTP server",
+        "config": "{\n  \"mcpServers\": {\n    \"${'$'}{MCPDIRECT_KEY_NAME}\": {\n      \"serverUrl\": \"${'$'}{MCPDIRECT_URL}/${'$'}{MCPDIRECT_KEY}/mcp\",\n    }\n  }\n}"
+      }
+    ],
+    "references": [
+      {
+        "name": "Windsurfy MCP Configuration",
+        "url": "https://docs.windsurf.com/windsurf/cascade/mcp"
+      }
+    ]
+  }
+]""".trimIndent()
+
+@Serializable
 data class AIAgentReference(val name: String, val url: String)
 
+@Serializable
 data class AIAgentDeeplink(val name:String,val icon: String?,val deeplink: String,val config: String){
     fun deeplink(keyName: String, key:String, url: String,):String{
         val base64Config = Base64.encode(config
@@ -19,8 +316,10 @@ data class AIAgentDeeplink(val name:String,val icon: String?,val deeplink: Strin
     }
 }
 
+@Serializable
 data class AIAgentConfigPath(val os: String, val path: String)
 
+@Serializable
 data class AIAgentConfig(
     val title: String, val config: String,
     val paths: List<AIAgentConfigPath>? = null,
@@ -34,6 +333,7 @@ data class AIAgentConfig(
     }
 }
 
+@Serializable
 data class AIAgent(
     val name:String,
     val references: List<AIAgentReference>? = null,

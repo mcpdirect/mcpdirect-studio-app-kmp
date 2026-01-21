@@ -2,6 +2,20 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced AI agent integration guide and improved UI components
+
+### Details
+- Added comprehensive AI agent integration guide with configurations for multiple platforms
+- Implemented JSON serialization for AI agent data classes
+- Enhanced AIAgentListComponent to dynamically load AI agent configurations
+- Added TooltipIconButton composable with improved tooltip functionality
+- Updated QuickStartScreen with tooltip-enhanced action buttons
+- Added removeToolMaker functionality in QuickStartViewModel
+- Enhanced UI with proper tooltips for remove, restart, and configure actions
+- Updated Kotlin version from 2.2.21 to 2.3.0 in dependencies
+
+## [January 20, 2026]
+### Summary
 Enhanced API server management and improved response handling
 
 ### Details

@@ -528,17 +528,25 @@ fun MCPServerMainView(
         ) {
             Text(toolMaker.name, style = MaterialTheme.typography.titleSmall)
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = {
+            TooltipIconButton("Remove", onClick = {
+                viewModel.removeToolMaker(toolMaker)
+            }){
+                Icon(
+                    painterResource(Res.drawable.delete), contentDescription = "",
+                    Modifier.size(24.dp), tint = MaterialTheme.colorScheme.error
+                )
+            }
+            TooltipIconButton("Restart",onClick = {
                 viewModel.modifyToolMakerStatus(
                     toolMaker, 1
                 )
             }) {
                 Icon(
                     painterResource(Res.drawable.restart_alt), contentDescription = "",
-                    Modifier.size(24.dp)
+                    Modifier.size(24.dp), tint = MaterialTheme.colorScheme.primary
                 )
             }
-            IconButton(onClick = {
+            TooltipIconButton("Configure",onClick = {
                 if (toolMaker.templateId > 0) {
                     if (toolMaker.mcp()) onActionChange(ConnectMCPViewAction.CONFIG_MCP_TEMPLATE)
                 } else if (toolMaker.mcp()) onActionChange(ConnectMCPViewAction.CONFIG_MCP)

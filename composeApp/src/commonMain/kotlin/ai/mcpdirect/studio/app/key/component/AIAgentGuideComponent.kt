@@ -1,11 +1,13 @@
 package ai.mcpdirect.studio.app.key.component
 
 import ai.mcpdirect.mcpdirectstudioapp.AppInfo
+import ai.mcpdirect.mcpdirectstudioapp.JSON
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.tips.AIAgent
+import ai.mcpdirect.studio.app.tips.aiAgentIntegrationGuide
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

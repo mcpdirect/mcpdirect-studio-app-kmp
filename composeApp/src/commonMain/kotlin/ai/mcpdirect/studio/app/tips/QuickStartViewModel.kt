@@ -278,4 +278,12 @@ class QuickStartViewModel: ViewModel() {
             }
         }
     }
+    fun removeToolMaker(toolMaker: AIPortToolMaker) {
+        viewModelScope.launch {
+            if(toolMaker.mcp())
+                StudioRepository.removeMCPServerFromStudio(currentToolAgent.value,toolMaker)
+            else if(toolMaker.openapi())
+                StudioRepository.removeOpenAPIServerFromStudio(currentToolAgent.value,toolMaker)
+        }
+    }
 }
