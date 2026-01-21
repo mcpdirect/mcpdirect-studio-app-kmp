@@ -453,6 +453,13 @@ fun ToolAgentSelectionMenu(
 //                Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name,
 //                     fontWeight = FontWeight.Bold,)
                 Spacer(Modifier.weight(1f))
+//                TooltipIconButton(
+//                    "Edit MCPdirect Studio name" ,
+//                    onClick = {},
+//                    Modifier.size(32.dp)
+//                ){
+//                    Icon(painterResource(Res.drawable.edit), contentDescription = "", Modifier.size(20.dp))
+//                }
                 Icon(painterResource(Res.drawable.more), contentDescription = "")
             }
             ExposedDropdownMenu(

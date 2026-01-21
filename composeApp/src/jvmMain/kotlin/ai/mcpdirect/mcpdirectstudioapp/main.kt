@@ -155,7 +155,12 @@ fun main() = application {
                                             }
                                         ) {
                                             Icon(
-                                                painterResource(Res.drawable.arrow_back),
+                                                painterResource(
+//                                                    if(generalViewModel.previousScreen==Screen.Home)
+//                                                        Res.drawable.home
+//                                                    else
+                                                        Res.drawable.arrow_back
+                                                ),
                                                 contentDescription = ""
                                             )
                                         }
@@ -167,10 +172,10 @@ fun main() = application {
                                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                                             verticalAlignment = Alignment.CenterVertically,
                                         ) {
-                                            Icon(
-                                                painterResource(generalViewModel.currentScreen.icon),
-                                                contentDescription = it
-                                            )
+//                                            Icon(
+//                                                painterResource(generalViewModel.currentScreen.icon),
+//                                                contentDescription = it
+//                                            )
                                             Text(it)
                                         }
 

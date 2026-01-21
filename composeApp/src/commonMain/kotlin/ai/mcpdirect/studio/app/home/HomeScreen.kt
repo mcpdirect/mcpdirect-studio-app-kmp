@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.home.widget.MCPDirectKeysWidget
 import ai.mcpdirect.studio.app.home.widget.MCPServersWidget
 import ai.mcpdirect.studio.app.home.widget.MyStudiosWidget
 import ai.mcpdirect.studio.app.home.widget.MyTeamsView
+import ai.mcpdirect.studio.app.home.widget.QuickstartWidget
 import ai.mcpdirect.studio.app.home.widget.VirtualMCPWidget
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.repository.UserRepository
@@ -64,56 +65,7 @@ fun HomeScreen(){
                     )
                 }
             }
-            Column(Modifier.weight(1f)) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        "Quick start",
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                    FilledTonalIconButton(
-                        onClick = { showTipsDialog = true }
-                    ) {
-                        Icon(
-                            painterResource(Res.drawable.lightbulb_2),
-                            contentDescription = ""
-                        )
-                    }
-                }
-                HorizontalDivider()
-                Row(
-                    Modifier.padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text("3",style = MaterialTheme.typography.displayMedium)
-                    Text(
-                        "steps, let any of your agents access any of your MCP servers",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-                OutlinedCard{
-                    Image(
-                        painterResource(Res.drawable.mcpdirect_tips_600),
-                        contentDescription = "MCPdirect: Universal MCP Access Gateway",
-                    )
-                }
-                Spacer(Modifier.height(4.dp))
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        generalViewModel.currentScreen(
-                            Screen.QuickStart,
-                            "3 steps, let any of your agents access any of your MCP servers",
-                            Screen.Home
-                        )
-                    }){
-                    Text("Let's start")
-                }
-            }
+            QuickstartWidget(Modifier.weight(1f))
             Row(
                 Modifier.padding(top = 32.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -167,6 +119,14 @@ fun HomeScreen(){
                     }
                 }
                 Spacer(Modifier.weight(1f))
+                IconButton(
+                    onClick = { showTipsDialog = true }
+                ) {
+                    Icon(
+                        painterResource(Res.drawable.lightbulb_2),
+                        contentDescription = ""
+                    )
+                }
                 IconButton(
                     onClick = {
                         viewModel.refreshToolAgents(true)

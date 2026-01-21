@@ -2,6 +2,20 @@
 
 ## [January 20, 2026]
 ### Summary
+Refactored home screen with QuickstartWidget and enhanced tool agent functionality
+
+### Details
+- Created QuickstartWidget component for better modularity in home screen
+- Refactored HomeScreen to use QuickstartWidget instead of inline code
+- Moved quick start functionality to separate widget component
+- Added modifyToolAgent function in StudioRepository for updating tool agent properties
+- Enhanced UI with improved navigation and layout in main application
+- Added proper imports for lifecycle and coroutine functionality
+- Improved code organization by separating concerns into dedicated components
+- Updated navigation icons and layout in main application window
+
+## [January 20, 2026]
+### Summary
 Enhanced AI agent list with search functionality and improved LM Studio integration
 
 ### Details

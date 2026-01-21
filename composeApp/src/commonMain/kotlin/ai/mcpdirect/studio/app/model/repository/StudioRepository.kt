@@ -7,9 +7,11 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration.Companion.seconds
@@ -795,6 +797,24 @@ object StudioRepository {
                     "Install MCP server RTM #${rtm} From Studio #${toolAgent.name}",it.code,it.message
                 )
                 onResponse(it)
+            }
+        }
+    }
+    suspend fun modifyToolAgent(
+        toolAgent: AIPortToolAgent,
+        name: String? = null,
+        tags: String? = null,
+        status: Int? = null,
+    ){
+        loadMutex.withLock {
+            getPlatform().modifyToolAgent(toolAgent.id, name,tags,status){
+                if(it.successful()) it.data?.let { agent ->
+                    _toolAgents.update { map ->
+                        map.toMutableMap().apply {
+                            put(agent.id,agent)
+                        }
+                    }
+                }
             }
         }
     }
