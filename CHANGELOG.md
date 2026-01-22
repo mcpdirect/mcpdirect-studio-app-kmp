@@ -2,6 +2,22 @@
 
 ## [January 20, 2026]
 ### Summary
+Implemented app version checking and update notification system
+
+### Details
+- Added AppVersionRepository for managing application version information
+- Implemented checkAppVersion functionality in Platform interfaces
+- Created LinkButton composable for clickable text elements
+- Enhanced HomeScreen with version display and update notifications
+- Added badge indicator for new version availability
+- Implemented hover effect for update check functionality
+- Added link to GitHub releases for downloading new versions
+- Integrated app version checking with login process
+- Enhanced UI with proper styling for version information display
+- Added marketplace USL constant for app version queries
+
+## [January 20, 2026]
+### Summary
 Enhanced AI agent integration with general transport options and UI improvements
 
 ### Details

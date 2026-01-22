@@ -76,9 +76,9 @@ kotlin {
                 outputFile.writeText("""
                     package ai.mcpdirect.mcpdirectstudioapp
                     object AppInfo {
-                        const val APP_ID = "$appId"
+                        const val APP_ID = $appId
                         const val APP_VERSION = "$appVersion"
-                        const val APP_VERSION_CODE = "$appVersionCode"
+                        const val APP_VERSION_CODE = $appVersionCode
                         const val MCPDIRECT_GATEWAY_ENDPOINT = "$mcpdirectGatewayEndpoint"
                         const val MCPDIRECT_HSTP_WEBPORT = "$mcpdirectHSTPWebport"
                     }""".trimIndent()

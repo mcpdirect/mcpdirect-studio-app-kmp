@@ -8,7 +8,9 @@ import ai.mcpdirect.studio.app.model.MCPServer
 import ai.mcpdirect.studio.app.model.OpenAPIServer
 import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.model.aitool.AIPortAppVersion
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
+import ai.mcpdirect.studio.app.model.repository.AppVersionRepository
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.handler.NotificationHandler
 import appnet.util.crypto.SHA256
@@ -229,6 +231,11 @@ class JVMPlatform : Platform, NotificationHandler{
         password: String,
         onResponse: (resp: AIPortServiceResponse<AIPortUser?>) -> Unit
     ) {
+        checkAppVersion {
+            if(it.successful()) it.data?.let { data->
+                AppVersionRepository.updateAppVersion(data)
+            }
+        }
         CoroutineScope(Dispatchers.IO).launch {
             MCPDirectStudio.setNotificationHandler(this@JVMPlatform)
             MCPDirectStudio.login(account,password){
@@ -261,6 +268,28 @@ class JVMPlatform : Platform, NotificationHandler{
             MCPDirectStudio.logout {
                 code, message, data ->
                 onResponse(AIPortServiceResponse(code,message,data))
+            }
+        }
+    }
+
+    override fun checkAppVersion(onResponse: (resp: AIPortServiceResponse<AIPortAppVersion>) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            MCPDirectStudio.checkAppVersion(AppInfo.APP_ID, AppInfo.APP_VERSION_CODE){
+                code, message, data ->
+                val version = AIPortAppVersion()
+                if(code==0&&data!=null){
+                    version.appId = data.appId
+                    version.platform = data.platform
+                    version.architecture = data.platform
+                    version.version = data.version
+                    version.versionCode = data.versionCode
+                    version.status = data.status
+                    version.mandatory = data.mandatory
+                    version.url = data.url
+                    version.releaseNotes = data.releaseNotes
+                    version.created = data.created
+                }
+                onResponse(AIPortServiceResponse(code,message,version))
             }
         }
     }

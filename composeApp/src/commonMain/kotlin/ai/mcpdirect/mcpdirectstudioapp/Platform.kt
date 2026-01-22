@@ -26,6 +26,7 @@ val adminProvider = "admin.mcpdirect.ai"
 val authUsl = "authentication@$adminProvider"
 val accountUsl = "account.management@$adminProvider"
 val aitoolsUSL = "aitools.management@$adminProvider"
+val marketplaceUSL = "aitools.marketplace@$adminProvider"
 val JSON = Json{
     encodeDefaults = true
     ignoreUnknownKeys = true
@@ -46,7 +47,9 @@ interface Platform {
     fun hstpRequest(usl:String, parameters:String, onResponse:(resp:String)->Unit)
     fun login(account:String,password:String,onResponse:(resp: AIPortServiceResponse<AIPortUser?>)->Unit)
     fun logout(onResponse: (resp: AIPortServiceResponse<Boolean?>) -> Unit)
-
+    fun checkAppVersion(
+        onResponse: (resp: AIPortServiceResponse<AIPortAppVersion>) -> Unit
+    )
     fun register(account: String, language: String?=null,
                  onResponse: (resp: AIPortServiceResponse<AIPortOtp>) -> Unit){
 

@@ -1,10 +1,12 @@
 package ai.mcpdirect.studio.app.home
 
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
+import ai.mcpdirect.studio.app.model.repository.AppVersionRepository
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
@@ -21,7 +23,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.time.TimeMark
 
 class HomeViewModel: ViewModel() {
     val localToolAgent = StudioRepository.localToolAgent
@@ -96,6 +97,15 @@ class HomeViewModel: ViewModel() {
     fun refreshTeams(force:Boolean=false){
         viewModelScope.launch {
             TeamRepository.loadTeams(force)
+        }
+    }
+    fun checkAppUpdate(){
+        viewModelScope.launch {
+            AppVersionRepository.checkAppVersion{
+                if(it.successful()&&it.data!=null){
+                    generalViewModel.showSnackbar("You're using the last version.")
+                }
+            }
         }
     }
 }

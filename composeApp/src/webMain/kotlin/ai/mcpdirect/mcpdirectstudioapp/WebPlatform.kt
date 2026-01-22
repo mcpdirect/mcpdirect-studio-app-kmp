@@ -3,6 +3,7 @@ package ai.mcpdirect.mcpdirectstudioapp
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.OpenAPIServerDoc
 import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.model.aitool.AIPortAppVersion
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
@@ -59,6 +60,17 @@ abstract class WebPlatform : Platform {
                 accountDetails = null;
             }
             onResponse(resp)
+        }
+    }
+
+    override fun checkAppVersion(onResponse: (resp: AIPortServiceResponse<AIPortAppVersion>) -> Unit)  {
+        httpRequest(
+            "$marketplaceUSL/app/query", mapOf(
+                "appId" to JsonPrimitive(AppInfo.APP_ID),
+                "versionCode" to JsonPrimitive(AppInfo.APP_VERSION_CODE),
+            )
+        ) {
+            onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortAppVersion>>(it))
         }
     }
 }

@@ -4,12 +4,12 @@ class AIPortAppVersion {
     var appId: Int = 0
     var platform: Int = 0
     var architecture: Int = 0
-    var version: String? = null
+    var version: String = ""
     var versionCode: Int = 0
     var status: Int = 0
     var mandatory: Boolean = false
     var releaseNotes: String? = null
-    var url: String? = null
+    var url: String = ""
     var created: Long = 0
     companion object{
         const val PLATFORM_MACOS: Int = 100
