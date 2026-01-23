@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
 import mcpdirectstudioapp.composeapp.generated.resources.key
+import mcpdirectstudioapp.composeapp.generated.resources.sdk
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

@@ -2,6 +2,20 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced MCP access key screen with integration guide functionality
+
+### Details
+- Added integrationGuide parameter to MCPAccessKey screen for direct access to AI agent integration
+- Enhanced ShortcutWidget with navigation to MCP access key integration guide
+- Improved AIAgentGuideComponent to handle optional access key parameter
+- Updated MCPdirectKeyScreen to support direct integration guide display
+- Added SDK icon resource for UI enhancements
+- Enhanced access key credential handling with proper null safety
+- Improved UI with better navigation flow for AI agent integration
+- Added HighlightedText composable component for future UI enhancements
+
+## [January 20, 2026]
+### Summary
 Enhanced tool agent screen and improved catalog navigation logic
 
 ### Details

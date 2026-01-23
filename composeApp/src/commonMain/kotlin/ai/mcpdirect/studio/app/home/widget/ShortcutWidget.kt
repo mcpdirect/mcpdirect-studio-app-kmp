@@ -52,7 +52,13 @@ fun ShortcutWidget(
             Text("Connect OpenAPI as MCP")
         }}
         TextButton(
-            onClick = {},
+            onClick = {
+                generalViewModel.currentScreen(
+                    Screen.MCPAccessKey(integrationGuide = true),
+                    "MCPdirect Keys",
+                    Screen.Home
+                )
+            },
             modifier = Modifier.fillMaxWidth().height(32.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ){Row(Modifier.fillMaxWidth()) {

@@ -30,20 +30,21 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun MCPdirectKeyScreen(
     accessKey: AIPortToolAccessKey?,
+    integrationGuide: Boolean=false,
     paddingValues: PaddingValues = PaddingValues(),
 ){
     val viewModel by remember {mutableStateOf(MCPdirectKeyScreenViewModel())}
     val grantViewModels = remember { mutableMapOf<Long, GrantToolPermissionViewModel>() }
     val toolMakerCandidates by viewModel.toolMarkerCandidates.collectAsState()
     val ids by viewModel.toolMarkerCandidateIds.collectAsState()
-    var showAIAgent by remember { mutableStateOf(false) }
+    var showAIAgent by remember { mutableStateOf(integrationGuide) }
     var aiAgent by remember { mutableStateOf<AIAgent?>(null) }
     Row(Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),) {
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
             MCPdirectKeysComponent(
                 accessKey = accessKey,
-                showKeyGeneration = accessKey==null,
+                showKeyGeneration = accessKey==null&&!integrationGuide,
                 modifier = Modifier.fillMaxHeight()
             ){
                 viewModel.accessKey(it)
@@ -51,9 +52,9 @@ fun MCPdirectKeyScreen(
         }
         if(showAIAgent){
             Card(Modifier.fillMaxHeight().weight(2f)) {
-                if(viewModel.accessKey!=null&&aiAgent!=null){
+                if(aiAgent!=null){
                     AIAgentGuideComponent(
-                        viewModel.accessKey!!,aiAgent!!
+                        viewModel.accessKey,aiAgent!!
                     ){
                         TextButton(
                             modifier = Modifier.height(32.dp),

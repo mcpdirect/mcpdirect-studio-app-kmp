@@ -217,6 +217,7 @@ fun main() = application {
 //                                    )
                                 MCPdirectKeyScreen(
                                     screen.accessKey,
+                                    screen.integrationGuide,
                                     paddingValues
                                 )
                             }

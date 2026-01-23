@@ -46,7 +46,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun AIAgentGuideComponent(
-    accessKey: AIPortToolAccessKey,
+    accessKey: AIPortToolAccessKey?,
     aiAgent: AIAgent,
     modifier: Modifier = Modifier,
     actions: (@Composable RowScope.() -> Unit)?=null
@@ -57,12 +57,15 @@ fun AIAgentGuideComponent(
         ) {
             actions?.invoke(this)
         }
-
-        var accessKeyCredential by remember { mutableStateOf("") }
+        var accessKeyName by remember { mutableStateOf("YOUR_MCPDIRECT_KEY_NAME") }
+        var accessKeyCredential by remember { mutableStateOf("SELECT_MCPDIRECT_KEY_FROM_LEFT_SIDE") }
         LaunchedEffect(accessKey){
-            AccessKeyRepository.getAccessKeyCredential(accessKey){ data->
-                data?.let {
-                    accessKeyCredential = it.secretKey.substring(4)
+            accessKey?.let{
+                accessKeyName = accessKey.name
+                AccessKeyRepository.getAccessKeyCredential(accessKey){ data->
+                    data?.let {
+                        accessKeyCredential = it.secretKey.substring(4)
+                    }
                 }
             }
         }
@@ -94,7 +97,7 @@ fun AIAgentGuideComponent(
                         if(endpoint.endsWith("/")){
                             endpoint = endpoint.substring(0, endpoint.length - 1)
                         }
-                        val keyName = accessKey.name.replace(" ","_")
+                        val keyName = accessKeyName.replace(" ","_")
                         val config = option.config
                             .replace($$"${MCPDIRECT_KEY_NAME}",keyName)
                             .replace($$"${MCPDIRECT_URL}", endpoint)
