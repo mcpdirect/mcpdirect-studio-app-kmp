@@ -143,6 +143,7 @@ class SharedMCPServerListViewModel: ViewModel() {
 @Composable
 fun SharedMCPServerListView(
     team: AIPortTeam?,
+    toolMaker: AIPortToolMaker?,
     modifier: Modifier = Modifier,
 ){
     val viewModel by remember { mutableStateOf(SharedMCPServerListViewModel()) }
@@ -190,14 +191,14 @@ fun SharedMCPServerListView(
                 }
             }
             LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(toolMakers){ toolMaker->
+                items(toolMakers){ t1->
                     SharedMCPServerView(
-                        toolMaker,
-                        expanded,
-                        if(editable) toolMaker.id in sharedToolMakers else null,
+                        t1,
+                        expanded||toolMaker?.let{t1.id==toolMaker.id}?:false,
+                        if(editable) t1.id in sharedToolMakers else null,
                         Modifier.fillMaxWidth()
                     ){ selected->
-                        viewModel.selectToolMaker(selected,toolMaker)
+                        viewModel.selectToolMaker(selected,t1)
                     }
                 }
             }

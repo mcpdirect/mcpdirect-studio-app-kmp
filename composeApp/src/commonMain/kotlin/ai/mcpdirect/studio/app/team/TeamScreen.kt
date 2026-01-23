@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.team
 
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.team.view.SharedMCPServerListView
@@ -40,6 +41,7 @@ class TeamScreenViewModel : ViewModel() {
 @Composable
 fun TeamScreen(
     team: AIPortTeam?,
+    toolMaker: AIPortToolMaker?,
     paddingValues: PaddingValues
 ){
     val viewModel by remember { mutableStateOf(TeamScreenViewModel()) }
@@ -56,7 +58,7 @@ fun TeamScreen(
             }
         }
         Column(Modifier.weight(2f)) {
-            SharedMCPServerListView(viewModel.currentTeam,Modifier.weight(2f).fillMaxWidth())
+            SharedMCPServerListView(viewModel.currentTeam,toolMaker,Modifier.weight(2f).fillMaxWidth())
         }
         TeamMemberView(viewModel.currentTeam,Modifier.weight(1f).fillMaxHeight())
     }

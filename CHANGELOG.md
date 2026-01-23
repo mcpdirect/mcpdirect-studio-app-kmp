@@ -2,6 +2,21 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced team screen functionality and improved UI component structure
+
+### Details
+- Updated Screen.MCPTeam to include toolMaker parameter for better team navigation
+- Enhanced MCPServersWidget with improved TeamToolMakerCard navigation
+- Refactored VirtualMCPWidget with separate VirtualToolMakerCard and TeamVirtualToolMakerCard components
+- Implemented team dropdown menu in TeamVirtualToolMakerCard for better team navigation
+- Enhanced TeamScreen with toolMaker parameter support
+- Updated SharedMCPServerListView to handle toolMaker selection properly
+- Improved UI with better separation of user-owned and team-shared virtual tool makers
+- Enhanced team navigation with proper toolMaker context passing
+- Improved component structure with dedicated card components for different tool maker types
+
+## [January 20, 2026]
+### Summary
 Enhanced team collaboration features and improved UI components
 
 ### Details
