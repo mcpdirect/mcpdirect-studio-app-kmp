@@ -583,12 +583,15 @@ interface Platform {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<AIPortTeamMember>>(it))
         }
     }
-    fun queryTeamMembers(teamId: Long,
-                         onResponse: (resp: AIPortServiceResponse<List<AIPortTeamMember>>) -> Unit
+    fun queryTeamMembers(
+        teamId: Long,
+        lastUpdated: Long,
+        onResponse: (resp: AIPortServiceResponse<List<AIPortTeamMember>>) -> Unit
     ) {
         hstpRequest(
             "$accountUsl/team/member/query", mapOf(
                 "teamId" to JsonPrimitive(teamId),
+                "lastUpdated" to JsonPrimitive(lastUpdated),
             )
         ) {
             onResponse(JSON.decodeFromString<AIPortServiceResponse<List<AIPortTeamMember>>>(it))

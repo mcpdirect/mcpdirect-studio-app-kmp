@@ -2,6 +2,22 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced team collaboration features and improved UI components
+
+### Details
+- Updated Platform interface to include lastUpdated parameter in queryTeamMembers
+- Enhanced HomeScreen with automatic refresh of team tool makers
+- Added refreshTeamToolMakers functionality to HomeViewModel
+- Refactored MCPServersWidget with separate ToolMakerCard and TeamToolMakerCard components
+- Implemented team dropdown menu in TeamToolMakerCard for better team navigation
+- Enhanced VirtualMCPWidget with proper refresh logic
+- Added getTeams function to TeamRepository for retrieving teams associated with tool makers
+- Implemented loadTeamMembers functionality with proper caching and refresh logic
+- Improved UI with better separation of user-owned and team-shared tool makers
+- Enhanced team member query with lastUpdated timestamp support
+
+## [January 20, 2026]
+### Summary
 Enhanced home screen with shortcut widget and improved access controls
 
 ### Details

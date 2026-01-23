@@ -8,6 +8,7 @@ import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMakerTemplate
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMakerTemplate
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +37,9 @@ object TeamRepository {
     private val _teamToolMakers = MutableStateFlow<Map<TeamKey, AIPortTeamToolMaker>>(emptyMap())
     val teamToolMakers: StateFlow<Map<TeamKey, AIPortTeamToolMaker>> = _teamToolMakers
 
+    private var _teamMemberLastQuery: TimeMark? = null
+    private val _teamMembers = MutableStateFlow<Map<TeamKey, AIPortTeamMember>>(emptyMap())
+    val teamMembers: StateFlow<Map<TeamKey, AIPortTeamMember>> = _teamMembers
 
     fun reset(){
         _teamLastQuery = null
@@ -110,6 +114,19 @@ object TeamRepository {
         }
     }
 
+    fun getTeams(
+        maker: AIPortToolMaker,
+        onResponse: (resp: AIPortServiceResponse<List<AIPortTeam>>) -> Unit
+    ){
+        val teams = mutableListOf<AIPortTeam>()
+        _teamToolMakers.value.values.forEach {
+            if(it.toolMakerId == maker.id) {
+                val team = _teams.value[it.teamId]
+                if(team!=null) teams.add(team)
+            }
+        }
+        onResponse(AIPortServiceResponse(0,null,teams))
+    }
     suspend fun loadTeamToolMakers(
         team: AIPortTeam = AIPortTeam(), force: Boolean=false,
         onResponse: ((code: Int, message: String?, data: List<AIPortTeamToolMaker>?) -> Unit)?=null
@@ -143,6 +160,33 @@ object TeamRepository {
             }
         }
     }
+    suspend fun loadTeamMembers(
+        force: Boolean=false
+    ){
+        loadMutex.withLock {
+            val now = TimeSource.Monotonic.markNow()
+            if (_teamMemberLastQuery == null || (force && _teamMemberLastQuery!!.elapsedNow() > _duration)) {
+                generalViewModel.loading()
+                getPlatform().queryTeamMembers(
+                    teamId = 0,
+                    lastUpdated = if (_teamMemberLastQuery == null) 0L else currentMilliseconds()
+                ){
+                    generalViewModel.loaded("Load Team all member",it.code,it.message)
+                    if(it.successful())it.data?.let { members ->
+                        _teamMembers.update { map ->
+                            map.toMutableMap().apply {
+                                for (member in members) {
+                                    put(TeamKey(member.teamId,member.memberId),member)
+                                }
+                            }
+                        }
+                        _teamMemberLastQuery = now
+
+                    }
+                }
+            }
+        }
+    }
     fun teamToolMaker(teamId: Long,makerId:Long): AIPortTeamToolMaker?{
         return _teamToolMakers.value[TeamKey(teamId,makerId)]
     }
@@ -152,7 +196,7 @@ object TeamRepository {
     ){
         loadMutex.withLock {
             generalViewModel.loading()
-            getPlatform().queryTeamMembers(team.id){
+            getPlatform().queryTeamMembers(team.id,0){
                 generalViewModel.loaded("Load Team Member of #${team.name}",it.code,it.message)
                 onResponse(it)
             }

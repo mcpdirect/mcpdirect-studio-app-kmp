@@ -34,9 +34,9 @@ fun VirtualMCPWidget(
 ){
     val toolMakers by viewModel.virtualToolMakers.collectAsState()
     val scrollState = rememberScrollState()
-    LaunchedEffect(viewModel) {
-        viewModel.refreshToolMakers(true)
-    }
+//    LaunchedEffect(viewModel) {
+//        viewModel.refreshToolMakers(true)
+//    }
     Column(modifier.padding(start =16.dp,end = 5.dp,bottom = 16.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

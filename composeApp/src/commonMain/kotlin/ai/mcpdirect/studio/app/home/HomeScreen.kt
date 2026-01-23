@@ -53,6 +53,10 @@ fun HomeScreen(){
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var showTipsDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        viewModel.refreshToolMakers()
+        viewModel.refreshTeamToolMakers(true)
+    }
     Row{
         Column(Modifier.width(300.dp).padding(top = 32.dp, bottom = 16.dp, start = 16.dp)){
             val interactionSource = remember { MutableInteractionSource() }
@@ -181,6 +185,7 @@ fun HomeScreen(){
                         viewModel.refreshToolMakers(true)
                         viewModel.refreshAccessKeys(true)
                         viewModel.refreshTeams(true)
+                        viewModel.refreshTeamToolMakers(true)
                     }
                 ) {
                     Icon(

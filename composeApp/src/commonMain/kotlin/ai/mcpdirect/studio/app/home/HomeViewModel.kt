@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.home
 
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
+import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
@@ -50,6 +51,7 @@ class HomeViewModel: ViewModel() {
             AccessKeyRepository.loadAccessKeys(force)
         }
     }
+
     val toolMakerFilter = MutableStateFlow("")
     val toolMakers: StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
@@ -97,6 +99,18 @@ class HomeViewModel: ViewModel() {
     fun refreshTeams(force:Boolean=false){
         viewModelScope.launch {
             TeamRepository.loadTeams(force)
+        }
+    }
+//    val teamToolMakers: StateFlow<List<AIPortTeamToolMaker>> = TeamRepository.teamToolMakers
+//        .map { it.values.toList() }
+//        .stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5000),
+//            initialValue = emptyList()
+//        )
+    fun refreshTeamToolMakers(force:Boolean=false){
+        viewModelScope.launch {
+            TeamRepository.loadTeamToolMakers(force=force)
         }
     }
     fun checkAppUpdate(){
