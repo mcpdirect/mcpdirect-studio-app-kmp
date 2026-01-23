@@ -157,7 +157,7 @@ enum class ConnectMCPViewAction {
 fun ConnectMCPView(
     modifier: Modifier,
     viewModel: QuickStartViewModel,
-    showCatalog: Boolean = true
+    showCatalog: Long = -1
 ){
 //    val toolAgents by viewModel.toolAgents.collectAsState()
 //    val localToolAgent by StudioRepository.localToolAgent.collectAsState()
@@ -166,11 +166,13 @@ fun ConnectMCPView(
     val toolMakers by viewModel.toolMakers.collectAsState()
     var action by remember { mutableStateOf(ConnectMCPViewAction.MAIN) }
     var catalog by remember { mutableStateOf(showCatalog) }
-    var currentMCPTemplate by remember { mutableStateOf(AIPortMCPServer()) }
+    var currentMCPTemplate by remember {
+        mutableStateOf(AIPortMCPServer(if(showCatalog<0) 0 else showCatalog))
+    }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)){
 //        Column(Modifier.weight(1f))  {
             OutlinedCard(Modifier.weight(1f)) {
-                if(!catalog) {
+                if(catalog<0) {
                     StudioActionBar (
                         "Installed MCP servers",
                     ){
@@ -178,7 +180,7 @@ fun ConnectMCPView(
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(8.dp,0.dp),
                             onClick = {
-                                catalog = !catalog
+                                catalog = 0
                             }) {
                             Text(
                                 "MCP Catalog",
@@ -262,7 +264,7 @@ fun ConnectMCPView(
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(8.dp,0.dp),
                             onClick = {
-                                catalog = !catalog
+                                catalog = -1
                             }) {
                             Text(
                                 "Installed MCP servers",
@@ -282,7 +284,8 @@ fun ConnectMCPView(
                                         modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
                                     )
                                     1L -> StudioListItem(
-                                        selected = currentMCPTemplate.id==mcpServer.id,
+                                        selected =
+                                            currentMCPTemplate.id==mcpServer.id,
                                         headlineContent = { Text("OpenAPI") },
                                         modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
                                     )
@@ -318,7 +321,7 @@ fun ConnectMCPView(
 //        }
 
         Card(Modifier.weight(2f)) {
-            if(!catalog&&toolMakers.isNotEmpty()) {
+            if(catalog<0&&toolMakers.isNotEmpty()) {
                 currentToolMaker?.let { toolMaker ->
                     when (action) {
                         ConnectMCPViewAction.MAIN -> {
@@ -377,7 +380,7 @@ fun ConnectMCPView(
                         if(it.successful()) it.data?.let { data ->
                             viewModel.currentToolMaker(data)
                             viewModel.selectToolMaker(true,data)
-                            catalog = false
+                            catalog = -1
                         }
                     }
                 }
@@ -390,7 +393,7 @@ fun ConnectMCPView(
                             if(it.successful()) it.data?.let { data ->
                                 viewModel.currentToolMaker(data)
                                 viewModel.selectToolMaker(true,data)
-                                catalog = false
+                                catalog = -1
                             }
                         }
                     }

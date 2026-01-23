@@ -1,6 +1,9 @@
 package ai.mcpdirect.studio.app.home.widget
 
+import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,7 +39,13 @@ fun ShortcutWidget(
         HorizontalDivider()
         Spacer(Modifier.height(16.dp))
         TextButton(
-            onClick = {},
+            onClick = {
+                generalViewModel.currentScreen(
+                    Screen.MyStudio(toolMaker = AIPortToolMaker(1)),
+                    "My Studios",
+                    Screen.Home
+                )
+            },
             modifier = Modifier.fillMaxWidth().height(32.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ){Row(Modifier.fillMaxWidth()) {

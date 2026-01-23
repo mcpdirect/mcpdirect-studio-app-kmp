@@ -40,12 +40,16 @@ fun ToolAgentScreen(
 ){
     val viewModel by remember { mutableStateOf(QuickStartViewModel()) }
     var showMCPdirectKeysDialog by remember { mutableStateOf(false) }
+    val showCatalog =
+        if(toolAgent==null&&toolMaker==null) 0
+        else if(toolMaker!=null&&toolMaker.id<Int.MAX_VALUE) toolMaker.id
+        else -1L
     LaunchedEffect(null) {
         toolAgent?.let { agent ->
             viewModel.currentToolAgent(agent)
         }
         toolMaker?.let { maker ->
-            StudioRepository.toolAgent(maker.agentId){
+            if(maker.id>Int.MAX_VALUE) StudioRepository.toolAgent(maker.agentId){
                 if(it.successful()) it.data?.let{ agent ->
                     viewModel.currentToolAgent(agent)
                     viewModel.currentToolMaker(maker)
@@ -85,7 +89,8 @@ fun ToolAgentScreen(
     }
     ConnectMCPView(
         Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
-        viewModel,toolAgent==null&&toolMaker==null
+        viewModel,
+        showCatalog
     )
     if(showMCPdirectKeysDialog){
         BlankDialog(

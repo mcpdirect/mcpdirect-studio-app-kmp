@@ -19,6 +19,10 @@ open class AIPortToolMaker {
     var templateId: Long =0
     var errorCode:Int=0
     var errorMessage:String = ""
+    constructor()
+    constructor(id: Long){
+        this.id = id
+    }
     fun virtual():Boolean{
         return type == TYPE_VIRTUAL
     }

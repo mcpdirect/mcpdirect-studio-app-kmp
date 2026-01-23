@@ -2,6 +2,20 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced tool agent screen and improved catalog navigation logic
+
+### Details
+- Updated ToolAgentScreen to handle different catalog display modes based on tool agent/maker presence
+- Enhanced catalog display logic with proper ID handling for different tool maker types
+- Improved ShortcutWidget with proper navigation to My Studio screen
+- Added secondary constructor to AIPortToolMaker for easier instantiation
+- Refactored ConnectMCPView to use Long type for showCatalog parameter instead of Boolean
+- Enhanced catalog navigation with improved state management using -1, 0, and positive IDs
+- Improved tool maker template handling with proper ID-based logic
+- Enhanced UI with better navigation flow between catalog and installed servers views
+
+## [January 20, 2026]
+### Summary
 Enhanced team screen functionality and improved UI component structure
 
 ### Details
