@@ -2,6 +2,22 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced home screen with shortcut widget and improved access controls
+
+### Details
+- Created ShortcutWidget component for quick access to common functions
+- Added shortcut buttons for connecting OpenAPI as MCP and integrating with AI agents
+- Enhanced MCPServersWidget with team access controls and group icons
+- Improved VirtualMCPWidget with proper user permission checks
+- Updated HomeViewModel to remove user ownership filter from tool maker lists
+- Added ShortcutWidget to HomeScreen layout
+- Updated app version code from 26012200 to 26012201
+- Removed version display from window title
+- Updated mcpdirect-studio-core dependency from SNAPSHOT to release version
+- Enhanced UI with proper access controls based on user permissions
+
+## [January 20, 2026]
+### Summary
 Updated app version code and enhanced version management
 
 ### Details

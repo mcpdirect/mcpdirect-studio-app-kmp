@@ -56,7 +56,7 @@ class HomeViewModel: ViewModel() {
         toolMakerFilter
     ){ makers,filter ->
         makers.values.filter {
-            it.type>0&& UserRepository.me(it.userId) &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true))
+            it.type>0 &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true))
         }.sortedBy { it.name }
     }.stateIn(
         scope = viewModelScope,
@@ -69,7 +69,7 @@ class HomeViewModel: ViewModel() {
         virtualToolMakerFilter
     ){ makers,filter ->
         makers.values.filter {
-            it.type==0&& UserRepository.me(it.userId) &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true))
+            it.type==0 &&(filter.isEmpty()||it.name.contains(filter,ignoreCase = true))
         }.sortedBy { it.name }
     }.stateIn(
         scope = viewModelScope,

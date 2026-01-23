@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
 import mcpdirectstudioapp.composeapp.generated.resources.design_services
+import mcpdirectstudioapp.composeapp.generated.resources.group
 import mcpdirectstudioapp.composeapp.generated.resources.person
 import mcpdirectstudioapp.composeapp.generated.resources.plug_connect
 import mcpdirectstudioapp.composeapp.generated.resources.setting_config
@@ -103,20 +104,39 @@ fun MCPServersWidget(
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Spacer(Modifier.weight(1.0f))
-                                IconButton(
-                                    onClick = {
-                                        generalViewModel.currentScreen(
-                                            Screen.MyStudio(toolMaker = toolMaker),
-                                            "MCP Servers",
-                                            Screen.Home
+                                if(UserRepository.me(toolMaker.userId)) {
+                                    IconButton(
+                                        onClick = {
+                                            generalViewModel.currentScreen(
+                                                Screen.MyStudio(toolMaker = toolMaker),
+                                                "MCP Servers",
+                                                Screen.Home
+                                            )
+                                        },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(
+                                            painterResource(Res.drawable.setting_config), null,
+                                            modifier = Modifier.size(16.dp),
                                         )
-                                    },
-                                    modifier = Modifier.size(32.dp)
-                                ) {
-                                    Icon(
-                                        painterResource(Res.drawable.setting_config), null,
-                                        modifier = Modifier.size(16.dp),
-                                    )
+                                    }
+                                }else{
+                                    IconButton(
+                                        onClick = {
+                                            generalViewModel.currentScreen(
+                                                Screen.MCPTeam(),
+                                                "My Teams",
+                                                Screen.Home
+                                            )
+                                        },
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(
+                                            painterResource(Res.drawable.group),
+                                            "Team",
+                                            modifier = Modifier.size(16.dp),
+                                        )
+                                    }
                                 }
                             }
 

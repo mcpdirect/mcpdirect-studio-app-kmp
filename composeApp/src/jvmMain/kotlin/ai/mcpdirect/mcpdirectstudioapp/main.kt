@@ -81,7 +81,7 @@ fun main() = application {
         position = WindowPosition(Alignment.Center)
     )
     val os = os()
-    val version = AppInfo.APP_VERSION
+//    val version = AppInfo.APP_VERSION
     // undecorated = true removes the OS chrome
     // transparent = true allows us to control the corner radius
     Window(
@@ -89,7 +89,7 @@ fun main() = application {
         state = windowState,
         undecorated = os!=PLATFORM_MACOS,
         transparent = os != PLATFORM_MACOS,
-        title = "MCPdirect Studio $version",
+        title = "MCPdirect Studio",
         icon = painterResource(Res.drawable.mcpdirect_logo_48),
     ) {
         var padding by remember { mutableStateOf(if(os==PLATFORM_MACOS) 0.dp else 16.dp) }

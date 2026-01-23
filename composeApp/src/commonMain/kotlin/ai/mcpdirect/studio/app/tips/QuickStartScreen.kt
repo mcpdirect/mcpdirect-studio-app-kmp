@@ -186,7 +186,7 @@ fun ConnectMCPView(
                             )
                         }
                     }
-                    HorizontalDivider()
+//                    HorizontalDivider()
                     ToolAgentSelectionMenu(viewModel, Modifier.padding(16.dp,8.dp))
                     if (toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {
                         Icon(
@@ -270,7 +270,8 @@ fun ConnectMCPView(
                             )
                         }
                     }
-                    HorizontalDivider()
+//                    HorizontalDivider()
+                    ToolAgentSelectionMenu(viewModel, Modifier.padding(16.dp,8.dp))
                     LazyColumn(Modifier.weight(1f)){
                         items(mcpServerCatalog) { mcpServer ->
                             if (mcpServer.id <100) {

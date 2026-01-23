@@ -18,7 +18,7 @@ val appPackageId = "ai.mcpdirect.mcpdirectstudioapp"
 println("APP_PACKAGE_ID=$appPackageId")
 val appVersion = "2.3.0"
 println("APP_VERSION=$appVersion")
-val appVersionCode = 26012200
+val appVersionCode = 26012201
 println("APP_VERSION_CODE=$appVersionCode")
 val generatedSrcDirPath = "generated/compose/srcGenerator"
 val mcpdirectGatewayEndpoint = System.getenv("AI_MCPDIRECT_GATEWAY_ENDPOINT")?:"http://localhost:8088/"
@@ -107,7 +107,7 @@ kotlin {
 //            implementation(compose.material3)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("ai.mcpdirect:mcpdirect-studio-core:2.3.0-SNAPSHOT")
+            implementation("ai.mcpdirect:mcpdirect-studio-core:2.3.0")
         }
         jsMain.dependencies {
 //            implementation(compose.material3)

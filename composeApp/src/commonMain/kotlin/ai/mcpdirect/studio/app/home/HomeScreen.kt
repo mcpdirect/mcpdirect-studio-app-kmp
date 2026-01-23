@@ -13,6 +13,7 @@ import ai.mcpdirect.studio.app.home.widget.MCPServersWidget
 import ai.mcpdirect.studio.app.home.widget.MyStudiosWidget
 import ai.mcpdirect.studio.app.home.widget.MyTeamsView
 import ai.mcpdirect.studio.app.home.widget.QuickstartWidget
+import ai.mcpdirect.studio.app.home.widget.ShortcutWidget
 import ai.mcpdirect.studio.app.home.widget.VirtualMCPWidget
 import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.repository.AppVersionRepository
@@ -112,6 +113,7 @@ fun HomeScreen(){
                 }
             }
             QuickstartWidget(Modifier.weight(1f))
+            ShortcutWidget(Modifier.weight(1f),viewModel)
             Row(
                 Modifier.padding(top = 32.dp),
                 verticalAlignment = Alignment.CenterVertically
