@@ -6,7 +6,6 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.TYPE_VIRTUAL
-import ai.mcpdirect.studio.app.model.aitool.AIPortVirtualTool
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
@@ -29,7 +28,6 @@ import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
 import mcpdirectstudioapp.composeapp.generated.resources.description
 import mcpdirectstudioapp.composeapp.generated.resources.design_services
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
-import mcpdirectstudioapp.composeapp.generated.resources.info
 import mcpdirectstudioapp.composeapp.generated.resources.person
 import org.jetbrains.compose.resources.painterResource
 
@@ -60,10 +58,10 @@ class SharedMCPServerViewModel : ViewModel() {
             if(maker.type==TYPE_VIRTUAL) ToolRepository.loadVirtualTools(toolMaker=maker)
             else ToolRepository.loadTools(maker.userId,toolMaker=maker)
             StudioRepository.toolAgent(maker.agentId){
-                if(it.successful()) it.data?.let { toolAgent = it }
+                if(it.successful()) it.data?.let {data-> toolAgent = data }
             }
             UserRepository.user(maker.userId){
-                if(it.successful()) it.data?.let { user = it }
+                if(it.successful()) it.data?.let {data-> user = data }
             }
         }
     }
@@ -115,7 +113,7 @@ fun SharedMCPServerView(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 tools.forEach { tool ->
-                    val toolId = if (tool is AIPortVirtualTool) tool.toolId else tool.id
+//                    val toolId = if (tool is AIPortVirtualTool) tool.toolId else tool.id
                     val interactionSource = remember { MutableInteractionSource() }
                     val isHovered by interactionSource.collectIsHoveredAsState()
                     OutlinedButton(

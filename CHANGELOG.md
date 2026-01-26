@@ -2,6 +2,17 @@
 
 ## [January 20, 2026]
 ### Summary
+Cleaned up unused imports and improved code clarity in SharedMCPServerView
+
+### Details
+- Removed unused AIPortVirtualTool import from SharedMCPServerView
+- Removed unused info icon import from SharedMCPServerView
+- Improved code clarity with better variable naming in data assignment
+- Commented out unused toolId calculation in SharedMCPServerView
+- Enhanced code readability and maintainability
+
+## [January 20, 2026]
+### Summary
 Enhanced team sharing functionality and improved tool maker selection
 
 ### Details
