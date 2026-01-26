@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.team
 
 import ai.mcpdirect.studio.app.UIState
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 //import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
@@ -188,7 +189,7 @@ class MCPTeamViewModel : ViewModel(){
             }
         }
     }
-    fun modifyMCPTeam(name:String?,status:Int?,onResponse: (code:Int,message:String?,data: AIPortTeam?) -> Unit){
+    fun modifyMCPTeam(name:String?,status:Int?,onResponse: (resp: AIPortServiceResponse<AIPortTeam>) -> Unit){
         viewModelScope.launch {
 //            getPlatform().modifyTeam(it.id,name,status){
 //                    (code, message, data) ->

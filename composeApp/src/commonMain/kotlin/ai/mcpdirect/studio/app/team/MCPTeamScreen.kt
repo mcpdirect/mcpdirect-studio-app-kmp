@@ -167,7 +167,7 @@ fun CreateTeamDialog(
                         code, message,data ->
                         if(code==0) onDismissRequest()
                     }else viewModel.modifyMCPTeam(viewModel.mcpTeamName,null){
-                        code, message,data ->
+                        (code, message,data) ->
                         if(code==0) onDismissRequest()
                     }
                 }

@@ -218,8 +218,10 @@ object TeamRepository {
             }
         }
     }
-    suspend fun modifyTeam(team:AIPortTeam,name:String?,status:Int?,
-                           onResponse: (code:Int,message:String?,data:AIPortTeam?) -> Unit){
+    suspend fun modifyTeam(
+        team:AIPortTeam,name:String?,status:Int?,
+        onResponse: ((resp: AIPortServiceResponse<AIPortTeam>) -> Unit)?=null
+    ){
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().modifyTeam(team.id,name,status){
@@ -231,7 +233,7 @@ object TeamRepository {
                     }
                 }
                 generalViewModel.loaded("Modify Team of #${team.name}",it.code,it.message)
-                onResponse(it.code,it.message,it.data)
+                onResponse?.invoke(it)
             }
         }
     }
