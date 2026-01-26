@@ -2,6 +2,22 @@
 
 ## [January 20, 2026]
 ### Summary
+Major refactoring with new component architecture and UI improvements
+
+### Details
+- Refactored ToolAgentScreen to use new ToolAgentComponent and ToolAgentComponentViewModel
+- Created new ToolAgentComponent and ToolMakerComponent for better modularity
+- Added MCPdirectKeyQuickstartComponent for streamlined key generation workflow
+- Enhanced tool permission granting with improved UI and workflow
+- Updated app version from 2.3.0 to 2.3.1
+- Updated app version code from 26012201 to 260122001
+- Improved UI with new color scheme and styling
+- Enhanced access key generation and selection workflow
+- Improved tool selection with better filtering and display
+- Added TODO comment for future deep link functionality
+
+## [January 20, 2026]
+### Summary
 Enhanced MCP access key screen with integration guide functionality
 
 ### Details

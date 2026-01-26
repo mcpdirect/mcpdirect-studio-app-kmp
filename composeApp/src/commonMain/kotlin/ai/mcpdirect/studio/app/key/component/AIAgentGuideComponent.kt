@@ -123,6 +123,8 @@ fun AIAgentGuideComponent(
                                     }?: Text(deeplink.name)
                                 }
                             }
+                            //TODO access special MCP servers
+                            //ExposedDropdownMenuBox
                             IconButton(onClick = {
                                 getPlatform().copyToClipboard(config)
                             }){

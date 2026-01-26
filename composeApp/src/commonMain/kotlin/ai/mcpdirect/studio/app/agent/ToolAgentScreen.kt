@@ -1,33 +1,24 @@
 package ai.mcpdirect.studio.app.agent
 
+import ai.mcpdirect.studio.app.agent.component.ToolAgentComponent
+import ai.mcpdirect.studio.app.agent.component.ToolAgentComponentViewModel
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.BlankDialog
+import ai.mcpdirect.studio.app.model.aitool.AIPortTool
+import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
+import ai.mcpdirect.studio.app.model.repository.ToolRepository.tools
 import ai.mcpdirect.studio.app.tips.ConnectMCPView
 import ai.mcpdirect.studio.app.tips.GenerateMCPdirectKeyView
 import ai.mcpdirect.studio.app.tips.QuickStartViewModel
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import ai.mcpdirect.studio.app.tips.component.MCPdirectKeyQuickstartComponent
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,7 +29,7 @@ fun ToolAgentScreen(
     toolMaker: AIPortToolMaker?,
     paddingValues: PaddingValues = PaddingValues()
 ){
-    val viewModel by remember { mutableStateOf(QuickStartViewModel()) }
+    val viewModel by remember { mutableStateOf(ToolAgentComponentViewModel()) }
     var showMCPdirectKeysDialog by remember { mutableStateOf(false) }
     val showCatalog =
         if(toolAgent==null&&toolMaker==null) 0
@@ -87,7 +78,7 @@ fun ToolAgentScreen(
             generalViewModel.topBarActions = {}
         }
     }
-    ConnectMCPView(
+    ToolAgentComponent(
         Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
         viewModel,
         showCatalog
@@ -97,13 +88,28 @@ fun ToolAgentScreen(
             "Grant to MCPdirect key",
             {showMCPdirectKeysDialog = false},
         ) { paddingValues ->
+            var enableGrant by remember { mutableStateOf(false)}
+            var selectedAccessKey by remember { mutableStateOf<AIPortToolAccessKey?>(null)}
+            var selectedTools by remember { mutableStateOf<List<AIPortTool>>(emptyList())}
             Column(Modifier.fillMaxSize().padding(paddingValues).padding(start=16.dp, end = 16.dp,bottom=16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                GenerateMCPdirectKeyView(Modifier.weight(1f),viewModel = viewModel)
+                MCPdirectKeyQuickstartComponent(
+                    viewModel.selectedToolMakers,
+                    viewModel.selectedTools,
+                    Modifier.weight(1f)
+                ){ accessKey, tools ->
+                    selectedAccessKey = accessKey
+                    selectedTools = tools
+                    enableGrant = accessKey!=null && tools.isNotEmpty()
+                }
                 Row{
                     Spacer(Modifier.weight(1f))
                     Button(
-                        onClick = {}
+                        enabled = enableGrant,
+                        onClick = {
+                            viewModel.grantToolPermissions(selectedAccessKey!!,selectedTools)
+                            showMCPdirectKeysDialog = false
+                        }
                     ){
                         Text("Grant");
                     }
