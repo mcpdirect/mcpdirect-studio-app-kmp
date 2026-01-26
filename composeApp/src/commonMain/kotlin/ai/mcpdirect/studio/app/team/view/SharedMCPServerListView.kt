@@ -24,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.close
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
 import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
+import mcpdirectstudioapp.composeapp.generated.resources.forms_add_on
 import mcpdirectstudioapp.composeapp.generated.resources.shield_toggle
 import org.jetbrains.compose.resources.painterResource
 import kotlin.collections.set
@@ -174,14 +176,17 @@ fun SharedMCPServerListView(
     Card(modifier = modifier) {
         currentTeam?.let { team ->
             StudioActionBar(
-                "Shared MCP Servers (${sharedToolMakers.size}) with ${team.name ?: ""}"
+                if(grantable)
+                    "Share MCP Servers with ${team.name ?: ""}"
+                else
+                    "Shared MCP Servers (${sharedToolMakers.size}) with ${team.name ?: ""}"
             ){
-                IconButton(
+                if(!grantable) IconButton(
                     onClick = { viewModel.grantable.value = !grantable },
                     modifier = Modifier.size(32.dp)
                 ){
                     Icon(painterResource(
-                        if(grantable) Res.drawable.close else Res.drawable.shield_toggle
+                        Res.drawable.forms_add_on
                     ),contentDescription = null, Modifier.size(20.dp))
                 }
                 IconButton(
@@ -192,15 +197,25 @@ fun SharedMCPServerListView(
                     Icon(painterResource(icon),contentDescription = null, Modifier.size(20.dp))
                 }
             }
-            Row(Modifier.padding(16.dp)) {
+            Row(
+                Modifier.padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 StudioSearchbar(modifier = Modifier.weight(1f)) {
                     viewModel.toolMakerFilter.value = it
                 }
-                Spacer(Modifier.size(8.dp))
-                if(grantable) Button(
-                    modifier = Modifier.height(40.dp),
-                    onClick = { viewModel.saveTeamToolMakers() }){
-                    Text("Save")
+//                Spacer(Modifier.size(8.dp))
+                if(grantable) {
+                    TextButton(
+                        modifier = Modifier.height(40.dp),
+                        onClick = { viewModel.grantable.value = false }) {
+                        Text("Cancel")
+                    }
+                    Button(
+                        modifier = Modifier.height(40.dp),
+                        onClick = { viewModel.saveTeamToolMakers() }) {
+                        Text("Save")
+                    }
                 }
             }
             LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

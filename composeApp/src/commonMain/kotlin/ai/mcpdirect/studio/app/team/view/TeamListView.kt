@@ -120,18 +120,20 @@ fun TeamListView(
                     }
                 }
             } else {
-                StudioActionBar("Create Team"){
-                    if(teams.isNotEmpty())TextButton(
-                        modifier = Modifier.height(32.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp),
-                        onClick = { showCreateTeamView = false }
-                    ) {
-                        Text(
-                            "Teams",
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                    }
-                }
+                StudioActionBar("Create Team")
+//                {
+//                    if(teams.isNotEmpty())TextButton(
+//                        modifier = Modifier.height(32.dp),
+//                        contentPadding = PaddingValues(horizontal = 8.dp),
+//                        onClick = { showCreateTeamView = false }
+//                    )
+//                    {
+//                        Text(
+//                            "Teams",
+//                            style = MaterialTheme.typography.bodySmall,
+//                        )
+//                    }
+//                }
                 HorizontalDivider()
                 var name by remember { mutableStateOf("") }
                 var nameError by remember { mutableStateOf(true) }
@@ -154,7 +156,7 @@ fun TeamListView(
                 ) {
                     TextButton(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        onClick = {}
+                        onClick = { showCreateTeamView = false}
                     ){
                         Text("Cancel")
                     }
@@ -163,6 +165,7 @@ fun TeamListView(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         onClick = {
                             viewModel.createTeam(name) {
+                                showCreateTeamView = !it.successful()
                                 if (it.successful()) it.data?.let {
                                     viewModel.currentTeam(it)
                                     onTeamChange(it)
