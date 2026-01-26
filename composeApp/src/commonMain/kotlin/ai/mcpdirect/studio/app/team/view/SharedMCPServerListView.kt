@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.model.repository.TeamRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
@@ -33,6 +35,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.Res
+import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
+import mcpdirectstudioapp.composeapp.generated.resources.arrow_forward
 import mcpdirectstudioapp.composeapp.generated.resources.close
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
 import mcpdirectstudioapp.composeapp.generated.resources.edit
@@ -181,21 +185,53 @@ fun SharedMCPServerListView(
                 else
                     "Shared MCP Servers (${sharedToolMakers.size}) with ${team.name ?: ""}"
             ){
-                if(!grantable) IconButton(
-                    onClick = { viewModel.grantable.value = !grantable },
-                    modifier = Modifier.size(32.dp)
-                ){
-                    Icon(painterResource(
-                        Res.drawable.forms_add_on
-                    ),contentDescription = null, Modifier.size(20.dp))
-                }
-                IconButton(
-                    onClick = {expanded=!expanded},
-                    modifier = Modifier.size(32.dp)
+                TextButton(
+                    modifier = Modifier.height(32.dp),
+                    contentPadding = PaddingValues(horizontal = 8.dp),
+                    onClick = { viewModel.grantable.value = !grantable }
                 ) {
-                    val icon = if(expanded) Res.drawable.collapse_all else Res.drawable.expand_all
-                    Icon(painterResource(icon),contentDescription = null, Modifier.size(20.dp))
+                    if(grantable) {
+                        Spacer(Modifier.width(4.dp))
+                        Icon(
+                            painterResource(
+                                Res.drawable.arrow_back
+                            ),
+                            contentDescription = null,
+                            Modifier.size(20.dp)
+                        )
+                    }
+                    Text(
+                        if(!grantable)
+                            "Share MCP Servers"
+                        else "Shared MCP Servers",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    if(!grantable) {
+                        Spacer(Modifier.width(4.dp))
+                        Icon(
+                            painterResource(
+                                Res.drawable.arrow_forward
+                            ),
+                            contentDescription = null,
+                            Modifier.size(20.dp)
+                        )
+                    }
                 }
+//                if(!grantable) IconButton(
+//                    onClick = { viewModel.grantable.value = !grantable },
+//                    modifier = Modifier.size(32.dp)
+//                ){
+//                    Icon(painterResource(
+//                        Res.drawable.forms_add_on
+//                    ),contentDescription = null, Modifier.size(20.dp))
+//                }
+//                IconButton(
+//                    onClick = {expanded=!expanded},
+//                    modifier = Modifier.size(32.dp)
+//                ) {
+//                    val icon = if(expanded) Res.drawable.collapse_all else Res.drawable.expand_all
+//                    Icon(painterResource(icon),contentDescription = null, Modifier.size(20.dp))
+//                }
             }
             Row(
                 Modifier.padding(16.dp),
@@ -206,16 +242,23 @@ fun SharedMCPServerListView(
                 }
 //                Spacer(Modifier.size(8.dp))
                 if(grantable) {
-                    TextButton(
-                        modifier = Modifier.height(40.dp),
-                        onClick = { viewModel.grantable.value = false }) {
-                        Text("Cancel")
-                    }
+//                    TextButton(
+//                        modifier = Modifier.height(40.dp),
+//                        onClick = { viewModel.grantable.value = false }) {
+//                        Text("Cancel")
+//                    }
                     Button(
                         modifier = Modifier.height(40.dp),
                         onClick = { viewModel.saveTeamToolMakers() }) {
                         Text("Save")
                     }
+                }
+                IconButton(
+                    onClick = {expanded=!expanded},
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    val icon = if(expanded) Res.drawable.collapse_all else Res.drawable.expand_all
+                    Icon(painterResource(icon),contentDescription = null, Modifier.size(20.dp))
                 }
             }
             LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
