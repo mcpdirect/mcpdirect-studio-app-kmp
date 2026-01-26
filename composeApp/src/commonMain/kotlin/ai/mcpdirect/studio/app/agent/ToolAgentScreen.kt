@@ -127,7 +127,7 @@ fun ToolAgentScreen(
             "Share to MCP Teams",
             {dialog = ToolAgentScreenDialog.None},
         ) { paddingValues ->
-            TeamScreen(paddingValues=paddingValues)
+            TeamScreen(toolMakers = viewModel.selectedToolMakers, editable = true, paddingValues=paddingValues)
         }
     }
 }

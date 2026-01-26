@@ -79,6 +79,9 @@ fun SharedMCPServerView(
     val viewModel by remember { mutableStateOf(SharedMCPServerViewModel()) }
     LaunchedEffect(toolMaker){
         viewModel.toolMaker(toolMaker)
+        if(selected!=null&&onSelectedChange!=null){
+            onSelectedChange(selected)
+        }
     }
     LaunchedEffect(expanded) {
         viewModel.expanded = expanded

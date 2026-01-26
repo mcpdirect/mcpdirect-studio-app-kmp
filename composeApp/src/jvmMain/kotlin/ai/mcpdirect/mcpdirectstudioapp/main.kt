@@ -243,7 +243,7 @@ fun main() = application {
                             }
                             is Screen.MCPTeam -> {
 //                                    MCPTeamScreen(screen.dialog,paddingValues)
-                                TeamScreen(screen.team,screen.toolMaker,paddingValues)
+                                TeamScreen(screen.team,screen.toolMakers,paddingValues=paddingValues)
                             }
                             is Screen.MCPTeamToolMaker -> {
                                 MCPTeamToolMakerScreen(screen.team)

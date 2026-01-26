@@ -41,7 +41,8 @@ class TeamScreenViewModel : ViewModel() {
 @Composable
 fun TeamScreen(
     team: AIPortTeam?=null,
-    toolMaker: AIPortToolMaker?=null,
+    toolMakers: List<AIPortToolMaker>?=null,
+    editable: Boolean = false,
     paddingValues: PaddingValues
 ){
     val viewModel by remember { mutableStateOf(TeamScreenViewModel()) }
@@ -58,7 +59,11 @@ fun TeamScreen(
             }
         }
         Column(Modifier.weight(2f)) {
-            SharedMCPServerListView(viewModel.currentTeam,toolMaker,Modifier.weight(2f).fillMaxWidth())
+            SharedMCPServerListView(
+                viewModel.currentTeam,
+                toolMakers,
+                editable,
+                Modifier.weight(2f).fillMaxWidth())
         }
         TeamMemberView(viewModel.currentTeam,Modifier.weight(1f).fillMaxHeight())
     }

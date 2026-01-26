@@ -195,7 +195,7 @@ fun TeamVirtualToolMakerCard(
             IconButton(
                 onClick = {
                     generalViewModel.currentScreen(
-                        Screen.MCPTeam(team,toolMaker),
+                        Screen.MCPTeam(team,listOf(toolMaker)),
                         "My Teams",
                         Screen.Home
                     )

@@ -2,6 +2,20 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced team sharing functionality and improved tool maker selection
+
+### Details
+- Updated MCPTeam screen to use list of tool makers instead of single tool maker
+- Enhanced ToolAgentScreen to pass selected tool makers to team sharing
+- Improved MCPServersWidget and VirtualMCPWidget with proper tool maker list handling
+- Enhanced TeamScreen with editable parameter and list of tool makers support
+- Updated SharedMCPServerListView with improved tool maker selection logic
+- Enhanced SharedMCPServerView with proper selection handling
+- Improved team sharing functionality with better tool maker management
+- Updated main application window to handle tool maker list in MCPTeam screen
+
+## [January 20, 2026]
+### Summary
 Enhanced dialog management and improved UI components
 
 ### Details

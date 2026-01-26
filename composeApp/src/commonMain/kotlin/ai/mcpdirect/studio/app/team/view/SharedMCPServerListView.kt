@@ -143,21 +143,32 @@ class SharedMCPServerListViewModel: ViewModel() {
 @Composable
 fun SharedMCPServerListView(
     team: AIPortTeam?,
-    toolMaker: AIPortToolMaker?,
+    selectedToolMakers: List<AIPortToolMaker>?,
+    editable: Boolean,
     modifier: Modifier = Modifier,
 ){
     val viewModel by remember { mutableStateOf(SharedMCPServerListViewModel()) }
-    val currentTeam by viewModel.currentTeam.collectAsState()
-    val sharedToolMakers  by viewModel.sharedToolMakers.collectAsState()
-//    val ids by viewModel.sharedToolMakerCandidateIds.collectAsState()
-    val toolMakers by viewModel.toolMakers.collectAsState()
-    val editable by viewModel.editable.collectAsState()
-    var expanded by remember { mutableStateOf(false) }
     LaunchedEffect(team) {
         viewModel.currentTeam.value=team
         viewModel.teamToolMakerCandidates.clear()
-        if(team!=null)TeamRepository.loadTeamToolMakers(team)
+        if(team!=null) {
+            TeamRepository.loadTeamToolMakers(team)
+//            if(UserRepository.me(team.ownerId)){
+//                viewModel.editable.value = true
+//            }
+        }
+//        else viewModel.editable.value = true
+        viewModel.editable.value = editable
+//        if(viewModel.editable.value)selectedToolMakers?.forEach {
+//            viewModel.selectToolMaker(true,it)
+//        }
     }
+    val currentTeam by viewModel.currentTeam.collectAsState()
+    val sharedToolMakers  by viewModel.sharedToolMakers.collectAsState()
+    val toolMakers by viewModel.toolMakers.collectAsState()
+    val editable by viewModel.editable.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
+
     Card(modifier = modifier) {
         currentTeam?.let { team ->
             StudioActionBar(
@@ -192,10 +203,14 @@ fun SharedMCPServerListView(
             }
             LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(toolMakers){ t1->
+                    val selected = selectedToolMakers?.let{ selectedToolMakers->
+                        selectedToolMakers.find { maker -> maker.id == t1.id }!=null
+//                            t1.id==toolMaker.id
+                    }?:false
                     SharedMCPServerView(
                         t1,
-                        expanded||toolMaker?.let{t1.id==toolMaker.id}?:false,
-                        if(editable) t1.id in sharedToolMakers else null,
+                        expanded||selected,
+                        if(editable) selected||t1.id in sharedToolMakers else null,
                         Modifier.fillMaxWidth()
                     ){ selected->
                         viewModel.selectToolMaker(selected,t1)
