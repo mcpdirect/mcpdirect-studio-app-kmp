@@ -54,7 +54,7 @@ fun TeamScreen(
     Row(Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),) {
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-            TeamListView(team,team==null) {
+            TeamListView(team,team==null,modifier = Modifier.fillMaxHeight()) {
                 viewModel.currentTeam(it)
             }
         }

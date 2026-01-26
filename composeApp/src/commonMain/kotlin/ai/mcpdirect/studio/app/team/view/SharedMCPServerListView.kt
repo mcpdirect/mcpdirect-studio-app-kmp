@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -35,6 +36,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.close
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
 import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
+import mcpdirectstudioapp.composeapp.generated.resources.shield_toggle
 import org.jetbrains.compose.resources.painterResource
 import kotlin.collections.set
 import kotlin.collections.toList
@@ -86,13 +88,13 @@ class SharedMCPServerListViewModel: ViewModel() {
 //        started = SharingStarted.WhileSubscribed(5000),
 //        initialValue = emptyList()
 //    )
-    val editable = MutableStateFlow(false)
+    val grantable = MutableStateFlow(false)
     val toolMakerFilter = MutableStateFlow("")
     val toolMakers: StateFlow<List<AIPortToolMaker>> = combine(
         ToolRepository.toolMakers,
         sharedToolMakers,
         toolMakerFilter,
-        editable
+        grantable
     ) { makers,sharedToolMakers, toolMakerFilter,editable -> makers.values.filter { maker->
         if(editable)
             UserRepository.me(maker.userId)&&(toolMakerFilter.isEmpty()||maker.name.contains(toolMakerFilter,ignoreCase = true))
@@ -128,7 +130,7 @@ class SharedMCPServerListViewModel: ViewModel() {
                         team, teamToolMakerCandidates.values.toList()
                     ){
                         if(it.successful()) it.data?.let {
-                            editable.value = false
+                            grantable.value = false
                             teamToolMakerCandidates.clear()
                             generalViewModel.showSnackbar("${team.name} update successfully")
                         } else {
@@ -158,7 +160,7 @@ fun SharedMCPServerListView(
 //            }
         }
 //        else viewModel.editable.value = true
-        viewModel.editable.value = editable
+        viewModel.grantable.value = editable
 //        if(viewModel.editable.value)selectedToolMakers?.forEach {
 //            viewModel.selectToolMaker(true,it)
 //        }
@@ -166,7 +168,7 @@ fun SharedMCPServerListView(
     val currentTeam by viewModel.currentTeam.collectAsState()
     val sharedToolMakers  by viewModel.sharedToolMakers.collectAsState()
     val toolMakers by viewModel.toolMakers.collectAsState()
-    val editable by viewModel.editable.collectAsState()
+    val grantable by viewModel.grantable.collectAsState()
     var expanded by remember { mutableStateOf(false) }
 
     Card(modifier = modifier) {
@@ -175,11 +177,11 @@ fun SharedMCPServerListView(
                 "Shared MCP Servers (${sharedToolMakers.size}) with ${team.name ?: ""}"
             ){
                 IconButton(
-                    onClick = { viewModel.editable.value = !editable },
+                    onClick = { viewModel.grantable.value = !grantable },
                     modifier = Modifier.size(32.dp)
                 ){
                     Icon(painterResource(
-                        if(editable) Res.drawable.close else Res.drawable.edit
+                        if(grantable) Res.drawable.close else Res.drawable.shield_toggle
                     ),contentDescription = null, Modifier.size(20.dp))
                 }
                 IconButton(
@@ -195,7 +197,7 @@ fun SharedMCPServerListView(
                     viewModel.toolMakerFilter.value = it
                 }
                 Spacer(Modifier.size(8.dp))
-                if(editable) Button(
+                if(grantable) Button(
                     modifier = Modifier.height(40.dp),
                     onClick = { viewModel.saveTeamToolMakers() }){
                     Text("Save")
@@ -210,7 +212,7 @@ fun SharedMCPServerListView(
                     SharedMCPServerView(
                         t1,
                         expanded||selected,
-                        if(editable) selected||t1.id in sharedToolMakers else null,
+                        if(grantable) selected||t1.id in sharedToolMakers else null,
                         Modifier.fillMaxWidth()
                     ){ selected->
                         viewModel.selectToolMaker(selected,t1)

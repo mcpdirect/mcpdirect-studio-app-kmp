@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.key.component
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioListItem
+import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
+import mcpdirectstudioapp.composeapp.generated.resources.edit
 import org.jetbrains.compose.resources.painterResource
 
 class MCPdirectKeysComponentViewModel : ViewModel() {
@@ -78,7 +80,15 @@ fun MCPdirectKeysComponent(
     ){
         Column(modifier) {
             if(!showGenerateKeyView){
-                StudioActionBar("MCPdirect Keys")
+                StudioActionBar("MCPdirect Keys"){
+                    TooltipIconButton(
+                        "Edit MCPdirect Key Name",
+                        onClick = {},
+                        modifier = Modifier.size(32.dp)
+                    ){
+                        Icon(painterResource(Res.drawable.edit),contentDescription = null,Modifier.size(20.dp))
+                    }
+                }
                 HorizontalDivider()
                 LazyColumn {
                     items(accessKeys) { accessKey ->

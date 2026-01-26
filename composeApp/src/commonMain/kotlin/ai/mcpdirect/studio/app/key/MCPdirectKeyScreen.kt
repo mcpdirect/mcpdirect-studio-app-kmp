@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.key
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioSearchbar
+import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.key.component.AIAgentGuideComponent
 import ai.mcpdirect.studio.app.key.component.AIAgentListComponent
 import ai.mcpdirect.studio.app.key.component.MCPdirectKeysComponent
@@ -21,6 +22,7 @@ import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.arrow_back
 import mcpdirectstudioapp.composeapp.generated.resources.arrow_forward
 import mcpdirectstudioapp.composeapp.generated.resources.collapse_all
+import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.expand_all
 import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_left
 import mcpdirectstudioapp.composeapp.generated.resources.keyboard_arrow_right

@@ -2,6 +2,21 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced team and key management UI with improved functionality
+
+### Details
+- Added TooltipIconButton for editing MCPdirect key names in MCPdirectKeyScreen
+- Enhanced MCPdirectKeysComponent with edit functionality
+- Improved TeamScreen with proper modifier handling
+- Renamed editable to grantable in SharedMCPServerListView for better clarity
+- Enhanced SharedMCPServerListView with shield toggle icon for grant functionality
+- Improved TeamListView with better UI layout and create team functionality
+- Added floating action button for team creation in TeamListView
+- Enhanced UI with better icons and improved user experience
+- Improved code clarity with better variable naming
+
+## [January 20, 2026]
+### Summary
 Cleaned up unused imports and improved code clarity in SharedMCPServerView
 
 ### Details
