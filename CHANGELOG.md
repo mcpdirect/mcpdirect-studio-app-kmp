@@ -2,6 +2,20 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced dialog management and improved UI components
+
+### Details
+- Added ToolAgentScreenDialog enum for better dialog management
+- Enhanced ToolAgentScreen with proper dialog state handling
+- Improved ShortcutWidget with dropdown menu for AI agent integration
+- Added access key selection in AI agent integration dropdown
+- Enhanced TeamScreen with nullable parameters
+- Improved TeamMemberView with TooltipIconButton for invite functionality
+- Enhanced UI with proper dialog state management and improved user experience
+- Added dropdown menu for selecting access keys in AI agent integration
+
+## [January 20, 2026]
+### Summary
 Major refactoring with new component architecture and UI improvements
 
 ### Details

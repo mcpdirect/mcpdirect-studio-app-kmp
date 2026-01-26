@@ -10,6 +10,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository.tools
+import ai.mcpdirect.studio.app.team.TeamScreen
 import ai.mcpdirect.studio.app.tips.ConnectMCPView
 import ai.mcpdirect.studio.app.tips.GenerateMCPdirectKeyView
 import ai.mcpdirect.studio.app.tips.QuickStartViewModel
@@ -22,7 +23,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
+enum class ToolAgentScreenDialog{
+    None,
+    GrantToMCPdirectKeys,
+    ShareToMCPTeams
+}
 @Composable
 fun ToolAgentScreen(
     toolAgent: AIPortToolAgent?,
@@ -30,7 +35,7 @@ fun ToolAgentScreen(
     paddingValues: PaddingValues = PaddingValues()
 ){
     val viewModel by remember { mutableStateOf(ToolAgentComponentViewModel()) }
-    var showMCPdirectKeysDialog by remember { mutableStateOf(false) }
+    var dialog by remember { mutableStateOf(ToolAgentScreenDialog.None) }
     val showCatalog =
         if(toolAgent==null&&toolMaker==null) 0
         else if(toolMaker!=null&&toolMaker.id<Int.MAX_VALUE) toolMaker.id
@@ -56,7 +61,7 @@ fun ToolAgentScreen(
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(horizontal = 8.dp),
                             onClick = {
-                                showMCPdirectKeysDialog = true
+                                dialog = ToolAgentScreenDialog.GrantToMCPdirectKeys
                             }) {
                             Text("Grant to MCPdirect Keys", fontWeight = FontWeight.Bold)
                         }
@@ -64,6 +69,7 @@ fun ToolAgentScreen(
                             modifier = Modifier.height(32.dp),
                             contentPadding = PaddingValues(horizontal = 8.dp),
                             onClick = {
+                                dialog = ToolAgentScreenDialog.ShareToMCPTeams
                             }) {
                             Text("Share to MCP Teams", fontWeight = FontWeight.Bold)
                         }
@@ -83,10 +89,11 @@ fun ToolAgentScreen(
         viewModel,
         showCatalog
     )
-    if(showMCPdirectKeysDialog){
-        BlankDialog(
+    when(dialog){
+        ToolAgentScreenDialog.None->{}
+        ToolAgentScreenDialog.GrantToMCPdirectKeys ->BlankDialog(
             "Grant to MCPdirect key",
-            {showMCPdirectKeysDialog = false},
+            {dialog = ToolAgentScreenDialog.None},
         ) { paddingValues ->
             var enableGrant by remember { mutableStateOf(false)}
             var selectedAccessKey by remember { mutableStateOf<AIPortToolAccessKey?>(null)}
@@ -108,13 +115,19 @@ fun ToolAgentScreen(
                         enabled = enableGrant,
                         onClick = {
                             viewModel.grantToolPermissions(selectedAccessKey!!,selectedTools)
-                            showMCPdirectKeysDialog = false
+                            dialog = ToolAgentScreenDialog.None
                         }
                     ){
                         Text("Grant");
                     }
                 }
             }
+        }
+        ToolAgentScreenDialog.ShareToMCPTeams ->BlankDialog(
+            "Share to MCP Teams",
+            {dialog = ToolAgentScreenDialog.None},
+        ) { paddingValues ->
+            TeamScreen(paddingValues=paddingValues)
         }
     }
 }

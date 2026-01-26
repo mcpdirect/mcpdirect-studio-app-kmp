@@ -2,6 +2,7 @@ package ai.mcpdirect.studio.app.team.view
 
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.Tag
+import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
@@ -132,8 +133,10 @@ fun TeamMemberView(
                 }
             }else {
                 StudioActionBar("Team Members (${viewModel.teamMembers.size})") {
-                    if(teamOwner)IconButton(
-                        onClick = { invite = true },
+                    TooltipIconButton(
+                       tooltip = if(teamOwner)"Invite" else "Only for team owner",
+                        onClick = {invite = true},
+                        enabled = teamOwner,
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(

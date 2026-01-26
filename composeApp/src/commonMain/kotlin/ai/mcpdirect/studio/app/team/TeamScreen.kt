@@ -40,8 +40,8 @@ class TeamScreenViewModel : ViewModel() {
 }
 @Composable
 fun TeamScreen(
-    team: AIPortTeam?,
-    toolMaker: AIPortToolMaker?,
+    team: AIPortTeam?=null,
+    toolMaker: AIPortToolMaker?=null,
     paddingValues: PaddingValues
 ){
     val viewModel by remember { mutableStateOf(TeamScreenViewModel()) }
