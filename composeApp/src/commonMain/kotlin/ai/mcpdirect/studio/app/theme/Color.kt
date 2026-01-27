@@ -229,10 +229,10 @@ val AppCardColors: CardColors
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
     )
 
-val greenLight = Color(0xFF7E04B2)
+val greenLight = Color(0xFF7008E6B)
 val onGreenLight = Color(0xFFFFFFFF)
-val greenContainerLight = Color(0xFF9932CC)
-val onGreenContainerLight = Color(0xFFF8DDFF)
+val greenContainerLight = Color(0xFF46B065)
+val onGreenContainerLight = Color(0xFFFFFFFF)
 
 // Light Mode variants
 val LightSuccess = Color(0xFF2E7D32)
