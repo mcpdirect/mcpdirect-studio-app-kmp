@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.Tag
+import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
 import ai.mcpdirect.studio.app.mcp.openapi.ConfigOpenAPIServerView
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
@@ -79,6 +80,7 @@ import kotlinx.coroutines.launch
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.check
 import mcpdirectstudioapp.composeapp.generated.resources.design_services
+import mcpdirectstudioapp.composeapp.generated.resources.edit
 import mcpdirectstudioapp.composeapp.generated.resources.error
 import mcpdirectstudioapp.composeapp.generated.resources.inbox_empty
 import mcpdirectstudioapp.composeapp.generated.resources.mobiledata_off
@@ -398,39 +400,43 @@ fun ToolAgentSelectionMenu(
             ) {
 //                val optionCount = options.size
                 toolAgents.forEachIndexed { index, option ->
-                    DropdownMenuItem(
-//                    shapes = MenuDefaults.itemShape(index, optionCount),
-                        text = {
-                            BadgedBox(
-                                badge = {
-                                    if (option.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
-                                        Text(
-                                            "This device",
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                    }
-                                }
-                            ) {
-                                Text(
-                                    option.name, softWrap = false,
-                                    overflow = TextOverflow.MiddleEllipsis
-                                )
-                            }
-//                            Text(option.name, style = MaterialTheme.typography.bodyLarge)
-                        },
-//                    selected = index == checkedIndex,
-                        onClick = {
-//                            textFieldState.setTextAndPlaceCursorAtEnd(option.name)
+                    if (option.id > 0L && UserRepository.me(option.userId)) {
+                        if(currentToolAgent.id == option.id) {
                             checkedIndex = index
-                            expanded = false
-                            viewModel.currentToolAgent(option)
-                        },
-                        leadingIcon = {
-                            if(checkedIndex == index)
-                                Icon(painterResource(Res.drawable.check), contentDescription = null)
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                    )
+                        }
+                        DropdownMenuItem(
+                            contentPadding = PaddingValues(horizontal = 12.dp),
+                            text = {
+                                BadgedBox(
+                                    badge = {
+                                        if (option.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
+                                            Text(
+                                                "This device",
+                                                fontWeight = FontWeight.Bold,
+                                            )
+                                        }
+                                    }
+                                ) {
+                                    Text(
+                                        option.name, softWrap = false,
+                                        overflow = TextOverflow.MiddleEllipsis
+                                    )
+                                }
+//                            Text(option.name, style = MaterialTheme.typography.bodyLarge)
+                            },
+//                    selected = index == checkedIndex,
+                            onClick = {
+//                            textFieldState.setTextAndPlaceCursorAtEnd(option.name)
+                                checkedIndex = index
+                                expanded = false
+                                viewModel.currentToolAgent(option)
+                            },
+                            leadingIcon = {
+                                if (checkedIndex == index)
+                                    Icon(painterResource(Res.drawable.check), contentDescription = null)
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -468,7 +474,7 @@ fun ToolAgentComponent(
                         )
                     }
                 }
-                ToolAgentSelectionMenu(viewModel, Modifier.padding(16.dp,8.dp))
+                ToolAgentSelectionMenu(viewModel, Modifier.padding(horizontal = 16.dp))
                 if (toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {
                     Icon(
                         painterResource(Res.drawable.inbox_empty),
@@ -478,7 +484,7 @@ fun ToolAgentComponent(
                     Text("No MCP server installed.")
                     Text("Install one from MCP catalog.")
                 } else LazyColumn(
-                    Modifier.weight(1f).padding(horizontal = 16.dp),
+                    Modifier.weight(1f).padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(toolMakers) { toolMaker ->
@@ -489,7 +495,18 @@ fun ToolAgentComponent(
                                 viewModel.currentToolMaker(toolMaker)
                             },
                             headlineContent = {
-                                Text(toolMaker.name)
+                                Row {
+                                    Text(toolMaker.name)
+                                    TooltipIconButton(
+                                        "Edit MCP server name",
+                                        onClick = {
+
+                                        },
+                                        modifier = Modifier.size(24.dp)
+                                    ){
+                                        Icon(painterResource(Res.drawable.edit),contentDescription = null,Modifier.size(16.dp))
+                                    }
+                                }
                             },
                             trailingContent = {
                                 if (toolMaker.status == STATUS_OFF) Icon(
