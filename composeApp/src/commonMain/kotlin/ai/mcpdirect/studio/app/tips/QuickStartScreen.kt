@@ -24,6 +24,7 @@ import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker.Companion.STATUS_WAI
 import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.ToolRepository
+import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.tool.ToolDetails
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -35,6 +36,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -179,7 +181,7 @@ fun ConnectMCPView(
                         )
                     }
                 }
-                ToolAgentSelectionMenu(viewModel, Modifier.padding(16.dp,8.dp))
+                ToolAgentSelectionMenu(viewModel, Modifier.padding(horizontal = 16.dp))
                 if (toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {
                     Icon(
                         painterResource(Res.drawable.inbox_empty),
@@ -188,11 +190,14 @@ fun ConnectMCPView(
                     )
                     Text("No MCP server installed.")
                     Text("Install one from MCP catalog.")
-                } else LazyColumn(Modifier.weight(1f)) {
+                } else LazyColumn(
+                    Modifier.weight(1f).padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
                     items(toolMakers) { toolMaker ->
-                        StudioListItem(
+                        ListButton(
                             selected = currentToolMaker?.id == toolMaker.id,
-                            modifier = Modifier.clickable {
+                            onClick = {
                                 action = ConnectMCPViewAction.MAIN
                                 viewModel.currentToolMaker(toolMaker)
                             },
@@ -226,19 +231,23 @@ fun ConnectMCPView(
                             },
                             supportingContent = {
                                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    when (toolMaker) {
-                                        is MCPServer -> {
-                                            if (toolMaker.transport == 0) {
-                                                Tag("STDIO")
-                                            } else if (toolMaker.transport == 1) {
-                                                Tag("SSE")
-                                            } else if (toolMaker.transport == 2) {
-                                                Tag("HTTP")
+                                    Badge(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    ) {
+                                        when (toolMaker) {
+                                            is MCPServer -> {
+                                                if (toolMaker.transport == 0) {
+                                                    Text("STDIO")
+                                                } else if (toolMaker.transport == 1) {
+                                                    Text("SSE")
+                                                } else if (toolMaker.transport == 2) {
+                                                    Text("HTTP")
+                                                }
                                             }
-                                        }
-
-                                        is OpenAPIServer -> {
-                                            Tag("OpenAPI")
+                                            is OpenAPIServer -> {
+                                                Text("OpenAPI")
+                                            }
                                         }
                                     }
                                 }
@@ -263,28 +272,31 @@ fun ConnectMCPView(
                     }
                 }
 //                    HorizontalDivider()
-                ToolAgentSelectionMenu(viewModel, Modifier.padding(16.dp,8.dp))
-                LazyColumn(Modifier.weight(1f)){
+                ToolAgentSelectionMenu(viewModel, Modifier.padding(horizontal = 16.dp))
+                LazyColumn(
+                    Modifier.weight(1f).padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ){
                     items(mcpServerCatalog) { mcpServer ->
                         if (mcpServer.id <100) {
                             when(mcpServer.id){
-                                0L -> StudioListItem(
+                                0L -> ListButton(
                                     selected = currentMCPTemplate.id==mcpServer.id,
                                     headlineContent = { Text("MCP Server") },
-                                    modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
+                                    onClick = {currentMCPTemplate = mcpServer }
                                 )
-                                1L -> StudioListItem(
+                                1L -> ListButton(
                                     selected =
                                         currentMCPTemplate.id==mcpServer.id,
                                     headlineContent = { Text("OpenAPI") },
-                                    modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
+                                    onClick = {currentMCPTemplate = mcpServer }
                                 )
                                 -1L -> HorizontalDivider()
                             }
-                        }else StudioListItem(
+                        }else ListButton(
                             selected = currentMCPTemplate.id==mcpServer.id,
                             headlineContent = { Text(mcpServer.name) },
-                            modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
+                            onClick = {currentMCPTemplate = mcpServer }
                         )
                     }
                 }
@@ -458,39 +470,43 @@ fun ToolAgentSelectionMenu(
             ) {
 //                val optionCount = options.size
                 toolAgents.forEachIndexed { index, option ->
-                    DropdownMenuItem(
-//                    shapes = MenuDefaults.itemShape(index, optionCount),
-                        text = {
-                            BadgedBox(
-                                badge = {
-                                    if (option.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
-                                        Text(
-                                            "This device",
-                                            fontWeight = FontWeight.Bold,
-                                        )
+                    if (option.id > 0L && UserRepository.me(option.userId)) {
+                        if (currentToolAgent.id == option.id) {
+                            checkedIndex = index
+                        }
+                        DropdownMenuItem(
+                            contentPadding = PaddingValues(horizontal = 12.dp),
+                            text = {
+                                BadgedBox(
+                                    badge = {
+                                        if (option.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
+                                            Text(
+                                                "This device",
+                                                fontWeight = FontWeight.Bold,
+                                            )
+                                        }
                                     }
+                                ) {
+                                    Text(
+                                        option.name, softWrap = false,
+                                        overflow = TextOverflow.MiddleEllipsis
+                                    )
                                 }
-                            ) {
-                                Text(
-                                    option.name, softWrap = false,
-                                    overflow = TextOverflow.MiddleEllipsis
-                                )
-                            }
 //                            Text(option.name, style = MaterialTheme.typography.bodyLarge)
                             },
 //                    selected = index == checkedIndex,
-                        onClick = {
+                            onClick = {
 //                            textFieldState.setTextAndPlaceCursorAtEnd(option.name)
-                            checkedIndex = index
-                            expanded = false
-                            viewModel.currentToolAgent(option)
-                        },
-                    leadingIcon = {
-                        if(checkedIndex == index)
-                        Icon(painterResource(Res.drawable.check), contentDescription = null)
-                                  },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                    )
+                                checkedIndex = index
+                                expanded = false
+                                viewModel.currentToolAgent(option)
+                            },
+                            leadingIcon = {
+                                if (checkedIndex == index)
+                                    Icon(painterResource(Res.drawable.check), contentDescription = null)
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -517,29 +533,15 @@ fun MCPServerMainView(
         }
     }else Column(modifier) {
         Row(
-            Modifier.padding(start = 16.dp, end = 4.dp),
+            Modifier.padding(start = 16.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(toolMaker.name, style = MaterialTheme.typography.titleSmall)
+            Icon(
+                painterResource(Res.drawable.plug_connect), contentDescription = "", Modifier.size(24.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(toolMaker.name, fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1f))
-            TooltipIconButton("Remove", onClick = {
-                viewModel.removeToolMaker(toolMaker)
-            }){
-                Icon(
-                    painterResource(Res.drawable.delete), contentDescription = "",
-                    Modifier.size(24.dp), tint = MaterialTheme.colorScheme.error
-                )
-            }
-            TooltipIconButton("Restart",onClick = {
-                viewModel.modifyToolMakerStatus(
-                    toolMaker, 1
-                )
-            }) {
-                Icon(
-                    painterResource(Res.drawable.restart_alt), contentDescription = "",
-                    Modifier.size(24.dp), tint = MaterialTheme.colorScheme.primary
-                )
-            }
             TooltipIconButton("Configure",onClick = {
                 if (toolMaker.templateId > 0) {
                     if (toolMaker.mcp()) onActionChange(ConnectMCPViewAction.CONFIG_MCP_TEMPLATE)
@@ -549,6 +551,38 @@ fun MCPServerMainView(
                 Icon(
                     painterResource(Res.drawable.setting_config), contentDescription = "",
                     Modifier.size(24.dp)
+                )
+            }
+            TooltipIconButton("Remove", onClick = {
+                viewModel.removeToolMaker(toolMaker)
+            }){
+                Icon(
+                    painterResource(Res.drawable.delete), contentDescription = "",
+                    Modifier.size(24.dp), tint = MaterialTheme.colorScheme.error
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(width = 36.dp, height = 22.dp) // Manually adjusted size
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                var checked by remember { mutableStateOf(toolMaker.status>0) }
+                Switch(
+                    checked = checked,
+                    onCheckedChange = {
+                        viewModel.modifyToolMakerStatus(
+                            toolMaker, if(it) 1 else 0
+                        ){
+                            if(it.successful()) it.data?.let { data ->
+                                checked = data.status>0
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .scale(0.6f)
+                    // Remove default touch padding if it interferes with your layout
+                    // (Optional, use with caution for accessibility)
                 )
             }
         }

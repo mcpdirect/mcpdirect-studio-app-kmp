@@ -527,27 +527,30 @@ fun ToolAgentComponent(
                 }
 //                    HorizontalDivider()
                 ToolAgentSelectionMenu(viewModel, Modifier.padding(horizontal = 16.dp))
-                LazyColumn(Modifier.weight(1f)){
+                LazyColumn(
+                    Modifier.weight(1f).padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
                     items(mcpServerCatalog) { mcpServer ->
                         if (mcpServer.id <100) {
                             when(mcpServer.id){
-                                0L -> StudioListItem(
+                                0L -> ListButton(
                                     selected = currentMCPTemplate.id==mcpServer.id,
                                     headlineContent = { Text("MCP Server") },
-                                    modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
+                                    onClick =  {currentMCPTemplate = mcpServer }
                                 )
-                                1L -> StudioListItem(
+                                1L -> ListButton(
                                     selected =
                                         currentMCPTemplate.id==mcpServer.id,
                                     headlineContent = { Text("OpenAPI") },
-                                    modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
+                                    onClick =  {currentMCPTemplate = mcpServer }
                                 )
                                 -1L -> HorizontalDivider()
                             }
-                        }else StudioListItem(
+                        }else ListButton(
                             selected = currentMCPTemplate.id==mcpServer.id,
                             headlineContent = { Text(mcpServer.name) },
-                            modifier = Modifier.clickable {currentMCPTemplate = mcpServer }
+                            onClick =  {currentMCPTemplate = mcpServer }
                         )
                     }
                 }

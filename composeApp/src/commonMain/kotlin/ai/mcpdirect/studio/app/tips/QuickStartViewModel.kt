@@ -200,7 +200,10 @@ class QuickStartViewModel: ViewModel() {
             }
         }
     }
-    fun modifyToolMakerStatus(maker: AIPortToolMaker,status: Int){
+    fun modifyToolMakerStatus(
+        maker: AIPortToolMaker,status: Int,
+        onResponse: (AIPortServiceResponse<AIPortToolMaker>) -> Unit
+    ){
         viewModelScope.launch {
             StudioRepository.modifyToolMakerStatus(currentToolAgent.value,maker,status){
                 if(it.successful()) it.data?.let{ data ->
@@ -208,6 +211,7 @@ class QuickStartViewModel: ViewModel() {
                         if(it.id==data.id) currentToolMaker(data)
                     }
                 }
+                onResponse(it)
             }
         }
     }
