@@ -10,7 +10,7 @@ root/
 - **Read every README.md first**
 - **Please generate change log and update CHANGELOG.md first**
 - **Ignore CHANGELOG.archived.md**
-- **Change log must include date, summary, detail.**
+- **Change log must include current date, summary, detail.**
 - **New log will be on the top of CHANGELOG.md file**
 - **Use change log summary as git commit message**
 - **change log must be committed**

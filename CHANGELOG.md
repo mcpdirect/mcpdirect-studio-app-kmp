@@ -2,6 +2,16 @@
 
 ## [January 20, 2026]
 ### Summary
+Updated QWEN.md instructions and added new color scheme
+
+### Details
+- Updated QWEN.md with clearer instructions about change log format
+- Added new green color scheme for UI components
+- Enhanced theme system with additional color options
+- Improved documentation clarity with better instruction wording
+
+## [January 20, 2026]
+### Summary
 Enhanced tool agent management with improved name editing functionality
 
 ### Details
