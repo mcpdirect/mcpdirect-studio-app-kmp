@@ -805,8 +805,10 @@ object StudioRepository {
         name: String? = null,
         tags: String? = null,
         status: Int? = null,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolAgent>) -> Unit
     ){
         loadMutex.withLock {
+            generalViewModel.loading()
             getPlatform().modifyToolAgent(toolAgent.id, name,tags,status){
                 if(it.successful()) it.data?.let { agent ->
                     _toolAgents.update { map ->
@@ -815,6 +817,10 @@ object StudioRepository {
                         }
                     }
                 }
+                generalViewModel.loaded(
+                    "Modify MCPdirect Studio #${toolAgent.name}",it.code,it.message
+                )
+                onResponse(it)
             }
         }
     }

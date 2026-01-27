@@ -5,6 +5,7 @@ import ai.mcpdirect.studio.app.compose.ListButton
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioListItem
+import ai.mcpdirect.studio.app.compose.TooltipIconButton
 import ai.mcpdirect.studio.app.mcp.ConfigMCPServerView
 import ai.mcpdirect.studio.app.mcp.openapi.ConfigOpenAPIServerView
 import ai.mcpdirect.studio.app.model.*
@@ -16,14 +17,24 @@ import ai.mcpdirect.studio.app.model.repository.StudioRepository
 import ai.mcpdirect.studio.app.model.repository.UserRepository
 import ai.mcpdirect.studio.app.tips.ConnectMCPViewAction
 import ai.mcpdirect.studio.app.tips.mcpServerCatalog
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -266,7 +277,108 @@ class ToolAgentComponentViewModel: ViewModel() {
             }
         }
     }
+    fun modifyToolAgent(
+        toolAgent: AIPortToolAgent,name:String,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolAgent>) -> Unit
+    ){
+        viewModelScope.launch {
+            StudioRepository.modifyToolAgent(toolAgent,name){
+                if(it.successful()) it.data?.let{ data ->
+                    _currentToolAgent.value = data
+                }
+                onResponse(it)
+            }
+        }
+    }
 }
+@Composable
+fun ToolAgentNameEditor(
+    name:String,
+    modifier: Modifier = Modifier,
+    onValueChange: (String) -> Unit,
+){
+    val focusRequester = remember { FocusRequester() }
+    var error by remember { mutableStateOf(true) }
+    var textFieldState by remember {
+        mutableStateOf(TextFieldValue(name))
+    }
+    Box(modifier = modifier) {
+        Row(
+            Modifier
+                .height(48.dp)
+//                .background(
+//                    MaterialTheme.colorScheme.surface,
+//                    ButtonDefaults.shape
+//                )
+//                .clip(ButtonDefaults.shape)
+                .border(
+                    ButtonDefaults.outlinedButtonBorder(),
+                    ButtonDefaults.shape
+                )
+                .padding(start = 16.dp, end = 8.dp)
+                .focusRequester(focusRequester),
+            verticalAlignment = Alignment.CenterVertically,
+        ){
+            Icon(painterResource(
+                Res.drawable.design_services),
+                contentDescription = "MCPdirect Studio"
+            )
+            BasicTextField(
+                modifier=Modifier
+                    .weight(1f)
+                    .padding(start=8.dp,end = 4.dp)
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            val text = textFieldState.text
+                            textFieldState = textFieldState.copy(
+                                selection = TextRange(text.length)
+                            )
+                        }
+                    },
+                value = textFieldState,
+                onValueChange = {
+                    if(it.text.length<31) {
+                        textFieldState = it
+                    }
+                    error = textFieldState.text.length>30
+                            ||textFieldState.text.isEmpty()
+                            ||textFieldState.text==name
+                },
+                singleLine = true
+            )
+            IconButton(
+                enabled = !error,
+                modifier = Modifier.size(32.dp),
+                onClick = {
+                    onValueChange(textFieldState.text)
+                }
+            ) {
+                Icon(
+                    painterResource(Res.drawable.save),
+                    contentDescription = "Save",
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            Spacer(Modifier.width(4.dp))
+            IconButton(
+                modifier = Modifier.size(32.dp),
+                onClick = {
+                    onValueChange("")
+                }
+            ) {
+                Icon(
+                    painterResource(Res.drawable.close),
+                    contentDescription = "Clear",
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToolAgentSelectionMenu(
@@ -276,13 +388,24 @@ fun ToolAgentSelectionMenu(
     val toolAgents by viewModel.toolAgents.collectAsState()
     val localToolAgent by StudioRepository.localToolAgent.collectAsState()
     val currentToolAgent by viewModel.currentToolAgent.collectAsState()
+    var editToolAgentName by remember { mutableStateOf(false) }
     LaunchedEffect(null){
         if (currentToolAgent.id < 1L && toolAgents.isNotEmpty()) {
             if(localToolAgent.id>0L) viewModel.currentToolAgent(localToolAgent)
             else viewModel.currentToolAgent(toolAgents[0])
         }
     }
-    if(toolAgents.isNotEmpty()){
+    if(editToolAgentName){
+        ToolAgentNameEditor(currentToolAgent.name,modifier) { name ->
+            if(name.isNotEmpty()){
+                viewModel.modifyToolAgent(currentToolAgent, name){
+                    if(it.successful()){
+                        editToolAgentName = false
+                    }
+                }
+            } else editToolAgentName = false
+        }
+    } else if(toolAgents.isNotEmpty()){
         var expanded by remember { mutableStateOf(false) }
         var checkedIndex: Int? by remember { mutableStateOf(null) }
         ExposedDropdownMenuBox(
@@ -302,7 +425,7 @@ fun ToolAgentSelectionMenu(
 //                colors = ExposedDropdownMenuDefaults.textFieldColors(),
 //            )
             OutlinedButton(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 4.dp),
                 onClick = {
                     expanded = !expanded
                 }
@@ -331,14 +454,22 @@ fun ToolAgentSelectionMenu(
 //                Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name,
 //                     fontWeight = FontWeight.Bold,)
                 Spacer(Modifier.weight(1f))
-//                TooltipIconButton(
-//                    "Edit MCPdirect Studio name" ,
-//                    onClick = {},
-//                    Modifier.size(32.dp)
-//                ){
-//                    Icon(painterResource(Res.drawable.edit), contentDescription = "", Modifier.size(20.dp))
-//                }
-                Icon(painterResource(Res.drawable.more), contentDescription = "")
+                TooltipIconButton(
+                    "Edit MCPdirect Studio name" ,
+                    onClick = { editToolAgentName = true },
+                    Modifier.size(32.dp)
+                ){
+                    Icon(painterResource(Res.drawable.edit), contentDescription = "", Modifier.size(20.dp))
+                }
+                Spacer(Modifier.width(8.dp))
+                TooltipIconButton(
+                    "Select MCPdirect Studio" ,
+                    onClick = { expanded = !expanded },
+                    Modifier.size(32.dp)
+                ){
+                    Icon(painterResource(Res.drawable.more), contentDescription = "", Modifier.size(20.dp))
+                }
+
             }
             ExposedDropdownMenu(
                 expanded = expanded,
