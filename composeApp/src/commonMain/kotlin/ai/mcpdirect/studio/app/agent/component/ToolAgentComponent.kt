@@ -234,7 +234,10 @@ class ToolAgentComponentViewModel: ViewModel() {
             }
         }
     }
-    fun modifyToolMakerStatus(maker: AIPortToolMaker,status: Int){
+    fun modifyToolMakerStatus(
+        maker: AIPortToolMaker,status: Int,
+        onResponse: (AIPortServiceResponse<AIPortToolMaker>) -> Unit
+    ){
         viewModelScope.launch {
             StudioRepository.modifyToolMakerStatus(currentToolAgent.value,maker,status){
                 if(it.successful()) it.data?.let{ data ->
@@ -242,6 +245,7 @@ class ToolAgentComponentViewModel: ViewModel() {
                         if(it.id==data.id) currentToolMaker(data)
                     }
                 }
+                onResponse(it)
             }
         }
     }
@@ -497,15 +501,15 @@ fun ToolAgentComponent(
                             headlineContent = {
                                 Row {
                                     Text(toolMaker.name)
-                                    TooltipIconButton(
-                                        "Edit MCP server name",
-                                        onClick = {
-
-                                        },
-                                        modifier = Modifier.size(24.dp)
-                                    ){
-                                        Icon(painterResource(Res.drawable.edit),contentDescription = null,Modifier.size(16.dp))
-                                    }
+//                                    TooltipIconButton(
+//                                        "Edit MCP server name",
+//                                        onClick = {
+//
+//                                        },
+//                                        modifier = Modifier.size(24.dp)
+//                                    ){
+//                                        Icon(painterResource(Res.drawable.edit),contentDescription = null,Modifier.size(16.dp))
+//                                    }
                                 }
                             },
                             trailingContent = {
@@ -578,7 +582,7 @@ fun ToolAgentComponent(
                     }
                 }
 //                    HorizontalDivider()
-                ToolAgentSelectionMenu(viewModel, Modifier.padding(16.dp,8.dp))
+                ToolAgentSelectionMenu(viewModel, Modifier.padding(horizontal = 16.dp))
                 LazyColumn(Modifier.weight(1f)){
                     items(mcpServerCatalog) { mcpServer ->
                         if (mcpServer.id <100) {

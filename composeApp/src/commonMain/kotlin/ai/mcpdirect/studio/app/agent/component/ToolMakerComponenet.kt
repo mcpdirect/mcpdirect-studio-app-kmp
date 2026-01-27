@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
@@ -37,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,12 +51,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.close
 import mcpdirectstudioapp.composeapp.generated.resources.delete
+import mcpdirectstudioapp.composeapp.generated.resources.plug_connect
 import mcpdirectstudioapp.composeapp.generated.resources.restart_alt
 import mcpdirectstudioapp.composeapp.generated.resources.setting_config
 import org.jetbrains.compose.resources.painterResource
@@ -78,29 +83,15 @@ fun ToolMakerComponent(
         }
     }else Column(modifier) {
         Row(
-            Modifier.padding(start = 16.dp, end = 4.dp),
+            Modifier.padding(start = 16.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(toolMaker.name, style = MaterialTheme.typography.titleSmall)
+            Icon(
+                painterResource(Res.drawable.plug_connect), contentDescription = "", Modifier.size(24.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(toolMaker.name, fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1f))
-            TooltipIconButton("Remove", onClick = {
-                viewModel.removeToolMaker(toolMaker)
-            }){
-                Icon(
-                    painterResource(Res.drawable.delete), contentDescription = "",
-                    Modifier.size(24.dp), tint = MaterialTheme.colorScheme.error
-                )
-            }
-            TooltipIconButton("Restart",onClick = {
-                viewModel.modifyToolMakerStatus(
-                    toolMaker, 1
-                )
-            }) {
-                Icon(
-                    painterResource(Res.drawable.restart_alt), contentDescription = "",
-                    Modifier.size(24.dp), tint = MaterialTheme.colorScheme.primary
-                )
-            }
             TooltipIconButton("Configure",onClick = {
                 if (toolMaker.templateId > 0) {
                     if (toolMaker.mcp()) onActionChange(ConnectMCPViewAction.CONFIG_MCP_TEMPLATE)
@@ -110,6 +101,38 @@ fun ToolMakerComponent(
                 Icon(
                     painterResource(Res.drawable.setting_config), contentDescription = "",
                     Modifier.size(24.dp)
+                )
+            }
+            TooltipIconButton("Remove", onClick = {
+                viewModel.removeToolMaker(toolMaker)
+            }){
+                Icon(
+                    painterResource(Res.drawable.delete), contentDescription = "",
+                    Modifier.size(24.dp), tint = MaterialTheme.colorScheme.error
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(width = 36.dp, height = 22.dp) // Manually adjusted size
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                var checked by remember { mutableStateOf(toolMaker.status>0) }
+                Switch(
+                    checked = checked,
+                    onCheckedChange = {
+                        viewModel.modifyToolMakerStatus(
+                            toolMaker, if(it) 1 else 0
+                        ){
+                            if(it.successful()) it.data?.let { data ->
+                                checked = data.status>0
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .scale(0.6f)
+                    // Remove default touch padding if it interferes with your layout
+                    // (Optional, use with caution for accessibility)
                 )
             }
         }
