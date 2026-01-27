@@ -249,15 +249,15 @@ data class AppColorScheme(
 )
 
 val appColorSchemeLight = AppColorScheme(
-    green = onGreenLight,
+    green = greenLight,
     onGreen = onGreenLight,
-    greenContainer = onGreenContainerLight,
+    greenContainer = greenContainerLight,
     onGreenContainer = onGreenContainerLight,
 )
 val appColorSchemeDark = AppColorScheme(
-    green = onGreenDark,
+    green = greenDark,
     onGreen = onGreenDark,
-    greenContainer = onGreenContainerDark,
+    greenContainer = greenContainerDark,
     onGreenContainer = onGreenContainerDark,
 )
 
