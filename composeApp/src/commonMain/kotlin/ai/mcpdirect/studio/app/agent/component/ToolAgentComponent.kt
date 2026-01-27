@@ -477,7 +477,10 @@ fun ToolAgentComponent(
                     )
                     Text("No MCP server installed.")
                     Text("Install one from MCP catalog.")
-                } else LazyColumn(Modifier.weight(1f)) {
+                } else LazyColumn(
+                    Modifier.weight(1f).padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
                     items(toolMakers) { toolMaker ->
                         ListButton(
                             selected = currentToolMaker?.id == toolMaker.id,
