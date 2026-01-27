@@ -3,11 +3,12 @@ package ai.mcpdirect.studio.app.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
-
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 
@@ -240,16 +241,14 @@ private val highContrastDarkColorScheme = darkColorScheme(
 )
 
 @Immutable
-data class ColorFamily(
-    val color: Color,
-    val onColor: Color,
-    val colorContainer: Color,
-    val onColorContainer: Color
+data class AppColorScheme(
+    val success: Color,
+    val warning: Color
 )
 
-val unspecified_scheme = ColorFamily(
-    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
-)
+val AppColors = staticCompositionLocalOf {
+    AppColorScheme(success = Color.Unspecified, warning = Color.Unspecified)
+}
 
 @Composable
 fun AppTheme(
@@ -257,19 +256,43 @@ fun AppTheme(
     typography: Typography? = null,
     content: @Composable() () -> Unit
 ) {
-  val colorScheme = when {
+    // Select custom palette based on the theme
+    val appColors = if (darkTheme) {
+        AppColorScheme(success = DarkSuccess, warning = DarkWarning)
+    } else {
+        AppColorScheme(success = LightSuccess, warning = LightWarning)
+    }
+
+    val colorScheme = when {
 //      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
 //          val context = LocalContext.current
 //          if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
 //      }
-      
-      darkTheme -> darkScheme
-      else -> lightScheme
-  }
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = typography ?: AppTypography,
-    content = content
-  )
-}
 
+        darkTheme -> darkScheme
+        else -> lightScheme
+    }
+    CompositionLocalProvider(AppColors provides appColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = typography ?: AppTypography,
+            content = content
+        )
+    }
+//    MaterialTheme(
+//        colorScheme = colorScheme,
+//        typography = typography ?: AppTypography,
+//        content = content
+//    )
+}
+//@Composable
+//fun StatusBadge() {
+//    Card(
+//        // This will automatically be DarkSuccess or LightSuccess
+//        colors = CardDefaults.cardColors(
+//            containerColor = LocalCustomColors.current.success
+//        )
+//    ) {
+//        Text("Active", modifier = Modifier.padding(8.dp))
+//    }
+//}

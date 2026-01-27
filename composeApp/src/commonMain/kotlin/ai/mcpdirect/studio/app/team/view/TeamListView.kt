@@ -131,7 +131,7 @@ fun TeamListView(
                 }
 //                HorizontalDivider()
                 LazyColumn(
-                    Modifier.padding(16.dp),
+                    Modifier.padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(teams) { team ->

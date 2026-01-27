@@ -228,3 +228,11 @@ val AppCardColors: CardColors
         containerColor = MaterialTheme.colorScheme.secondaryContainer,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
     )
+
+// Light Mode variants
+val LightSuccess = Color(0xFF2E7D32)
+val LightWarning = Color(0xFFED6C02)
+
+// Dark Mode variants
+val DarkSuccess = Color(0xFF81C784)
+val DarkWarning = Color(0xFFFFB74D)

@@ -103,7 +103,10 @@ fun MCPdirectKeysComponent(
 //                    }
                 }
 //                HorizontalDivider()
-                LazyColumn(Modifier.padding(horizontal = 16.dp)) {
+                LazyColumn(
+                    Modifier.padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
                     items(accessKeys) { accessKey ->
                         val selected = currentAccessKey?.id == accessKey.id
                         ListButton(
