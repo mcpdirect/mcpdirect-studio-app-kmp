@@ -158,28 +158,23 @@ fun TeamMemberView(
                                 else Text(it.account)
                             },
                             supportingContent = {
-                                Box(
-                                    Modifier.border(
-                                        width = 1.dp,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                                        shape = RoundedCornerShape(8.dp)
-                                    )
-                                ) {
-                                    if (it.expirationDate < 0L) Tag(
-                                        "waiting for acceptance",
-                                        toggleColor = MaterialTheme.colorScheme.error,
-                                    ) else if (it.status == 0) Tag(
-                                        "inactive",
-                                        toggleColor = MaterialTheme.colorScheme.error,
-                                    ) else Tag(
-                                        "active",
+                                Badge(
+                                    containerColor =
+                                        if (it.expirationDate < 0L||it.status == 0) MaterialTheme.colorScheme.errorContainer
+                                        else MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor =
+                                        if (it.expirationDate < 0L||it.status == 0) MaterialTheme.colorScheme.onErrorContainer
+                                        else MaterialTheme.colorScheme.onPrimaryContainer,
+                                )  {
+                                    Text (
+                                        if (it.expirationDate < 0L) "waiting for acceptance"
+                                        else if (it.status == 0) "inactive"
+                                        else "active"
                                     )
                                 }
                             },
                             trailingContent = {
-                                if (teamOwner) {
-
-                                } else if (me && it.expirationDate < 0) {
+                                if (me && it.expirationDate < 0) {
                                     Button(
                                         onClick = { viewModel.acceptMCPTeamMember(team, myId) }
                                     ) {

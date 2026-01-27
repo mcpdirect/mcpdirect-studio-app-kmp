@@ -1,9 +1,11 @@
 package ai.mcpdirect.studio.app.team.view
 
+import ai.mcpdirect.studio.app.compose.ListButton
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
+import ai.mcpdirect.studio.app.compose.TooltipText
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
@@ -135,31 +137,60 @@ fun TeamListView(
                 LazyColumn {
                     items(teams) { team ->
                         val selected = currentTeam?.id == team.id
-                        StudioListItem(
-                            modifier = Modifier.clickable {
+                        ListButton(
+                            selected = selected,
+                            headlineContent = { Text(team.name) },
+                            onClick = {
                                 currentTeam = team
                                 onTeamChange(team)
                             },
-                            selected = selected,
-                            headlineContent = { Text(team.name) },
                             supportingContent = {
-                                Row {
+                                Badge(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                )  {
                                     Icon(
                                         painterResource(Res.drawable.person),
                                         contentDescription = null,
                                         Modifier.size(16.dp)
                                     )
                                     if (UserRepository.me(team.ownerId))
-                                        Text("Me", style = MaterialTheme.typography.bodySmall)
+                                        Text("Me")
                                     else if (team.ownerName.lowercase() == "anonymous")
-                                        Text(team.ownerName, style = MaterialTheme.typography.bodySmall)
-                                    else Text(
-                                        "${team.ownerName} (${team.ownerAccount})",
-                                        style = MaterialTheme.typography.bodySmall
+                                        Text(team.ownerName)
+                                    else TooltipText(
+                                        team.ownerName,
+                                        team.ownerAccount
                                     )
                                 }
                             },
                         )
+//                        StudioListItem(
+//                            modifier = Modifier.clickable {
+//                                currentTeam = team
+//                                onTeamChange(team)
+//                            },
+//                            selected = selected,
+//                            headlineContent = { Text(team.name) },
+//                            supportingContent = {
+//                                Row {
+//                                    Icon(
+//                                        painterResource(Res.drawable.person),
+//                                        contentDescription = null,
+//                                        Modifier.size(16.dp)
+//                                    )
+//                                    if (UserRepository.me(team.ownerId))
+//                                        Text("Me", style = MaterialTheme.typography.bodySmall)
+//                                    else if (team.ownerName.lowercase() == "anonymous")
+//                                        Text(team.ownerName, style = MaterialTheme.typography.bodySmall)
+//                                    else TooltipText(
+//                                        team.ownerName,
+//                                        team.ownerAccount,
+//                                        style = MaterialTheme.typography.bodySmall
+//                                    )
+//                                }
+//                            },
+//                        )
                     }
                 }
             } else {

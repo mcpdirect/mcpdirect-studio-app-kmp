@@ -2,6 +2,21 @@
 
 ## [January 20, 2026]
 ### Summary
+Enhanced UI components with new ListButton and improved styling
+
+### Details
+- Created new ListButton composable component for improved list item interactions
+- Enhanced ToolAgentComponent with ListButton for better UI consistency
+- Improved StudioListItem with reduced dependencies and cleaner code
+- Enhanced TooltipText with improved API and styling options
+- Updated MyStudioScreen and MCTemplateListView with improved tooltip usage
+- Enhanced TeamListView with ListButton implementation
+- Improved TeamMemberView with better status indicators using Badges
+- Enhanced UI with better visual hierarchy and interaction patterns
+- Improved code clarity with better component organization
+
+## [January 20, 2026]
+### Summary
 Enhanced SharedMCPServerListView with improved UI and navigation
 
 ### Details

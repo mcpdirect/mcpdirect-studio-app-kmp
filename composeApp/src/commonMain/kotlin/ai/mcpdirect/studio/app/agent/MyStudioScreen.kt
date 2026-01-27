@@ -700,7 +700,7 @@ fun ToolMakerItem(
             }else user?.let{
                 TooltipText(
                     it.name,
-                    contentDescription = it.account
+                    tooltip = it.account
                 )
             }
         },

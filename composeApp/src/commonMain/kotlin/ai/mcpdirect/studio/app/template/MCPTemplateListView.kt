@@ -1,6 +1,5 @@
 package ai.mcpdirect.studio.app.template
 
-import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.StudioIcon
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.Tag
@@ -95,7 +94,7 @@ fun MCPTemplateListView(
                             else user?.let {
                                 TooltipText(
                                     it.name,
-                                    contentDescription = it.account,
+                                    tooltip = it.account,
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }

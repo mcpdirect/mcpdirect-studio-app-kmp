@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.agent.component
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.compose.ListButton
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
 import ai.mcpdirect.studio.app.compose.StudioListItem
@@ -478,9 +479,9 @@ fun ToolAgentComponent(
                     Text("Install one from MCP catalog.")
                 } else LazyColumn(Modifier.weight(1f)) {
                     items(toolMakers) { toolMaker ->
-                        StudioListItem(
+                        ListButton(
                             selected = currentToolMaker?.id == toolMaker.id,
-                            modifier = Modifier.clickable {
+                            onClick =  {
                                 action = ConnectMCPViewAction.MAIN
                                 viewModel.currentToolMaker(toolMaker)
                             },
@@ -514,19 +515,23 @@ fun ToolAgentComponent(
                             },
                             supportingContent = {
                                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    when (toolMaker) {
-                                        is MCPServer -> {
-                                            if (toolMaker.transport == 0) {
-                                                Tag("STDIO")
-                                            } else if (toolMaker.transport == 1) {
-                                                Tag("SSE")
-                                            } else if (toolMaker.transport == 2) {
-                                                Tag("HTTP")
+                                    Badge(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    ) {
+                                        when (toolMaker) {
+                                            is MCPServer -> {
+                                                if (toolMaker.transport == 0) {
+                                                    Text("STDIO")
+                                                } else if (toolMaker.transport == 1) {
+                                                    Text("SSE")
+                                                } else if (toolMaker.transport == 2) {
+                                                    Text("HTTP")
+                                                }
                                             }
-                                        }
-
-                                        is OpenAPIServer -> {
-                                            Tag("OpenAPI")
+                                            is OpenAPIServer -> {
+                                                Text("OpenAPI")
+                                            }
                                         }
                                     }
                                 }
