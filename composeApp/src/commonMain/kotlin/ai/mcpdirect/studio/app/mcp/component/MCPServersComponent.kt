@@ -50,8 +50,8 @@ fun MCPServersComponent(
         StudioActionBar(
             title = "MCP Servers",
         )
-        HorizontalDivider()
-        StudioSearchbar(modifier = Modifier.padding(16.dp)) {
+//        HorizontalDivider()
+        StudioSearchbar(modifier = Modifier.padding(start = 16.dp, end = 16.dp,bottom = 16.dp)) {
             viewModel.toolMakerFilter.value = it
         }
         if(toolMakers.isEmpty()) StudioBoard(Modifier.weight(1f)) {

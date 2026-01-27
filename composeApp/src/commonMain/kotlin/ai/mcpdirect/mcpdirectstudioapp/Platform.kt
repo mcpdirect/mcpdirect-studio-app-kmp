@@ -700,9 +700,13 @@ interface Platform {
         }
     }
 
-    fun modifyToolMaker(makerId: Long, name: String?=null, tags: String?=null, status: Int?=null,
-                        onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit){
-        hstpRequest(
+    fun modifyToolMaker(
+        makerId: Long, name: String?=null, tags: String?=null, status: Int?=null,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit
+    ){
+        if(name==null&&status==null&&tags==null){
+            onResponse(AIPortServiceResponse(-1,"invalid arguments"))
+        } else hstpRequest(
             "$aitoolsUSL/tool_maker/modify", mapOf(
                 "makerId" to JsonPrimitive(makerId),
                 "name" to JsonPrimitive(name),

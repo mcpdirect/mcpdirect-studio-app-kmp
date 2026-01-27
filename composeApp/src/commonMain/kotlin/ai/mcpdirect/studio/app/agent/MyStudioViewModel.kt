@@ -1,6 +1,5 @@
 package ai.mcpdirect.studio.app.agent
 
-import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.MCPServer
@@ -527,8 +526,8 @@ class MyStudioViewModel(): ViewModel() {
                             toolMaker: AIPortToolMaker,
                             toolMakerName:String) {
         viewModelScope.launch {
-            ToolRepository.modifyToolMakerName(toolMaker,toolMakerName){
-                code, message, data ->
+            ToolRepository.modifyToolMaker(toolMaker,toolMakerName){
+                (code, message, data) ->
                 if (code == 0) data?.let{
                     if(toolMaker is MCPServer) modifyMCPServerNameForStudio(
                         toolAgent, toolMaker,toolMakerName

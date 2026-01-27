@@ -2,15 +2,12 @@ package ai.mcpdirect.studio.app.model.repository
 
 import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
-import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.aitool.*
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration.Companion.seconds
@@ -238,24 +235,26 @@ object ToolRepository {
 //        }
 //    }
 
-    suspend fun modifyToolMakerName(
+    suspend fun modifyToolMaker(
         toolMaker: AIPortToolMaker,
-        toolMakerName:String,
-        onResponse:(code:Int, message:String?, toolMaker: AIPortToolMaker?) -> Unit) {
+        name:String?=null,
+        status:Int?=null,
+        tags:String?=null,
+        onResponse:(resp: AIPortServiceResponse<AIPortToolMaker>) -> Unit) {
         loadMutex.withLock {
             generalViewModel.loading()
-            getPlatform().modifyToolMaker(toolMaker.id, toolMakerName,null,null) {
-                if (it.successful()) it.data?.let{
+            getPlatform().modifyToolMaker(toolMaker.id, name,tags,status) {
+                if (it.successful()) it.data?.let{ data ->
                     _toolMakers.update { map ->
                         map.toMutableMap().apply {
-                            put(toolMaker.id, toolMaker)
+                            put(data.id, data)
                         }
                     }
                 }
                 generalViewModel.loaded(
-                    "Modify tool maker name of #${toolMaker.name} to $toolMakerName",it.code,it.message
+                    "Modify tool maker of #${toolMaker.name}",it.code,it.message
                 )
-                onResponse(it.code,it.message,it.data)
+                onResponse(it)
             }
         }
     }

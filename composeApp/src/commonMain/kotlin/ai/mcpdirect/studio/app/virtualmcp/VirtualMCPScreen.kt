@@ -41,12 +41,14 @@ fun VirtualMCPScreen(
     Row(Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),) {
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
-            VirtualMCPListView(toolMaker,toolMaker==null){
+            VirtualMCPListView(
+                toolMaker,toolMaker==null, Modifier.fillMaxHeight()
+            ){
                 viewModel.currentToolMaker(it)
             }
         }
-        Column(Modifier.weight(2f)) {
-            Card(Modifier.weight(1f)) {
+//        Column(Modifier.weight(2f)) {
+            Card(Modifier.weight(2f).fillMaxHeight()) {
                 viewModel.currentToolMaker?.let { key ->
                     StudioActionBar(
                         "Tools (${viewModel.virtualToolCount})"
@@ -57,20 +59,42 @@ fun VirtualMCPScreen(
                         }){
                             Icon(painterResource(Res.drawable.reset_settings),contentDescription = null)
                         }
+//                        IconButton(
+//                            onClick = {
+//                                viewModel.expanded = !viewModel.expanded
+//                                grantViewModels.values.forEach {
+//                                    it.expanded = viewModel.expanded
+//                                } },
+//                            modifier = Modifier.size(32.dp)
+//                        ) {
+//                            val icon = if(viewModel.expanded) Res.drawable.collapse_all else Res.drawable.expand_all
+//                            Icon(painterResource(icon),contentDescription = null, Modifier.size(20.dp))
+//                        }
+                    }
+                    Row(
+                        Modifier.padding(start=16.dp,end=16.dp, bottom = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        StudioSearchbar(modifier = Modifier.weight(1f)) {
+                            viewModel.toolMakerCandidateFilter.value = it
+                        }
+                        Button(
+                            onClick = { viewModel.saveVirtualTools() },
+                            modifier = Modifier.height(40.dp)
+                        ) {
+                            Text("Save")
+                        }
                         IconButton(
                             onClick = {
                                 viewModel.expanded = !viewModel.expanded
                                 grantViewModels.values.forEach {
                                     it.expanded = viewModel.expanded
                                 } },
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier.size(40.dp)
                         ) {
                             val icon = if(viewModel.expanded) Res.drawable.collapse_all else Res.drawable.expand_all
-                            Icon(painterResource(icon),contentDescription = null, Modifier.size(20.dp))
+                            Icon(painterResource(icon),contentDescription = null)
                         }
-                    }
-                    StudioSearchbar(modifier = Modifier.padding(16.dp)) {
-                        viewModel.toolMakerCandidateFilter.value = it
                     }
                     LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(toolMakerCandidates){ toolMaker->
@@ -98,13 +122,13 @@ fun VirtualMCPScreen(
                     }
                 }
             }
-            Spacer(Modifier.height(8.dp))
-            Button(onClick = {
-                viewModel.saveVirtualTools()
-            }, Modifier.fillMaxWidth()) {
-                Text("Save")
-            }
-        }
+//            Spacer(Modifier.height(8.dp))
+//            Button(onClick = {
+//                viewModel.saveVirtualTools()
+//            }, Modifier.fillMaxWidth()) {
+//                Text("Save")
+//            }
+//        }
         OutlinedCard(Modifier.weight(1f).fillMaxHeight()) {
             MCPServersComponent(
                 showMyMCPServerOnly = true,

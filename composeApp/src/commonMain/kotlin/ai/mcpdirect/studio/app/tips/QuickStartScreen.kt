@@ -201,7 +201,33 @@ fun ConnectMCPView(
                                 action = ConnectMCPViewAction.MAIN
                                 viewModel.currentToolMaker(toolMaker)
                             },
-                            headlineContent = { Text(toolMaker.name, style = MaterialTheme.typography.bodyMedium) },
+                            headlineContent = {
+                                BadgedBox(
+                                    badge = {
+                                        when (toolMaker) {
+//                                                    is MCPServer -> {
+//                                                        if (toolMaker.transport == 0) {
+//                                                            Text("STDIO")
+//                                                        } else if (toolMaker.transport == 1) {
+//                                                            Text("SSE")
+//                                                        } else if (toolMaker.transport == 2) {
+//                                                            Text("HTTP")
+//                                                        }
+//                                                    }
+                                            is OpenAPIServer -> {
+                                                Badge(
+                                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                ) {
+                                                    Text("OpenAPI")
+                                                }
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    Text(toolMaker.name)
+                                }
+                            },
                             trailingContent = {
                                 if (toolMaker.status == STATUS_OFF) Icon(
                                     painterResource(Res.drawable.mobiledata_off),
@@ -229,29 +255,29 @@ fun ConnectMCPView(
                                     )
                                 }
                             },
-                            supportingContent = {
-                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Badge(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    ) {
-                                        when (toolMaker) {
-                                            is MCPServer -> {
-                                                if (toolMaker.transport == 0) {
-                                                    Text("STDIO")
-                                                } else if (toolMaker.transport == 1) {
-                                                    Text("SSE")
-                                                } else if (toolMaker.transport == 2) {
-                                                    Text("HTTP")
-                                                }
-                                            }
-                                            is OpenAPIServer -> {
-                                                Text("OpenAPI")
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+//                            supportingContent = {
+//                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+//                                    Badge(
+//                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+//                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+//                                    ) {
+//                                        when (toolMaker) {
+//                                            is MCPServer -> {
+//                                                if (toolMaker.transport == 0) {
+//                                                    Text("STDIO")
+//                                                } else if (toolMaker.transport == 1) {
+//                                                    Text("SSE")
+//                                                } else if (toolMaker.transport == 2) {
+//                                                    Text("HTTP")
+//                                                }
+//                                            }
+//                                            is OpenAPIServer -> {
+//                                                Text("OpenAPI")
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
                         )
                     }
                 }

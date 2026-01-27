@@ -444,7 +444,31 @@ fun ToolAgentComponent(
                             },
                             headlineContent = {
                                 Row {
-                                    Text(toolMaker.name)
+                                    BadgedBox(
+                                        badge = {
+                                            when (toolMaker) {
+//                                                    is MCPServer -> {
+//                                                        if (toolMaker.transport == 0) {
+//                                                            Text("STDIO")
+//                                                        } else if (toolMaker.transport == 1) {
+//                                                            Text("SSE")
+//                                                        } else if (toolMaker.transport == 2) {
+//                                                            Text("HTTP")
+//                                                        }
+//                                                    }
+                                                is OpenAPIServer -> {
+                                                    Badge(
+                                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                    ) {
+                                                        Text("OpenAPI")
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ) {
+                                        Text(toolMaker.name)
+                                    }
 //                                    TooltipIconButton(
 //                                        "Edit MCP server name",
 //                                        onClick = {
@@ -483,29 +507,29 @@ fun ToolAgentComponent(
                                     )
                                 }
                             },
-                            supportingContent = {
-                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    Badge(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    ) {
-                                        when (toolMaker) {
-                                            is MCPServer -> {
-                                                if (toolMaker.transport == 0) {
-                                                    Text("STDIO")
-                                                } else if (toolMaker.transport == 1) {
-                                                    Text("SSE")
-                                                } else if (toolMaker.transport == 2) {
-                                                    Text("HTTP")
-                                                }
-                                            }
-                                            is OpenAPIServer -> {
-                                                Text("OpenAPI")
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+//                            supportingContent = {
+//                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+//                                    Badge(
+//                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+//                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+//                                    ) {
+//                                        when (toolMaker) {
+//                                            is MCPServer -> {
+//                                                if (toolMaker.transport == 0) {
+//                                                    Text("STDIO")
+//                                                } else if (toolMaker.transport == 1) {
+//                                                    Text("SSE")
+//                                                } else if (toolMaker.transport == 2) {
+//                                                    Text("HTTP")
+//                                                }
+//                                            }
+//                                            is OpenAPIServer -> {
+//                                                Text("OpenAPI")
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
                         )
                     }
                 }

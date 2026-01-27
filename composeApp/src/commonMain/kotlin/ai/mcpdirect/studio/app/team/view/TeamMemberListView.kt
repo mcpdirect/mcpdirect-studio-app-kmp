@@ -98,12 +98,12 @@ fun TeamMemberView(
                         )
                     }
                 }
-                HorizontalDivider()
+//                HorizontalDivider()
                 var userNotExist by remember { mutableStateOf(false) }
                 var name by remember { mutableStateOf("") }
                 var nameError by remember { mutableStateOf(true) }
                 OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(start=16.dp,end=16.dp, bottom = 16.dp),
                     value = name,
                     onValueChange = { text ->
                         userNotExist = false
