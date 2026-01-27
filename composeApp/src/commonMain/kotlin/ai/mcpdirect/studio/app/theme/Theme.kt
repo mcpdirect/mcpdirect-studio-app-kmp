@@ -242,12 +242,32 @@ private val highContrastDarkColorScheme = darkColorScheme(
 
 @Immutable
 data class AppColorScheme(
-    val success: Color,
-    val warning: Color
+    val green: Color,
+    val onGreen: Color,
+    val greenContainer: Color,
+    val onGreenContainer: Color,
+)
+
+val appColorSchemeLight = AppColorScheme(
+    green = onGreenLight,
+    onGreen = onGreenLight,
+    greenContainer = onGreenContainerLight,
+    onGreenContainer = onGreenContainerLight,
+)
+val appColorSchemeDark = AppColorScheme(
+    green = onGreenDark,
+    onGreen = onGreenDark,
+    greenContainer = onGreenContainerDark,
+    onGreenContainer = onGreenContainerDark,
 )
 
 val AppColors = staticCompositionLocalOf {
-    AppColorScheme(success = Color.Unspecified, warning = Color.Unspecified)
+    AppColorScheme(
+        green = Color.Unspecified,
+        onGreen = Color.Unspecified,
+        greenContainer = Color.Unspecified,
+        onGreenContainer = Color.Unspecified,
+    )
 }
 
 @Composable
@@ -258,9 +278,9 @@ fun AppTheme(
 ) {
     // Select custom palette based on the theme
     val appColors = if (darkTheme) {
-        AppColorScheme(success = DarkSuccess, warning = DarkWarning)
+        appColorSchemeLight
     } else {
-        AppColorScheme(success = LightSuccess, warning = LightWarning)
+        appColorSchemeDark
     }
 
     val colorScheme = when {

@@ -234,10 +234,7 @@ val onGreenLight = Color(0xFFFFFFFF)
 val greenContainerLight = Color(0xFF46B065)
 val onGreenContainerLight = Color(0xFFFFFFFF)
 
-// Light Mode variants
-val LightSuccess = Color(0xFF2E7D32)
-val LightWarning = Color(0xFFED6C02)
-
-// Dark Mode variants
-val DarkSuccess = Color(0xFF81C784)
-val DarkWarning = Color(0xFFFFB74D)
+val greenDark = Color(0xFFA1EE62)
+val onGreenDark = Color(0xFF484646)
+val greenContainerDark = Color(0xFFFbF9C9)
+val onGreenContainerDark = Color(0xFF484646)
