@@ -1,5 +1,6 @@
 package ai.mcpdirect.studio.app.key.component
 
+import ai.mcpdirect.studio.app.compose.ListButton
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioListItem
 import ai.mcpdirect.studio.app.compose.TooltipIconButton
@@ -37,27 +38,36 @@ class MCPdirectKeysComponentViewModel : ViewModel() {
             initialValue = emptyList()
         )
 
-    var currentAccessKey by mutableStateOf<AIPortToolAccessKey?>(null)
-        private set
-    fun selectAccessKey(accessKey: AIPortToolAccessKey?){
-        currentAccessKey = accessKey
-    }
+//    var currentAccessKey by mutableStateOf<AIPortToolAccessKey?>(null)
+//        private set
+//    fun selectAccessKey(accessKey: AIPortToolAccessKey?){
+//        currentAccessKey = accessKey
+//    }
     fun generateMCPdirectKey(
         keyName:String,
         onResponse: (resp: AIPortServiceResponse<AIPortToolAccessKey>) -> Unit
     ) {
         viewModelScope.launch {
             AccessKeyRepository.generateAccessKey(keyName){
-                if(it.successful()) it.data?.let { data->
-                    currentAccessKey = data
-                }
+//                if(it.successful()) it.data?.let { data->
+//                    currentAccessKey = data
+//                }
                 onResponse(it)
             }
         }
     }
-    fun selectedAccessKey(accessKey: AIPortToolAccessKey): Boolean{
-        return currentAccessKey?.id == accessKey.id
+
+    fun modifyMCPdirectKey(
+        key: AIPortToolAccessKey, name: String,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolAccessKey>) -> Unit
+    ) {
+        viewModelScope.launch {
+            AccessKeyRepository.modifyAccessKey(key,name=name, onResponse = onResponse)
+        }
     }
+//    fun selectedAccessKey(accessKey: AIPortToolAccessKey): Boolean{
+//        return currentAccessKey?.id == accessKey.id
+//    }
 }
 @Composable
 fun MCPdirectKeysComponent(
@@ -69,9 +79,12 @@ fun MCPdirectKeysComponent(
 ){
     val viewModel by remember {mutableStateOf(MCPdirectKeysComponentViewModel())}
     val accessKeys by viewModel.accessKeys.collectAsState()
+    var currentAccessKey by remember { mutableStateOf<AIPortToolAccessKey?>(null) }
+    var editableAccessKey by remember { mutableStateOf<AIPortToolAccessKey?>(null) }
     var showGenerateKeyView by remember { mutableStateOf(showKeyGeneration) }
     LaunchedEffect(accessKey){
-        viewModel.selectAccessKey(accessKey)
+//        viewModel.selectAccessKey(accessKey)
+        currentAccessKey = accessKey
         onAccessKeyChange(accessKey)
     }
     Box(
@@ -81,21 +94,21 @@ fun MCPdirectKeysComponent(
         Column(modifier) {
             if(!showGenerateKeyView){
                 StudioActionBar("MCPdirect Keys"){
-                    TooltipIconButton(
-                        "Edit MCPdirect Key Name",
-                        onClick = {},
-                        modifier = Modifier.size(32.dp)
-                    ){
-                        Icon(painterResource(Res.drawable.edit),contentDescription = null,Modifier.size(20.dp))
-                    }
+//                    TooltipIconButton(
+//                        "Edit MCPdirect Key Name",
+//                        onClick = {},
+//                        modifier = Modifier.size(32.dp)
+//                    ){
+//                        Icon(painterResource(Res.drawable.edit),contentDescription = null,Modifier.size(20.dp))
+//                    }
                 }
-                HorizontalDivider()
-                LazyColumn {
+//                HorizontalDivider()
+                LazyColumn(Modifier.padding(horizontal = 16.dp)) {
                     items(accessKeys) { accessKey ->
-                        val selected = viewModel.selectedAccessKey(accessKey)
-                        StudioListItem(
-                            modifier = Modifier.clickable {
-                                viewModel.selectAccessKey(accessKey)
+                        val selected = currentAccessKey?.id == accessKey.id
+                        ListButton(
+                            onClick = {
+                                currentAccessKey = accessKey
                                 onAccessKeyChange(accessKey)
                             },
                             selected = selected,
@@ -104,12 +117,28 @@ fun MCPdirectKeysComponent(
 //                                viewModel.selectAccessKey(accessKey)
 //                            })
 //                        },
-                            headlineContent = { Text(accessKey.name) },
+                            headlineContent = {
+                                Row {
+                                    Text(accessKey.name)
+                                    TooltipIconButton(
+                                        "Edit MCPdirect Key Name",
+                                        onClick = {
+                                            editableAccessKey = accessKey
+                                            showGenerateKeyView = true
+                                        },
+                                        modifier = Modifier.size(24.dp)
+                                    ){
+                                        Icon(painterResource(Res.drawable.edit),contentDescription = null,Modifier.size(16.dp))
+                                    }
+                                }
+                            },
                         )
                     }
                 }
             } else {
-                StudioActionBar("Generate New Key")
+                var name by remember { mutableStateOf(editableAccessKey?.name ?: "") }
+                var nameError by remember { mutableStateOf(true) }
+                StudioActionBar(editableAccessKey?.name ?: "Generate New Key")
 //                {
 //                    if(accessKeys.isNotEmpty())TextButton(
 //                        modifier = Modifier.height(32.dp),
@@ -122,9 +151,7 @@ fun MCPdirectKeysComponent(
 //                        )
 //                    }
 //                }
-                HorizontalDivider()
-                var name by remember { mutableStateOf("") }
-                var nameError by remember { mutableStateOf(true) }
+//                HorizontalDivider()
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     value = name,
@@ -146,6 +173,7 @@ fun MCPdirectKeysComponent(
                     TextButton(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         onClick = {
+                            editableAccessKey = null
                             showGenerateKeyView = false
                         },
                     ){
@@ -155,16 +183,28 @@ fun MCPdirectKeysComponent(
                         enabled = !nameError,
                         modifier = Modifier.padding(horizontal = 16.dp),
                         onClick = {
-                            viewModel.generateMCPdirectKey(name){
-                                showGenerateKeyView = !it.successful()
-                                if(!showGenerateKeyView) it.data?.let { data->
-                                    viewModel.selectAccessKey(data)
-                                    onAccessKeyChange(data)
+                            if(editableAccessKey!=null)
+                                viewModel.modifyMCPdirectKey(editableAccessKey!!,name){
+                                    if(it.successful()) it.data?.let{ data ->
+                                        editableAccessKey = null
+                                        showGenerateKeyView = false
+                                        if(currentAccessKey?.id == data.id) {
+                                            currentAccessKey = data
+                                            onAccessKeyChange(data)
+                                        }
+                                    }
                                 }
-                            }
+                            else
+                                viewModel.generateMCPdirectKey(name){
+                                    showGenerateKeyView = !it.successful()
+                                    if(!showGenerateKeyView) it.data?.let { data->
+                                        currentAccessKey = data
+                                        onAccessKeyChange(data)
+                                    }
+                                }
                         },
                     ){
-                        Text("Generate")
+                        Text(if(editableAccessKey!=null) "Save" else "Generate")
                     }
                 }
             }

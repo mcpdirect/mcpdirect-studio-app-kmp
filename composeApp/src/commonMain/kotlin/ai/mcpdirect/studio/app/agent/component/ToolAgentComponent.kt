@@ -488,7 +488,9 @@ fun ToolAgentComponent(
                                 action = ConnectMCPViewAction.MAIN
                                 viewModel.currentToolMaker(toolMaker)
                             },
-                            headlineContent = { Text(toolMaker.name, style = MaterialTheme.typography.bodyMedium) },
+                            headlineContent = {
+                                Text(toolMaker.name)
+                            },
                             trailingContent = {
                                 if (toolMaker.status == STATUS_OFF) Icon(
                                     painterResource(Res.drawable.mobiledata_off),

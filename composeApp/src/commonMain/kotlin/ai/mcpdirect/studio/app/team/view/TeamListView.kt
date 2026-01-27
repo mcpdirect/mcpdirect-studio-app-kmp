@@ -131,7 +131,7 @@ fun TeamListView(
                 }
 //                HorizontalDivider()
                 LazyColumn(
-                    Modifier.padding(8.dp),
+                    Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(teams) { team ->
@@ -213,7 +213,7 @@ fun TeamListView(
                     }
                 }
             } else {
-                var name by remember { mutableStateOf("") }
+                var name by remember { mutableStateOf(editableTeam?.name?:"") }
                 var nameError by remember { mutableStateOf(true) }
 
                 StudioActionBar(title = editableTeam?.name?:"Create Team")
@@ -230,7 +230,7 @@ fun TeamListView(
 //                        )
 //                    }
 //                }
-                HorizontalDivider()
+//                HorizontalDivider()
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     value = name,
@@ -263,9 +263,13 @@ fun TeamListView(
                         onClick = {
                             if (editableTeam!=null)
                                 viewModel.modifyTeam(currentTeam!!, name) {
-                                    if(it.successful()){
+                                    if(it.successful()) it.data?.let{ data ->
                                         showCreateTeamView = false
                                         editableTeam = null
+                                        if(currentTeam?.id==data.id){
+                                            currentTeam = data
+                                            onTeamChange(data)
+                                        }
                                     }
                                 }
                             else viewModel.createTeam(name) {

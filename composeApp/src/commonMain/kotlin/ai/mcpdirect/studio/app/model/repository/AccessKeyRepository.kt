@@ -84,7 +84,10 @@ object AccessKeyRepository {
         }
     }
 
-    suspend fun modifyAccessKey(key: AIPortToolAccessKey, status:Int?=null, name:String?=null) {
+    suspend fun modifyAccessKey(
+        key: AIPortToolAccessKey, status:Int?=null, name:String?=null,
+        onResponse: ((resp: AIPortServiceResponse<AIPortToolAccessKey>) -> Unit)?=null
+    ) {
         loadMutex.withLock {
             generalViewModel.loading()
             getPlatform().modifyToolAccessKey(key.id,status,name){
@@ -100,6 +103,7 @@ object AccessKeyRepository {
                 generalViewModel.loaded(
                     "Modify MCPdirect Access Key\"${key.name}\"",it.code,it.message
                 )
+                onResponse?.invoke(it)
             }
         }
     }
