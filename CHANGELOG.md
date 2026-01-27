@@ -2,6 +2,19 @@
 
 ## [January 20, 2026]
 ### Summary
+Refactored main window configuration with simplified UI
+
+### Details
+- Simplified window configuration by commenting out platform-specific decorations
+- Removed undecorated and transparent window properties
+- Commented out window padding and shadow elevation settings
+- Removed maximize functionality and related UI elements
+- Simplified window draggable area and resize logic
+- Improved code clarity by removing complex platform-specific window controls
+- Enhanced cross-platform compatibility with simplified window management
+
+## [January 20, 2026]
+### Summary
 Enhanced UI components with ListButton implementation and improved tool management
 
 ### Details

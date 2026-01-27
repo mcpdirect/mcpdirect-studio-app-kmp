@@ -87,13 +87,13 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         state = windowState,
-        undecorated = os!=PLATFORM_MACOS,
-        transparent = os != PLATFORM_MACOS,
+//        undecorated = os!=PLATFORM_MACOS,
+//        transparent = os != PLATFORM_MACOS,
         title = "MCPdirect Studio",
         icon = painterResource(Res.drawable.mcpdirect_logo_48),
     ) {
-        var padding by remember { mutableStateOf(if(os==PLATFORM_MACOS) 0.dp else 16.dp) }
-        var shadowElevation by remember { mutableStateOf(if(os==PLATFORM_MACOS) 0.dp else 8.dp) }
+//        var padding by remember { mutableStateOf(if(os==PLATFORM_MACOS) 0.dp else 16.dp) }
+//        var shadowElevation by remember { mutableStateOf(if(os==PLATFORM_MACOS) 0.dp else 8.dp) }
         LaunchedEffect(Unit) {
             if (os==PLATFORM_MACOS) {
                 // macOS 特定设置
@@ -109,11 +109,11 @@ fun main() = application {
         AppTheme{
             // This Surface is our actual "Window" background
 
-            var maximize by remember { mutableStateOf(false) }
+//            var maximize by remember { mutableStateOf(false) }
             Surface(
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier.fillMaxSize(),//.padding(padding),
                 color = MaterialTheme.colorScheme.background,
-                shadowElevation = shadowElevation,
+//                shadowElevation = shadowElevation,
 //                shape = if(!maximize&&os==PLATFORM_MACOS) MaterialTheme.shapes.medium else RectangleShape
             ) {
                 Scaffold (
@@ -322,211 +322,211 @@ fun main() = application {
                     }
                 }
             }
-            if(os!=PLATFORM_MACOS)WindowDraggableArea(modifier = Modifier.fillMaxWidth().height(
-                if(maximize) 32.dp else 64.dp
-            ).padding(padding)) {
-
-                Row(modifier = Modifier.fillMaxWidth()) {
-//                    if(os==PLATFORM_MACOS){
-////                        val interactionSource = remember { MutableInteractionSource() }
-////                        val isHovered by interactionSource.collectIsHoveredAsState()
-////                        Box(
-////                            modifier = Modifier
-////                                .padding(start = 16.dp,top=16.dp)
-////                                .size(12.dp)
-////                                .clip(CircleShape)
-////                                .background(
-////                                    color = Color(0xFFF96057)
-////                                )
-////                                .clickable{
-////                                    exitApplication()
-////                                }
-////                                .hoverable(interactionSource)
+//            if(os!=PLATFORM_MACOS)WindowDraggableArea(modifier = Modifier.fillMaxWidth().height(
+//                if(maximize) 32.dp else 64.dp
+//            ).padding(padding)) {
+//
+//                Row(modifier = Modifier.fillMaxWidth()) {
+////                    if(os==PLATFORM_MACOS){
+//////                        val interactionSource = remember { MutableInteractionSource() }
+//////                        val isHovered by interactionSource.collectIsHoveredAsState()
+//////                        Box(
+//////                            modifier = Modifier
+//////                                .padding(start = 16.dp,top=16.dp)
+//////                                .size(12.dp)
+//////                                .clip(CircleShape)
+//////                                .background(
+//////                                    color = Color(0xFFF96057)
+//////                                )
+//////                                .clickable{
+//////                                    exitApplication()
+//////                                }
+//////                                .hoverable(interactionSource)
+//////                        ){
+//////                            Icon(painterResource(Res.drawable.macos_close),contentDescription = null)
+//////                        }
+////                        Spacer(Modifier.width(16.dp))
+////                        MacOSWindowButton(
+////                            onClick = {exitApplication()},
+////                            color = Color(0xFFF96057)
 ////                        ){
 ////                            Icon(painterResource(Res.drawable.macos_close),contentDescription = null)
 ////                        }
-//                        Spacer(Modifier.width(16.dp))
-//                        MacOSWindowButton(
-//                            onClick = {exitApplication()},
-//                            color = Color(0xFFF96057)
-//                        ){
-//                            Icon(painterResource(Res.drawable.macos_close),contentDescription = null)
-//                        }
-//                        Spacer(Modifier.width(8.dp))
-////                        Box(
-////                            modifier = Modifier
-////                                .padding(top = 16.dp)
-////                                .size(12.dp)
-////                                .clip(CircleShape)
-////                                .background(
-////                                    color = if(maximize) Color.Gray else Color(0xFFF8BC31)
-////                                )
-////                                .clickable(!maximize){
-////                                    SwingUtilities.invokeLater {
-////                                        (window as? Frame)?.extendedState = Frame.ICONIFIED
-////                                    }
+////                        Spacer(Modifier.width(8.dp))
+//////                        Box(
+//////                            modifier = Modifier
+//////                                .padding(top = 16.dp)
+//////                                .size(12.dp)
+//////                                .clip(CircleShape)
+//////                                .background(
+//////                                    color = if(maximize) Color.Gray else Color(0xFFF8BC31)
+//////                                )
+//////                                .clickable(!maximize){
+//////                                    SwingUtilities.invokeLater {
+//////                                        (window as? Frame)?.extendedState = Frame.ICONIFIED
+//////                                    }
+//////                                }
+//////                        )
+////                        MacOSWindowButton(
+////                            onClick = {
+////                                SwingUtilities.invokeLater {
+////                                    (window as? Frame)?.extendedState = Frame.ICONIFIED
 ////                                }
-////                        )
-//                        MacOSWindowButton(
+////                            },
+////                            color =  if(maximize) Color.Gray else Color(0xFFF8BC31)
+////                        ){
+////                            Icon(painterResource(Res.drawable.macos_min),contentDescription = null)
+////                        }
+////                        Spacer(Modifier.width(8.dp))
+//////                        Box(
+//////                            modifier = Modifier
+//////                                .padding(top = 16.dp)
+//////                                .size(12.dp)
+//////                                .clip(CircleShape)
+//////                                .background(
+//////                                    color = Color(0xFF44C748)
+//////                                )
+//////                                .clickable{
+//////                                    SwingUtilities.invokeLater {
+//////                                        if (!maximize) {
+//////                                            padding = 0.dp
+//////                                            shadowElevation = 0.dp
+//////                                            (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
+//////                                        } else {
+//////                                            padding = 16.dp
+//////                                            shadowElevation = 8.dp
+//////                                            (window as? Frame)?.extendedState = Frame.NORMAL
+//////                                        }
+//////                                        maximize = !maximize
+//////                                    }
+//////                                }
+//////                        )
+////                        MacOSWindowButton(
+////                            onClick = {
+////                                SwingUtilities.invokeLater {
+////                                    if (!maximize) {
+////                                        padding = 0.dp
+////                                        shadowElevation = 0.dp
+////                                        windowState.placement = WindowPlacement.Fullscreen
+//////                                        (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
+////                                    } else {
+////                                        padding = 16.dp
+////                                        shadowElevation = 8.dp
+////                                        windowState.placement = WindowPlacement.Floating
+//////                                        (window as? Frame)?.extendedState = Frame.NORMAL
+////                                    }
+////                                    maximize = !maximize
+////                                }
+////                            },
+////                            color = Color(0xFF44C748)
+////                        ){
+//////                            Icon(painterResource(Res.drawable.macos_max),contentDescription = null)
+////                            MacMaximizeIconCanvas(maximize)
+////                        }
+////                        Row {
+////                            // 1. 直角在左下角
+////                            Canvas(modifier = Modifier.size(32.dp)) {
+////                                drawPath(
+////                                    path = Path().apply {
+////                                        moveTo(0f, size.height)
+////                                        lineTo(0f, 0f)
+////                                        lineTo(size.width, size.height)
+////                                        close()
+////                                    },
+////                                    color = Color.Red
+////                                )
+////                            }
+////
+////                            // 2. 直角在左上角
+////                            Canvas(modifier = Modifier.size(32.dp)) {
+////                                drawPath(
+////                                    path = Path().apply {
+////                                        moveTo(8f, 8f)
+////                                        lineTo(size.width-8, 8f)
+////                                        lineTo(8f, size.height-8f)
+////                                        close()
+////                                    },
+////                                    color = Color.Blue
+////                                )
+////                            }
+////
+////                            // 3. 直角在右下角
+////                            Canvas(modifier = Modifier.size(32.dp)) {
+////                                drawPath(
+////                                    path = Path().apply {
+////                                        moveTo(size.width, size.height)
+////                                        lineTo(0f, size.height)
+////                                        lineTo(size.width, 0f)
+////                                        close()
+////                                    },
+////                                    color = Color.Green
+////                                )
+////                            }
+////
+////                            // 4. 直角在右上角
+////                            Canvas(modifier = Modifier.size(32.dp)) {
+////                                drawPath(
+////                                    path = Path().apply {
+////                                        moveTo(size.width, 0f)
+////                                        lineTo(size.width, size.height)
+////                                        lineTo(0f, 0f)
+////                                        close()
+////                                    },
+////                                    color = Color.Yellow
+////                                )
+////                            }
+////                        }
+////                    }
+//                    Spacer(Modifier.weight(1f))
+//                    if(os!=PLATFORM_MACOS) {
+//                        IconButton(
 //                            onClick = {
 //                                SwingUtilities.invokeLater {
 //                                    (window as? Frame)?.extendedState = Frame.ICONIFIED
 //                                }
 //                            },
-//                            color =  if(maximize) Color.Gray else Color(0xFFF8BC31)
-//                        ){
-//                            Icon(painterResource(Res.drawable.macos_min),contentDescription = null)
+//                            modifier = Modifier.size(32.dp)
+//                        ) {
+//                            Icon(painterResource(Res.drawable.check_indeterminate_small), contentDescription = "")
 //                        }
-//                        Spacer(Modifier.width(8.dp))
-////                        Box(
-////                            modifier = Modifier
-////                                .padding(top = 16.dp)
-////                                .size(12.dp)
-////                                .clip(CircleShape)
-////                                .background(
-////                                    color = Color(0xFF44C748)
-////                                )
-////                                .clickable{
-////                                    SwingUtilities.invokeLater {
-////                                        if (!maximize) {
-////                                            padding = 0.dp
-////                                            shadowElevation = 0.dp
-////                                            (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
-////                                        } else {
-////                                            padding = 16.dp
-////                                            shadowElevation = 8.dp
-////                                            (window as? Frame)?.extendedState = Frame.NORMAL
-////                                        }
-////                                        maximize = !maximize
-////                                    }
-////                                }
-////                        )
-//                        MacOSWindowButton(
+//
+//                        IconButton(
 //                            onClick = {
 //                                SwingUtilities.invokeLater {
 //                                    if (!maximize) {
 //                                        padding = 0.dp
 //                                        shadowElevation = 0.dp
-//                                        windowState.placement = WindowPlacement.Fullscreen
-////                                        (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
+//                                        (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
 //                                    } else {
 //                                        padding = 16.dp
 //                                        shadowElevation = 8.dp
-//                                        windowState.placement = WindowPlacement.Floating
-////                                        (window as? Frame)?.extendedState = Frame.NORMAL
+//                                        (window as? Frame)?.extendedState = Frame.NORMAL
 //                                    }
 //                                    maximize = !maximize
 //                                }
 //                            },
-//                            color = Color(0xFF44C748)
-//                        ){
-////                            Icon(painterResource(Res.drawable.macos_max),contentDescription = null)
-//                            MacMaximizeIconCanvas(maximize)
+//                            modifier = Modifier.size(32.dp)
+//                        ) {
+//                            Icon(
+//                                painterResource(Res.drawable.check_box_outline_blank),
+//                                contentDescription = "",
+//                                modifier = Modifier.size(16.dp)
+//                            )
 //                        }
-//                        Row {
-//                            // 1. 直角在左下角
-//                            Canvas(modifier = Modifier.size(32.dp)) {
-//                                drawPath(
-//                                    path = Path().apply {
-//                                        moveTo(0f, size.height)
-//                                        lineTo(0f, 0f)
-//                                        lineTo(size.width, size.height)
-//                                        close()
-//                                    },
-//                                    color = Color.Red
-//                                )
-//                            }
 //
-//                            // 2. 直角在左上角
-//                            Canvas(modifier = Modifier.size(32.dp)) {
-//                                drawPath(
-//                                    path = Path().apply {
-//                                        moveTo(8f, 8f)
-//                                        lineTo(size.width-8, 8f)
-//                                        lineTo(8f, size.height-8f)
-//                                        close()
-//                                    },
-//                                    color = Color.Blue
-//                                )
-//                            }
-//
-//                            // 3. 直角在右下角
-//                            Canvas(modifier = Modifier.size(32.dp)) {
-//                                drawPath(
-//                                    path = Path().apply {
-//                                        moveTo(size.width, size.height)
-//                                        lineTo(0f, size.height)
-//                                        lineTo(size.width, 0f)
-//                                        close()
-//                                    },
-//                                    color = Color.Green
-//                                )
-//                            }
-//
-//                            // 4. 直角在右上角
-//                            Canvas(modifier = Modifier.size(32.dp)) {
-//                                drawPath(
-//                                    path = Path().apply {
-//                                        moveTo(size.width, 0f)
-//                                        lineTo(size.width, size.height)
-//                                        lineTo(0f, 0f)
-//                                        close()
-//                                    },
-//                                    color = Color.Yellow
-//                                )
-//                            }
+//                        IconButton(
+//                            onClick = { exitApplication() },
+//                            modifier = Modifier.size(32.dp)
+//                        ) {
+//                            Icon(painterResource(Res.drawable.close_small), contentDescription = "")
 //                        }
 //                    }
-                    Spacer(Modifier.weight(1f))
-                    if(os!=PLATFORM_MACOS) {
-                        IconButton(
-                            onClick = {
-                                SwingUtilities.invokeLater {
-                                    (window as? Frame)?.extendedState = Frame.ICONIFIED
-                                }
-                            },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(painterResource(Res.drawable.check_indeterminate_small), contentDescription = "")
-                        }
-
-                        IconButton(
-                            onClick = {
-                                SwingUtilities.invokeLater {
-                                    if (!maximize) {
-                                        padding = 0.dp
-                                        shadowElevation = 0.dp
-                                        (window as? Frame)?.extendedState = Frame.MAXIMIZED_BOTH
-                                    } else {
-                                        padding = 16.dp
-                                        shadowElevation = 8.dp
-                                        (window as? Frame)?.extendedState = Frame.NORMAL
-                                    }
-                                    maximize = !maximize
-                                }
-                            },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(
-                                painterResource(Res.drawable.check_box_outline_blank),
-                                contentDescription = "",
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-
-                        IconButton(
-                            onClick = { exitApplication() },
-                            modifier = Modifier.size(32.dp)
-                        ) {
-                            Icon(painterResource(Res.drawable.close_small), contentDescription = "")
-                        }
-                    }
-                }
-            }
+//                }
+//            }
         }
         // 3. Resize Logic (Overlay)
         // We pass the AWT window instance to handle the bounds directly
-        if(os!=PLATFORM_MACOS)WindowResizeEdges(window)
+//        if(os!=PLATFORM_MACOS)WindowResizeEdges(window)
     }
 }
 
