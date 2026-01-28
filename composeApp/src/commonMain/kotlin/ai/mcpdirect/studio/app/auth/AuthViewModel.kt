@@ -2,25 +2,13 @@ package ai.mcpdirect.studio.app.auth
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
-import ai.mcpdirect.studio.app.generalViewModel
-//import ai.mcpdirect.studio.app.mcpkey.mcpAccessKeyViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortOtp
+import ai.mcpdirect.studio.app.model.repository.*
+import ai.mcpdirect.studio.app.virtualmcp.virtualMakerViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-
-import ai.mcpdirect.studio.app.model.account.AIPortUser
-import ai.mcpdirect.studio.app.model.repository.AccessKeyRepository
-import ai.mcpdirect.studio.app.model.repository.StudioRepository
-import ai.mcpdirect.studio.app.model.repository.TeamRepository
-import ai.mcpdirect.studio.app.model.repository.ToolRepository
-import ai.mcpdirect.studio.app.model.repository.UserRepository
-//import ai.mcpdirect.studio.app.team.mcpTeamToolMakerViewModel
-//import ai.mcpdirect.studio.app.team.mcpTeamViewModel
-//import ai.mcpdirect.studio.app.tool.toolPermissionViewModel
-import ai.mcpdirect.studio.app.virtualmcp.virtualMakerViewModel
-//import ai.mcpdirect.studio.app.setting.SettingsViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -78,9 +66,9 @@ class AuthViewModel() : ViewModel(){
     var isRegisterPasswordValid by mutableStateOf(true)
     var isForgotPasswordEmailValid by mutableStateOf(true)
     var isSetNewPasswordValid by mutableStateOf(true)
-    var isConfirmNewPasswordValid by mutableStateOf(true)
-    var isRegisterSetPasswordValid by mutableStateOf(true)
-    var isRegisterConfirmPasswordValid by mutableStateOf(true)
+//    var isConfirmNewPasswordValid by mutableStateOf(true)
+//    var isRegisterSetPasswordValid by mutableStateOf(true)
+//    var isRegisterConfirmPasswordValid by mutableStateOf(true)
 //
     fun login(email: String, password: String) {
         isLoginEmailValid = email.isNotBlank()
@@ -212,8 +200,8 @@ class AuthViewModel() : ViewModel(){
             return
         }
         isRegisterPasswordValid = password.isNotBlank()
-        isRegisterSetPasswordValid = password.isNotBlank()
-        isRegisterConfirmPasswordValid = password.isNotBlank()
+//        isRegisterSetPasswordValid = password.isNotBlank()
+//        isRegisterConfirmPasswordValid = password.isNotBlank()
 
         if (!isRegisterPasswordValid) {
             uiState = UIState.Error(message = "Password cannot be empty.")
@@ -286,7 +274,7 @@ class AuthViewModel() : ViewModel(){
 //
     fun setNewPassword(email: String, otp: String, newPassword: String) {
         isSetNewPasswordValid = newPassword.isNotBlank()
-        isConfirmNewPasswordValid = newPassword.isNotBlank()
+//        isConfirmNewPasswordValid = newPassword.isNotBlank()
 
         if (!isSetNewPasswordValid) {
             uiState = UIState.Error(message ="New password cannot be empty.")

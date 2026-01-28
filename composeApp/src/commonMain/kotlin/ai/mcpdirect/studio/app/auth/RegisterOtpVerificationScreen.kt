@@ -4,6 +4,8 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +21,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -33,7 +36,7 @@ fun RegisterOtpVerificationScreen() {
     var confirmPassword by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
-    val (otpRequester,nameRequester,passwordFocusRequester, confirmPasswordFocusRequester) = FocusRequester.createRefs()
+    val firstFocusRequester = remember { FocusRequester() }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -57,10 +60,18 @@ fun RegisterOtpVerificationScreen() {
         Text("Enter OTP sent to ${authViewModel.registrationEmail}")
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            modifier = Modifier.width(256.dp),
+            modifier = Modifier.width(256.dp).focusRequester(firstFocusRequester),
             value = otp,
             onValueChange = { otp = it },
-            label = { Text("OTP") }
+            label = { Text("OTP") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            //Define what happens when "Next" is pressed
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
+            singleLine = true,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text("Set your name and password")
@@ -69,20 +80,15 @@ fun RegisterOtpVerificationScreen() {
             value = name,
             onValueChange = { name = it },
             label = { Text("Your Name") },
-            singleLine = true,
-            modifier = Modifier
-                .width(256.dp)
-                .focusRequester(passwordFocusRequester)
-                .onKeyEvent {
-                    if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
-                        focusManager.moveFocus(FocusDirection.Next)
-                        true
-                    } else if (it.key == Key.Spacebar && it.type == KeyEventType.KeyDown) {
-                        false
-                    } else {
-                        false
-                    }
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            //Define what happens when "Next" is pressed
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
                 }
+            ),
+            singleLine = true,
+            modifier = Modifier.width(256.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         var passwordVisibility by remember { mutableStateOf(false) }
@@ -91,6 +97,13 @@ fun RegisterOtpVerificationScreen() {
             onValueChange = { password = it },
             label = { Text("Password") },
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            //Define what happens when "Next" is pressed
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
             singleLine = true,
             trailingIcon = {
                 IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
@@ -100,19 +113,7 @@ fun RegisterOtpVerificationScreen() {
                     )
                 }
             },
-            modifier = Modifier
-                .width(256.dp)
-                .focusRequester(passwordFocusRequester)
-                .onKeyEvent {
-                    if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
-                        focusManager.moveFocus(FocusDirection.Next)
-                        true
-                    } else if (it.key == Key.Spacebar && it.type == KeyEventType.KeyDown) {
-                        false
-                    } else {
-                        false
-                    }
-                }
+            modifier = Modifier.width(256.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         var confirmPasswordVisibility by remember { mutableStateOf(false) }
@@ -121,6 +122,17 @@ fun RegisterOtpVerificationScreen() {
             onValueChange = { confirmPassword = it },
             label = { Text("Confirm Password") },
             visualTransformation = if (confirmPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    authViewModel.register(name, otp, password, confirmPassword)
+                    //Move focus to the button
+//                    loginFocusRequester.requestFocus()
+
+                    // Optional: If you want to hide the keyboard too
+                    focusManager.clearFocus()
+                }
+            ),
             singleLine = true,
             trailingIcon = {
                 IconButton(onClick = { confirmPasswordVisibility = !confirmPasswordVisibility }) {
@@ -130,19 +142,7 @@ fun RegisterOtpVerificationScreen() {
                     )
                 }
             },
-            modifier = Modifier
-                .width(256.dp)
-                .focusRequester(confirmPasswordFocusRequester)
-                .onKeyEvent {
-                    if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
-                        focusManager.moveFocus(FocusDirection.Next)
-                        true
-                    } else if (it.key == Key.Spacebar && it.type == KeyEventType.KeyDown) {
-                        false
-                    } else {
-                        false
-                    }
-                }
+            modifier = Modifier.width(256.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -156,6 +156,9 @@ fun RegisterOtpVerificationScreen() {
             Text("Back to Registration")
         }
 
+        LaunchedEffect(Unit) {
+            firstFocusRequester.requestFocus()
+        }
         when (val state = authViewModel.uiState) {
             is UIState.Error -> {
                 state.message?.let {

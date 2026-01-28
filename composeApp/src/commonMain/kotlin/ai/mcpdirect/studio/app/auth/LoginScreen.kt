@@ -5,6 +5,8 @@ import ai.mcpdirect.studio.app.UIState
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,18 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.*
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import mcpdirectstudioapp.composeapp.generated.resources.Res
-import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_platform_logo
-import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_studio_logo
-import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_text_logo
-import mcpdirectstudioapp.composeapp.generated.resources.mcpdirect_text_logo_256
-import mcpdirectstudioapp.composeapp.generated.resources.visibility
-import mcpdirectstudioapp.composeapp.generated.resources.visibility_off
+import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -32,7 +28,8 @@ fun LoginScreen() {
     var password by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
-    val (emailFocusRequester, passwordFocusRequester,loginFocusRequester) = FocusRequester.createRefs()
+    val accountFocusRequester = remember { FocusRequester() }
+//    val loginFocusRequester = remember { FocusRequester() }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -54,10 +51,17 @@ fun LoginScreen() {
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            modifier = Modifier.width(256.dp),
+            modifier = Modifier.width(256.dp).focusRequester(accountFocusRequester),
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            //Define what happens when "Next" is pressed
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
             singleLine = true,
             isError = !authViewModel.isLoginEmailValid,
             supportingText = {
@@ -74,6 +78,18 @@ fun LoginScreen() {
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
+            // For the last field, use "Done" to hide the keyboard
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    authViewModel.login(email, password)
+                    //Move focus to the button
+//                    loginFocusRequester.requestFocus()
+
+                    // Optional: If you want to hide the keyboard too
+                    focusManager.clearFocus()
+                }
+            ),
             singleLine = true,
             isError = !authViewModel.isLoginPasswordValid,
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
@@ -97,7 +113,12 @@ fun LoginScreen() {
                 modifier = Modifier.size(48.dp),
                 color = MaterialTheme.colorScheme.primary
             )
-        else Button(onClick = { authViewModel.login(email, password) }) {
+        else Button(
+            onClick = { authViewModel.login(email, password) },
+//            modifier = Modifier.focusRequester(loginFocusRequester).focusable().onFocusChanged { state ->
+//                println("get focus")
+//            }
+        ) {
             Text("Login")
         }
 
@@ -110,6 +131,9 @@ fun LoginScreen() {
             TextButton(onClick = { authViewModel.navigateTo(AuthScreen.ForgotPassword) }) {
                 Text("Forgot Password?")
             }
+        }
+        LaunchedEffect(Unit) {
+            accountFocusRequester.requestFocus()
         }
 //        Spacer(modifier = Modifier.height(16.dp))
 //        TextButton(onClick = { authViewModel.navigateTo(AuthScreen.AuthOption) }) {
@@ -136,8 +160,8 @@ fun LoginScreen() {
             is UIState.Error -> {
                 Text (
                     when (state.code) {
-                        AIPortServiceResponse.ACCOUNT_NOT_EXIST -> "account not exist"
-                        else -> "sign in failed"
+                        AIPortServiceResponse.ACCOUNT_NOT_EXIST -> "Account not exist"
+                        else -> "Sign in failed, please check account and password"
                     },
                     color = MaterialTheme.colorScheme.error
                 )

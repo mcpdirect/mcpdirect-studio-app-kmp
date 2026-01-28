@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.agent.component
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
+import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.ListButton
 import ai.mcpdirect.studio.app.compose.StudioActionBar
 import ai.mcpdirect.studio.app.compose.StudioBoard
@@ -24,6 +25,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,8 +35,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -297,6 +302,7 @@ fun ToolAgentNameEditor(
     modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
 ){
+    val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     var error by remember { mutableStateOf(true) }
     var textFieldState by remember {
@@ -344,6 +350,16 @@ fun ToolAgentNameEditor(
                             ||textFieldState.text.isEmpty()
                             ||textFieldState.text==name
                 },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if(!error) {
+                            onValueChange(textFieldState.text)
+                            // Optional: If you want to hide the keyboard too
+                            focusManager.clearFocus()
+                        }
+                    }
+                ),
                 singleLine = true
             )
             IconButton(

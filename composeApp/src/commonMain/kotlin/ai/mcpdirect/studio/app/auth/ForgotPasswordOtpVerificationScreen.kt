@@ -4,6 +4,8 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.UIState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +19,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -30,8 +33,7 @@ fun ForgotPasswordOtpVerificationScreen() {
     var confirmNewPassword by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
-    val (otpFocusRequester, newPasswordFocusRequester, confirmNewPasswordFocusRequester) = FocusRequester.createRefs()
-
+    val firstFocusRequester = remember { FocusRequester() }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -58,20 +60,17 @@ fun ForgotPasswordOtpVerificationScreen() {
             value = otp,
             onValueChange = { otp = it },
             label = { Text("OTP") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            //Define what happens when "Next" is pressed
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
             singleLine = true,
             modifier = Modifier
                 .width(256.dp)
-                .focusRequester(otpFocusRequester)
-                .onKeyEvent {
-                    if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
-                        focusManager.moveFocus(FocusDirection.Next)
-                        true
-                    } else if (it.key == Key.Spacebar && it.type == KeyEventType.KeyDown) {
-                        false
-                    } else {
-                        false
-                    }
-                }
+                .focusRequester(firstFocusRequester)
         )
         Spacer(modifier = Modifier.height(16.dp))
         var newPasswordVisibility by remember { mutableStateOf(false) }
@@ -80,6 +79,13 @@ fun ForgotPasswordOtpVerificationScreen() {
             onValueChange = { newPassword = it },
             label = { Text("New Password") },
             visualTransformation = if (newPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            //Define what happens when "Next" is pressed
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
             singleLine = true,
             trailingIcon = {
                 IconButton(onClick = { newPasswordVisibility = !newPasswordVisibility }) {
@@ -89,19 +95,7 @@ fun ForgotPasswordOtpVerificationScreen() {
                     )
                 }
             },
-            modifier = Modifier
-                .width(256.dp)
-                .focusRequester(newPasswordFocusRequester)
-                .onKeyEvent {
-                    if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
-                        focusManager.moveFocus(FocusDirection.Next)
-                        true
-                    } else if (it.key == Key.Spacebar && it.type == KeyEventType.KeyDown) {
-                        false
-                    } else {
-                        false
-                    }
-                }
+            modifier = Modifier.width(256.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         var confirmNewPasswordVisibility by remember { mutableStateOf(false) }
@@ -110,6 +104,17 @@ fun ForgotPasswordOtpVerificationScreen() {
             onValueChange = { confirmNewPassword = it },
             label = { Text("Confirm New Password") },
             visualTransformation = if (confirmNewPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    authViewModel.setNewPassword(authViewModel.forgotPasswordEmail, otp, newPassword)
+                    //Move focus to the button
+//                    loginFocusRequester.requestFocus()
+
+                    // Optional: If you want to hide the keyboard too
+                    focusManager.clearFocus()
+                }
+            ),
             singleLine = true,
             trailingIcon = {
                 IconButton(onClick = { confirmNewPasswordVisibility = !confirmNewPasswordVisibility }) {
@@ -119,19 +124,7 @@ fun ForgotPasswordOtpVerificationScreen() {
                     )
                 }
             },
-            modifier = Modifier
-                .width(256.dp)
-                .focusRequester(confirmNewPasswordFocusRequester)
-                .onKeyEvent {
-                    if (it.key == Key.Tab && it.type == KeyEventType.KeyDown) {
-                        focusManager.moveFocus(FocusDirection.Next)
-                        true
-                    } else if (it.key == Key.Spacebar && it.type == KeyEventType.KeyDown) {
-                        false
-                    } else {
-                        false
-                    }
-                }
+            modifier = Modifier.width(256.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         if( authViewModel.uiState is UIState.Loading) {
@@ -144,7 +137,9 @@ fun ForgotPasswordOtpVerificationScreen() {
         TextButton(onClick = { authViewModel.navigateTo(AuthScreen.ForgotPassword) }) {
             Text("Back to Forgot Password")
         }
-
+        LaunchedEffect(Unit) {
+            firstFocusRequester.requestFocus()
+        }
         when (val state = authViewModel.uiState) {
             is UIState.Error -> {
                 state.message?.let {
