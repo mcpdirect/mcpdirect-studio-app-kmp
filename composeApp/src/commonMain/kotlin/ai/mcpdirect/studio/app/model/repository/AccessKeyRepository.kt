@@ -104,11 +104,11 @@ object AccessKeyRepository {
                 }
                 val message = when(it.code){
                     SERVICE_SUCCESSFUL -> null
-                    SQL_DUPLICATE_KEY -> "\"${name}\" already exists"
-                    else -> if(it.message?.contains("duplicate key") == true) "\"${name}\" already exists" else it.message
+                    SQL_DUPLICATE_KEY -> "MCPdirect Access Key \"${name}\" already exists"
+                    else -> if(it.message?.contains("duplicate key") == true) "MCPdirect Access Key \"${name}\" already exists" else it.message
                 }
                 generalViewModel.loaded(
-                    "Modify MCPdirect Access Key\"${key.name}\"",it.code,message
+                    "Modify MCPdirect Access Key \"${key.name}\"",it.code,message
                 )
                 onResponse?.invoke(it)
             }

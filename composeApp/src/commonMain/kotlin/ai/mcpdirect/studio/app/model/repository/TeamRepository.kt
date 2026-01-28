@@ -4,6 +4,8 @@ import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse.Companion.SERVICE_SUCCESSFUL
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse.Companion.SQL_DUPLICATE_KEY
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.account.AIPortTeamMember
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
@@ -232,7 +234,12 @@ object TeamRepository {
                         }
                     }
                 }
-                generalViewModel.loaded("Modify Team of #${team.name}",it.code,it.message)
+                val message = when(it.code){
+                    SERVICE_SUCCESSFUL -> null
+                    SQL_DUPLICATE_KEY -> "MCP Team \"${name}\" already exists"
+                    else -> if(it.message?.contains("duplicate key") == true) "MCP Team \"${name}\" already exists" else it.message
+                }
+                generalViewModel.loaded("Modify MCP Team \"${team.name}\"",it.code,message)
                 onResponse?.invoke(it)
             }
         }

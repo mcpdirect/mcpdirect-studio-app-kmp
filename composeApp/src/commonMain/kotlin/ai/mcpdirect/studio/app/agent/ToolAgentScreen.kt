@@ -4,6 +4,7 @@ import ai.mcpdirect.studio.app.agent.component.ToolAgentComponent
 import ai.mcpdirect.studio.app.agent.component.ToolAgentComponentViewModel
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.BlankDialog
+import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortTool
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
@@ -127,7 +128,11 @@ fun ToolAgentScreen(
             "Share to MCP Teams",
             {dialog = ToolAgentScreenDialog.None},
         ) { paddingValues ->
-            TeamScreen(toolMakers = viewModel.selectedToolMakers, editable = true, paddingValues=paddingValues)
+            TeamScreen(
+                team = AIPortTeam(),
+                toolMakers = viewModel.selectedToolMakers,
+                editable = true, paddingValues=paddingValues
+            )
         }
     }
 }

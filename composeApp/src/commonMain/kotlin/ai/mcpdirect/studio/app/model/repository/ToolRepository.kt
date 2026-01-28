@@ -4,6 +4,8 @@ import ai.mcpdirect.mcpdirectstudioapp.currentMilliseconds
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse.Companion.SERVICE_SUCCESSFUL
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse.Companion.SQL_DUPLICATE_KEY
 import ai.mcpdirect.studio.app.model.aitool.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -251,8 +253,14 @@ object ToolRepository {
                         }
                     }
                 }
+                val message = when(it.code){
+                    SERVICE_SUCCESSFUL -> null
+                    SQL_DUPLICATE_KEY -> "MCP server \"${name}\" already exists"
+                    else -> if(it.message?.contains("duplicate key") == true) "MCP server \"${name}\" already exists" else it.message
+                }
+
                 generalViewModel.loaded(
-                    "Modify tool maker of #${toolMaker.name}",it.code,it.message
+                    "Modify MCP server \"${toolMaker.name}\"",it.code,message
                 )
                 onResponse(it)
             }

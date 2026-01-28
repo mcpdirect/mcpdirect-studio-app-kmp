@@ -83,7 +83,7 @@ fun TeamListView(
     var showCreateTeamView by remember { mutableStateOf(showKeyGeneration) }
     var editableTeam by remember { mutableStateOf<AIPortTeam?>(null) }
     LaunchedEffect(team){
-        if(team!=null){
+        if(team!=null&&team.id>0){
 //            viewModel.currentTeam(team)
             currentTeam = team
             onTeamChange(team)

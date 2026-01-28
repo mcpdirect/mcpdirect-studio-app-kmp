@@ -1,6 +1,19 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Improve team handling and error messaging consistency
+
+### Details
+- Added AIPortTeam import to ToolAgentScreen for proper team handling
+- Fixed team initialization condition to check for valid team ID
+- Updated error messaging to be consistent across repositories
+- Enhanced Modify MCP server error message in ToolRepository
+- Improved Modify MCP Team error message in TeamRepository
+- Standardized duplicate key error messages across repositories
+- Updated Modify MCPdirect Access Key error message in AccessKeyRepository
+
+## [January 28, 2026]
+### Summary
 Enhance editable text functionality with improved UI and error handling
 
 ### Details
