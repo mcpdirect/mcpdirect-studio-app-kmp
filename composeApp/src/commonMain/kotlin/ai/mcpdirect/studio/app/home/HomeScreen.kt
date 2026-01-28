@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.delay
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
@@ -100,21 +101,25 @@ fun HomeScreen(){
                             modifier = Modifier.width(110.dp)
                         )
                         Spacer(Modifier.width(8.dp))
-                        if(isHovered) {
-                            LinkButton(
-                                if(newVersion) "Upgrade" else "Check update",
-                                onClick = {
-                                    if(newVersion){
-                                        uriHandler.openUri("https://github.com/mcpdirect/mcpdirect-studio-app-kmp/releases")
-                                    } else viewModel.checkAppUpdate()
-                                },
-                                style = MaterialTheme.typography.bodySmall
-//                                modifier = Modifier.height(24.dp),
-                            )
-//                            {
-//                                Text(if(newVersion) "Download" else "Check update",style = MaterialTheme.typography.bodySmall)
-//                            }
-                        }else Text("v${AppInfo.APP_VERSION}",style = MaterialTheme.typography.bodySmall)
+                        if(isHovered) LinkButton(
+                            if(newVersion) "Upgrade" else "Check update",
+                            onClick = {
+                                if(newVersion){
+                                    uriHandler.openUri("https://github.com/mcpdirect/mcpdirect-studio-app-kmp/releases")
+                                } else viewModel.checkAppUpdate()
+                            },
+                            style = MaterialTheme.typography.bodySmall
+                        ) else Text("v${AppInfo.APP_VERSION}",style = MaterialTheme.typography.bodySmall)
+                        Spacer(Modifier.width(4.dp))
+                        if(newVersion) Icon(
+                            painterResource(Res.drawable.upgrade),
+                            contentDescription = "Upgraded",
+                            modifier = Modifier.size(16.dp)
+                        ) else Icon(
+                            painterResource(Res.drawable.refresh),
+                            contentDescription = "Check Update",
+                            modifier = Modifier.size(14.dp)
+                        )
                     }
                 }
             }
@@ -190,20 +195,35 @@ fun HomeScreen(){
                             contentDescription = ""
                         )
                     }
-                    IconButton(
-                        onClick = {
-                            viewModel.refreshToolAgents(true)
-                            viewModel.refreshToolMakers(true)
-                            viewModel.refreshAccessKeys(true)
-                            viewModel.refreshTeams(true)
-                            viewModel.refreshTeamToolMakers(true)
+                    var isVisible by remember { mutableStateOf(false) }
+                    val process = generalViewModel.loadingProcess
+                    if(process in 0f..<1.0f) {
+                        CircularProgressIndicator(Modifier.size(48.dp).padding(12.dp))
+                    }else {
+                        if(!isVisible)CircularProgressIndicator(Modifier.size(48.dp).padding(12.dp))
+                        // 延迟 2 秒后显示
+                        LaunchedEffect(Unit) {
+                            isVisible = false
+                            delay(1500) // 2 秒延迟
+                            isVisible = true
                         }
-                    ) {
-                        Icon(
-                            painterResource(Res.drawable.refresh),
-                            contentDescription = ""
-                        )
+                        if(isVisible) IconButton(
+                            onClick = {
+                                viewModel.refreshToolAgents(true)
+                                viewModel.refreshToolMakers(true)
+                                viewModel.refreshAccessKeys(true)
+                                viewModel.refreshTeams(true)
+                                viewModel.refreshTeamToolMakers(true)
+                            }
+                        ) {
+                            Icon(
+                                painterResource(Res.drawable.refresh),
+                                contentDescription = "",
+                                tint = if(process<0f) MaterialTheme.colorScheme.error else LocalContentColor.current
+                            )
+                        }
                     }
+
                 } else InlineTextField(
                     me.name,
                     modifier = Modifier.height(48.dp),

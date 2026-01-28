@@ -1,6 +1,18 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Enhance HomeScreen with improved update and refresh functionality
+
+### Details
+- Added upgrade icon to indicate when a new version is available
+- Implemented refresh icon for update checking functionality
+- Added delayed visibility for refresh button to improve UX
+- Included loading indicator during refresh operations
+- Added delay functionality using kotlinx.coroutines.delay
+- Enhanced visual feedback for loading states in HomeScreen
+
+## [January 28, 2026]
+### Summary
 Improve team handling and error messaging consistency
 
 ### Details
