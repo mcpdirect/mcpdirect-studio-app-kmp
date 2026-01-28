@@ -1,6 +1,19 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Enhance editable text functionality with improved UI and error handling
+
+### Details
+- Added padding option to InlineTextField composable
+- Fixed border display issue in InlineTextField
+- Corrected cancel behavior to properly return to non-editing state
+- Enhanced error messaging for duplicate access key names
+- Implemented editable user profile name in HomeScreen
+- Improved validation and error handling in access key repository
+- Updated QWEN.md instructions for changelog generation
+
+## [January 28, 2026]
+### Summary
 Add editable text functionality to allow in-place name editing
 
 ### Details

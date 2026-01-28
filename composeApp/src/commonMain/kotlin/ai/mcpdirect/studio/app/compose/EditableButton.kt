@@ -38,6 +38,7 @@ import org.jetbrains.compose.resources.painterResource
 fun InlineTextField(
     name:String,
     modifier: Modifier = Modifier,
+    paddingValues: PaddingValues = PaddingValues(),
     validator: (String) -> Boolean = { true },
     onValueChange: (String?) -> Unit,
 ){
@@ -47,19 +48,25 @@ fun InlineTextField(
     var textFieldState by remember {
         mutableStateOf(TextFieldValue(name))
     }
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier.border(
+            ButtonDefaults.outlinedButtonBorder(),
+            ButtonDefaults.shape
+        ),
+        contentAlignment = Alignment.Center
+    ) {
         Row(
-            Modifier
+            Modifier.padding(paddingValues),
 //                .height(48.dp)
 //                .background(
 //                    MaterialTheme.colorScheme.surface,
 //                    ButtonDefaults.shape
 //                )
 //                .clip(ButtonDefaults.shape)
-                .border(
-                    ButtonDefaults.outlinedButtonBorder(),
-                    ButtonDefaults.shape
-                ),
+//                .border(
+//                    ButtonDefaults.outlinedButtonBorder(),
+//                    ButtonDefaults.shape
+//                ),
 //                .padding(start = 8.dp)
 //                .focusRequester(focusRequester),
             verticalAlignment = Alignment.CenterVertically,
@@ -114,7 +121,7 @@ fun InlineTextField(
             IconButton(
                 modifier = Modifier.size(32.dp),
                 onClick = {
-                    onValueChange("")
+                    onValueChange(null)
                 }
             ) {
                 Icon(
@@ -188,7 +195,7 @@ fun EditableText(
                 modifier = Modifier.size(16.dp)
             )
         }
-    } else InlineTextField(text,modifier,validator){ text ->
+    } else InlineTextField(text,modifier,validator=validator){ text ->
         editable = false
         onEdit?.invoke(editable)
         text?.let { onTextChange(it) }

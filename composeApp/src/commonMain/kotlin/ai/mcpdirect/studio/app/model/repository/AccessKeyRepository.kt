@@ -3,6 +3,8 @@ package ai.mcpdirect.studio.app.model.repository
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse.Companion.SERVICE_SUCCESSFUL
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse.Companion.SQL_DUPLICATE_KEY
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKeyCredential
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -100,8 +102,13 @@ object AccessKeyRepository {
                         }
                     }
                 }
+                val message = when(it.code){
+                    SERVICE_SUCCESSFUL -> null
+                    SQL_DUPLICATE_KEY -> "\"${name}\" already exists"
+                    else -> if(it.message?.contains("duplicate key") == true) "\"${name}\" already exists" else it.message
+                }
                 generalViewModel.loaded(
-                    "Modify MCPdirect Access Key\"${key.name}\"",it.code,it.message
+                    "Modify MCPdirect Access Key\"${key.name}\"",it.code,message
                 )
                 onResponse?.invoke(it)
             }

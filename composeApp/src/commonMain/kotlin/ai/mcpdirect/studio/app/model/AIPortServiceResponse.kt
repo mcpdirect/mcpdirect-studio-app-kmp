@@ -19,6 +19,10 @@ data class AIPortServiceResponse<T>(
         const val SERVICE_TIMEOUT: Int = 251
         const val SERVICE_ERROR: Int = 250
 
+        //SQL
+        const val SQL_DUPLICATE_KEY: Int = 123505
+        const val SQL_DATA_TOO_LONG: Int = 122001
+
         //auth
         const val ACCOUNT_NOT_EXIST: Int = 1001000
         const val ACCOUNT_EXISTED: Int = 1001001

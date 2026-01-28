@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app
 
 import ai.mcpdirect.studio.app.model.AIPortServiceResponse
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse.Companion.SQL_DUPLICATE_KEY
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

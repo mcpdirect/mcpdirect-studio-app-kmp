@@ -6,6 +6,8 @@ import ai.mcpdirect.studio.app.PasswordRequirements
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.auth.PasswordChangeState
 import ai.mcpdirect.studio.app.auth.authViewModel
+import ai.mcpdirect.studio.app.compose.EditableText
+import ai.mcpdirect.studio.app.compose.InlineTextField
 import ai.mcpdirect.studio.app.compose.LinkButton
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.widget.MCPDirectKeysWidget
@@ -122,76 +124,96 @@ fun HomeScreen(){
                 Modifier.padding(top = 32.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(
-                    onClick = { showMenu = true  }
-                ){
-                    Icon(painterResource(Res.drawable.account_circle), contentDescription = "Account")
-                    Text(
-                        me.name,
-                        Modifier.padding(start = 8.dp),
-                        style = MaterialTheme.typography.labelLarge,
-                        overflow = TextOverflow.Ellipsis)
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
+
+                var edited by remember { mutableStateOf(false) }
+                if(!edited){
+                    TextButton(
+                        onClick = { showMenu = true },
+                        contentPadding = PaddingValues(horizontal = 8.dp),
                     ) {
-                        Text(me.account,Modifier.padding(
-                            start = 16.dp, end = 16.dp, bottom = 16.dp))
-                        HorizontalDivider()
-                        if(me.type!=AIPortUser.ANONYMOUS)DropdownMenuItem(
-                            text = { Text("Change Password") },
-                            onClick = {
-                                showMenu = false
-                                showChangePasswordDialog = true
-                            },
-                            leadingIcon = { Icon(painterResource(Res.drawable.password), "Password") }
+                        Icon(painterResource(Res.drawable.account_circle), contentDescription = "Account")
+                        EditableText(
+                            me.name,
+                            Modifier.padding(start = 8.dp),
+                            style = MaterialTheme.typography.labelLarge,
+                            overflow = TextOverflow.Ellipsis,
+                            onEdit = {edited = true}
                         )
-                        if(getPlatform().type!=0)
-                            DropdownMenuItem(
-                                text = { Text("Setting") },
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            Text(
+                                me.account, Modifier.padding(
+                                    start = 16.dp, end = 16.dp, bottom = 16.dp
+                                )
+                            )
+                            HorizontalDivider()
+                            if (me.type != AIPortUser.ANONYMOUS) DropdownMenuItem(
+                                text = { Text("Change Password") },
                                 onClick = {
                                     showMenu = false
-                                    generalViewModel.currentScreen(Screen.UserSetting)
+                                    showChangePasswordDialog = true
+                                },
+                                leadingIcon = { Icon(painterResource(Res.drawable.password), "Password") }
+                            )
+//                        if(getPlatform().type!=0)
+//                            DropdownMenuItem(
+//                                text = { Text("Setting") },
+//                                onClick = {
+//                                    showMenu = false
+//                                    generalViewModel.currentScreen(Screen.UserSetting)
+//                                },
+//                                leadingIcon = {
+//                                    Icon(painterResource(Res.drawable.settings), "Setting")
+//                                }
+//                            )
+                            HorizontalDivider()
+                            DropdownMenuItem(
+                                text = { Text("Logout") },
+                                onClick = {
+                                    showMenu = false
+                                    showLogoutDialog = true
                                 },
                                 leadingIcon = {
-                                    Icon(painterResource(Res.drawable.settings), "Setting")
+                                    Icon(painterResource(Res.drawable.logout), "Logout")
                                 }
                             )
-                        HorizontalDivider()
-                        DropdownMenuItem(
-                            text = { Text("Logout") },
-                            onClick = {
-                                showMenu = false
-                                showLogoutDialog = true
-                            },
-                            leadingIcon = {
-                                Icon(painterResource(Res.drawable.logout), "Logout")
-                            }
+                        }
+                    }
+                    Spacer(Modifier.weight(1f))
+                    IconButton(
+                        onClick = { showTipsDialog = true }
+                    ) {
+                        Icon(
+                            painterResource(Res.drawable.lightbulb_2),
+                            contentDescription = ""
                         )
                     }
-                }
-                Spacer(Modifier.weight(1f))
-                IconButton(
-                    onClick = { showTipsDialog = true }
-                ) {
-                    Icon(
-                        painterResource(Res.drawable.lightbulb_2),
-                        contentDescription = ""
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        viewModel.refreshToolAgents(true)
-                        viewModel.refreshToolMakers(true)
-                        viewModel.refreshAccessKeys(true)
-                        viewModel.refreshTeams(true)
-                        viewModel.refreshTeamToolMakers(true)
+                    IconButton(
+                        onClick = {
+                            viewModel.refreshToolAgents(true)
+                            viewModel.refreshToolMakers(true)
+                            viewModel.refreshAccessKeys(true)
+                            viewModel.refreshTeams(true)
+                            viewModel.refreshTeamToolMakers(true)
+                        }
+                    ) {
+                        Icon(
+                            painterResource(Res.drawable.refresh),
+                            contentDescription = ""
+                        )
                     }
-                ) {
-                    Icon(
-                        painterResource(Res.drawable.refresh),
-                        contentDescription = ""
-                    )
+                } else InlineTextField(
+                    me.name,
+                    modifier = Modifier.height(48.dp),
+                    paddingValues = PaddingValues(8.dp),
+                    validator = { it.length<21 }
+                ){ name->
+                    edited = false
+//                    if(name!=null) viewModel.modifyMCPdirectKey(accessKey,name){
+//
+//                    }
                 }
             }
         }

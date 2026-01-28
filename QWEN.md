@@ -15,4 +15,4 @@ root/
 - **Use change log summary as git commit message**
 - **change log must be committed**
 - **Don't auto git commit**
-- **Always commit change log**
+- **Always generate change log before git commit**
