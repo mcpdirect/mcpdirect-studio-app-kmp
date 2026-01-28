@@ -310,8 +310,7 @@ fun ToolAgentNameEditor(
     }
     Box(modifier = modifier) {
         Row(
-            Modifier
-                .height(48.dp)
+            Modifier.height(48.dp)
 //                .background(
 //                    MaterialTheme.colorScheme.surface,
 //                    ButtonDefaults.shape

@@ -1,6 +1,7 @@
 package ai.mcpdirect.studio.app.home
 
 import ai.mcpdirect.studio.app.generalViewModel
+import ai.mcpdirect.studio.app.model.AIPortServiceResponse
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
 import ai.mcpdirect.studio.app.model.aitool.AIPortTeamToolMaker
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAccessKey
@@ -120,6 +121,30 @@ class HomeViewModel: ViewModel() {
                     generalViewModel.showSnackbar("You're using the last version.")
                 }
             }
+        }
+    }
+    fun modifyToolAgent(
+        toolAgent: AIPortToolAgent,name:String,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolAgent>) -> Unit
+    ){
+        viewModelScope.launch {
+            StudioRepository.modifyToolAgent(toolAgent,name,onResponse=onResponse)
+        }
+    }
+    fun modifyMCPdirectKey(
+        key: AIPortToolAccessKey, name: String,
+        onResponse: (resp: AIPortServiceResponse<AIPortToolAccessKey>) -> Unit
+    ) {
+        viewModelScope.launch {
+            AccessKeyRepository.modifyAccessKey(key,name=name, onResponse = onResponse)
+        }
+    }
+    fun modifyTeam(
+        team:AIPortTeam,name:String?=null,status:Int?=null,
+        onResponse: ((resp: AIPortServiceResponse<AIPortTeam>) -> Unit)?=null
+    ){
+        viewModelScope.launch {
+            TeamRepository.modifyTeam(team,name,status,onResponse)
         }
     }
 }

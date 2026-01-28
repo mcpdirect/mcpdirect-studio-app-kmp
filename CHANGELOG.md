@@ -1,6 +1,19 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Add editable text functionality to allow in-place name editing
+
+### Details
+- Created new EditableText and InlineTextField composables for inline editing
+- Implemented editable access key names in MCPDirectKeysWidget
+- Added editable tool agent names in MyStudiosWidget
+- Enabled direct name editing in UI components without separate edit screens
+- Added validation and error handling for name changes
+- Included save and cancel functionality for editing operations
+- Used ellipsis text overflow for better display of long names
+
+## [January 28, 2026]
+### Summary
 Improve authentication UI with better keyboard navigation and focus management
 
 ### Details

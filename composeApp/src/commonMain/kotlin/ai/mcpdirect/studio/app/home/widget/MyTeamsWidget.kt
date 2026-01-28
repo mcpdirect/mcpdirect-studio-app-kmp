@@ -2,6 +2,8 @@ package ai.mcpdirect.studio.app.home.widget
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.compose.EditableText
+import ai.mcpdirect.studio.app.compose.InlineTextField
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import androidx.compose.foundation.hoverable
@@ -26,10 +28,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
@@ -77,7 +82,8 @@ fun MyTeamsView(
         if (teams.isNotEmpty()) {
             LazyColumn {
                 items(teams) { team ->
-                    TextButton(
+                    var edited by remember { mutableStateOf(false) }
+                    if(!edited)TextButton(
                         modifier = Modifier.height(32.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         onClick = {
@@ -90,7 +96,20 @@ fun MyTeamsView(
 //                        border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor)
                     ) {
                         Row(Modifier.fillMaxWidth()) {
-                            Text(team.name)
+                            EditableText(
+                                team.name,
+                                overflow = TextOverflow.MiddleEllipsis,
+                                onEdit = {edited = it}
+                            )
+                        }
+                    } else InlineTextField(
+                        team.name,
+                        modifier = Modifier.height(32.dp),
+                        validator = { it.length<21 }
+                    ){ name->
+                        edited = false
+                        if(name!=null) viewModel.modifyTeam(team,name){
+
                         }
                     }
                 }

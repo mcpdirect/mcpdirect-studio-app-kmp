@@ -2,6 +2,8 @@ package ai.mcpdirect.studio.app.home.widget
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
+import ai.mcpdirect.studio.app.compose.EditableText
+import ai.mcpdirect.studio.app.compose.InlineTextField
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import ai.mcpdirect.studio.app.model.repository.UserRepository
@@ -13,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -68,9 +73,11 @@ fun MyStudiosWidget(
             LazyColumn{
                 items(toolAgents) {
                     if (it.id > 0L && UserRepository.me(it.userId)) {
-                        TextButton(
+                        var edited by remember { mutableStateOf(false) }
+                        if(!edited)TextButton(
+                            enabled = !edited,
                             modifier = Modifier.height(32.dp),
-                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            contentPadding = PaddingValues(horizontal = if(edited) 0.dp else 16.dp),
                             onClick = {
                                 generalViewModel.currentScreen(
                                     Screen.MyStudio(it),
@@ -82,7 +89,7 @@ fun MyStudiosWidget(
                             Row(Modifier.fillMaxWidth()) {
                                 BadgedBox(
                                     badge = {
-                                        if (it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
+                                        if (!edited && it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
                                             Text(
                                                 "This device",
                                                 style = MaterialTheme.typography.labelSmall,
@@ -90,11 +97,21 @@ fun MyStudiosWidget(
                                         }
                                     }
                                 ) {
-                                    Text(
+                                    EditableText(
                                         it.name, softWrap = false,
-                                        overflow = TextOverflow.MiddleEllipsis
+                                        overflow = TextOverflow.MiddleEllipsis,
+                                        onEdit = {edited = it},
                                     )
                                 }
+                            }
+                        } else InlineTextField(
+                            it.name,
+                            modifier = Modifier.height(32.dp),
+                            validator = { it.length<31 }
+                        ){ name->
+                            edited = false
+                            if(name!=null) viewModel.modifyToolAgent(it,name){
+
                             }
                         }
                     }
