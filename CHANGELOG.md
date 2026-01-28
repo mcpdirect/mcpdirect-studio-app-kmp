@@ -1,4 +1,17 @@
 # Changelog
+## [January 28, 2026]
+### Summary
+Improve authentication UI with better keyboard navigation and focus management
+
+### Details
+- Enhanced LoginScreen with proper keyboard navigation using IME actions
+- Implemented focus management with FocusRequester and FocusManager
+- Added keyboard actions for "Next" and "Done" transitions
+- Improved error messages with more descriptive text
+- Optimized imports and cleaned up unused variables in AuthViewModel
+- Removed redundant state variables in authentication view model
+- Enhanced user experience with proper keyboard flow in authentication screens
+
 ## [January 27, 2026]
 ### Summary
 Updated theme color scheme and cleaned up changelog entries
