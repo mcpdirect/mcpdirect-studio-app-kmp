@@ -185,6 +185,7 @@ fun EditableText(
             style
         )
         Spacer(Modifier.width(2.dp))
+
         IconButton(onClick={
             editable = !editable
             onEdit?.invoke(editable)
@@ -192,7 +193,7 @@ fun EditableText(
             Icon(
                 painterResource(Res.drawable.edit),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(14.dp)
             )
         }
     } else InlineTextField(text,modifier,validator=validator){ text ->
