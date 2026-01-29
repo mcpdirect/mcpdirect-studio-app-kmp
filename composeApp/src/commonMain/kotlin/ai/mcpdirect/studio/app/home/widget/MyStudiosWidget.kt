@@ -91,7 +91,7 @@ fun MyStudiosWidget(
                                     badge = {
                                         if (!edited && it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
                                             Text(
-                                                "This device",
+                                                "Local",
                                                 style = MaterialTheme.typography.labelSmall,
                                             )
                                         }

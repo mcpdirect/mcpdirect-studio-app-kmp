@@ -64,13 +64,14 @@ fun HomeScreen(){
         Column(Modifier.width(300.dp).padding(top = 32.dp, bottom = 16.dp, start = 16.dp)){
             val interactionSource = remember { MutableInteractionSource() }
             val isHovered by interactionSource.collectIsHoveredAsState()
-            val newVersion = appVersion.versionCode>AppInfo.APP_VERSION_CODE
+
             Row(Modifier.fillMaxWidth().hoverable(interactionSource)){
-                Image(
-                    painter = painterResource(Res.drawable.mcpdirect_logo_48),
-                    contentDescription = "MCPdirect Studio",
-                    modifier = Modifier.size(48.dp)
-                )
+//                Image(
+//                    painter = painterResource(Res.drawable.mcpdirect_logo_48),
+//                    contentDescription = "MCPdirect Studio",
+//                    modifier = Modifier.size(48.dp)
+//                )
+                val newVersion = appVersion.versionCode>AppInfo.APP_VERSION_CODE
                 Column {
                     BadgedBox(
                         badge = {
@@ -84,7 +85,7 @@ fun HomeScreen(){
                         Image(
                             painter = painterResource(Res.drawable.mcpdirect_text_logo_150),
                             contentDescription = "MCPdirect Studio",
-                            modifier = Modifier.width(110.dp)
+                            modifier = Modifier.width(120.dp)
                         )
                     }
                     Row(
@@ -94,35 +95,54 @@ fun HomeScreen(){
                         if (getPlatform().type == 0) Image(
                             painter = painterResource(Res.drawable.mcpdirect_platform_logo),
                             contentDescription = "MCPdirect Studio",
-                            modifier = Modifier.width(110.dp)
+                            modifier = Modifier.width(120.dp)
                         ) else Image(
                             painter = painterResource(Res.drawable.mcpdirect_studio_logo),
                             contentDescription = "MCPdirect Studio",
-                            modifier = Modifier.width(110.dp)
+                            modifier = Modifier.width(120.dp)
                         )
                         Spacer(Modifier.width(8.dp))
-                        if(isHovered) LinkButton(
-                            if(newVersion) "Upgrade" else "Check update",
-                            onClick = {
-                                if(newVersion){
-                                    uriHandler.openUri("https://github.com/mcpdirect/mcpdirect-studio-app-kmp/releases")
-                                } else viewModel.checkAppUpdate()
-                            },
-                            style = MaterialTheme.typography.bodySmall
-                        ) else Text("v${AppInfo.APP_VERSION}",style = MaterialTheme.typography.bodySmall)
-                        Spacer(Modifier.width(4.dp))
-                        if(newVersion) Icon(
-                            painterResource(Res.drawable.upgrade),
-                            contentDescription = "Upgraded",
-                            modifier = Modifier.size(16.dp)
-                        ) else Icon(
-                            painterResource(Res.drawable.refresh),
-                            contentDescription = "Check Update",
-                            modifier = Modifier.size(14.dp)
-                        )
+                        var checking by remember { mutableStateOf(false) }
+                        if(checking){
+                            CircularProgressIndicator(Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("v${AppInfo.APP_VERSION}", style = MaterialTheme.typography.bodySmall)
+                            LaunchedEffect(Unit){
+                                delay(3000)
+                                viewModel.checkAppUpdate{
+                                    checking = false
+                                    if(it.successful()&&it.data!=null){
+                                        generalViewModel.showSnackbar("You're using the last version.")
+                                    }
+                                }
+                            }
+                        } else {
+                            if (newVersion) Icon(
+                                painterResource(Res.drawable.upgrade),
+                                contentDescription = "Upgraded",
+                                modifier = Modifier.size(16.dp)
+                            ) else Icon(
+                                painterResource(Res.drawable.refresh),
+                                contentDescription = "Check updates",
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            if (isHovered) LinkButton(
+                                if (newVersion) "Upgrade" else "Check update",
+                                onClick = {
+                                    if (newVersion) {
+                                        uriHandler.openUri("https://github.com/mcpdirect/mcpdirect-studio-app-kmp/releases")
+                                    } else {
+                                        checking = true
+                                    }
+                                },
+                                style = MaterialTheme.typography.bodySmall
+                            ) else Text("v${AppInfo.APP_VERSION}", style = MaterialTheme.typography.bodySmall)
+                        }
                     }
                 }
             }
+            Spacer(Modifier.height(16.dp))
             QuickstartWidget(Modifier.weight(1f))
             ShortcutWidget(Modifier.weight(1f),viewModel)
             Row(

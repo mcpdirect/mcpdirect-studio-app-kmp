@@ -168,7 +168,7 @@ fun ToolMakerView(
             verticalAlignment = Alignment.CenterVertically) {
             viewModel.toolAgent?.let {
                 Text(it.name)
-                if (it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) { Text("This device") }
+                if (it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) { Text("Local") }
             }
         }
     }

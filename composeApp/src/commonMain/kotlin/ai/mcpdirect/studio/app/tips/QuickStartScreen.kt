@@ -431,7 +431,7 @@ fun ToolAgentSelectionMenu(
     }
     if(toolAgents.isNotEmpty()){
         var expanded by remember { mutableStateOf(false) }
-//        val textFieldState = rememberTextFieldState(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name)
+//        val textFieldState = rememberTextFieldState(if (localToolAgent.id == currentToolAgent.id) "Local" else currentToolAgent.name)
         var checkedIndex: Int? by remember { mutableStateOf(null) }
         ExposedDropdownMenuBox(
             expanded = expanded, onExpandedChange = { expanded = it },
@@ -465,7 +465,7 @@ fun ToolAgentSelectionMenu(
                     badge = {
                         if (currentToolAgent.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
                             Text(
-                                "This device",
+                                "Local",
                                 fontWeight = FontWeight.Bold,
                             )
                         }
@@ -476,7 +476,7 @@ fun ToolAgentSelectionMenu(
                         overflow = TextOverflow.MiddleEllipsis
                     )
                 }
-//                Text(if (localToolAgent.id == currentToolAgent.id) "This Device" else currentToolAgent.name,
+//                Text(if (localToolAgent.id == currentToolAgent.id) "Local" else currentToolAgent.name,
 //                     fontWeight = FontWeight.Bold,)
                 Spacer(Modifier.weight(1f))
 //                TooltipIconButton(
@@ -507,7 +507,7 @@ fun ToolAgentSelectionMenu(
                                     badge = {
                                         if (option.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
                                             Text(
-                                                "This device",
+                                                "Local",
                                                 fontWeight = FontWeight.Bold,
                                             )
                                         }

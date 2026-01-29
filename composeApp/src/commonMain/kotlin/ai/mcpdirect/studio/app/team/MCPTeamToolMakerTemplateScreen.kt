@@ -147,7 +147,7 @@ fun ToolMakerTemplateItem(
 
 //            if(isVirtualMCP) Text("Virtual MCP Server")
 //            else if (maker.agentId == localToolAgentId)
-//                Text("This device",color = MaterialTheme.colorScheme.primary)
+//                Text("Local",color = MaterialTheme.colorScheme.primary)
 //            else maker.agentName?.let { Text(it) }
         },
         trailingContent = {

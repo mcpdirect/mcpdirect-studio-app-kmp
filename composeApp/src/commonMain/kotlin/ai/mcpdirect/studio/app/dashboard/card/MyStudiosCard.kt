@@ -72,7 +72,7 @@ fun MyStudiosCard(
                             overflow = TextOverflow.MiddleEllipsis) },
                         supportingContent = {
                             if (it.id == localToolAgent.id)
-                                Tag("This device")
+                                Tag("Local")
                         },
                         trailingContent = {
                             if (it.status == 0) Icon(

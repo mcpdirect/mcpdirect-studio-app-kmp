@@ -1,6 +1,17 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Standardize UI terminology and enhance app update functionality
+
+### Details
+- Renamed "This device" to "Local" throughout the UI for consistency
+- Modified HomeViewModel to improve app update checking functionality
+- Updated multiple UI components to reflect the new "Local" terminology
+- Enhanced app update checking with proper response handling
+- Improved UI consistency across various screens and widgets
+
+## [January 28, 2026]
+### Summary
 Enhance HomeScreen with improved update and refresh functionality
 
 ### Details

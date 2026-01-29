@@ -155,7 +155,7 @@ fun SharedMCPServerView(
                         Text(it.name,
                             modifier = Modifier.padding(vertical = 8.dp),
                             style = MaterialTheme.typography.bodySmall)
-                        if (it.id == localToolAgent.id) Badge { Text("This device") }
+                        if (it.id == localToolAgent.id) Badge { Text("Local") }
                     }else {
                         Icon(painterResource(Res.drawable.person), contentDescription = null, Modifier.size(20.dp))
                         Text(user.name,
