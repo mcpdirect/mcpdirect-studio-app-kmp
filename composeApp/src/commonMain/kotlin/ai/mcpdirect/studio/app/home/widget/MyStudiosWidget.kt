@@ -4,6 +4,7 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.EditableText
 import ai.mcpdirect.studio.app.compose.InlineTextField
+import ai.mcpdirect.studio.app.compose.ValidatorBuilder
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import ai.mcpdirect.studio.app.model.repository.UserRepository
@@ -107,7 +108,7 @@ fun MyStudiosWidget(
                         } else InlineTextField(
                             it.name,
                             modifier = Modifier.height(32.dp),
-                            validator = { it.length<31 }
+                            validator = ValidatorBuilder().required().maxLength(30).build(),
                         ){ name->
                             edited = false
                             if(name!=null) viewModel.modifyToolAgent(it,name){

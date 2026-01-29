@@ -11,6 +11,7 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -39,4 +40,33 @@ fun TooltipIcon(
             contentDescription = null // tooltip provides description
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TooltipBox(
+    tooltip: String,
+    modifier: Modifier = Modifier,
+    onDismissRequest: (() -> Unit)? = null,
+    focusable: Boolean = false,
+    enableUserInput: Boolean = true,
+    hasAction: Boolean = false,
+    content: @Composable (() -> Unit)
+) {
+    val tooltipState = rememberTooltipState()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip {
+                Text(tooltip)
+            }
+        },
+        state = tooltipState,
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        focusable = focusable,
+        enableUserInput = enableUserInput,
+        hasAction = hasAction,
+        content = content
+    )
 }

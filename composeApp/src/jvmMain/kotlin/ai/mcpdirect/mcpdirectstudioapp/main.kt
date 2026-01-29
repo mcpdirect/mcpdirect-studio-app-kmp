@@ -76,8 +76,8 @@ fun os(): Int {
 @OptIn(ExperimentalMaterial3Api::class)
 fun main() = application {
     val windowState = rememberWindowState(
-        width = 1280.dp,
-        height = 960.dp,
+        width = 1200.dp,
+        height = 800.dp,
         position = WindowPosition(Alignment.Center)
     )
     val os = os()

@@ -144,4 +144,12 @@ class HomeViewModel: ViewModel() {
             TeamRepository.modifyTeam(team,name,status,onResponse)
         }
     }
+    fun refreshAll(force:Boolean=false){
+        checkAppUpdate{}
+        refreshToolAgents(force)
+        refreshToolMakers(force)
+        refreshAccessKeys(force)
+        refreshTeams(force)
+        refreshTeamToolMakers(force)
+    }
 }

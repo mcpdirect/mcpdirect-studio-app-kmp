@@ -1,6 +1,19 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Enhance theme system and add validation features to editable components
+
+### Details
+- Fixed light/dark mode color scheme assignment in Theme.kt
+- Added refreshAll function to HomeViewModel for comprehensive refresh
+- Enhanced EditableText component with validation features and rules
+- Added new TooltipBox composable for improved tooltips
+- Added warning SVG icon for UI enhancements
+- Improved validation system with ValidationResult and ValidationRule interfaces
+- Added error, info, and warning icons to EditableText component
+
+## [January 28, 2026]
+### Summary
 Standardize UI terminology and enhance app update functionality
 
 ### Details

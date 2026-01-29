@@ -816,6 +816,8 @@ object StudioRepository {
                             put(agent.id,agent)
                         }
                     }
+                    if(agent.id==localToolAgent.value.id)
+                        localToolAgent(agent)
                 }
                 generalViewModel.loaded(
                     "Modify MCPdirect Studio #${toolAgent.name}",it.code,it.message

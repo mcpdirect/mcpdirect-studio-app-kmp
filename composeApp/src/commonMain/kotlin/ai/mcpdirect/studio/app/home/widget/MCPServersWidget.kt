@@ -2,7 +2,6 @@ package ai.mcpdirect.studio.app.home.widget
 
 import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
-import ai.mcpdirect.studio.app.compose.OutlinedCardDefaults
 import ai.mcpdirect.studio.app.compose.StudioSearchbar
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
@@ -19,13 +18,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import mcpdirectstudioapp.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 
@@ -104,21 +105,31 @@ fun MCPServersWidget(
         }
     }
 }
-
+class ToolMakerCardViewModel(toolMaker: AIPortToolMaker): ViewModel(){
+    val toolAgent : StateFlow<AIPortToolAgent?> =  StudioRepository.toolAgents
+        .map { it[toolMaker.agentId] }     // 转为 List
+        .stateIn(
+            scope = viewModelScope,      // 或 CoroutineScope(Dispatchers.Main.immediate)
+            started = SharingStarted.WhileSubscribed(5000), // 按需启动
+            initialValue = AIPortToolAgent()
+        )
+}
 @Composable
 fun ToolMakerCard(
     toolMaker: AIPortToolMaker,
     localToolAgent : AIPortToolAgent,
     modifier: Modifier
 ){
-    var toolAgent by remember { mutableStateOf(AIPortToolAgent()) }
-    LaunchedEffect(toolMaker) {
-        StudioRepository.toolAgent(toolMaker.agentId) {
-            if (it.successful()) it.data?.let { data ->
-                toolAgent = data
-            }
-        }
-    }
+    val viewModel by remember { mutableStateOf(ToolMakerCardViewModel(toolMaker)) }
+    val toolAgent by viewModel.toolAgent.collectAsState()
+//    var toolAgent by remember { mutableStateOf(AIPortToolAgent()) }
+//    LaunchedEffect(toolMaker) {
+//        StudioRepository.toolAgent(toolMaker.agentId) {
+//            if (it.successful()) it.data?.let { data ->
+//                toolAgent = data
+//            }
+//        }
+//    }
     OutlinedCard(modifier) {
         Row(
             Modifier.padding(horizontal = 8.dp),
@@ -149,30 +160,32 @@ fun ToolMakerCard(
         }
 
         Spacer(Modifier.weight(1.0f))
-        HorizontalDivider()
-        Row(
-            Modifier.padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(painterResource(Res.drawable.design_services), contentDescription = null, Modifier.size(20.dp))
-            Text(toolAgent.name,
-                modifier = Modifier.padding(vertical = 8.dp),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(Modifier.weight(1.0f))
-            Text(
-                "Local",
-                Modifier.background(
-                    color = MaterialTheme.colorScheme.background,
-                    ButtonDefaults.outlinedShape
-                ).clip(ButtonDefaults.outlinedShape).border(
-                    ButtonDefaults.outlinedButtonBorder(),
-                    ButtonDefaults.outlinedShape
-                ).padding(horizontal = 8.dp,vertical = 2.dp),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelSmall
-            )
+        toolAgent?.let { toolAgent->
+            HorizontalDivider()
+            Row(
+                Modifier.padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(painterResource(Res.drawable.design_services), contentDescription = null, Modifier.size(20.dp))
+                Text(toolAgent.name,
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(Modifier.weight(1.0f))
+                if(toolMaker.agentId==localToolAgent.id) Text(
+                    "Local",
+                    Modifier.background(
+                        color = MaterialTheme.colorScheme.background,
+                        ButtonDefaults.outlinedShape
+                    ).clip(ButtonDefaults.outlinedShape).border(
+                        ButtonDefaults.outlinedButtonBorder(),
+                        ButtonDefaults.outlinedShape
+                    ).padding(horizontal = 8.dp,vertical = 2.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
         }
     }
 }

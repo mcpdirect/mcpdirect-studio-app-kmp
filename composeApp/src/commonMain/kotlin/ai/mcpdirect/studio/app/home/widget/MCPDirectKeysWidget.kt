@@ -4,6 +4,7 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.EditableText
 import ai.mcpdirect.studio.app.compose.InlineTextField
+import ai.mcpdirect.studio.app.compose.ValidatorBuilder
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import androidx.compose.foundation.hoverable
@@ -106,7 +107,7 @@ fun MCPDirectKeysWidget(
                     } else InlineTextField(
                         accessKey.name,
                         modifier = Modifier.height(32.dp),
-                        validator = { it.length<21 }
+                        validator = ValidatorBuilder().required().maxLength(20).build(),
                     ){ name->
                         edited = false
                         if(name!=null) viewModel.modifyMCPdirectKey(accessKey,name){

@@ -278,9 +278,9 @@ fun AppTheme(
 ) {
     // Select custom palette based on the theme
     val appColors = if (darkTheme) {
-        appColorSchemeLight
-    } else {
         appColorSchemeDark
+    } else {
+        appColorSchemeLight
     }
 
     val colorScheme = when {

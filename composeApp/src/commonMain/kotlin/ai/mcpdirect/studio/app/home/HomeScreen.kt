@@ -9,6 +9,7 @@ import ai.mcpdirect.studio.app.auth.authViewModel
 import ai.mcpdirect.studio.app.compose.EditableText
 import ai.mcpdirect.studio.app.compose.InlineTextField
 import ai.mcpdirect.studio.app.compose.LinkButton
+import ai.mcpdirect.studio.app.compose.ValidatorBuilder
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.widget.MCPDirectKeysWidget
 import ai.mcpdirect.studio.app.home.widget.MCPServersWidget
@@ -57,8 +58,7 @@ fun HomeScreen(){
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var showTipsDialog by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        viewModel.refreshToolMakers()
-        viewModel.refreshTeamToolMakers(true)
+        viewModel.refreshAll(true)
     }
     Row{
         Column(Modifier.width(300.dp).padding(top = 32.dp, bottom = 16.dp, start = 16.dp)){
@@ -229,11 +229,7 @@ fun HomeScreen(){
                         }
                         if(isVisible) IconButton(
                             onClick = {
-                                viewModel.refreshToolAgents(true)
-                                viewModel.refreshToolMakers(true)
-                                viewModel.refreshAccessKeys(true)
-                                viewModel.refreshTeams(true)
-                                viewModel.refreshTeamToolMakers(true)
+                                viewModel.refreshAll(true)
                             }
                         ) {
                             Icon(
@@ -248,7 +244,7 @@ fun HomeScreen(){
                     me.name,
                     modifier = Modifier.height(48.dp),
                     paddingValues = PaddingValues(8.dp),
-                    validator = { it.length<21 }
+                    validator = ValidatorBuilder().required().maxLength(30).build(),
                 ){ name->
                     edited = false
 //                    if(name!=null) viewModel.modifyMCPdirectKey(accessKey,name){
