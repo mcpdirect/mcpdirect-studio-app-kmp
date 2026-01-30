@@ -1,6 +1,18 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Replace FlowRow with LazyVerticalGrid for improved performance
+
+### Details
+- Replaced FlowRow with LazyVerticalGrid in MCPServersWidget for better performance
+- Replaced FlowRow with LazyVerticalGrid in VirtualMCPWidget for better performance
+- Updated scrollbar adapters to work with LazyGridState instead of ScrollState
+- Improved scrolling behavior and performance in server and virtual tool widgets
+- Maintained consistent UI layout while enhancing performance characteristics
+- Updated grid item rendering to use items() function for proper lazy loading
+
+## [January 28, 2026]
+### Summary
 Enhance editable text validation and improve tool filtering
 
 ### Details

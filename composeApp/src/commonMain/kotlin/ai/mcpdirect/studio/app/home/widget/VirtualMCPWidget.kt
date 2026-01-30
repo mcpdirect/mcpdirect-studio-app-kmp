@@ -14,6 +14,10 @@ import ai.mcpdirect.studio.app.model.repository.UserRepository
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
@@ -40,7 +44,8 @@ fun VirtualMCPWidget(
     modifier: Modifier
 ){
     val toolMakers by viewModel.virtualToolMakers.collectAsState()
-    val scrollState = rememberScrollState()
+//    val scrollState = rememberScrollState()
+    val gridState = rememberLazyGridState()
 //    LaunchedEffect(viewModel) {
 //        viewModel.refreshToolMakers(true)
 //    }
@@ -77,8 +82,8 @@ fun VirtualMCPWidget(
             Box(Modifier.weight(1f).padding(top = 8.dp)) {
                 BoxWithConstraints(
                     modifier = Modifier
-                        .verticalScroll(scrollState)
-                        .padding(end = 11.dp)
+//                        .verticalScroll(scrollState)
+//                        .padding(end = 11.dp)
                         .fillMaxSize()
                 ) {
                     // 根据宽度计算每行最大项目数
@@ -91,25 +96,48 @@ fun VirtualMCPWidget(
                             else -> 5               // 超宽屏幕：5列
                         }
                     }
-                    FlowRow(
-//                        Modifier.verticalScroll(scrollState).padding( end = 11.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                    FlowRow(
+////                        Modifier.verticalScroll(scrollState).padding( end = 11.dp),
+//                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                        verticalArrangement = Arrangement.spacedBy(8.dp),
+//                        maxItemsInEachRow = maxItemsInEachRow
+//                    ) {
+//                        toolMakers.forEach { toolMaker ->
+//                            if(UserRepository.me(toolMaker.userId)) {
+//                                VirtualToolMakerCard(toolMaker,Modifier.weight(1f).height(120.dp))
+//                            }else{
+//                                TeamVirtualToolMakerCard(toolMaker,Modifier.weight(1f).height(120.dp))
+//                            }
+//
+//                        }
+//                    }
+                    LazyVerticalGrid(
+                        state = gridState,
+                        columns = GridCells.Fixed(maxItemsInEachRow), // 固定2列
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(end = 11.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        maxItemsInEachRow = maxItemsInEachRow
-                    ) {
-                        toolMakers.forEach { toolMaker ->
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                        contentPadding = PaddingValues(bottom = 8.dp) // 底部内边距
+                    ){
+                        items(toolMakers) { toolMaker ->
                             if(UserRepository.me(toolMaker.userId)) {
-                                VirtualToolMakerCard(toolMaker,Modifier.weight(1f).height(120.dp))
+                                VirtualToolMakerCard(toolMaker,Modifier.height(120.dp))
                             }else{
-                                TeamVirtualToolMakerCard(toolMaker,Modifier.weight(1f).height(120.dp))
+                                TeamVirtualToolMakerCard(toolMaker,Modifier.height(120.dp))
                             }
 
                         }
                     }
                 }
+//                VerticalScrollbar(
+//                    modifier = Modifier.align(Alignment.CenterEnd),
+//                    adapter = rememberScrollbarAdapter(scrollState = scrollState)
+//                )
                 VerticalScrollbar(
                     modifier = Modifier.align(Alignment.CenterEnd),
-                    adapter = rememberScrollbarAdapter(scrollState = scrollState)
+                    adapter = rememberScrollbarAdapter(scrollState = gridState)
                 )
             }
         } else if (getPlatform().type == 0) Column(
