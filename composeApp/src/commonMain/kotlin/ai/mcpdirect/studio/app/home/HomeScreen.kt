@@ -143,7 +143,8 @@ fun HomeScreen(){
                 }
             }
             Spacer(Modifier.height(16.dp))
-            QuickstartWidget(Modifier.weight(1f))
+            QuickstartWidget(Modifier.weight(1f,false))
+            Spacer(Modifier.height(16.dp))
             ShortcutWidget(Modifier.weight(1f),viewModel)
             Row(
                 Modifier.padding(top = 32.dp),

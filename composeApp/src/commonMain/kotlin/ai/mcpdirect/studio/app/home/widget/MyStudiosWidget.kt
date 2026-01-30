@@ -71,7 +71,9 @@ fun MyStudiosWidget(
 //        HorizontalDivider()
         if (toolAgents.size > 1) {
             val localToolAgent by viewModel.localToolAgent.collectAsState()
-            LazyColumn{
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ){
                 items(toolAgents) {
                     if (it.id > 0L && UserRepository.me(it.userId)) {
                         var edited by remember { mutableStateOf(false) }
@@ -87,10 +89,10 @@ fun MyStudiosWidget(
                                 )
                             },
                         ) {
-                            Row(Modifier.fillMaxWidth()) {
+                            if (it.id == localToolAgent.id){
                                 BadgedBox(
                                     badge = {
-                                        if (!edited && it.id == localToolAgent.id) Badge(Modifier.padding(start = 8.dp)) {
+                                        Badge(Modifier.padding(start = 8.dp)) {
                                             Text(
                                                 "Local",
                                                 style = MaterialTheme.typography.labelSmall,
@@ -104,7 +106,14 @@ fun MyStudiosWidget(
                                         onEdit = {edited = it},
                                     )
                                 }
-                            }
+                                Spacer(Modifier.width(32.dp))
+                            }else EditableText(
+                                it.name, softWrap = false,
+                                overflow = TextOverflow.MiddleEllipsis,
+                                onEdit = {edited = it},
+                            )
+//                            Row {
+//                            }
                         } else InlineTextField(
                             it.name,
                             modifier = Modifier.height(32.dp),

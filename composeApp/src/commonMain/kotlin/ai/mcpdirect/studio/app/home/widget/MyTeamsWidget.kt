@@ -81,7 +81,9 @@ fun MyTeamsView(
             }
         }
         if (teams.isNotEmpty()) {
-            LazyColumn {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 items(teams) { team ->
                     var edited by remember { mutableStateOf(false) }
                     if(!edited)TextButton(
@@ -96,7 +98,7 @@ fun MyTeamsView(
                         },
 //                        border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor)
                     ) {
-                        Row(Modifier.fillMaxWidth()) {
+                        Row {
                             EditableText(
                                 team.name,
                                 overflow = TextOverflow.MiddleEllipsis,

@@ -1,6 +1,19 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Enhance editable text validation and improve tool filtering
+
+### Details
+- Added keyboard event handling to EditableText component
+- Improved tool maker filtering in ToolRepository to ignore templates
+- Added TODO comment for future ToolMakerTemplate completion
+- Enhanced validation system with additional keyboard support
+- Made minor UI adjustments in HomeScreen and widget components
+- Updated weight distribution in QuickstartWidget layout
+- Added spacing adjustments in various UI components
+
+## [January 28, 2026]
+### Summary
 Enhance theme system and add validation features to editable components
 
 ### Details

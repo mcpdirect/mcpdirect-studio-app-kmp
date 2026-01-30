@@ -82,7 +82,9 @@ fun MCPDirectKeysWidget(
             }
         }
         if (accessKeys.isNotEmpty()) {
-            LazyColumn {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 items(accessKeys) { accessKey ->
                     var edited by remember { mutableStateOf(false) }
                     if(!edited)TextButton(
@@ -97,7 +99,7 @@ fun MCPDirectKeysWidget(
                         },
 //                        border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor)
                     ) {
-                        Row(Modifier.fillMaxWidth()) {
+                        Row {
                             EditableText(
                                 accessKey.name,
                                 overflow = TextOverflow.MiddleEllipsis,

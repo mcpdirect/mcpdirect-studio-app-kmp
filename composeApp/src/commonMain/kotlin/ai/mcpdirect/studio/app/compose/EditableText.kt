@@ -1,6 +1,5 @@
 package ai.mcpdirect.studio.app.compose
 
-import ai.mcpdirect.studio.app.theme.AppColorScheme
 import ai.mcpdirect.studio.app.theme.AppColors
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -16,7 +15,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
+
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -53,7 +58,9 @@ enum class ValidationSeverity {
     Error      // 错误
 }
 // 验证规则组合器
-class Validator(private val rules: List<ValidationRule>) {
+class Validator(
+    private val rules: List<ValidationRule> = emptyList()
+) {
     fun validate(input: String): ValidationResult {
         return rules
             .map { it.validate(input) }
@@ -108,7 +115,7 @@ object ValidationRules {
                 ValidationResult.OK
             } else {
                 ValidationResult.Fail(
-                    "Required",
+                    "Please enter a text",
                     severity = ValidationSeverity.Error
                 )
             }
@@ -163,7 +170,7 @@ fun InlineTextField(
     name:String,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues(),
-    validator: Validator?=null,
+    validator: Validator = Validator(),
     onValueChange: (String?) -> Unit,
 ){
     val focusManager = LocalFocusManager.current
@@ -175,7 +182,16 @@ fun InlineTextField(
         mutableStateOf(TextFieldValue(name))
     }
     LaunchedEffect(Unit){
-        validationResult = validator?.validate(name)?: ValidationResult.OK
+        if(name.isNotBlank()){
+            var result = validator.validate(name)
+            if(result is ValidationResult.OK){
+                result = ValidationResult.Fail(
+                    "Please modify text",
+                    severity = ValidationSeverity.Info
+                )
+            }
+            validationResult = result
+        }
     }
     Box(
         modifier = modifier.border(
@@ -205,7 +221,6 @@ fun InlineTextField(
                 TooltipBox(
                     tooltip = fail.reason,
                 ){
-
                     Icon(
                         painterResource(
                             when((validationResult as ValidationResult.Fail).severity){
@@ -243,7 +258,15 @@ fun InlineTextField(
             BasicTextField(
                 modifier=Modifier
                     .weight(1f)
-                    .padding(start=8.dp,end = 4.dp)
+                    .onKeyEvent { keyEvent ->
+                        if (keyEvent.key == Key.Escape && keyEvent.type == KeyEventType.KeyUp) {
+                            // ESC 键按下
+                            onValueChange(null)
+                            true // 消费事件
+                        } else {
+                            false
+                        }
+                    }
                     .onFocusChanged { focusState ->
                         if (focusState.isFocused) {
                             val text = textFieldState.text
@@ -255,10 +278,15 @@ fun InlineTextField(
                     .focusRequester(focusRequester),
                 value = textFieldState,
                 onValueChange = {
-                    validator?.let { validator->
+                    if(it.text==name) {
+                        validationResult = ValidationResult.Fail(
+                            "No changes in text",
+                            severity = ValidationSeverity.Info
+                        )
+                    } else {
                         validationResult = validator.validate(it.text)
-                        textFieldState = it
                     }
+                    textFieldState = it
 
 //                    error = !validator(it.text)
 //                    if(validator(it.text)) {
@@ -318,7 +346,7 @@ fun EditableText(
     onTextLayout: ((TextLayoutResult) -> Unit)? = null,
     style: TextStyle = LocalTextStyle.current,
     onEdit: ((Boolean)->Unit)? = null,
-    validator: Validator?=null,
+    validator: Validator= Validator(),
     onTextChange: ((String) -> Unit)?=null
 ){
     var editable by remember { mutableStateOf(false) }

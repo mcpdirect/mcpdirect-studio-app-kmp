@@ -138,13 +138,15 @@ object ToolRepository {
                     if (it.successful()) it.data?.let { makers ->
                         _toolMakers.update { map ->
                             map.toMutableMap().apply {
-                                for (maker in makers) {
-                                    if(maker.status<0) remove(maker.id)
-                                    else put(maker.id, maker)
-                                    if(maker.lastUpdated>_makerLastUpdate){
-                                        _makerLastUpdate = maker.lastUpdated
+                                for (maker in makers)
+                                    //TODO ignore before ToolMakerTemplate completed
+                                    if(maker.templateId==0L){
+                                        if(maker.status<0) remove(maker.id)
+                                        else put(maker.id, maker)
+                                        if(maker.lastUpdated>_makerLastUpdate){
+                                            _makerLastUpdate = maker.lastUpdated
+                                        }
                                     }
-                                }
                             }
                         }
                         _makerLastQuery = now

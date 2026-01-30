@@ -6,6 +6,7 @@ import ai.mcpdirect.studio.app.compose.StudioSearchbar
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
 import ai.mcpdirect.studio.app.model.account.AIPortTeam
+import ai.mcpdirect.studio.app.model.account.AIPortUser
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolAgent
 import ai.mcpdirect.studio.app.model.aitool.AIPortToolMaker
 import ai.mcpdirect.studio.app.model.repository.StudioRepository
@@ -69,19 +70,37 @@ fun MCPServersWidget(
         }
         if (toolMakers.isNotEmpty()) {
             Box(Modifier.weight(1f).padding(top = 8.dp)) {
-                FlowRow(
-                    Modifier.verticalScroll(scrollState).padding( end = 11.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    maxItemsInEachRow = 2
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
+                        .padding(end = 11.dp)
+                        .fillMaxSize()
                 ) {
-                    toolMakers.forEach { toolMaker ->
-                        if(UserRepository.me(toolMaker.userId))
-                            ToolMakerCard(toolMaker,localToolAgent,Modifier.weight(1f).height(120.dp))
-                        else
-                            TeamToolMakerCard(toolMaker,Modifier.weight(1f).height(120.dp))
+                    // 根据宽度计算每行最大项目数
+                    val maxItemsInEachRow = remember(maxWidth) {
+                        when {
+                            maxWidth < 400.dp -> 1  // 窄屏幕：1列
+                            maxWidth < 600.dp -> 2  // 中等屏幕：2列
+                            maxWidth < 900.dp -> 3  // 宽屏幕：3列
+                            maxWidth < 1200.dp -> 4
+                            else -> 5               // 超宽屏幕：5列
+                        }
+                    }
+                    FlowRow(
+//                        Modifier.verticalScroll(scrollState).padding( end = 11.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        maxItemsInEachRow = maxItemsInEachRow
+                    ) {
+                        toolMakers.forEach { toolMaker ->
+                            if(UserRepository.me(toolMaker.userId))
+                                ToolMakerCard(toolMaker,localToolAgent,Modifier.weight(1f).height(120.dp))
+                            else
+                                TeamToolMakerCard(toolMaker,Modifier.weight(1f).height(120.dp))
+                        }
                     }
                 }
+
                 VerticalScrollbar(
                     modifier = Modifier.align(Alignment.CenterEnd),
                     adapter = rememberScrollbarAdapter(scrollState = scrollState)
@@ -122,8 +141,15 @@ fun ToolMakerCard(
 ){
     val viewModel by remember { mutableStateOf(ToolMakerCardViewModel(toolMaker)) }
     val toolAgent by viewModel.toolAgent.collectAsState()
-//    var toolAgent by remember { mutableStateOf(AIPortToolAgent()) }
+//    var user by remember { mutableStateOf<AIPortUser?>(null) }
 //    LaunchedEffect(toolMaker) {
+//        if(!UserRepository.me(toolMaker.userId)){
+//            UserRepository.user(toolMaker.userId){
+//                if(it.successful()) it.data?.let {
+//                    user = it
+//                }
+//            }
+//        }
 //        StudioRepository.toolAgent(toolMaker.agentId) {
 //            if (it.successful()) it.data?.let { data ->
 //                toolAgent = data
