@@ -1,6 +1,18 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Remove automatic refresh calls and adjust UI layouts in widgets
+
+### Details
+- Removed automatic refresh calls in MyStudiosWidget and MCPDirectKeysWidget
+- Adjusted UI layouts in editable text areas for better consistency
+- Cleaned up unused imports across multiple widget files
+- Made minor UI structure changes in MyStudiosWidget and MCPDirectKeysWidget
+- Updated padding and layout in editable components for improved UX
+- Removed refresh calls that were causing performance issues
+
+## [January 28, 2026]
+### Summary
 Replace FlowRow with LazyVerticalGrid for improved performance
 
 ### Details

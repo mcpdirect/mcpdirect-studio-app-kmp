@@ -10,28 +10,14 @@ import ai.mcpdirect.studio.app.home.HomeViewModel
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -48,12 +34,12 @@ fun MyTeamsView(
     modifier: Modifier = Modifier
 ){
     val teams by viewModel.teams.collectAsState()
-    LaunchedEffect(viewModel) {
-        viewModel.refreshTeams()
-    }
+//    LaunchedEffect(viewModel) {
+//        viewModel.refreshTeams()
+//    }
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
-    Column(modifier.padding(start=8.dp).hoverable(interactionSource)) {
+    Column(modifier.hoverable(interactionSource)) {
         Row(
             modifier = Modifier.height(48.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -86,24 +72,26 @@ fun MyTeamsView(
             ) {
                 items(teams) { team ->
                     var edited by remember { mutableStateOf(false) }
-                    if(!edited)TextButton(
-                        modifier = Modifier.height(32.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        onClick = {
-                            generalViewModel.currentScreen(
-                                Screen.MCPTeam(team),
-                                "My Teams",
-                                Screen.Home
-                            )
-                        },
+                    if(!edited) Row(Modifier.padding(start = 16.dp)) {
+                        TextButton(
+                            modifier = Modifier.height(32.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            onClick = {
+                                generalViewModel.currentScreen(
+                                    Screen.MCPTeam(team),
+                                    "My Teams",
+                                    Screen.Home
+                                )
+                            },
 //                        border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor)
-                    ) {
-                        Row {
-                            EditableText(
-                                team.name,
-                                overflow = TextOverflow.MiddleEllipsis,
-                                onEdit = {edited = it}
-                            )
+                        ) {
+                            Row {
+                                EditableText(
+                                    team.name,
+                                    overflow = TextOverflow.MiddleEllipsis,
+                                    onEdit = { edited = it }
+                                )
+                            }
                         }
                     } else InlineTextField(
                         team.name,

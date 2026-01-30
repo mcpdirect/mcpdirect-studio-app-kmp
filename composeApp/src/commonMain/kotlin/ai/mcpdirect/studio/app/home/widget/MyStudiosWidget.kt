@@ -12,13 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -35,13 +29,13 @@ fun MyStudiosWidget(
     modifier: Modifier = Modifier
 ){
     val toolAgents by viewModel.toolAgents.collectAsState()
-    LaunchedEffect(viewModel) {
-        viewModel.refreshToolAgents()
-    }
+//    LaunchedEffect(viewModel) {
+//        viewModel.refreshToolAgents()
+//    }
 //    val interactionSource = remember { MutableInteractionSource() }
 //    val isHovered by interactionSource.collectIsHoveredAsState()
 //    Column(modifier.padding(start=8.dp).hoverable(interactionSource)) {
-    Column(modifier.padding(start=8.dp)) {
+    Column {
         Row(
             modifier = Modifier.height(48.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -77,43 +71,45 @@ fun MyStudiosWidget(
                 items(toolAgents) {
                     if (it.id > 0L && UserRepository.me(it.userId)) {
                         var edited by remember { mutableStateOf(false) }
-                        if(!edited)TextButton(
-                            enabled = !edited,
-                            modifier = Modifier.height(32.dp),
-                            contentPadding = PaddingValues(horizontal = if(edited) 0.dp else 16.dp),
-                            onClick = {
-                                generalViewModel.currentScreen(
-                                    Screen.MyStudio(it),
-                                    "My Studios",
-                                    Screen.Home
-                                )
-                            },
-                        ) {
-                            if (it.id == localToolAgent.id){
-                                BadgedBox(
-                                    badge = {
-                                        Badge(Modifier.padding(start = 8.dp)) {
-                                            Text(
-                                                "Local",
-                                                style = MaterialTheme.typography.labelSmall,
-                                            )
-                                        }
-                                    }
-                                ) {
-                                    EditableText(
-                                        it.name, softWrap = false,
-                                        overflow = TextOverflow.MiddleEllipsis,
-                                        onEdit = {edited = it},
+                        if(!edited) Row(Modifier.padding(start = 16.dp)) {
+                            TextButton(
+                                enabled = !edited,
+                                modifier = Modifier.height(32.dp),
+                                contentPadding = PaddingValues(horizontal = if (edited) 0.dp else 16.dp),
+                                onClick = {
+                                    generalViewModel.currentScreen(
+                                        Screen.MyStudio(it),
+                                        "My Studios",
+                                        Screen.Home
                                     )
-                                }
-                                Spacer(Modifier.width(32.dp))
-                            }else EditableText(
-                                it.name, softWrap = false,
-                                overflow = TextOverflow.MiddleEllipsis,
-                                onEdit = {edited = it},
-                            )
+                                },
+                            ) {
+                                if (it.id == localToolAgent.id) {
+                                    BadgedBox(
+                                        badge = {
+                                            Badge(Modifier.padding(start = 8.dp)) {
+                                                Text(
+                                                    "Local",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                )
+                                            }
+                                        }
+                                    ) {
+                                        EditableText(
+                                            it.name, softWrap = false,
+                                            overflow = TextOverflow.MiddleEllipsis,
+                                            onEdit = { edited = it },
+                                        )
+                                    }
+                                    Spacer(Modifier.width(32.dp))
+                                } else EditableText(
+                                    it.name, softWrap = false,
+                                    overflow = TextOverflow.MiddleEllipsis,
+                                    onEdit = { edited = it },
+                                )
 //                            Row {
 //                            }
+                            }
                         } else InlineTextField(
                             it.name,
                             modifier = Modifier.height(32.dp),
