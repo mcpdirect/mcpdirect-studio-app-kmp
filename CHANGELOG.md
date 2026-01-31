@@ -1,6 +1,18 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Add Material Design color palette and enhance team owner display
+
+### Details
+- Added comprehensive MaterialColors.kt with full Material Design color palette
+- Enhanced MyTeamsWidget to show team owner information with tooltips
+- Added person icon for displaying team owner names
+- Implemented user lookup functionality to retrieve team owner details
+- Added BadgedBox and tooltip functionality for team owner display
+- Included MaterialTheme and additional UI components for enhanced display
+
+## [January 28, 2026]
+### Summary
 Remove automatic refresh calls and adjust UI layouts in widgets
 
 ### Details

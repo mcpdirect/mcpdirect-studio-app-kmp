@@ -4,17 +4,25 @@ import ai.mcpdirect.mcpdirectstudioapp.getPlatform
 import ai.mcpdirect.studio.app.Screen
 import ai.mcpdirect.studio.app.compose.EditableText
 import ai.mcpdirect.studio.app.compose.InlineTextField
+import ai.mcpdirect.studio.app.compose.TooltipBox
+import ai.mcpdirect.studio.app.compose.TooltipIcon
 import ai.mcpdirect.studio.app.compose.ValidatorBuilder
 import ai.mcpdirect.studio.app.generalViewModel
 import ai.mcpdirect.studio.app.home.HomeViewModel
+import ai.mcpdirect.studio.app.model.account.AIPortUser
+import ai.mcpdirect.studio.app.model.repository.UserRepository
+import ai.mcpdirect.studio.app.theme.AppColors
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
@@ -26,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
 import mcpdirectstudioapp.composeapp.generated.resources.group
+import mcpdirectstudioapp.composeapp.generated.resources.person
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -71,6 +80,7 @@ fun MyTeamsView(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 items(teams) { team ->
+                    val me = UserRepository.me(team.ownerId)
                     var edited by remember { mutableStateOf(false) }
                     if(!edited) Row(Modifier.padding(start = 16.dp)) {
                         TextButton(
@@ -83,14 +93,34 @@ fun MyTeamsView(
                                     Screen.Home
                                 )
                             },
-//                        border = BorderStroke(1.dp, ButtonDefaults.textButtonColors().contentColor)
                         ) {
-                            Row {
-                                EditableText(
-                                    team.name,
+                            if(me) EditableText(
+                                team.name,
+                                overflow = TextOverflow.MiddleEllipsis,
+                                onEdit = { edited = it }
+                            ) else {
+                                var user by remember { mutableStateOf(AIPortUser()) }
+                                LaunchedEffect(Unit){
+                                    UserRepository.user(team.ownerId){
+                                        if(it.successful()) it.data?.let { data->
+                                            user = data
+                                        }
+                                    }
+                                }
+                                Text(
+                                    team.name, softWrap = false,
                                     overflow = TextOverflow.MiddleEllipsis,
-                                    onEdit = { edited = it }
                                 )
+                                Spacer(Modifier.width(4.dp))
+                                TooltipBox(
+                                    user.name
+                                ) {
+                                    Icon(
+                                        painterResource(Res.drawable.person),
+                                        null,
+                                        Modifier.size(16.dp)
+                                    )
+                                }
                             }
                         }
                     } else InlineTextField(
@@ -103,6 +133,7 @@ fun MyTeamsView(
 
                         }
                     }
+
                 }
             }
         } else if (getPlatform().type == 0) Column(
