@@ -164,6 +164,7 @@ fun MCPdirectKeysComponent(
                         else name = text
                     },
                     label = { Text("MCPdirect Key Name") },
+                    singleLine = true,
                     isError = nameError,
                     supportingText = {
                         Text("Name must not be empty and should have at most 20 characters")

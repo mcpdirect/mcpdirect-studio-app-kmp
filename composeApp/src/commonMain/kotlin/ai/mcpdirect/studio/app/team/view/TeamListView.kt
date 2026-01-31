@@ -239,6 +239,7 @@ fun TeamListView(
                         name = text.ifBlank { "" }
                     },
                     label = { Text("Team Name") },
+                    singleLine = true,
                     isError = nameError,
                     supportingText = {
                         Text("Name must not be empty and should have at most 20 characters")

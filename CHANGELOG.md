@@ -1,6 +1,17 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Add singleLine property to text input fields for better validation
+
+### Details
+- Added singleLine = true property to MCPdirectKeysComponent text field
+- Added singleLine = true property to TeamListView text field
+- Ensured text input fields only accept single-line text input
+- Improved input validation consistency across the application
+- Prevented multi-line input in name fields for better data integrity
+
+## [January 28, 2026]
+### Summary
 Add Material Design color palette and enhance team owner display
 
 ### Details
