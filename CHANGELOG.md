@@ -1,6 +1,18 @@
 # Changelog
 ## [January 28, 2026]
 ### Summary
+Enhance TooltipBox functionality and update team display icons
+
+### Details
+- Enhanced TooltipBox composable to accept a composable tooltip parameter
+- Updated MyTeamsWidget to use new TooltipBox functionality
+- Changed team owner display icon from person to call_received
+- Added Row and RowScope imports to TooltipIcon.kt
+- Improved tooltip display with composable content support
+- Added new call_received SVG icon resource
+
+## [January 28, 2026]
+### Summary
 Add singleLine property to text input fields for better validation
 
 ### Details

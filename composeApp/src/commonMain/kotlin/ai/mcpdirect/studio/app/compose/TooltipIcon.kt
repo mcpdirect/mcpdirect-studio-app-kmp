@@ -1,5 +1,7 @@
 package ai.mcpdirect.studio.app.compose
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,6 +61,36 @@ fun TooltipBox(
         tooltip = {
             PlainTooltip {
                 Text(tooltip)
+            }
+        },
+        state = tooltipState,
+        modifier = modifier,
+        onDismissRequest = onDismissRequest,
+        focusable = focusable,
+        enableUserInput = enableUserInput,
+        hasAction = hasAction,
+        content = content
+    )
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TooltipBox(
+    tooltip: @Composable (RowScope.() -> Unit),
+    modifier: Modifier = Modifier,
+    onDismissRequest: (() -> Unit)? = null,
+    focusable: Boolean = false,
+    enableUserInput: Boolean = true,
+    hasAction: Boolean = false,
+    content: @Composable (() -> Unit)
+) {
+    val tooltipState = rememberTooltipState()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+        tooltip = {
+            PlainTooltip {
+                Row {
+                    tooltip()
+                }
             }
         },
         state = tooltipState,

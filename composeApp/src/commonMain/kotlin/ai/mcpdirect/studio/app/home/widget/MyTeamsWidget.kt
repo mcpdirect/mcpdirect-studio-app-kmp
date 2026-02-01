@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mcpdirectstudioapp.composeapp.generated.resources.Res
 import mcpdirectstudioapp.composeapp.generated.resources.add
+import mcpdirectstudioapp.composeapp.generated.resources.call_received
 import mcpdirectstudioapp.composeapp.generated.resources.group
 import mcpdirectstudioapp.composeapp.generated.resources.person
 import org.jetbrains.compose.resources.painterResource
@@ -113,10 +114,17 @@ fun MyTeamsView(
                                 )
                                 Spacer(Modifier.width(4.dp))
                                 TooltipBox(
-                                    user.name
+                                    {
+                                        Icon(
+                                            painterResource(Res.drawable.person),
+                                            null,
+                                            Modifier.size(16.dp)
+                                        )
+                                        Text(user.name)
+                                    }
                                 ) {
                                     Icon(
-                                        painterResource(Res.drawable.person),
+                                        painterResource(Res.drawable.call_received),
                                         null,
                                         Modifier.size(16.dp)
                                     )
